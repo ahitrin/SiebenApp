@@ -22,6 +22,8 @@ class Goals():
                 value['open'] = key not in self.closed
             if 'name' in keys:
                 value['name'] = name
+            if 'trans' in keys:
+                value['trans'] = self.transitions[key] if key in self.transitions else []
             result[key] = value if len(keys) > 1 else value[keys[0]]
         return result
 

@@ -79,6 +79,15 @@ class GoalsTest(TestCase):
         self.goals.link(2, 3)
         assert self.goals.top() == {3: 'B'}
 
+    def test_view_transitions(self):
+        self.goals.add('A')
+        self.goals.add('B')
+        self.goals.add('C', 2)
+        self.goals.link(3, 4)
+        assert self.goals.top() == {4: 'C'}
+        assert self.goals.all(keys='trans') == {
+                1: [2, 3], 2: [4], 3: [4], 4: []}
+
     def test_remove_link_between_goals(self):
         self.goals.add('A')
         self.goals.add('B')
