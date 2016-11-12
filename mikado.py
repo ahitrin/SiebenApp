@@ -55,3 +55,8 @@ class Goals():
     def link(self, lower, upper):
         self.transitions.setdefault(lower, list())
         self.transitions[lower].append(upper)
+
+    def unlink(self, lower, upper):
+        self.transitions[lower].remove(upper)
+        if not self.transitions[lower]:
+            self.transitions.pop(lower)

@@ -78,3 +78,10 @@ class GoalsTest(TestCase):
         self.goals.add('B')
         self.goals.link(2, 3)
         assert self.goals.top() == {3: 'B'}
+
+    def test_remove_link_between_goals(self):
+        self.goals.add('A')
+        self.goals.add('B')
+        self.goals.link(2, 3)
+        self.goals.unlink(2, 3)
+        assert self.goals.top() == {2: 'A', 3: 'B'}
