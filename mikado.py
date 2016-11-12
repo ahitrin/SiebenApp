@@ -13,13 +13,17 @@ class Goals():
         self._link(add_to, next_id)
         return next_id
 
-    def all(self):
-        return {k: v for k, v in self.goals.items()
-                     if k not in self.closed}
-
-    def all_with_status(self):
-        return {k: {'name': v, 'open': k not in self.closed}
-                for k, v in self.goals.items()}
+    def all(self, keys='name'):
+        keys = keys.split(',')
+        result = dict()
+        for key, name in self.goals.items():
+            if 'open' in keys:
+                value = {'name': name,
+                         'open': key not in self.closed}
+            else:
+                value = name
+            result[key] = value
+        return result
 
     def top(self):
         return {key: value

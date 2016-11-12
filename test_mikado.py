@@ -48,10 +48,10 @@ def test_insert_goal_in_the_middle():
 
 def test_close_single_goal():
     goals = Goals('Do it')
-    assert goals.all_with_status() == {1: {'name': 'Do it',
-                                           'open': True}}
+    assert goals.all(keys='name,open') == {1: {'name': 'Do it',
+                                               'open': True}}
     goals.close(1)
-    assert goals.all() == {}
+    assert goals.all() == {1: 'Do it'}
     assert goals.top() == {}
-    assert goals.all_with_status() == {1: {'name': 'Do it',
-                                           'open': False}}
+    assert goals.all(keys='name,open') == {1: {'name': 'Do it',
+                                               'open': False}}
