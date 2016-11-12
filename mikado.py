@@ -4,15 +4,11 @@
 class Goals():
     def __init__(self, name):
         self.goals = {1: name}
-        self.top_keys = set([1])
         self.transitions = dict()
 
     def add(self, name, add_to=1):
         next_id = len(self.goals) + 1
         self.goals[next_id] = name
-        self.top_keys.add(next_id)
-        if 1 in self.top_keys:
-            self.top_keys.remove(1)
         self.transitions.setdefault(add_to, list())
         self.transitions[add_to].append(next_id)
 
@@ -21,5 +17,5 @@ class Goals():
 
     def top(self):
         return {key: self.goals[key]
-                for key in self.top_keys
+                for key in self.goals.keys()
                 if key not in self.transitions.keys()}
