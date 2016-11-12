@@ -38,7 +38,7 @@ def test_rename_goal():
     assert goals.all() == {1: 'Root', 2: 'A'}
 
 
-def test_inesert_goal_in_the_middle():
+def test_insert_goal_in_the_middle():
     goals = Goals('Root')
     goals.add('B')
     goals.insert(1, 2, 'A')

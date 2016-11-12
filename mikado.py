@@ -9,8 +9,7 @@ class Goals():
     def add(self, name, add_to=1):
         next_id = len(self.goals) + 1
         self.goals[next_id] = name
-        self.transitions.setdefault(add_to, list())
-        self.transitions[add_to].append(next_id)
+        self._link(add_to, next_id)
         return next_id
 
     def all(self):
@@ -23,8 +22,11 @@ class Goals():
 
     def insert(self, lower, upper, name):
         key = self.add(name, lower)
-        self.transitions.setdefault(key, list())
-        self.transitions[key].append(upper)
+        self._link(key, upper)
 
     def rename(self, goal_id, new_name):
         self.goals[goal_id] = new_name
+
+    def _link(self, lower, upper):
+        self.transitions.setdefault(lower, list())
+        self.transitions[lower].append(upper)
