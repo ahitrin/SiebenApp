@@ -80,3 +80,11 @@ def test_enumeration_could_be_changed_after_delete():
     assert goals.all() == {1: 'Root', 2: 'A', 3: 'B'}
     goals.delete(2)
     assert goals.all() == {1: 'Root', 2: 'B'}
+
+
+def test_remove_goal_chain():
+    goals = Goals('Root')
+    goals.add('A')
+    goals.add('B', 2)
+    goals.delete(2)
+    assert goals.all() == {1: 'Root'}
