@@ -44,3 +44,14 @@ def test_insert_goal_in_the_middle():
     goals.insert(1, 2, 'A')
     assert goals.all() == {1: 'Root', 2: 'B', 3: 'A'}
     assert goals.top() == {2: 'B'}
+
+
+def test_close_single_goal():
+    goals = Goals('Do it')
+    assert goals.all_with_status() == {1: {'name': 'Do it',
+                                           'open': True}}
+    goals.close(1)
+    assert goals.all() == {}
+    assert goals.top() == {}
+    assert goals.all_with_status() == {1: {'name': 'Do it',
+                                           'open': False}}
