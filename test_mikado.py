@@ -29,3 +29,10 @@ def test_two_goals_in_a_chain():
     goals.add('AA', 2)
     assert goals.all() == {1: 'Root', 2: 'A', 3: 'AA'}
     assert goals.top() == {3: 'AA'}
+
+
+def test_rename_goal():
+    goals = Goals('Root')
+    goals.add('Boom')
+    goals.rename(2, 'A')
+    assert goals.all() == {1: 'Root', 2: 'A'}

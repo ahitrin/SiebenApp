@@ -19,3 +19,6 @@ class Goals():
         return {key: self.goals[key]
                 for key in self.goals.keys()
                 if key not in self.transitions.keys()}
+
+    def rename(self, goal_id, new_name):
+        self.goals[goal_id] = new_name
