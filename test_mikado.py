@@ -13,3 +13,11 @@ def test_new_goal_moves_to_top():
     goals.add('Some later')
     assert goals.all() == {1: 'Just do it', 2: 'Some later'}
     assert goals.top() == {2: 'Some later'}
+
+
+def test_two_new_goals_move_to_top():
+    goals = Goals('Root')
+    goals.add('A')
+    goals.add('B')
+    assert goals.all() == {1: 'Root', 2: 'A', 3: 'B'}
+    assert goals.top() == {2: 'A', 3: 'B'}
