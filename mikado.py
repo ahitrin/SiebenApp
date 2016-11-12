@@ -44,6 +44,9 @@ class Goals():
     def reopen(self, goal_id):
         self.closed.remove(goal_id)
 
+    def delete(self, goal_id):
+        self.goals.pop(goal_id)
+
     def _link(self, lower, upper):
         self.transitions.setdefault(lower, list())
         self.transitions[lower].append(upper)

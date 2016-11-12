@@ -64,3 +64,10 @@ def test_reopen_goal():
     assert goals.all(keys='open') == {1: True, 2: False}
     goals.reopen(2)
     assert goals.all(keys='open') == {1: True, 2: True}
+
+
+def test_delete_single_goal():
+    goals = Goals('Root')
+    goals.add('A')
+    goals.delete(2)
+    assert goals.all() == {1: 'Root'}
