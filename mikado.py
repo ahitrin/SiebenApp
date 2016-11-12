@@ -17,12 +17,12 @@ class Goals():
         keys = keys.split(',')
         result = dict()
         for key, name in self.goals.items():
+            value = {}
             if 'open' in keys:
-                value = {'name': name,
-                         'open': key not in self.closed}
-            else:
-                value = name
-            result[key] = value
+                value['open'] = key not in self.closed
+            if 'name' in keys:
+                value['name'] = name
+            result[key] = value if len(keys) > 1 else value[keys[0]]
         return result
 
     def top(self):
@@ -40,6 +40,9 @@ class Goals():
 
     def close(self, goal_id):
         self.closed.add(goal_id)
+
+    def reopen(self, goal_id):
+        self.closed.remove(goal_id)
 
     def _link(self, lower, upper):
         self.transitions.setdefault(lower, list())

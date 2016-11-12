@@ -55,3 +55,12 @@ def test_close_single_goal():
     assert goals.top() == {}
     assert goals.all(keys='name,open') == {1: {'name': 'Do it',
                                                'open': False}}
+
+
+def test_reopen_goal():
+    goals = Goals('Root')
+    goals.add('A')
+    goals.close(2)
+    assert goals.all(keys='open') == {1: True, 2: False}
+    goals.reopen(2)
+    assert goals.all(keys='open') == {1: True, 2: True}
