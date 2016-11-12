@@ -10,7 +10,7 @@ class Goals():
     def add(self, name, add_to=1):
         next_id = len(self.goals) + 1
         self.goals[next_id] = name
-        self._link(add_to, next_id)
+        self.link(add_to, next_id)
         return next_id
 
     def all(self, keys='name'):
@@ -33,7 +33,7 @@ class Goals():
 
     def insert(self, lower, upper, name):
         key = self.add(name, lower)
-        self._link(key, upper)
+        self.link(key, upper)
 
     def rename(self, goal_id, new_name):
         self.goals[goal_id] = new_name
@@ -52,6 +52,6 @@ class Goals():
         for key in sorted(k for k in self.goals.keys() if k > goal_id):
             self.goals[key - 1] = self.goals.pop(key)
 
-    def _link(self, lower, upper):
+    def link(self, lower, upper):
         self.transitions.setdefault(lower, list())
         self.transitions[lower].append(upper)
