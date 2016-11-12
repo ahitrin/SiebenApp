@@ -11,6 +11,7 @@ class Goals():
         self.goals[next_id] = name
         self.transitions.setdefault(add_to, list())
         self.transitions[add_to].append(next_id)
+        return next_id
 
     def all(self):
         return self.goals
@@ -19,6 +20,11 @@ class Goals():
         return {key: self.goals[key]
                 for key in self.goals.keys()
                 if key not in self.transitions.keys()}
+
+    def insert(self, lower, upper, name):
+        key = self.add(name, lower)
+        self.transitions.setdefault(key, list())
+        self.transitions[key].append(upper)
 
     def rename(self, goal_id, new_name):
         self.goals[goal_id] = new_name

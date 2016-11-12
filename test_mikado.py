@@ -36,3 +36,11 @@ def test_rename_goal():
     goals.add('Boom')
     goals.rename(2, 'A')
     assert goals.all() == {1: 'Root', 2: 'A'}
+
+
+def test_inesert_goal_in_the_middle():
+    goals = Goals('Root')
+    goals.add('B')
+    goals.insert(1, 2, 'A')
+    assert goals.all() == {1: 'Root', 2: 'B', 3: 'A'}
+    assert goals.top() == {2: 'B'}
