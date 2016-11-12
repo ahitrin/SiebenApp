@@ -71,3 +71,12 @@ def test_delete_single_goal():
     goals.add('A')
     goals.delete(2)
     assert goals.all() == {1: 'Root'}
+
+
+def test_enumeration_could_be_changed_after_delete():
+    goals = Goals('Root')
+    goals.add('A')
+    goals.add('B')
+    assert goals.all() == {1: 'Root', 2: 'A', 3: 'B'}
+    goals.delete(2)
+    assert goals.all() == {1: 'Root', 2: 'B'}

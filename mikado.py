@@ -46,6 +46,8 @@ class Goals():
 
     def delete(self, goal_id):
         self.goals.pop(goal_id)
+        for key in sorted(k for k in self.goals.keys() if k > goal_id):
+            self.goals[key - 1] = self.goals.pop(key)
 
     def _link(self, lower, upper):
         self.transitions.setdefault(lower, list())
