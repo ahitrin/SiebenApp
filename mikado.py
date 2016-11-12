@@ -50,9 +50,17 @@ class Goals():
         self.goals.pop(goal_id)
         if goal_id in self.transitions:
             for next_goal in self.transitions[goal_id]:
-                self.delete(next_goal)
+                other_transitions = list()
+                for k in (k for k in self.transitions if k != goal_id):
+                    other_transitions.extend(self.transitions[k])
+                if next_goal not in set(other_transitions):
+                    self.delete(next_goal)
+            self.transitions.pop(goal_id)
         for key in sorted(k for k in self.goals.keys() if k > goal_id):
             self.goals[key - 1] = self.goals.pop(key)
+        for key, values in self.transitions.items():
+            self.transitions[key] = [v for v in values if v < goal_id] + \
+                                    [v - 1 for v in values if v > goal_id]
 
     def link(self, lower, upper):
         self.transitions.setdefault(lower, list())

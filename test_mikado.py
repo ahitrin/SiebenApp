@@ -94,3 +94,19 @@ class GoalsTest(TestCase):
         self.goals.link(2, 3)
         self.goals.unlink(2, 3)
         assert self.goals.top() == {2: 'A', 3: 'B'}
+
+    def test_remove_goal_in_the_middle(self):
+        self.goals.add('A')
+        self.goals.add('B')
+        self.goals.add('C', 2)
+        self.goals.link(3, 4)
+        assert self.goals.all(keys='name,trans') == {
+                1: {'name': 'Root', 'trans': [2, 3]},
+                2: {'name': 'A', 'trans': [4]},
+                3: {'name': 'B', 'trans': [4]},
+                4: {'name': 'C', 'trans': []}}
+        self.goals.delete(3)
+        assert self.goals.all(keys='name,trans') == {
+                1: {'name': 'Root', 'trans': [2]},
+                2: {'name': 'A', 'trans': [3]},
+                3: {'name': 'C', 'trans': []}}
