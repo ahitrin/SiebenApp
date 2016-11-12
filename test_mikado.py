@@ -21,3 +21,11 @@ def test_two_new_goals_move_to_top():
     goals.add('B')
     assert goals.all() == {1: 'Root', 2: 'A', 3: 'B'}
     assert goals.top() == {2: 'A', 3: 'B'}
+
+
+def test_two_goals_in_a_chain():
+    goals = Goals('Root')
+    goals.add('A')
+    goals.add('AA', 2)
+    assert goals.all() == {1: 'Root', 2: 'A', 3: 'AA'}
+    assert goals.top() == {3: 'AA'}
