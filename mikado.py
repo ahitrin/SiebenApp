@@ -4,7 +4,7 @@
 class Goals():
     def __init__(self, name):
         self.goals = {1: name}
-        self.transitions = dict()
+        self.edges = dict()
         self.closed = set()
 
     def add(self, name, add_to=1):
@@ -22,15 +22,15 @@ class Goals():
                 value['open'] = key not in self.closed
             if 'name' in keys:
                 value['name'] = name
-            if 'trans' in keys:
-                value['trans'] = self.transitions[key] if key in self.transitions else []
+            if 'edge' in keys:
+                value['edge'] = self.edges[key] if key in self.edges else []
             result[key] = value if len(keys) > 1 else value[keys[0]]
         return result
 
     def top(self):
         return {key: value
                 for key, value in self.goals.items()
-                if key not in self.transitions.keys() and
+                if key not in self.edges.keys() and
                    key not in self.closed}
 
     def insert(self, lower, upper, name):
@@ -48,25 +48,25 @@ class Goals():
 
     def delete(self, goal_id):
         self.goals.pop(goal_id)
-        if goal_id in self.transitions:
-            for next_goal in self.transitions[goal_id]:
-                other_transitions = list()
-                for k in (k for k in self.transitions if k != goal_id):
-                    other_transitions.extend(self.transitions[k])
-                if next_goal not in set(other_transitions):
+        if goal_id in self.edges:
+            for next_goal in self.edges[goal_id]:
+                other_edges = list()
+                for k in (k for k in self.edges if k != goal_id):
+                    other_edges.extend(self.edges[k])
+                if next_goal not in set(other_edges):
                     self.delete(next_goal)
-            self.transitions.pop(goal_id)
+            self.edges.pop(goal_id)
         for key in sorted(k for k in self.goals.keys() if k > goal_id):
             self.goals[key - 1] = self.goals.pop(key)
-        for key, values in self.transitions.items():
-            self.transitions[key] = [v for v in values if v < goal_id] + \
-                                    [v - 1 for v in values if v > goal_id]
+        for key, values in self.edges.items():
+            self.edges[key] = [v for v in values if v < goal_id] + \
+                              [v - 1 for v in values if v > goal_id]
 
     def link(self, lower, upper):
-        self.transitions.setdefault(lower, list())
-        self.transitions[lower].append(upper)
+        self.edges.setdefault(lower, list())
+        self.edges[lower].append(upper)
 
     def unlink(self, lower, upper):
-        self.transitions[lower].remove(upper)
-        if not self.transitions[lower]:
-            self.transitions.pop(lower)
+        self.edges[lower].remove(upper)
+        if not self.edges[lower]:
+            self.edges.pop(lower)

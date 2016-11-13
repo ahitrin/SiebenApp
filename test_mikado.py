@@ -79,13 +79,13 @@ class GoalsTest(TestCase):
         self.goals.link(2, 3)
         assert self.goals.top() == {3: 'B'}
 
-    def test_view_transitions(self):
+    def test_view_edges(self):
         self.goals.add('A')
         self.goals.add('B')
         self.goals.add('C', 2)
         self.goals.link(3, 4)
         assert self.goals.top() == {4: 'C'}
-        assert self.goals.all(keys='trans') == {
+        assert self.goals.all(keys='edge') == {
                 1: [2, 3], 2: [4], 3: [4], 4: []}
 
     def test_remove_link_between_goals(self):
@@ -100,13 +100,13 @@ class GoalsTest(TestCase):
         self.goals.add('B')
         self.goals.add('C', 2)
         self.goals.link(3, 4)
-        assert self.goals.all(keys='name,trans') == {
-                1: {'name': 'Root', 'trans': [2, 3]},
-                2: {'name': 'A', 'trans': [4]},
-                3: {'name': 'B', 'trans': [4]},
-                4: {'name': 'C', 'trans': []}}
+        assert self.goals.all(keys='name,edge') == {
+                1: {'name': 'Root', 'edge': [2, 3]},
+                2: {'name': 'A', 'edge': [4]},
+                3: {'name': 'B', 'edge': [4]},
+                4: {'name': 'C', 'edge': []}}
         self.goals.delete(3)
-        assert self.goals.all(keys='name,trans') == {
-                1: {'name': 'Root', 'trans': [2]},
-                2: {'name': 'A', 'trans': [3]},
-                3: {'name': 'C', 'trans': []}}
+        assert self.goals.all(keys='name,edge') == {
+                1: {'name': 'Root', 'edge': [2]},
+                2: {'name': 'A', 'edge': [3]},
+                3: {'name': 'C', 'edge': []}}
