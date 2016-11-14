@@ -9,13 +9,13 @@ in fullscreen", color="green", shape="box"];
 6 [label="6: Call dot to redraw graph", color="red", shape="box", style="bold"];
 7 [label="7: Handle hotkey", color="green", shape="box"];
 8 [label="8: Primitive
-serialization w/ pikle", color="red", shape="box", style="bold"];
-1 -> 6 [color="grey"];
+serialization w/ pikle", color="green", shape="box"];
+1 -> 0 [color="grey"];
 2 -> 1 [color="grey"];
 3 -> 1 [color="grey"];
 4 -> 1 [color="grey"];
 5 -> 6 [color="grey"];
 6 -> 0 [color="black"];
 7 -> 4 [color="grey"];
-8 -> 0 [color="black"];
+8 -> 0 [color="grey"];
 }
