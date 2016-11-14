@@ -1,6 +1,9 @@
 #!/usr/bin/env python3.5
 # coding: utf-8
 import sys
+from mikado import Goals
+from subprocess import run
+from system import dot_export
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import (
@@ -20,6 +23,7 @@ class SiebenApp(QMainWindow):
         self.scr = QScrollArea()
         self.l = QLabel()
         self.refresh.connect(self.reload_image)
+        self.goals = Goals('Rename me')
 
     def setup(self):
         self.setWindowTitle('Sieben 7')
@@ -32,7 +36,10 @@ class SiebenApp(QMainWindow):
         self.refresh.emit()
 
     def reload_image(self):
-        img = QImage('./doc/work.png')
+        with open('work.dot', 'w') as f:
+            f.write(dot_export(self.goals))
+        run(['dot', '-Tpng', '-o', 'work.png', 'work.dot'])
+        img = QImage('work.png')
         self.l.setPixmap(QPixmap.fromImage(img))
         self.l.resize(img.size().width(), img.size().height())
 
