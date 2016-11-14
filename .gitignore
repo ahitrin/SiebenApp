@@ -1,3 +1,4 @@
 .cache
 .env
 __pycache__
+sieben.db
