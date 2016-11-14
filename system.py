@@ -12,3 +12,19 @@ def save(obj, filename=DEFAULT_DB):
 def load(filename=DEFAULT_DB):
     with open(filename, 'rb') as f:
         return pickle.load(f)
+
+
+def dot_export(goals):
+    data = goals.all(keys='open,name,edge')
+    tops = goals.top()
+    lines = []
+    for num in sorted(data.keys()):
+        name = '%d: %s' % (num, data[num]['name'])
+        color = 'red' if data[num]['open'] else 'green'
+        style = ', style=bold' if num in tops else ''
+        lines.append('%d [label="%s", color=%s%s];' % (num, name, color, style))
+    for num in sorted(data.keys()):
+        for edge in data[num]['edge']:
+            color = 'black' if data[edge]['open'] else 'grey'
+            lines.append('%d -> %d [color=%s];' % (edge, num, color))
+    return 'digraph g {\nnode [shape=box];\n%s\n}' % '\n'.join(lines)
