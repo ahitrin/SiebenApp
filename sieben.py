@@ -9,10 +9,12 @@ from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import (
     QApplication,
+    QDockWidget,
     QLabel,
+    QLineEdit,
     QMainWindow,
-    QSizePolicy,
-    QScrollArea
+    QScrollArea,
+    QSizePolicy
 )
 
 
@@ -24,6 +26,8 @@ class SiebenApp(QMainWindow):
         super().__init__()
         self.scr = QScrollArea()
         self.l = QLabel()
+        self.dock = QDockWidget('Edit area')
+        self.input = QLineEdit()
         self.refresh.connect(self.reload_image)
         self.quit_app.connect(QApplication.instance().quit)
         if path.exists('sieben.db'):
@@ -37,8 +41,13 @@ class SiebenApp(QMainWindow):
         self.scr.setWidget(self.l)
         self.setCentralWidget(self.scr)
         self.l.setScaledContents(True)
+        self.dock.setFeatures(QDockWidget.NoDockWidgetFeatures)
+        self.dock.setWidget(self.input)
+        self.addDockWidget(Qt.BottomDockWidgetArea, self.dock)
         self.l.setVisible(True)
         self.scr.setVisible(True)
+        self.dock.setVisible(True)
+        self.input.setVisible(True)
         self.refresh.emit()
 
     def reload_image(self):
