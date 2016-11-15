@@ -20,6 +20,7 @@ from PyQt5.QtWidgets import (
 
 class SiebenApp(QMainWindow):
     refresh = pyqtSignal()
+    add_goal = pyqtSignal()
     quit_app = pyqtSignal()
 
     def __init__(self):
@@ -29,6 +30,7 @@ class SiebenApp(QMainWindow):
         self.dock = QDockWidget('Edit area')
         self.input = QLineEdit()
         self.refresh.connect(self.reload_image)
+        self.add_goal.connect(self.start_adding_goal)
         self.quit_app.connect(QApplication.instance().quit)
         if path.exists('sieben.db'):
             self.goals = load()
@@ -48,6 +50,7 @@ class SiebenApp(QMainWindow):
         self.scr.setVisible(True)
         self.dock.setVisible(True)
         self.input.setVisible(True)
+        self.input.setEnabled(False)
         self.refresh.emit()
 
     def reload_image(self):
@@ -61,6 +64,7 @@ class SiebenApp(QMainWindow):
 
     def keyPressEvent(self, event):
         key_handlers = {
+            Qt.Key_A: lambda: self.add_goal.emit(),
             Qt.Key_Q: lambda: self.quit_app.emit(),
             Qt.Key_R: lambda: self.refresh.emit(),
         }
@@ -68,6 +72,19 @@ class SiebenApp(QMainWindow):
             key_handlers[event.key()]()
         else:
             super().keyPressEvent(event)
+
+    def start_adding_goal(self):
+        self.input.setEnabled(True)
+        self.input.setFocus(True)
+        self.input.editingFinished.connect(self.end_adding_goal)
+
+    def end_adding_goal(self):
+        self.input.editingFinished.disconnect()
+        goal_name = self.input.text()
+        self.goals.add(goal_name)
+        self.input.setEnabled(False)
+        self.input.setText('')
+        self.refresh.emit()
 
 
 if __name__ == '__main__':
