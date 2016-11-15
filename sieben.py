@@ -5,7 +5,7 @@ from mikado import Goals
 from os import path
 from subprocess import run
 from system import save, load, dot_export
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import (
     QApplication,
@@ -18,12 +18,14 @@ from PyQt5.QtWidgets import (
 
 class SiebenApp(QMainWindow):
     refresh = pyqtSignal()
+    quit_app = pyqtSignal()
 
     def __init__(self):
         super().__init__()
         self.scr = QScrollArea()
         self.l = QLabel()
         self.refresh.connect(self.reload_image)
+        self.quit_app.connect(QApplication.instance().quit)
         if path.exists('sieben.db'):
             self.goals = load()
         else:
@@ -49,9 +51,12 @@ class SiebenApp(QMainWindow):
         self.l.resize(img.size().width(), img.size().height())
 
     def keyPressEvent(self, event):
-        # stupid handler for 'r'
-        if event.key() == 82:
-            self.refresh.emit()
+        key_handlers = {
+            Qt.Key_Q: lambda: self.quit_app.emit(),
+            Qt.Key_R: lambda: self.refresh.emit(),
+        }
+        if event.key() in key_handlers:
+            key_handlers[event.key()]()
         else:
             super().keyPressEvent(event)
 
