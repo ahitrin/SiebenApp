@@ -6,12 +6,14 @@ class Goals():
         self.goals = {1: name}
         self.edges = {1: []}
         self.closed = set()
+        self.selection = 1
 
     def add(self, name, add_to=1):
         next_id = len(self.goals) + 1
         self.goals[next_id] = name
         self.edges[next_id] = list()
         self.link(add_to, next_id)
+        self.selection = next_id
         return next_id
 
     def all(self, keys='name'):
@@ -25,6 +27,8 @@ class Goals():
                 value['name'] = name
             if 'edge' in keys:
                 value['edge'] = self.edges[key]
+            if 'select' in keys:
+                value['select'] = (key == self.selection)
             result[key] = value if len(keys) > 1 else value[keys[0]]
         return result
 

@@ -110,3 +110,12 @@ class GoalsTest(TestCase):
                 1: {'name': 'Root', 'edge': [2]},
                 2: {'name': 'A', 'edge': [3]},
                 3: {'name': 'C', 'edge': []}}
+
+    def test_root_goal_is_selected_by_default(self):
+        assert self.goals.all(keys='select') == {1: True}
+
+    def test_move_selection_to_the_added_goal(self):
+        self.goals.add('A')
+        assert self.goals.all(keys='select') == {1: False, 2: True}
+        self.goals.add('B')
+        assert self.goals.all(keys='select') == {1: False, 2: False, 3: True}
