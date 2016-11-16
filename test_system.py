@@ -11,7 +11,8 @@ def test_save_and_load():
     goals.add('Middle')
     goals.link(3, 2)
     goals.add('Closed')
-    goals.close(4)
+    goals.select(4)
+    goals.close()
     save(goals, file_name)
     new_goals = load(file_name)
     assert goals.all(keys='open,name,edge') == new_goals.all(keys='open,name,edge')
@@ -22,7 +23,8 @@ def test_dot_export_with_closed():
     g.add('Middle')
     g.add('Top', 2)
     g.add('Closed')
-    g.close(4)
+    g.select(4)
+    g.close()
     assert dot_export(g) == '''digraph g {
 node [shape=box];
 1 [label="1: Root", color=red, style=filled, fillcolor=lightgray];

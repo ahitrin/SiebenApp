@@ -42,7 +42,7 @@ class GoalsTest(TestCase):
     def test_close_single_goal(self):
         assert self.goals.all(keys='name,open') == {
                 1: {'name': 'Root', 'open': True}}
-        self.goals.close(1)
+        self.goals.close()
         assert self.goals.all() == {1: 'Root'}
         assert self.goals.top() == {}
         assert self.goals.all(keys='name,open') == {
@@ -50,8 +50,10 @@ class GoalsTest(TestCase):
 
     def test_reopen_goal(self):
         self.goals.add('A')
-        self.goals.close(2)
+        self.goals.select(2)
+        self.goals.close()
         assert self.goals.all(keys='open') == {1: True, 2: False}
+        assert self.goals.all(keys='select') == {1: True, 2: False}
         self.goals.reopen(2)
         assert self.goals.all(keys='open') == {1: True, 2: True}
 

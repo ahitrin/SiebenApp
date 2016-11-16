@@ -49,10 +49,8 @@ class Goals():
     def rename(self, goal_id, new_name):
         self.goals[goal_id] = new_name
 
-    def close(self, goal_id=0):
-        if goal_id == 0:
-            goal_id = self.selection
-        self.closed.add(goal_id)
+    def close(self):
+        self.closed.add(self.selection)
         self.selection = 1
 
     def reopen(self, goal_id):
