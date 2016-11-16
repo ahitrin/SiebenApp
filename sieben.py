@@ -64,6 +64,15 @@ class SiebenApp(QMainWindow):
 
     def keyPressEvent(self, event):
         key_handlers = {
+            Qt.Key_1: lambda: self.select_number(1),
+            Qt.Key_2: lambda: self.select_number(2),
+            Qt.Key_3: lambda: self.select_number(3),
+            Qt.Key_4: lambda: self.select_number(4),
+            Qt.Key_5: lambda: self.select_number(5),
+            Qt.Key_6: lambda: self.select_number(6),
+            Qt.Key_7: lambda: self.select_number(7),
+            Qt.Key_8: lambda: self.select_number(8),
+            Qt.Key_9: lambda: self.select_number(9),
             Qt.Key_A: lambda: self.add_goal.emit(),
             Qt.Key_Q: lambda: self.quit_app.emit(),
             Qt.Key_R: lambda: self.refresh.emit(),
@@ -84,6 +93,10 @@ class SiebenApp(QMainWindow):
         self.goals.add(goal_name)
         self.input.setEnabled(False)
         self.input.setText('')
+        self.refresh.emit()
+
+    def select_number(self, num):
+        self.goals.select(num)
         self.refresh.emit()
 
 
