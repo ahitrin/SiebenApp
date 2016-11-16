@@ -74,7 +74,7 @@ class SiebenApp(QMainWindow):
             Qt.Key_8: lambda: self.select_number(8),
             Qt.Key_9: lambda: self.select_number(9),
             Qt.Key_A: lambda: self.add_goal.emit(),
-            Qt.Key_C: lambda: self.close_goal(),
+            Qt.Key_C: lambda: self.toggle_close_goal(),
             Qt.Key_D: lambda: self.delete_goal(),
             Qt.Key_Q: lambda: self.quit_app.emit(),
             Qt.Key_R: lambda: self.refresh.emit(),
@@ -101,8 +101,8 @@ class SiebenApp(QMainWindow):
         self.goals.select(num)
         self.refresh.emit()
 
-    def close_goal(self):
-        self.goals.close()
+    def toggle_close_goal(self):
+        self.goals.toggle_close()
         self.refresh.emit()
 
     def delete_goal(self):

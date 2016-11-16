@@ -49,12 +49,12 @@ class Goals():
     def rename(self, goal_id, new_name):
         self.goals[goal_id] = new_name
 
-    def close(self):
-        self.closed.add(self.selection)
-        self.selection = 1
-
-    def reopen(self, goal_id):
-        self.closed.remove(goal_id)
+    def toggle_close(self):
+        if self.selection in self.closed:
+            self.closed.remove(self.selection)
+        else:
+            self.closed.add(self.selection)
+            self.selection = 1
 
     def delete(self, goal_id=0):
         if goal_id == 0:
