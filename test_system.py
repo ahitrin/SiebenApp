@@ -25,7 +25,7 @@ def test_dot_export_with_closed():
     g.close(4)
     assert dot_export(g) == '''digraph g {
 node [shape=box];
-1 [label="1: Root", color=red];
+1 [label="1: Root", color=red, style=filled, fillcolor=lightgray];
 2 [label="2: Middle", color=red];
 3 [label="3: Top", color=red, style=bold];
 4 [label="4: Closed", color=green];

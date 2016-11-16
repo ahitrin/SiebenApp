@@ -15,14 +15,16 @@ def load(filename=DEFAULT_DB):
 
 
 def dot_export(goals):
-    data = goals.all(keys='open,name,edge')
+    data = goals.all(keys='open,name,edge,select')
     tops = goals.top()
     lines = []
     for num in sorted(data.keys()):
         name = '%d: %s' % (num, data[num]['name'])
         color = 'red' if data[num]['open'] else 'green'
         style = ', style=bold' if num in tops else ''
-        lines.append('%d [label="%s", color=%s%s];' % (num, name, color, style))
+        style = ', style=filled' if data[num]['select'] else style
+        fillcolor = ', fillcolor=lightgray' if data[num]['select'] else ''
+        lines.append('%d [label="%s", color=%s%s%s];' % (num, name, color, style, fillcolor))
     for num in sorted(data.keys()):
         for edge in data[num]['edge']:
             color = 'black' if data[edge]['open'] else 'grey'
