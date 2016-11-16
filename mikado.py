@@ -8,13 +8,17 @@ class Goals():
         self.closed = set()
         self.selection = 1
 
-    def add(self, name, add_to=1):
+    def add(self, name, add_to=0):
+        if add_to == 0:
+            add_to = self.selection
         next_id = len(self.goals) + 1
         self.goals[next_id] = name
         self.edges[next_id] = list()
         self.link(add_to, next_id)
-        self.selection = next_id
         return next_id
+
+    def select(self, goal_id):
+        self.selection = goal_id
 
     def all(self, keys='name'):
         keys = keys.split(',')
@@ -45,8 +49,11 @@ class Goals():
     def rename(self, goal_id, new_name):
         self.goals[goal_id] = new_name
 
-    def close(self, goal_id):
+    def close(self, goal_id=0):
+        if goal_id == 0:
+            goal_id = self.selection
         self.closed.add(goal_id)
+        self.selection = 1
 
     def reopen(self, goal_id):
         self.closed.remove(goal_id)

@@ -113,9 +113,31 @@ class GoalsTest(TestCase):
 
     def test_root_goal_is_selected_by_default(self):
         assert self.goals.all(keys='select') == {1: True}
-
-    def test_move_selection_to_the_added_goal(self):
         self.goals.add('A')
-        assert self.goals.all(keys='select') == {1: False, 2: True}
+        assert self.goals.all(keys='select') == {1: True, 2: False}
         self.goals.add('B')
-        assert self.goals.all(keys='select') == {1: False, 2: False, 3: True}
+        assert self.goals.all(keys='select') == {1: True, 2: False, 3: False}
+
+    def test_new_goal_is_added_to_the_selected_node(self):
+        self.goals.add('A')
+        self.goals.select(2)
+        assert self.goals.all(keys='name,select') == {
+            1: {'name': 'Root', 'select': False},
+            2: {'name': 'A', 'select': True},
+        }
+        self.goals.add('B')
+        assert self.goals.all(keys='name,select,edge') == {
+            1: {'name': 'Root', 'select': False, 'edge': [2]},
+            2: {'name': 'A', 'select': True, 'edge': [3]},
+            3: {'name': 'B', 'select': False, 'edge': []},
+        }
+
+    def test_move_selection_to_the_root_after_closing(self):
+        self.goals.add('A')
+        self.goals.add('B')
+        self.goals.select(2)
+        self.goals.close()
+        assert self.goals.all(keys='open,select') == {
+                1: {'open': True, 'select': True},
+                2: {'open': False, 'select': False},
+                3: {'open': True, 'select': False}}
