@@ -19,12 +19,22 @@ def dot_export(goals):
     tops = goals.top()
     lines = []
     for num in sorted(data.keys()):
-        name = '%d: %s' % (num, data[num]['name'])
-        color = 'red' if data[num]['open'] else 'green'
-        style = ', style=bold' if num in tops else ''
-        style = ', style=filled' if data[num]['select'] else style
-        fillcolor = ', fillcolor=lightgray' if data[num]['select'] else ''
-        lines.append('%d [label="%s", color=%s%s%s];' % (num, name, color, style, fillcolor))
+        goal = data[num]
+        attributes = {
+            'label': '"%d: %s"' % (num, goal['name']),
+            'color': 'red' if goal['open'] else 'green',
+            'fillcolor': 'lightgray' if goal['select'] else None,
+        }
+        if num in tops:
+            attributes['style'] = 'bold'
+        if goal['select']:
+            attributes['style'] = 'filled'
+        attributes_str = ', '.join(
+            '%s=%s' % (k, attributes[k])
+            for k in ['label', 'color', 'style', 'fillcolor']
+            if k in attributes and attributes[k]
+        )
+        lines.append('%d [%s];' % (num, attributes_str))
     for num in sorted(data.keys()):
         for edge in data[num]['edge']:
             color = 'black' if data[edge]['open'] else 'grey'
