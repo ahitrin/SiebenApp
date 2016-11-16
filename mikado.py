@@ -56,7 +56,9 @@ class Goals():
     def reopen(self, goal_id):
         self.closed.remove(goal_id)
 
-    def delete(self, goal_id):
+    def delete(self, goal_id=0):
+        if goal_id == 0:
+            goal_id = self.selection
         self.goals.pop(goal_id)
         for next_goal in self.edges[goal_id]:
             other_edges = list()
@@ -71,6 +73,7 @@ class Goals():
         for key, values in self.edges.items():
             self.edges[key] = [v for v in values if v < goal_id] + \
                               [v - 1 for v in values if v > goal_id]
+        self.selection = 1
 
     def link(self, lower, upper):
         self.edges[lower].append(upper)

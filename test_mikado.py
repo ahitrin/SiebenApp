@@ -59,20 +59,25 @@ class GoalsTest(TestCase):
 
     def test_delete_single_goal(self):
         self.goals.add('A')
-        self.goals.delete(2)
-        assert self.goals.all() == {1: 'Root'}
+        self.goals.select(2)
+        self.goals.delete()
+        assert self.goals.all(keys='name,select') == {
+                1: {'name': 'Root', 'select': True},
+        }
 
     def test_enumeration_could_be_changed_after_delete(self):
         self.goals.add('A')
         self.goals.add('B')
         assert self.goals.all() == {1: 'Root', 2: 'A', 3: 'B'}
-        self.goals.delete(2)
+        self.goals.select(2)
+        self.goals.delete()
         assert self.goals.all() == {1: 'Root', 2: 'B'}
 
     def test_remove_goal_chain(self):
         self.goals.add('A')
         self.goals.add('B', 2)
-        self.goals.delete(2)
+        self.goals.select(2)
+        self.goals.delete()
         assert self.goals.all() == {1: 'Root'}
 
     def test_add_link_between_goals(self):
@@ -107,7 +112,8 @@ class GoalsTest(TestCase):
                 2: {'name': 'A', 'edge': [4]},
                 3: {'name': 'B', 'edge': [4]},
                 4: {'name': 'C', 'edge': []}}
-        self.goals.delete(3)
+        self.goals.select(3)
+        self.goals.delete()
         assert self.goals.all(keys='name,edge') == {
                 1: {'name': 'Root', 'edge': [2]},
                 2: {'name': 'A', 'edge': [3]},
