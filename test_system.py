@@ -33,3 +33,14 @@ node [shape=box];
 4 -> 1 [color=grey];
 3 -> 2 [color=black];
 }'''
+    g.select(3)
+    assert dot_export(g) == '''digraph g {
+node [shape=box];
+1 [label="1: Root", color=red];
+2 [label="2: Middle", color=red];
+3 [label="3: Top", color=red, style="bold,filled", fillcolor=lightgray];
+4 [label="4: Closed", color=green];
+2 -> 1 [color=black];
+4 -> 1 [color=grey];
+3 -> 2 [color=black];
+}'''

@@ -24,11 +24,13 @@ def dot_export(goals):
             'label': '"%d: %s"' % (num, goal['name']),
             'color': 'red' if goal['open'] else 'green',
             'fillcolor': 'lightgray' if goal['select'] else None,
+            'style': 'bold' if num in tops else None,
         }
-        if num in tops:
-            attributes['style'] = 'bold'
         if goal['select']:
-            attributes['style'] = 'filled'
+            if attributes['style']:
+                attributes['style'] = '"%s,filled"' % attributes['style']
+            else:
+                attributes['style'] = 'filled'
         attributes_str = ', '.join(
             '%s=%s' % (k, attributes[k])
             for k in ['label', 'color', 'style', 'fillcolor']
