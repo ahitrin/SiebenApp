@@ -46,8 +46,8 @@ class Goals():
         key = self.add(name, lower)
         self.link(key, upper)
 
-    def rename(self, goal_id, new_name):
-        self.goals[goal_id] = new_name
+    def rename(self, new_name):
+        self.goals[self.selection] = new_name
 
     def toggle_close(self):
         if self.selection in self.closed:

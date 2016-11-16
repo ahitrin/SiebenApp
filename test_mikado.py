@@ -30,7 +30,8 @@ class GoalsTest(TestCase):
 
     def test_rename_goal(self):
         self.goals.add('Boom')
-        self.goals.rename(2, 'A')
+        self.goals.select(2)
+        self.goals.rename('A')
         assert self.goals.all() == {1: 'Root', 2: 'A'}
 
     def test_insert_goal_in_the_middle(self):
