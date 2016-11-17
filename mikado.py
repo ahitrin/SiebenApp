@@ -46,9 +46,9 @@ class Goals():
                 if not self.edges[key] and
                    key not in self.closed}
 
-    def insert(self, lower, upper, name):
-        key = self.add(name, lower)
-        self.toggle_link(key, upper)
+    def insert(self, name):
+        key = self.add(name, self.previous_selection)
+        self.toggle_link(key, self.selection)
 
     def rename(self, new_name):
         self.goals[self.selection] = new_name

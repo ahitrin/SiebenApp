@@ -36,7 +36,10 @@ class GoalsTest(TestCase):
 
     def test_insert_goal_in_the_middle(self):
         self.goals.add('B')
-        self.goals.insert(1, 2, 'A')
+        self.goals.select(1)
+        self.goals.hold_select()
+        self.goals.select(2)
+        self.goals.insert('A')
         assert self.goals.all() == {1: 'Root', 2: 'B', 3: 'A'}
         assert self.goals.top() == {2: 'B'}
 
