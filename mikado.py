@@ -7,6 +7,7 @@ class Goals():
         self.edges = {1: []}
         self.closed = set()
         self.selection = 1
+        self.previous_selection = 1
 
     def add(self, name, add_to=0):
         if add_to == 0:
@@ -19,6 +20,9 @@ class Goals():
 
     def select(self, goal_id):
         self.selection = goal_id
+
+    def hold_select(self):
+        self.previous_selection = self.selection
 
     def all(self, keys='name'):
         keys = keys.split(',')
@@ -75,7 +79,11 @@ class Goals():
                               [v - 1 for v in values if v > goal_id]
         self.selection = 1
 
-    def link(self, lower, upper):
+    def link(self, lower=0, upper=0):
+        if lower == 0:
+            lower = self.previous_selection
+        if upper == 0:
+            upper = self.selection
         self.edges[lower].append(upper)
 
     def unlink(self, lower, upper):
