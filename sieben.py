@@ -71,14 +71,14 @@ class SiebenApp(QMainWindow):
             Qt.Key_7: lambda: self.select_number(7),
             Qt.Key_8: lambda: self.select_number(8),
             Qt.Key_9: lambda: self.select_number(9),
-            Qt.Key_A: lambda: self.start_adding_goal(),
-            Qt.Key_C: lambda: self.toggle_close_goal(),
-            Qt.Key_D: lambda: self.delete_goal(),
-            Qt.Key_I: lambda: self.start_inserting_goal(),
-            Qt.Key_L: lambda: self.toggle_link_goals(),
-            Qt.Key_Q: lambda: self.quit_app.emit(),
-            Qt.Key_R: lambda: self.start_renaming_goal(),
-            Qt.Key_Space: lambda: self.hold_current_selection(),
+            Qt.Key_A: self.start_adding_goal,
+            Qt.Key_C: self.toggle_close_goal,
+            Qt.Key_D: self.delete_goal,
+            Qt.Key_I: self.start_inserting_goal,
+            Qt.Key_L: self.toggle_link_goals,
+            Qt.Key_Q: self.quit_app.emit,
+            Qt.Key_R: self.start_renaming_goal,
+            Qt.Key_Space: self.hold_current_selection,
         }
         if event.key() in key_handlers:
             key_handlers[event.key()]()
