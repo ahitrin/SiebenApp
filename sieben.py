@@ -20,7 +20,6 @@ from PyQt5.QtWidgets import (
 
 class SiebenApp(QMainWindow):
     refresh = pyqtSignal()
-    add_goal = pyqtSignal()
     quit_app = pyqtSignal()
 
     def __init__(self):
@@ -30,7 +29,6 @@ class SiebenApp(QMainWindow):
         self.dock = QDockWidget('Edit area')
         self.input = QLineEdit()
         self.refresh.connect(self.reload_image)
-        self.add_goal.connect(self.start_adding_goal)
         self.quit_app.connect(QApplication.instance().quit)
         if path.exists('sieben.db'):
             self.goals = load()
@@ -73,7 +71,7 @@ class SiebenApp(QMainWindow):
             Qt.Key_7: lambda: self.select_number(7),
             Qt.Key_8: lambda: self.select_number(8),
             Qt.Key_9: lambda: self.select_number(9),
-            Qt.Key_A: lambda: self.add_goal.emit(),
+            Qt.Key_A: lambda: self.start_adding_goal(),
             Qt.Key_C: lambda: self.toggle_close_goal(),
             Qt.Key_D: lambda: self.delete_goal(),
             Qt.Key_I: lambda: self.start_inserting_goal(),
