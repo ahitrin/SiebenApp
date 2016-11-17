@@ -76,6 +76,7 @@ class SiebenApp(QMainWindow):
             Qt.Key_A: lambda: self.add_goal.emit(),
             Qt.Key_C: lambda: self.toggle_close_goal(),
             Qt.Key_D: lambda: self.delete_goal(),
+            Qt.Key_I: lambda: self.start_inserting_goal(),
             Qt.Key_L: lambda: self.toggle_link_goals(),
             Qt.Key_Q: lambda: self.quit_app.emit(),
             Qt.Key_R: lambda: self.start_renaming_goal(),
@@ -108,6 +109,19 @@ class SiebenApp(QMainWindow):
         self.input.editingFinished.disconnect()
         new_name = self.input.text()
         self.goals.rename(new_name)
+        self.input.setEnabled(False)
+        self.input.setText('')
+        self.refresh.emit()
+
+    def start_inserting_goal(self):
+        self.input.setEnabled(True)
+        self.input.setFocus(True)
+        self.input.editingFinished.connect(self.end_inserting_goal)
+
+    def end_inserting_goal(self):
+        self.input.editingFinished.disconnect()
+        goal_name = self.input.text()
+        self.goals.insert(goal_name)
         self.input.setEnabled(False)
         self.input.setText('')
         self.refresh.emit()
