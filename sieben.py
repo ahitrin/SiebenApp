@@ -76,7 +76,7 @@ class SiebenApp(QMainWindow):
             Qt.Key_A: lambda: self.add_goal.emit(),
             Qt.Key_C: lambda: self.toggle_close_goal(),
             Qt.Key_D: lambda: self.delete_goal(),
-            Qt.Key_L: lambda: self.link_goals(),
+            Qt.Key_L: lambda: self.toggle_link_goals(),
             Qt.Key_Q: lambda: self.quit_app.emit(),
             Qt.Key_R: lambda: self.start_renaming_goal(),
             Qt.Key_Space: lambda: self.hold_current_selection(),
@@ -124,8 +124,8 @@ class SiebenApp(QMainWindow):
         self.goals.delete()
         self.refresh.emit()
 
-    def link_goals(self):
-        self.goals.link()
+    def toggle_link_goals(self):
+        self.goals.toggle_link()
         self.refresh.emit()
 
     def hold_current_selection(self):

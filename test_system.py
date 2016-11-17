@@ -12,7 +12,7 @@ def test_save_and_load():
     goals.select(3)
     goals.hold_select()
     goals.select(2)
-    goals.link()
+    goals.toggle_link()
     goals.add('Closed')
     goals.select(4)
     goals.toggle_close()

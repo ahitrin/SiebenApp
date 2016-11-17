@@ -15,7 +15,7 @@ class Goals():
         next_id = len(self.goals) + 1
         self.goals[next_id] = name
         self.edges[next_id] = list()
-        self.link(add_to, next_id)
+        self.toggle_link(add_to, next_id)
         return next_id
 
     def select(self, goal_id):
@@ -48,7 +48,7 @@ class Goals():
 
     def insert(self, lower, upper, name):
         key = self.add(name, lower)
-        self.link(key, upper)
+        self.toggle_link(key, upper)
 
     def rename(self, new_name):
         self.goals[self.selection] = new_name
@@ -79,12 +79,14 @@ class Goals():
                               [v - 1 for v in values if v > goal_id]
         self.selection = 1
 
-    def link(self, lower=0, upper=0):
+    def toggle_link(self, lower=0, upper=0):
         if lower == 0:
             lower = self.previous_selection
         if upper == 0:
             upper = self.selection
-        self.edges[lower].append(upper)
-
-    def unlink(self, lower, upper):
-        self.edges[lower].remove(upper)
+        if upper in self.edges[lower]:
+            # remove existing link
+            self.edges[lower].remove(upper)
+        else:
+            # create new link
+            self.edges[lower].append(upper)
