@@ -1,5 +1,6 @@
 .cache
 .env
+.hypothesis
 __pycache__
 sieben.db
 work.dot

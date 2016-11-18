@@ -78,6 +78,8 @@ class Goals():
     def delete(self, goal_id=0):
         if goal_id == 0:
             goal_id = self.selection
+        if len(self.goals) == 1:
+            return
         self.goals[goal_id] = None
         for next_goal in self.edges[goal_id]:
             other_edges = list()
