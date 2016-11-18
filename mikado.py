@@ -31,7 +31,7 @@ class Goals():
     def all(self, keys='name'):
         keys = keys.split(',')
         result = dict()
-        for key, name in self.goals.items():
+        for key, name in ((k, n) for k, n in self.goals.items() if n is not None):
             value = {}
             if 'open' in keys:
                 value['open'] = key not in self.closed
@@ -67,7 +67,7 @@ class Goals():
     def delete(self, goal_id=0):
         if goal_id == 0:
             goal_id = self.selection
-        self.goals.pop(goal_id)
+        self.goals[goal_id] = None
         for next_goal in self.edges[goal_id]:
             other_edges = list()
             for k in (k for k in self.edges if k != goal_id):
@@ -75,12 +75,8 @@ class Goals():
             if next_goal not in set(other_edges):
                 self.delete(next_goal)
         self.edges.pop(goal_id)
-        for key in sorted(k for k in self.goals if k > goal_id):
-            self.goals[key - 1] = self.goals.pop(key)
-            self.edges[key - 1] = self.edges.pop(key)
         for key, values in self.edges.items():
-            self.edges[key] = [v for v in values if v < goal_id] + \
-                              [v - 1 for v in values if v > goal_id]
+            self.edges[key] = [v for v in values if v != goal_id]
         self.selection = 1
 
     def toggle_link(self, lower=0, upper=0):

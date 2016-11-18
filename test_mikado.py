@@ -70,13 +70,13 @@ class GoalsTest(TestCase):
                 1: {'name': 'Root', 'select': True},
         }
 
-    def test_enumeration_could_be_changed_after_delete(self):
+    def test_enumeration_should_not_be_changed_after_delete(self):
         self.goals.add('A')
         self.goals.add('B')
         assert self.goals.all() == {1: 'Root', 2: 'A', 3: 'B'}
         self.goals.select(2)
         self.goals.delete()
-        assert self.goals.all() == {1: 'Root', 2: 'B'}
+        assert self.goals.all() == {1: 'Root', 3: 'B'}
 
     def test_remove_goal_chain(self):
         self.goals.add('A')
@@ -133,8 +133,8 @@ class GoalsTest(TestCase):
         self.goals.delete()
         assert self.goals.all(keys='name,edge') == {
                 1: {'name': 'Root', 'edge': [2]},
-                2: {'name': 'A', 'edge': [3]},
-                3: {'name': 'C', 'edge': []}}
+                2: {'name': 'A', 'edge': [4]},
+                4: {'name': 'C', 'edge': []}}
 
     def test_root_goal_is_selected_by_default(self):
         assert self.goals.all(keys='select') == {1: True}
