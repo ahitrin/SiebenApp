@@ -198,3 +198,12 @@ class GoalsTest(TestCase):
         assert self.goals.all(keys='select') == {1: False, 2: False, 3: False,
                 4: False, 5: False, 6: False, 7: False, 8: False, 9: False,
                 0: True}
+
+    def test_node_enumeration_has_equal_numbers_count_for_all_nodes(self):
+        for char in '234567890':
+            self.goals.add(char)
+        assert self.goals.all() == {1: 'Root', 2: '2', 3: '3', 4: '4', 5: '5',
+                6: '6', 7: '7', 8: '8', 9: '9', 0: '0'}
+        self.goals.add('A')
+        assert self.goals.all() == {11: 'Root', 12: '2', 13: '3', 14: '4',
+                15: '5', 16: '6', 17: '7', 18: '8', 19: '9', 10: '0', 21: 'A'}

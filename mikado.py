@@ -19,7 +19,10 @@ class Goals():
         return next_id
 
     def id_mapping(self, goal_id):
-        return goal_id % 10
+        new_id = goal_id % 10
+        if len(self.goals) > 10:
+            new_id += 10 * ((goal_id - 1) // 10 + 1)
+        return new_id
 
     def select(self, goal_id):
         self.selection = [g for g in self.goals.keys()
