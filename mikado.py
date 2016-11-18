@@ -13,14 +13,17 @@ class Goals():
         if add_to == 0:
             add_to = self.selection
         next_id = len(self.goals) + 1
-        next_id_view = next_id % 10
-        self.goals[next_id_view] = name
-        self.edges[next_id_view] = list()
+        self.goals[next_id] = name
+        self.edges[next_id] = list()
         self.toggle_link(add_to, next_id)
         return next_id
 
+    def id_mapping(self, goal_id):
+        return goal_id % 10
+
     def select(self, goal_id):
-        self.selection = goal_id
+        self.selection = [g for g in self.goals.keys()
+                          if self.id_mapping(g) == goal_id][0]
 
     def hold_select(self):
         self.previous_selection = self.selection
@@ -35,10 +38,10 @@ class Goals():
             if 'name' in keys:
                 value['name'] = name
             if 'edge' in keys:
-                value['edge'] = sorted(self.edges[key])
+                value['edge'] = sorted(self.id_mapping(e) for e in self.edges[key])
             if 'select' in keys:
                 value['select'] = (key == self.selection)
-            result[key] = value if len(keys) > 1 else value[keys[0]]
+            result[self.id_mapping(key)] = value if len(keys) > 1 else value[keys[0]]
         return result
 
     def top(self):
@@ -85,8 +88,6 @@ class Goals():
             lower = self.previous_selection
         if upper == 0:
             upper = self.selection
-        lower = lower % 10
-        upper = upper % 10
         if upper in self.edges[lower]:
             # remove existing link
             self.edges[lower].remove(upper)
