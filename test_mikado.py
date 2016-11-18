@@ -166,3 +166,35 @@ class GoalsTest(TestCase):
                 1: {'open': True, 'select': True},
                 2: {'open': False, 'select': False},
                 3: {'open': True, 'select': False}}
+
+    def test_node_enumeration_must_be_keyboard_friendly(self):
+        for char in '23456789':
+            self.goals.add(char)
+        assert self.goals.all(keys='name,edge') == {
+            1: {'name': 'Root', 'edge': [2, 3, 4, 5, 6, 7, 8, 9]},
+            2: {'name': '2', 'edge': []},
+            3: {'name': '3', 'edge': []},
+            4: {'name': '4', 'edge': []},
+            5: {'name': '5', 'edge': []},
+            6: {'name': '6', 'edge': []},
+            7: {'name': '7', 'edge': []},
+            8: {'name': '8', 'edge': []},
+            9: {'name': '9', 'edge': []},
+        }
+        self.goals.add('0 is next to 9')
+        assert self.goals.all(keys='name,edge') == {
+            1: {'name': 'Root', 'edge': [0, 2, 3, 4, 5, 6, 7, 8, 9]},
+            2: {'name': '2', 'edge': []},
+            3: {'name': '3', 'edge': []},
+            4: {'name': '4', 'edge': []},
+            5: {'name': '5', 'edge': []},
+            6: {'name': '6', 'edge': []},
+            7: {'name': '7', 'edge': []},
+            8: {'name': '8', 'edge': []},
+            9: {'name': '9', 'edge': []},
+            0: {'name': '0 is next to 9', 'edge': []},
+        }
+        self.goals.select(0)
+        assert self.goals.all(keys='select') == {1: False, 2: False, 3: False,
+                4: False, 5: False, 6: False, 7: False, 8: False, 9: False,
+                0: True}
