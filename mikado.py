@@ -7,6 +7,7 @@ class Goals():
         self.edges = {1: []}
         self.closed = set()
         self.selection = 1
+        self.selection_cache = []
         self.previous_selection = 1
 
     def add(self, name, add_to=0):
@@ -25,8 +26,15 @@ class Goals():
         return new_id
 
     def select(self, goal_id):
-        self.selection = [g for g in self.goals.keys()
-                          if self.id_mapping(g) == goal_id][0]
+        if self.selection_cache:
+            goal_id = 10 * self.selection_cache.pop() + goal_id
+        possible_selections = [g for g in self.goals.keys()
+                               if self.id_mapping(g) == goal_id]
+        if len(possible_selections) == 1:
+            self.selection_cache = []
+            self.selection = possible_selections[0]
+        else:
+            self.selection_cache.append(goal_id)
 
     def hold_select(self):
         self.previous_selection = self.selection

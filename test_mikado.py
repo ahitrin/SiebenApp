@@ -207,3 +207,20 @@ class GoalsTest(TestCase):
         self.goals.add('A')
         assert self.goals.all() == {11: 'Root', 12: '2', 13: '3', 14: '4',
                 15: '5', 16: '6', 17: '7', 18: '8', 19: '9', 10: '0', 21: 'A'}
+
+    def test_selection_should_be_additive(self):
+        for char in '234567890A':
+            self.goals.add(char)
+        assert self.goals.all(keys='select') == {11: True, 12: False,
+                13: False, 14: False, 15: False, 16: False, 17: False,
+                18: False, 19: False, 10: False, 21: False}
+        # no change yet
+        self.goals.select(2)
+        assert self.goals.all(keys='select') == {11: True, 12: False,
+                13: False, 14: False, 15: False, 16: False, 17: False,
+                18: False, 19: False, 10: False, 21: False}
+        # now change happens
+        self.goals.select(1)
+        assert self.goals.all(keys='select') == {11: False, 12: False,
+                13: False, 14: False, 15: False, 16: False, 17: False,
+                18: False, 19: False, 10: False, 21: True}
