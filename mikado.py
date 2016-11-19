@@ -65,6 +65,8 @@ class Goals():
                    key not in self.closed}
 
     def insert(self, name):
+        if self.selection == self.previous_selection:
+            return
         key = self.add(name, self.previous_selection)
         self.toggle_link(key, self.selection)
 
