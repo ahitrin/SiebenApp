@@ -104,8 +104,11 @@ class Goals():
         if upper == 0:
             upper = self.selection
         if upper in self.edges[lower]:
-            # remove existing link
-            self.edges[lower].remove(upper)
+            # remove existing link unless it's the last one
+            edges_to_upper = sum(1 for g in self.goals
+                                 if g in self.edges and upper in self.edges[g])
+            if edges_to_upper > 1:
+                self.edges[lower].remove(upper)
         else:
             # create new link
             self.edges[lower].append(upper)
