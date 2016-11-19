@@ -26,6 +26,8 @@ class Goals():
         return new_id
 
     def select(self, goal_id):
+        if goal_id > len(self.goals):
+            return
         if self.selection_cache:
             goal_id = 10 * self.selection_cache.pop() + goal_id
         possible_selections = [g for g in self.goals.keys()
@@ -91,6 +93,7 @@ class Goals():
         for key, values in self.edges.items():
             self.edges[key] = [v for v in values if v != goal_id]
         self.selection = 1
+        self.previous_selection = 1
 
     def toggle_link(self, lower=0, upper=0):
         if lower == 0:
