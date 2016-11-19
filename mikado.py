@@ -33,8 +33,9 @@ class Goals():
         possible_selections = [g for g in self.goals.keys()
                                if self.id_mapping(g) == goal_id]
         if len(possible_selections) == 1:
-            self.selection_cache = []
-            self.selection = possible_selections[0]
+            if self.goals[possible_selections[0]]:
+                self.selection_cache = []
+                self.selection = possible_selections[0]
         else:
             self.selection_cache.append(goal_id)
 
