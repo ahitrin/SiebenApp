@@ -54,7 +54,6 @@ def test_any_goal_may_be_selected(all_actions, non_select_actions, choice):
     for name, int_val in all_actions + non_select_actions:
         USER_ACTIONS[name](g, int_val)
     rnd_goal = choice(list(g.all().keys()))
-    note('Select: %d' % rnd_goal)
     for i in str(rnd_goal):
         g.select(int(i))
     assert g.all(keys='select')[rnd_goal] == True
