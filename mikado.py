@@ -69,11 +69,11 @@ class Goals():
                    key not in self.closed}
 
     def insert(self, name):
+        self.selection_cache = []
         if self.selection == self.previous_selection:
             return
         key = self.add(name, self.previous_selection)
         self.toggle_link(key, self.selection)
-        self.selection_cache = []
 
     def rename(self, new_name):
         self.goals[self.selection] = new_name
@@ -117,6 +117,7 @@ class Goals():
             lower = self.previous_selection
         if upper == 0:
             upper = self.selection
+        self.selection_cache = []
         if lower == upper:
             return
         if upper in self.edges[lower]:
@@ -125,8 +126,6 @@ class Goals():
                                  if g in self.edges and upper in self.edges[g])
             if edges_to_upper > 1:
                 self.edges[lower].remove(upper)
-                self.selection_cache = []
         else:
             # create new link
             self.edges[lower].append(upper)
-            self.selection_cache = []
