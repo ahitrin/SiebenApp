@@ -90,9 +90,10 @@ class Goals():
                 self.closed.add(self.selection)
                 self.selection = 1
                 self.previous_selection = 1
-                self.selection_cache = []
+        self.selection_cache = []
 
     def delete(self, goal_id=0):
+        self.selection_cache = []
         if goal_id == 0:
             goal_id = self.selection
         if goal_id == 1:
@@ -110,7 +111,6 @@ class Goals():
             self.edges[key] = [v for v in values if v != goal_id]
         self.selection = 1
         self.previous_selection = 1
-        self.selection_cache = []
 
     def toggle_link(self, lower=0, upper=0):
         if lower == 0:
