@@ -14,13 +14,13 @@ class Goals():
         if add_to == 0:
             add_to = self.selection
         if add_to in self.closed:
-            return None
+            return False
         next_id = len(self.goals) + 1
         self.goals[next_id] = name
         self.edges[next_id] = list()
         self.toggle_link(add_to, next_id)
         self.selection_cache = []
-        return next_id
+        return True
 
     def id_mapping(self, goal_id):
         new_id = goal_id % 10
@@ -72,8 +72,9 @@ class Goals():
         self.selection_cache = []
         if self.selection == self.previous_selection:
             return
-        key = self.add(name, self.previous_selection)
-        self.toggle_link(key, self.selection)
+        if self.add(name, self.previous_selection):
+            key = len(self.goals)
+            self.toggle_link(key, self.selection)
 
     def rename(self, new_name):
         self.goals[self.selection] = new_name
