@@ -17,11 +17,11 @@ USER_ACTIONS = {
 
 
 @composite
-def user_actions(draw, skip=[]):
+def user_actions(draw, min_size=0, skip=[]):
     actions = draw(lists(tuples(
         sampled_from(k for k in USER_ACTIONS.keys() if k not in skip),
         integers(0, 9)
-    )))
+    ), min_size=min_size))
     return actions
 
 
@@ -46,14 +46,12 @@ def test_there_is_always_at_least_one_goal(actions):
     assert g.all()
 
 
-@given(user_actions(), choices())
-def test_any_goal_may_be_selected(actions, choice):
-    # skip actions having 'select' at the end
-    assume(actions)
-    assume(actions[-1][0] != 'select' if actions else True)
-    note(pretty_print(actions))
+@given(user_actions(), user_actions(min_size=1, skip=['select']), choices())
+def test_any_goal_may_be_selected(all_actions, non_select_actions, choice):
+    note(pretty_print(all_actions))
+    note(pretty_print(non_select_actions))
     g = Goals('Root')
-    for name, int_val in actions:
+    for name, int_val in all_actions + non_select_actions:
         USER_ACTIONS[name](g, int_val)
     rnd_goal = choice(list(g.all().keys()))
     note('Select: %d' % rnd_goal)
@@ -64,7 +62,6 @@ def test_any_goal_may_be_selected(actions, choice):
 
 @given(user_actions(skip=['rename']))
 def test_all_goals_must_be_connected_to_the_root(actions):
-    # skip actions that may rename the root goal
     g = Goals('Root')
     note(pretty_print(actions))
     for name, int_val in actions:
@@ -80,7 +77,6 @@ def test_all_goals_must_be_connected_to_the_root(actions):
 
 @given(user_actions(skip=['rename']))
 def test_all_open_goals_must_be_connected_to_the_root_via_other_open_goals(actions):
-    # skip actions that may rename the root goal
     g = Goals('Root')
     note(pretty_print(actions))
     for name, int_val in actions:
