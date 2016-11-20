@@ -19,6 +19,7 @@ class Goals():
         self.goals[next_id] = name
         self.edges[next_id] = list()
         self.toggle_link(add_to, next_id)
+        self.selection_cache = []
         return next_id
 
     def id_mapping(self, goal_id):
@@ -71,9 +72,11 @@ class Goals():
             return
         key = self.add(name, self.previous_selection)
         self.toggle_link(key, self.selection)
+        self.selection_cache = []
 
     def rename(self, new_name):
         self.goals[self.selection] = new_name
+        self.selection_cache = []
 
     def toggle_close(self):
         if self.selection in self.closed:
@@ -86,6 +89,7 @@ class Goals():
                 self.closed.add(self.selection)
                 self.selection = 1
                 self.previous_selection = 1
+                self.selection_cache = []
 
     def delete(self, goal_id=0):
         if goal_id == 0:
@@ -105,6 +109,7 @@ class Goals():
             self.edges[key] = [v for v in values if v != goal_id]
         self.selection = 1
         self.previous_selection = 1
+        self.selection_cache = []
 
     def toggle_link(self, lower=0, upper=0):
         if lower == 0:
