@@ -76,3 +76,22 @@ def test_all_goals_must_be_connected_to_the_root(actions):
         queue.extend(g for g in edges[goal] if g not in visited)
         visited.add(goal)
     assert visited == set(edges.keys())
+
+
+@given(user_actions())
+def test_all_open_goals_must_be_connected_to_the_root_via_other_open_goals(actions):
+    # skip actions that may rename the root goal
+    assume(all(action[0] != 'rename' for action in actions))
+    g = Goals('Root')
+    note(pretty_print(actions))
+    for name, int_val in actions:
+        USER_ACTIONS[name](g, int_val)
+    open_goals = set(k for k, v in g.all(keys='open').items() if v)
+    edges = {k: v for k, v in g.all(keys='edge').items() if k in open_goals}
+    assume(edges)
+    queue, visited = [k for k, v in g.all().items() if v == 'Root'], set()
+    while queue:
+        goal = queue.pop()
+        queue.extend(g for g in edges[goal] if g not in visited and g in open_goals)
+        visited.add(goal)
+    assert visited == set(edges.keys())

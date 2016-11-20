@@ -13,6 +13,8 @@ class Goals():
     def add(self, name, add_to=0):
         if add_to == 0:
             add_to = self.selection
+        if add_to in self.closed:
+            return None
         next_id = len(self.goals) + 1
         self.goals[next_id] = name
         self.edges[next_id] = list()
@@ -77,8 +79,12 @@ class Goals():
         if self.selection in self.closed:
             self.closed.remove(self.selection)
         else:
-            self.closed.add(self.selection)
-            self.selection = 1
+            linked_goals = [g for g in self.edges[self.selection] if g not in self.closed]
+            other_open_goals = [g for g in self.goals if g not in self.closed and g != self.selection]
+            accessible_goals = set(g for o in other_open_goals for g in self.edges[o])
+            if all(g in accessible_goals for g in self.edges[self.selection]):
+                self.closed.add(self.selection)
+                self.selection = 1
 
     def delete(self, goal_id=0):
         if goal_id == 0:
@@ -86,6 +92,7 @@ class Goals():
         if goal_id == 1:
             return
         self.goals[goal_id] = None
+        self.closed.add(goal_id)
         for next_goal in self.edges[goal_id]:
             other_edges = list()
             for k in (k for k in self.edges if k != goal_id):
