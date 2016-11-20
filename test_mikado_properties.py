@@ -1,6 +1,6 @@
 # coding: utf-8
 from mikado import Goals
-from hypothesis import given, note, assume, settings
+from hypothesis import given, note, assume, settings, example
 from hypothesis.strategies import integers, lists, tuples, sampled_from, composite, choices
 
 
@@ -61,6 +61,9 @@ def test_there_is_always_one_selected_goal(actions):
 
 @settings(max_examples=1000)
 @given(user_actions(min_size=15,skip=['rename']), user_actions(min_size=1, skip=['select']), choices())
+@example(all_actions=[('add', 0), ('toggle_close', 0), ('select', 2), ('toggle_close', 0),
+                      ('toggle_close', 0), ('select', 2), ('toggle_close', 0)],
+         non_select_actions=[('insert', 0)], choice=choices())
 def test_any_goal_may_be_selected(all_actions, non_select_actions, choice):
     g = build_from(all_actions + non_select_actions)
     rnd_goal = choice(list(g.all().keys()))
