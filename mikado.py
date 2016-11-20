@@ -123,6 +123,8 @@ class Goals():
                                  if g in self.edges and upper in self.edges[g])
             if edges_to_upper > 1:
                 self.edges[lower].remove(upper)
+                self.selection_cache = []
         else:
             # create new link
             self.edges[lower].append(upper)
+            self.selection_cache = []

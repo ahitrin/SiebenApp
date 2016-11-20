@@ -48,10 +48,19 @@ def test_there_is_always_at_least_one_goal(actions):
 
 
 @settings(max_examples=1000)
-@given(user_actions(min_size=15), user_actions(min_size=1, skip=['select']), choices())
+@given(user_actions())
+def test_there_is_always_one_selected_goal(actions):
+    g = Goals('Root')
+    note(pretty_print(actions))
+    for name, int_val in actions:
+        USER_ACTIONS[name](g, int_val)
+    assert len([1 for k, v in g.all(keys='select').items() if v]) == 1
+
+
+@settings(max_examples=1000)
+@given(user_actions(min_size=15,skip=['rename']), user_actions(min_size=1, skip=['select']), choices())
 def test_any_goal_may_be_selected(all_actions, non_select_actions, choice):
-    note(pretty_print(all_actions))
-    note(pretty_print(non_select_actions))
+    note(pretty_print(all_actions + non_select_actions))
     g = Goals('Root')
     for name, int_val in all_actions + non_select_actions:
         USER_ACTIONS[name](g, int_val)
