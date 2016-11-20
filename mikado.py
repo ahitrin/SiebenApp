@@ -117,6 +117,8 @@ class Goals():
             lower = self.previous_selection
         if upper == 0:
             upper = self.selection
+        if lower == upper:
+            return
         if upper in self.edges[lower]:
             # remove existing link unless it's the last one
             edges_to_upper = sum(1 for g in self.goals

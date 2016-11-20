@@ -106,6 +106,10 @@ class GoalsTest(TestCase):
         assert self.goals.all(keys='edge') == {
                 1: [2, 3], 2: [4], 3: [4], 4: []}
 
+    def test_no_link_to_self_is_allowed(self):
+        self.goals.toggle_link()
+        assert self.goals.all(keys='edge') == {1: []}
+
     def test_remove_link_between_goals(self):
         self.goals.add('A')
         self.goals.add('B')
