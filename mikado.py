@@ -85,6 +85,7 @@ class Goals():
             if all(g in accessible_goals for g in self.edges[self.selection]):
                 self.closed.add(self.selection)
                 self.selection = 1
+                self.previous_selection = 1
 
     def delete(self, goal_id=0):
         if goal_id == 0:

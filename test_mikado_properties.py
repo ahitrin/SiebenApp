@@ -17,9 +17,9 @@ USER_ACTIONS = {
 
 
 @composite
-def user_actions(draw):
+def user_actions(draw, skip=[]):
     actions = draw(lists(tuples(
-        sampled_from(USER_ACTIONS.keys()),
+        sampled_from(k for k in USER_ACTIONS.keys() if k not in skip),
         integers(0, 9)
     )))
     return actions
@@ -62,10 +62,9 @@ def test_any_goal_may_be_selected(actions, choice):
     assert g.all(keys='select')[rnd_goal] == True
 
 
-@given(user_actions())
+@given(user_actions(skip=['rename']))
 def test_all_goals_must_be_connected_to_the_root(actions):
     # skip actions that may rename the root goal
-    assume(all(action[0] != 'rename' for action in actions))
     g = Goals('Root')
     note(pretty_print(actions))
     for name, int_val in actions:
@@ -79,10 +78,9 @@ def test_all_goals_must_be_connected_to_the_root(actions):
     assert visited == set(edges.keys())
 
 
-@given(user_actions())
+@given(user_actions(skip=['rename']))
 def test_all_open_goals_must_be_connected_to_the_root_via_other_open_goals(actions):
     # skip actions that may rename the root goal
-    assume(all(action[0] != 'rename' for action in actions))
     g = Goals('Root')
     note(pretty_print(actions))
     for name, int_val in actions:
