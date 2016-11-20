@@ -1,7 +1,7 @@
 # coding: utf-8
 from mikado import Goals
 from hypothesis import given, note, assume
-from hypothesis.strategies import integers, lists, tuples, sampled_from, composite, randoms
+from hypothesis.strategies import integers, lists, tuples, sampled_from, composite, choices
 
 
 USER_ACTIONS = {
@@ -46,15 +46,16 @@ def test_there_is_always_at_least_one_goal(actions):
     assert g.all()
 
 
-@given(user_actions(), randoms())
-def test_any_goal_may_be_selected(actions, rnd):
+@given(user_actions(), choices())
+def test_any_goal_may_be_selected(actions, choice):
     # skip actions having 'select' at the end
+    assume(actions)
     assume(actions[-1][0] != 'select' if actions else True)
     note(pretty_print(actions))
     g = Goals('Root')
     for name, int_val in actions:
         USER_ACTIONS[name](g, int_val)
-    rnd_goal = rnd.sample(g.all().keys(), 1)[0]
+    rnd_goal = choice(list(g.all().keys()))
     note('Select: %d' % rnd_goal)
     for i in str(rnd_goal):
         g.select(int(i))
