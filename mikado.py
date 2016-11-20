@@ -44,6 +44,7 @@ class Goals():
 
     def hold_select(self):
         self.previous_selection = self.selection
+        self.selection_cache = []
 
     def all(self, keys='name'):
         keys = keys.split(',')
