@@ -62,6 +62,23 @@ class GoalsTest(TestCase):
         self.goals.toggle_close()
         assert self.goals.all(keys='open') == {1: True, 2: True}
 
+    def test_close_goal_again(self):
+        self.goals.add('A')
+        self.goals.select(2)
+        self.goals.add('Ab')
+        self.goals.select(3)
+        self.goals.toggle_close()
+        assert self.goals.all(keys='open') == {1: True, 2: True, 3: False}
+        self.goals.select(2)
+        self.goals.toggle_close()
+        assert self.goals.all(keys='open') == {1: True, 2: False, 3: False}
+        self.goals.select(2)
+        self.goals.toggle_close()
+        assert self.goals.all(keys='open') == {1: True, 2: True, 3: False}
+        self.goals.select(2)
+        self.goals.toggle_close()
+        assert self.goals.all(keys='open') == {1: True, 2: False, 3: False}
+
     def test_delete_single_goal(self):
         self.goals.add('A')
         self.goals.select(2)

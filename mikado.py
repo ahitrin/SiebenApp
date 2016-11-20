@@ -86,7 +86,7 @@ class Goals():
             linked_goals = [g for g in self.edges[self.selection] if g not in self.closed]
             other_open_goals = [g for g in self.goals if g not in self.closed and g != self.selection]
             accessible_goals = set(g for o in other_open_goals for g in self.edges[o])
-            if all(g in accessible_goals for g in self.edges[self.selection]):
+            if all(g in accessible_goals for g in linked_goals):
                 self.closed.add(self.selection)
                 self.selection = 1
                 self.previous_selection = 1
