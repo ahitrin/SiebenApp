@@ -71,6 +71,7 @@ class SiebenApp(QMainWindow):
             Qt.Key_7: lambda: self.select_number(7),
             Qt.Key_8: lambda: self.select_number(8),
             Qt.Key_9: lambda: self.select_number(9),
+            Qt.Key_0: lambda: self.select_number(0),
             Qt.Key_A: self.start_adding_goal,
             Qt.Key_C: self.toggle_close_goal,
             Qt.Key_D: self.delete_goal,
