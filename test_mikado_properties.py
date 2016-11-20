@@ -37,33 +37,32 @@ def pretty_print(actions):
     return result
 
 
+def build_from(actions):
+    note(pretty_print(actions))
+    g = Goals('Root')
+    for name, int_val in actions:
+        USER_ACTIONS[name](g, int_val)
+    return g
+
+
 @settings(max_examples=1000)
 @given(user_actions())
 def test_there_is_always_at_least_one_goal(actions):
-    g = Goals('Root')
-    note(pretty_print(actions))
-    for name, int_val in actions:
-        USER_ACTIONS[name](g, int_val)
+    g = build_from(actions)
     assert g.all()
 
 
 @settings(max_examples=1000)
 @given(user_actions())
 def test_there_is_always_one_selected_goal(actions):
-    g = Goals('Root')
-    note(pretty_print(actions))
-    for name, int_val in actions:
-        USER_ACTIONS[name](g, int_val)
+    g = build_from(actions)
     assert len([1 for k, v in g.all(keys='select').items() if v]) == 1
 
 
 @settings(max_examples=1000)
 @given(user_actions(min_size=15,skip=['rename']), user_actions(min_size=1, skip=['select']), choices())
 def test_any_goal_may_be_selected(all_actions, non_select_actions, choice):
-    note(pretty_print(all_actions + non_select_actions))
-    g = Goals('Root')
-    for name, int_val in all_actions + non_select_actions:
-        USER_ACTIONS[name](g, int_val)
+    g = build_from(all_actions + non_select_actions)
     rnd_goal = choice(list(g.all().keys()))
     for i in str(rnd_goal):
         g.select(int(i))
@@ -73,10 +72,7 @@ def test_any_goal_may_be_selected(all_actions, non_select_actions, choice):
 @settings(max_examples=1000)
 @given(user_actions(skip=['rename']))
 def test_all_goals_must_be_connected_to_the_root(actions):
-    g = Goals('Root')
-    note(pretty_print(actions))
-    for name, int_val in actions:
-        USER_ACTIONS[name](g, int_val)
+    g = build_from(actions)
     edges = g.all(keys='edge')
     queue, visited = [k for k, v in g.all().items() if v == 'Root'], set()
     while queue:
@@ -89,10 +85,7 @@ def test_all_goals_must_be_connected_to_the_root(actions):
 @settings(max_examples=1000)
 @given(user_actions(skip=['rename']))
 def test_all_open_goals_must_be_connected_to_the_root_via_other_open_goals(actions):
-    g = Goals('Root')
-    note(pretty_print(actions))
-    for name, int_val in actions:
-        USER_ACTIONS[name](g, int_val)
+    g = build_from(actions)
     open_goals = set(k for k, v in g.all(keys='open').items() if v)
     edges = {k: v for k, v in g.all(keys='edge').items() if k in open_goals}
     assume(edges)
