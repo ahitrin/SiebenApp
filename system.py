@@ -1,5 +1,6 @@
 # coding: utf-8
 import pickle
+from mikado import Goals
 
 DEFAULT_DB = 'sieben.db'
 
@@ -12,6 +13,18 @@ def save(obj, filename=DEFAULT_DB):
 def load(filename=DEFAULT_DB):
     with open(filename, 'rb') as f:
         return pickle.load(f)
+
+
+def rescue_db(filename=DEFAULT_DB):
+    old_goals = load(filename)
+    new_goals = Goals('rescue')
+    new_goals.goals = old_goals.goals
+    new_goals.edges = old_goals.edges
+    new_goals.closed = old_goals.closed
+    new_goals.selection = 1
+    new_goals.selection_cache = []
+    new_goals.previous_selection = 1
+    save(new_goals, filename)
 
 
 def dot_export(goals):
