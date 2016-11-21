@@ -29,14 +29,13 @@ def rescue_db(filename=DEFAULT_DB):
 
 def dot_export(goals, view):
     data = goals.all(keys='open,name,edge,select')
-    top = goals.top()
     tops = goals.top()
     lines = []
     for num in sorted(data.keys()):
         goal = data[num]
         if view == 'open' and not goal['open']:
             continue
-        if view == 'top' and num not in top:
+        if view == 'top' and num not in tops:
             continue
         attributes = {
             'label': '"%d: %s"' % (num, goal['name']),

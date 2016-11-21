@@ -63,7 +63,7 @@ class Goals():
         return result
 
     def top(self):
-        return {key: value
+        return {self.id_mapping(key): value
                 for key, value in self.goals.items()
                 if key not in self.closed and
                    all(g in self.closed for g in self.edges[key])}
