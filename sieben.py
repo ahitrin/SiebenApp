@@ -30,6 +30,7 @@ class SiebenApp(QMainWindow):
         self.input = QLineEdit()
         self.refresh.connect(self.reload_image)
         self.quit_app.connect(QApplication.instance().quit)
+        self.view  = 'full'
         if path.exists('sieben.db'):
             self.goals = load()
         else:
@@ -54,7 +55,7 @@ class SiebenApp(QMainWindow):
     def reload_image(self):
         save(self.goals)
         with open('work.dot', 'w') as f:
-            f.write(dot_export(self.goals))
+            f.write(dot_export(self.goals, self.view))
         run(['dot', '-Tpng', '-o', 'work.png', 'work.dot'])
         img = QImage('work.png')
         self.l.setPixmap(QPixmap.fromImage(img))
@@ -79,6 +80,7 @@ class SiebenApp(QMainWindow):
             Qt.Key_L: self.toggle_link_goals,
             Qt.Key_Q: self.quit_app.emit,
             Qt.Key_R: self.start_renaming_goal,
+            Qt.Key_V: self.toggle_view,
             Qt.Key_Space: self.hold_current_selection,
         }
         if event.key() in key_handlers:
@@ -143,6 +145,14 @@ class SiebenApp(QMainWindow):
 
     def hold_current_selection(self):
         self.goals.hold_select()
+        self.refresh.emit()
+
+    def toggle_view(self):
+        next_view = {
+            'full': 'open',
+            'open': 'full',
+        }
+        self.view = next_view[self.view]
         self.refresh.emit()
 
 

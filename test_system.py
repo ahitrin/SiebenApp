@@ -21,14 +21,14 @@ def test_save_and_load():
     assert goals.all(keys='open,name,edge') == new_goals.all(keys='open,name,edge')
 
 
-def test_dot_export_with_closed():
+def test_dot_export_full_view():
     g = Goals('Root')
     g.add('Middle')
     g.add('Top', 2)
     g.add('Closed')
     g.select(4)
     g.toggle_close()
-    assert dot_export(g) == '''digraph g {
+    assert dot_export(g, 'full') == '''digraph g {
 node [shape=box];
 1 [label="1: Root", color=red, style=filled, fillcolor=lightgray];
 2 [label="2: Middle", color=red];
@@ -39,7 +39,7 @@ node [shape=box];
 3 -> 2 [color=black];
 }'''
     g.select(3)
-    assert dot_export(g) == '''digraph g {
+    assert dot_export(g, 'full') == '''digraph g {
 node [shape=box];
 1 [label="1: Root", color=red];
 2 [label="2: Middle", color=red];
@@ -47,5 +47,21 @@ node [shape=box];
 4 [label="4: Closed", color=green];
 2 -> 1 [color=black];
 4 -> 1 [color=grey];
+3 -> 2 [color=black];
+}'''
+
+def test_dot_export_open_view():
+    g = Goals('Root')
+    g.add('Middle')
+    g.add('Top', 2)
+    g.add('Closed')
+    g.select(4)
+    g.toggle_close()
+    assert dot_export(g, 'open') == '''digraph g {
+node [shape=box];
+1 [label="1: Root", color=red, style=filled, fillcolor=lightgray];
+2 [label="2: Middle", color=red];
+3 [label="3: Top", color=red, style=bold];
+2 -> 1 [color=black];
 3 -> 2 [color=black];
 }'''

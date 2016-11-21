@@ -27,12 +27,14 @@ def rescue_db(filename=DEFAULT_DB):
     save(new_goals, filename)
 
 
-def dot_export(goals):
+def dot_export(goals, view):
     data = goals.all(keys='open,name,edge,select')
     tops = goals.top()
     lines = []
     for num in sorted(data.keys()):
         goal = data[num]
+        if view == 'open' and not goal['open']:
+            continue
         attributes = {
             'label': '"%d: %s"' % (num, goal['name']),
             'color': 'red' if goal['open'] else 'green',
@@ -52,6 +54,8 @@ def dot_export(goals):
         lines.append('%d [%s];' % (num, attributes_str))
     for num in sorted(data.keys()):
         for edge in data[num]['edge']:
+            if view == 'open' and not data[edge]['open']:
+                continue
             color = 'black' if data[edge]['open'] else 'grey'
             lines.append('%d -> %d [color=%s];' % (edge, num, color))
     return 'digraph g {\nnode [shape=box];\n%s\n}' % '\n'.join(lines)
