@@ -65,3 +65,15 @@ node [shape=box];
 2 -> 1 [color=black];
 3 -> 2 [color=black];
 }'''
+
+def test_dot_export_top_view():
+    g = Goals('Root')
+    g.add('Middle')
+    g.add('Top', 2)
+    g.add('Closed')
+    g.select(4)
+    g.toggle_close()
+    assert dot_export(g, 'top') == '''digraph g {
+node [shape=box];
+3 [label="3: Top", color=red, style=bold];
+}'''

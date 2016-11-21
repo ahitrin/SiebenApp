@@ -150,7 +150,8 @@ class SiebenApp(QMainWindow):
     def toggle_view(self):
         next_view = {
             'full': 'open',
-            'open': 'full',
+            'open': 'top',
+            'top': 'full',
         }
         self.view = next_view[self.view]
         self.refresh.emit()
