@@ -61,6 +61,7 @@ class GoalsTest(TestCase):
         self.goals.select(2)
         self.goals.toggle_close()
         assert self.goals.all(keys='open') == {1: True, 2: True}
+        assert self.goals.top() == {2: 'A'}
 
     def test_close_goal_again(self):
         self.goals.add('A')
@@ -69,15 +70,19 @@ class GoalsTest(TestCase):
         self.goals.select(3)
         self.goals.toggle_close()
         assert self.goals.all(keys='open') == {1: True, 2: True, 3: False}
+        assert self.goals.top() == {2: 'A'}
         self.goals.select(2)
         self.goals.toggle_close()
         assert self.goals.all(keys='open') == {1: True, 2: False, 3: False}
+        assert self.goals.top() == {1: 'Root'}
         self.goals.select(2)
         self.goals.toggle_close()
         assert self.goals.all(keys='open') == {1: True, 2: True, 3: False}
+        assert self.goals.top() == {2: 'A'}
         self.goals.select(2)
         self.goals.toggle_close()
         assert self.goals.all(keys='open') == {1: True, 2: False, 3: False}
+        assert self.goals.top() == {1: 'Root'}
 
     def test_delete_single_goal(self):
         self.goals.add('A')
@@ -86,6 +91,7 @@ class GoalsTest(TestCase):
         assert self.goals.all(keys='name,select') == {
                 1: {'name': 'Root', 'select': True},
         }
+        assert self.goals.top() == {1: 'Root'}
 
     def test_enumeration_should_not_be_changed_after_delete(self):
         self.goals.add('A')
@@ -94,6 +100,7 @@ class GoalsTest(TestCase):
         self.goals.select(2)
         self.goals.delete()
         assert self.goals.all() == {1: 'Root', 3: 'B'}
+        assert self.goals.top() == {3: 'B'}
 
     def test_remove_goal_chain(self):
         self.goals.add('A')
