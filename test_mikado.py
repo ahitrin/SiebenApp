@@ -156,6 +156,7 @@ class GoalsTest(TestCase):
                 1: {'name': 'Root', 'edge': [2]},
                 2: {'name': 'A', 'edge': [4]},
                 4: {'name': 'C', 'edge': []}}
+        assert self.goals.top() == {4: 'C'}
 
     def test_root_goal_is_selected_by_default(self):
         assert self.goals.all(keys='select') == {1: True}

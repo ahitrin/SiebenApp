@@ -65,8 +65,8 @@ class Goals():
     def top(self):
         return {key: value
                 for key, value in self.goals.items()
-                if not self.edges[key] and
-                   key not in self.closed}
+                if key not in self.closed and
+                   not self.edges[key]}
 
     def insert(self, name):
         self.selection_cache = []
