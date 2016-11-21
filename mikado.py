@@ -82,7 +82,9 @@ class Goals():
 
     def toggle_close(self):
         if self.selection in self.closed:
-            self.closed.remove(self.selection)
+            parent_goals = [g for g, v in self.edges.items() if self.selection in v]
+            if any(g for g in parent_goals if g not in self.closed):
+                self.closed.remove(self.selection)
         else:
             linked_goals = [g for g in self.edges[self.selection] if g not in self.closed]
             other_open_goals = [g for g in self.goals if g not in self.closed and g != self.selection]

@@ -84,6 +84,22 @@ class GoalsTest(TestCase):
         assert self.goals.all(keys='open') == {1: True, 2: False, 3: False}
         assert self.goals.top() == {1: 'Root'}
 
+    def test_closed_leaf_goal_could_not_be_reopened(self):
+        self.goals.add('A')
+        self.goals.select(2)
+        self.goals.add('B')
+        self.goals.select(3)
+        self.goals.toggle_close()
+        self.goals.select(2)
+        self.goals.toggle_close()
+        assert self.goals.all(keys='open') == {1: True, 2: False, 3: False}
+        assert self.goals.top() == {1: 'Root'}
+        self.goals.select(3)
+        self.goals.toggle_close()
+        # nothing should change
+        assert self.goals.all(keys='open') == {1: True, 2: False, 3: False}
+        assert self.goals.top() == {1: 'Root'}
+
     def test_delete_single_goal(self):
         self.goals.add('A')
         self.goals.select(2)
