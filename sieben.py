@@ -37,7 +37,7 @@ class SiebenApp(QMainWindow):
             self.goals = Goals('Rename me')
 
     def setup(self):
-        self.setWindowTitle('Sieben 7')
+        self.setWindowTitle('SiebenApp')
         self.resize(700, 500)
         self.scr.setWidget(self.l)
         self.setCentralWidget(self.scr)
