@@ -1,6 +1,6 @@
 # coding: utf-8
 from mikado import Goals
-from hypothesis import given, note, assume, settings, example
+from hypothesis import given, note, assume, example
 from hypothesis.strategies import integers, lists, tuples, sampled_from, composite, choices
 
 
@@ -45,21 +45,18 @@ def build_from(actions):
     return g
 
 
-@settings(max_examples=1000)
 @given(user_actions())
 def test_there_is_always_at_least_one_goal(actions):
     g = build_from(actions)
     assert g.all()
 
 
-@settings(max_examples=1000)
 @given(user_actions())
 def test_there_is_always_one_selected_goal(actions):
     g = build_from(actions)
     assert len([1 for k, v in g.all(keys='select').items() if v]) == 1
 
 
-@settings(max_examples=1000)
 @given(user_actions(min_size=15,skip=['rename']), user_actions(min_size=1, skip=['select']), choices())
 def test_any_goal_may_be_selected(all_actions, non_select_actions, choice):
     g = build_from(all_actions + non_select_actions)
@@ -69,7 +66,6 @@ def test_any_goal_may_be_selected(all_actions, non_select_actions, choice):
     assert g.all(keys='select')[rnd_goal] == True
 
 
-@settings(max_examples=1000)
 @given(user_actions(skip=['rename']))
 def test_all_goals_must_be_connected_to_the_root(actions):
     g = build_from(actions)
@@ -82,7 +78,6 @@ def test_all_goals_must_be_connected_to_the_root(actions):
     assert visited == set(edges.keys())
 
 
-@settings(max_examples=1000)
 @given(user_actions(skip=['rename']))
 def test_all_open_goals_must_be_connected_to_the_root_via_other_open_goals(actions):
     g = build_from(actions)
