@@ -1,8 +1,13 @@
 ENV:=.env
 
-.PHONY: venv test run clean
+.PHONY: check venv test run clean
 
-all: venv
+all: check venv test
+
+check:
+	if [ ! `which python3` ] ; then echo Please install Python3 ; exit 1; fi
+	if [ ! `which virtualenv` ] ; then echo Please install virtualenv ; exit 1; fi
+	if [ ! `which dot` ] ; then echo Please install Graphviz ; fi
 
 venv:
 	virtualenv -p /usr/bin/python3 $(ENV)
@@ -16,3 +21,4 @@ run:
 
 clean:
 	rm -rf $(ENV)
+	find . -name \*.pyc -delete
