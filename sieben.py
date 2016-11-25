@@ -30,7 +30,7 @@ class SiebenApp(QMainWindow):
         self.input = QLineEdit()
         self.refresh.connect(self.reload_image)
         self.quit_app.connect(QApplication.instance().quit)
-        self.view  = 'full'
+        self.view  = 'open'
         if path.exists('sieben.db'):
             self.goals = load()
         else:
