@@ -20,9 +20,66 @@ Crucial ideas how to remove amount of active goals are simple:
  * Goal may _block_ each other. Subgoals block their parents. Additional links may be created and removed manually.
  * Only _top goals_ (both open and not blocked) should be worked on. Other goals could easily be hidden so they don't distract you.
 
-Let's take a look at simple example.
+Let's take a look at simple example: travel planning.
 
-... (example)
+Imagine that you want to travel into the beautiful country Wonderstan. Inspired by this idea, you run SiebenApp and start to plan your travel.
+
+    make run
+
+SiebenApp starts with a single default goal.
+
+![step1](docs/example1.png)
+
+Let's _rename_ this goal! Press `r`, type new goal name into the text field and press `Enter`.
+
+![step2](docs/example2.png)
+
+There are two obvious subgoals: book a hotel and buy airplane tickets. Also, Wonderstan has strict visiting rules: it requires visa for all visitors. To _add_ a subgoal, press `a`, enter its name, and then press `Enter` to finish. Repeat it for all goals.
+
+![step3](docs/example3.png)
+
+But wait! Before applying for a visa you need to collect all documents needed, including both booking and tickets. It means that first two subgoals are blocking the third one. Subgoal 4 may be started only after completion of subgoals 2 and 3. Let's reflect this dependency in our plan. Press `4` to select a subgoal...
+
+![step4](docs/example4.png)
+
+...then press `Space` so this selection will be remembered, and next press `2` and `l`.
+
+![step5](docs/example5.png)
+
+Voila! The _link_ has been created. Let's repeat this with another subgoal. Again, press `4`, `Space`, `3`, `l`.
+
+![step6](docs/example6.png)
+
+Now we have one big goal with 3 smaller subgoals. And only 2 of these subgoals actually respects your attention right now. They are marked with **bold border**. In addition, you may completely hide blocked goals so they don't distract your focus. Just press `v` to change _view_.
+
+![step7](docs/example7.png)
+
+Now you don't need to think about visa. Being focused well on a single goal, you find good tickets and buy them. Now it's time to _close_ current subgoal. Just press `c` for that.
+
+![step8](docs/example8.png)
+
+Wow, it disappears! And you may become even more focused because now you see the only one goal. Don't forget to _select_ it with `2` and _close_ with `c` when it will be ready.
+
+![step9](docs/example9.png)
+
+Something interesting happens. Your current goal has been replaced with the new one. It means that nothing stops you from applying for a visa right now. Neat! Press `v` to change _view_ again and look what happens behind the scenes.
+
+![step10](docs/example10.png)
+
+Here we see that two closed goals still exists in a graph, but now they are marked green. And subgoal 4 is marked with bold border because no other open goal blocks it.
+
+Now just freely play around using following buttons:
+
+ * `1`..`0` (according to the keyboard layout) for _selecting_ goals (when you have more than 10 goals, each selection needs 2 key presses);
+ * `a` for _adding_ new subgoals;
+ * `d` for _removing_ them (please note that removing is **undoable**, and may remove all subgoals of the current one);;
+ * `c` for _closing_ current goal, and also for re-open closed one;
+ * `r` for _renaming_
+ * `Space` for _holding_ (remembering) current selection;
+ * `l` for creating new _link_ between remembered and current selections (current selection becomes subgoal of the remembered one), and also for removing existing links;
+ * `i` for _inserting_ new goal between remembered and current selections;
+ * `v` for circular switching current _view_: only open goals → only "top" goals → all goals → ...;
+ * `q` for quitting when you are impressed enough.
 
 ## Alpha version warning
 
