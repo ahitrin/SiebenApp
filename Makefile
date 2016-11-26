@@ -14,10 +14,10 @@ venv:
 	$(ENV)/bin/pip3 install -r requirements.txt
 
 test:
-	$(ENV)/bin/py.test
+	PATH=$(ENV)/bin:${PATH} py.test
 
 run:
-	$(ENV)/bin/python sieben.py
+	PATH=$(ENV)/bin:${PATH} python3 sieben.py
 
 clean:
 	rm -rf $(ENV)
