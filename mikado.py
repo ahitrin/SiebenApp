@@ -26,6 +26,8 @@ class Goals():
         new_id = goal_id % 10
         if len(self.goals) > 10:
             new_id += 10 * ((goal_id - 1) // 10 + 1)
+        if len(self.goals) > 90:
+            new_id += 100 * ((goal_id - 1) // 100 + 1)
         return new_id
 
     def select(self, goal_id):

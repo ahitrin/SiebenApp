@@ -273,3 +273,15 @@ class GoalsTest(TestCase):
         assert self.goals.all(keys='select') == {11: False, 12: False,
                 13: False, 14: False, 15: False, 16: False, 17: False,
                 18: False, 19: False, 10: False, 21: True}
+
+    def test_enumeration_will_have_3_numbers_when_there_are_more_than_90_goals(self):
+        for i in range(89):
+            self.goals.add(str(i))
+        sel = self.goals.all(keys='select')
+        assert all(k < 100 for k in sel.keys())
+        assert sel[11] == True
+        self.goals.add('boo')
+        sel = self.goals.all(keys='select')
+        assert all(k > 100 for k in sel.keys())
+        assert sel[111] == True
+        assert all(not sel[k] for k in sel.keys() if k != 111)
