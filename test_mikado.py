@@ -285,3 +285,12 @@ class GoalsTest(TestCase):
         assert all(k > 100 for k in sel.keys())
         assert sel[111] == True
         assert all(not sel[k] for k in sel.keys() if k != 111)
+
+    def test_select_when_more_than_90_goals(self):
+        for i in range(100):
+            self.goals.add(str(i))
+        self.goals.select(1)
+        self.goals.select(4)
+        assert self.goals.all(keys='select')[111]
+        self.goals.select(5)
+        assert self.goals.all(keys='select')[145]
