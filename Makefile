@@ -1,6 +1,6 @@
 ENV:=.env
 
-.PHONY: check venv test run clean
+.PHONY: check venv test run rescue clean
 
 all: check venv test
 
@@ -18,6 +18,9 @@ test:
 
 run:
 	PATH=$(ENV)/bin:${PATH} python3 sieben.py
+
+rescue:
+	PATH=$(ENV)/bin:${PATH} python3 -c "import system; system.rescue_db()"
 
 clean:
 	rm -rf $(ENV)

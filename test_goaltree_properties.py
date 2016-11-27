@@ -1,5 +1,5 @@
 # coding: utf-8
-from mikado import Goals
+from goaltree import Goals
 from hypothesis import given, note, assume, example
 from hypothesis.strategies import integers, lists, sampled_from, composite, choices, streaming
 

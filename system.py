@@ -1,6 +1,6 @@
 # coding: utf-8
 import pickle
-from mikado import Goals
+from goaltree import Goals
 
 DEFAULT_DB = 'sieben.db'
 

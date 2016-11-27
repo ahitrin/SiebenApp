@@ -1,5 +1,5 @@
 # coding: utf-8
-from mikado import Goals
+from goaltree import Goals
 from system import save, load, dot_export
 from tempfile import NamedTemporaryFile
 

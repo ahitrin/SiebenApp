@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.5
 # coding: utf-8
 import sys
-from mikado import Goals
+from goaltree import Goals
 from os import path
 from subprocess import run
 from system import save, load, dot_export
