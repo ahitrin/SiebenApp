@@ -1,1 +1,0 @@
-from goaltree import Goals
