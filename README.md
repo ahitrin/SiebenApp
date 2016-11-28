@@ -95,9 +95,9 @@ Please take into consideration that here you see the very early Alpha release of
         mv sieben.db sieben.db.project1
         mv siben.db.project2 sieben.db
         make run
-        # or, another way: call SiebenApp from another path
+        # or, another way: call SiebenApp from another path but save sieben.db in current path
         cd ../project1
-        ../SiebenApp/.env/bin/python ../SiebenApp/sieben.py
+        ../SiebenApp/sieben
 
 4. **No actual security**. To draw goals graph, SiebenApp calls external program `dot` which is supposed to be a part of GraphViz package. It's theoretically possible that the called `dot` program may do any unexpected action instead, even something malicious.
 
