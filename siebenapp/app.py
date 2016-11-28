@@ -1,10 +1,10 @@
 #!/usr/bin/env python3.5
 # coding: utf-8
 import sys
-from goaltree import Goals
 from os import path
+from siebenapp.goaltree import Goals
+from siebenapp.system import save, load, dot_export
 from subprocess import run
-from system import save, load, dot_export
 from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import (
@@ -157,10 +157,9 @@ class SiebenApp(QMainWindow):
         self.refresh.emit()
 
 
-if __name__ == '__main__':
+def main():
     app = QApplication(sys.argv)
     w = SiebenApp()
     w.setup()
     w.show()
-
     sys.exit(app.exec_())

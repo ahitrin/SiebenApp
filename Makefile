@@ -1,6 +1,6 @@
 ENV:=.env
 
-.PHONY: check venv test run rescue clean
+.PHONY: check venv test install run rescue clean distclean
 
 all: check venv test
 
@@ -16,12 +16,18 @@ venv:
 test:
 	PATH=$(ENV)/bin:${PATH} py.test
 
+install:
+	PATH=$(ENV)/bin:${PATH} python3 setup.py install
+
 run:
-	PATH=$(ENV)/bin:${PATH} python3 sieben.py
+	PATH=$(ENV)/bin:${PATH} ./sieben
 
 rescue:
-	PATH=$(ENV)/bin:${PATH} python3 -c "import system; system.rescue_db()"
+	PATH=$(ENV)/bin:${PATH} python3 -c "from siebenapp.system import rescue_db; rescue_db()"
 
 clean:
-	rm -rf $(ENV)
+	rm -rf build
 	find . -name \*.pyc -delete
+
+distclean:
+	rm -rf $(ENV)

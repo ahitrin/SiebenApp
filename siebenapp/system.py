@@ -1,6 +1,6 @@
 # coding: utf-8
 import pickle
-from goaltree import Goals
+from siebenapp.goaltree import Goals
 
 DEFAULT_DB = 'sieben.db'
 

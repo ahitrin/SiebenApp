@@ -2,6 +2,7 @@
 .env
 .hypothesis
 __pycache__
+build
 sieben.db
 work.dot
 work.png
