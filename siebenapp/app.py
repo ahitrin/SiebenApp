@@ -91,10 +91,10 @@ class SiebenApp(QMainWindow):
     def start_adding_goal(self):
         self.input.setEnabled(True)
         self.input.setFocus(True)
-        self.input.editingFinished.connect(self.end_adding_goal)
+        self.input.returnPressed.connect(self.end_adding_goal)
 
     def end_adding_goal(self):
-        self.input.editingFinished.disconnect()
+        self.input.returnPressed.disconnect()
         goal_name = self.input.text()
         self.goals.add(goal_name)
         self.input.setEnabled(False)
@@ -104,10 +104,10 @@ class SiebenApp(QMainWindow):
     def start_renaming_goal(self):
         self.input.setEnabled(True)
         self.input.setFocus(True)
-        self.input.editingFinished.connect(self.end_renaming_goal)
+        self.input.returnPressed.connect(self.end_renaming_goal)
 
     def end_renaming_goal(self):
-        self.input.editingFinished.disconnect()
+        self.input.returnPressed.disconnect()
         new_name = self.input.text()
         self.goals.rename(new_name)
         self.input.setEnabled(False)
@@ -117,10 +117,10 @@ class SiebenApp(QMainWindow):
     def start_inserting_goal(self):
         self.input.setEnabled(True)
         self.input.setFocus(True)
-        self.input.editingFinished.connect(self.end_inserting_goal)
+        self.input.returnPressed.connect(self.end_inserting_goal)
 
     def end_inserting_goal(self):
-        self.input.editingFinished.disconnect()
+        self.input.returnPressed.disconnect()
         goal_name = self.input.text()
         self.goals.insert(goal_name)
         self.input.setEnabled(False)
