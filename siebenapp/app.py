@@ -73,13 +73,13 @@ class SiebenApp(QMainWindow):
             Qt.Key_8: lambda: self.select_number(8),
             Qt.Key_9: lambda: self.select_number(9),
             Qt.Key_0: lambda: self.select_number(0),
-            Qt.Key_A: self.start_adding_goal,
+            Qt.Key_A: self.start_edit(self.goals.add),
             Qt.Key_C: self.toggle_close_goal,
             Qt.Key_D: self.delete_goal,
-            Qt.Key_I: self.start_inserting_goal,
+            Qt.Key_I: self.start_edit(self.goals.insert),
             Qt.Key_L: self.toggle_link_goals,
             Qt.Key_Q: self.quit_app.emit,
-            Qt.Key_R: self.start_renaming_goal,
+            Qt.Key_R: self.start_edit(self.goals.rename),
             Qt.Key_V: self.toggle_view,
             Qt.Key_Space: self.hold_current_selection,
         }
@@ -87,6 +87,13 @@ class SiebenApp(QMainWindow):
             key_handlers[event.key()]()
         else:
             super().keyPressEvent(event)
+
+    def start_edit(self, fn):
+        def inner():
+            self.input.setEnabled(True)
+            self.input.setFocus(True)
+            self.input.returnPressed.connect(self.finish_edit(fn))
+        return inner
 
     def finish_edit(self, fn):
         def inner():
@@ -96,21 +103,6 @@ class SiebenApp(QMainWindow):
             self.input.setText('')
             self.refresh.emit()
         return inner
-
-    def start_adding_goal(self):
-        self.input.setEnabled(True)
-        self.input.setFocus(True)
-        self.input.returnPressed.connect(self.finish_edit(self.goals.add))
-
-    def start_renaming_goal(self):
-        self.input.setEnabled(True)
-        self.input.setFocus(True)
-        self.input.returnPressed.connect(self.finish_edit(self.goals.rename))
-
-    def start_inserting_goal(self):
-        self.input.setEnabled(True)
-        self.input.setFocus(True)
-        self.input.returnPressed.connect(self.finish_edit(self.goals.insert))
 
     def select_number(self, num):
         self.goals.select(num)
