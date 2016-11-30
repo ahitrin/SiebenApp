@@ -88,44 +88,29 @@ class SiebenApp(QMainWindow):
         else:
             super().keyPressEvent(event)
 
+    def finish_edit(self, fn):
+        def inner():
+            self.input.returnPressed.disconnect()
+            fn(self.input.text())
+            self.input.setEnabled(False)
+            self.input.setText('')
+            self.refresh.emit()
+        return inner
+
     def start_adding_goal(self):
         self.input.setEnabled(True)
         self.input.setFocus(True)
-        self.input.returnPressed.connect(self.end_adding_goal)
-
-    def end_adding_goal(self):
-        self.input.returnPressed.disconnect()
-        goal_name = self.input.text()
-        self.goals.add(goal_name)
-        self.input.setEnabled(False)
-        self.input.setText('')
-        self.refresh.emit()
+        self.input.returnPressed.connect(self.finish_edit(self.goals.add))
 
     def start_renaming_goal(self):
         self.input.setEnabled(True)
         self.input.setFocus(True)
-        self.input.returnPressed.connect(self.end_renaming_goal)
-
-    def end_renaming_goal(self):
-        self.input.returnPressed.disconnect()
-        new_name = self.input.text()
-        self.goals.rename(new_name)
-        self.input.setEnabled(False)
-        self.input.setText('')
-        self.refresh.emit()
+        self.input.returnPressed.connect(self.finish_edit(self.goals.rename))
 
     def start_inserting_goal(self):
         self.input.setEnabled(True)
         self.input.setFocus(True)
-        self.input.returnPressed.connect(self.end_inserting_goal)
-
-    def end_inserting_goal(self):
-        self.input.returnPressed.disconnect()
-        goal_name = self.input.text()
-        self.goals.insert(goal_name)
-        self.input.setEnabled(False)
-        self.input.setText('')
-        self.refresh.emit()
+        self.input.returnPressed.connect(self.finish_edit(self.goals.insert))
 
     def select_number(self, num):
         self.goals.select(num)
