@@ -74,14 +74,14 @@ class SiebenApp(QMainWindow):
             Qt.Key_9: lambda: self.select_number(9),
             Qt.Key_0: lambda: self.select_number(0),
             Qt.Key_A: self.start_edit(self.goals.add),
-            Qt.Key_C: self.toggle_close_goal,
-            Qt.Key_D: self.delete_goal,
+            Qt.Key_C: self.with_refresh(self.goals.toggle_close),
+            Qt.Key_D: self.with_refresh(self.goals.delete),
             Qt.Key_I: self.start_edit(self.goals.insert),
-            Qt.Key_L: self.toggle_link_goals,
+            Qt.Key_L: self.with_refresh(self.goals.toggle_link),
             Qt.Key_Q: self.quit_app.emit,
             Qt.Key_R: self.start_edit(self.goals.rename),
             Qt.Key_V: self.toggle_view,
-            Qt.Key_Space: self.hold_current_selection,
+            Qt.Key_Space: self.with_refresh(self.goals.hold_select),
         }
         if event.key() in key_handlers:
             key_handlers[event.key()]()
@@ -104,24 +104,14 @@ class SiebenApp(QMainWindow):
             self.refresh.emit()
         return inner
 
+    def with_refresh(self, fn):
+        def inner():
+            fn()
+            self.refresh.emit()
+        return inner
+
     def select_number(self, num):
         self.goals.select(num)
-        self.refresh.emit()
-
-    def toggle_close_goal(self):
-        self.goals.toggle_close()
-        self.refresh.emit()
-
-    def delete_goal(self):
-        self.goals.delete()
-        self.refresh.emit()
-
-    def toggle_link_goals(self):
-        self.goals.toggle_link()
-        self.refresh.emit()
-
-    def hold_current_selection(self):
-        self.goals.hold_select()
         self.refresh.emit()
 
     def toggle_view(self):
