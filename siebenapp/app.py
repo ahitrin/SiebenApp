@@ -38,7 +38,7 @@ class SiebenApp(QMainWindow):
 
     def setup(self):
         self.setWindowTitle('SiebenApp')
-        self.resize(700, 500)
+        self.showMaximized()
         self.scr.setWidget(self.l)
         self.setCentralWidget(self.scr)
         self.l.setScaledContents(True)
