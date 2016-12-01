@@ -36,12 +36,30 @@ class GoalsTest(TestCase):
 
     def test_insert_goal_in_the_middle(self):
         self.goals.add('B')
-        self.goals.select(1)
         self.goals.hold_select()
         self.goals.select(2)
         self.goals.insert('A')
-        assert self.goals.all() == {1: 'Root', 2: 'B', 3: 'A'}
+        assert self.goals.all(keys='name,edge') == {
+                1: {'name': 'Root', 'edge': [3]},
+                2: {'name': 'B', 'edge': []},
+                3: {'name': 'A', 'edge': [2]},
+        }
         assert self.goals.top() == {2: 'B'}
+
+    def test_insert_goal_between_independent_goals(self):
+        self.goals.add('A')
+        self.goals.add('B')
+        self.goals.select(2)
+        self.goals.hold_select()
+        self.goals.select(3)
+        self.goals.insert('Wow')
+        assert self.goals.all(keys='name,edge') == {
+                1: {'name': 'Root', 'edge': [2, 3]},
+                2: {'name': 'A', 'edge': [4]},
+                3: {'name': 'B', 'edge': []},
+                4: {'name': 'Wow', 'edge': [3]},
+        }
+        assert self.goals.top() == {3: 'B'}
 
     def test_close_single_goal(self):
         assert self.goals.all(keys='name,open') == {

@@ -77,6 +77,8 @@ class Goals():
         if self.add(name, self.previous_selection):
             key = len(self.goals)
             self.toggle_link(key, self.selection)
+            if self.selection in self.edges[self.previous_selection]:
+                self.toggle_link(self.previous_selection, self.selection)
 
     def rename(self, new_name):
         self.goals[self.selection] = new_name
