@@ -48,7 +48,7 @@ But wait! Before applying for a visa you need to collect all documents needed, i
 
 ![step5](docs/example5.png)
 
-Voila! The _link_ has been created. Let's repeat this with another subgoal. Again, press `4`, `Space`, `3`, `l`.
+Voila! The _link_ has been created. Let's repeat this with another subgoal. Now you may just press `3` and `l` since your _previous selection_ still remains at the subgoal 4.
 
 ![step6](docs/example6.png)
 
