@@ -40,10 +40,10 @@ def dot_export(goals, view):
         attributes = {
             'label': '"%d: %s"' % (num, goal['name']),
             'color': 'red' if goal['open'] else 'green',
-            'fillcolor': 'lightgray' if goal['select'] == 'select' else None,
+            'fillcolor': {'select': 'gray', 'prev': 'lightgray'}.get(goal['select']),
             'style': 'bold' if num in tops else None,
         }
-        if goal['select'] == 'select':
+        if goal['select'] is not None:
             if attributes['style']:
                 attributes['style'] = '"%s,filled"' % attributes['style']
             else:
@@ -60,6 +60,6 @@ def dot_export(goals, view):
                 continue
             if view == 'open' and not data[edge]['open']:
                 continue
-            color = 'black' if data[edge]['open'] else 'grey'
+            color = 'black' if data[edge]['open'] else 'gray'
             lines.append('%d -> %d [color=%s];' % (edge, num, color))
     return 'digraph g {\nnode [shape=box];\n%s\n}' % '\n'.join(lines)

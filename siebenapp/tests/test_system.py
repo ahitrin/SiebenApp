@@ -30,23 +30,23 @@ def test_dot_export_full_view():
     g.toggle_close()
     assert dot_export(g, 'full') == '''digraph g {
 node [shape=box];
-1 [label="1: Root", color=red, style=filled, fillcolor=lightgray];
+1 [label="1: Root", color=red, style=filled, fillcolor=gray];
 2 [label="2: Middle", color=red];
 3 [label="3: Top", color=red, style=bold];
 4 [label="4: Closed", color=green];
 2 -> 1 [color=black];
-4 -> 1 [color=grey];
+4 -> 1 [color=gray];
 3 -> 2 [color=black];
 }'''
     g.select(3)
     assert dot_export(g, 'full') == '''digraph g {
 node [shape=box];
-1 [label="1: Root", color=red];
+1 [label="1: Root", color=red, style=filled, fillcolor=lightgray];
 2 [label="2: Middle", color=red];
-3 [label="3: Top", color=red, style="bold,filled", fillcolor=lightgray];
+3 [label="3: Top", color=red, style="bold,filled", fillcolor=gray];
 4 [label="4: Closed", color=green];
 2 -> 1 [color=black];
-4 -> 1 [color=grey];
+4 -> 1 [color=gray];
 3 -> 2 [color=black];
 }'''
 
@@ -59,7 +59,7 @@ def test_dot_export_open_view():
     g.toggle_close()
     assert dot_export(g, 'open') == '''digraph g {
 node [shape=box];
-1 [label="1: Root", color=red, style=filled, fillcolor=lightgray];
+1 [label="1: Root", color=red, style=filled, fillcolor=gray];
 2 [label="2: Middle", color=red];
 3 [label="3: Top", color=red, style=bold];
 2 -> 1 [color=black];
