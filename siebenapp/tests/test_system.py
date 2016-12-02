@@ -18,7 +18,7 @@ def test_save_and_load():
     goals.toggle_close()
     save(goals, file_name)
     new_goals = load(file_name)
-    assert goals.all(keys='open,name,edge') == new_goals.all(keys='open,name,edge')
+    assert goals.all(keys='open,name,edge,select') == new_goals.all(keys='open,name,edge,select')
 
 
 def test_dot_export_full_view():
