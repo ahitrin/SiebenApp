@@ -75,7 +75,7 @@ class GoalsTest(TestCase):
         self.goals.select(2)
         self.goals.toggle_close()
         assert self.goals.all(keys='open') == {1: True, 2: False}
-        assert self.goals.all(keys='select') == {1: True, 2: False}
+        assert self.goals.all(keys='select') == {1: 'select', 2: None}
         self.goals.select(2)
         self.goals.toggle_close()
         assert self.goals.all(keys='open') == {1: True, 2: True}
@@ -123,7 +123,7 @@ class GoalsTest(TestCase):
         self.goals.select(2)
         self.goals.delete()
         assert self.goals.all(keys='name,select') == {
-                1: {'name': 'Root', 'select': True},
+                1: {'name': 'Root', 'select': 'select'},
         }
         assert self.goals.top() == {1: 'Root'}
 
@@ -200,24 +200,24 @@ class GoalsTest(TestCase):
         assert self.goals.top() == {4: 'C'}
 
     def test_root_goal_is_selected_by_default(self):
-        assert self.goals.all(keys='select') == {1: True}
+        assert self.goals.all(keys='select') == {1: 'select'}
         self.goals.add('A')
-        assert self.goals.all(keys='select') == {1: True, 2: False}
+        assert self.goals.all(keys='select') == {1: 'select', 2: None}
         self.goals.add('B')
-        assert self.goals.all(keys='select') == {1: True, 2: False, 3: False}
+        assert self.goals.all(keys='select') == {1: 'select', 2: None, 3: None}
 
     def test_new_goal_is_added_to_the_selected_node(self):
         self.goals.add('A')
         self.goals.select(2)
         assert self.goals.all(keys='name,select') == {
-            1: {'name': 'Root', 'select': False},
-            2: {'name': 'A', 'select': True},
+            1: {'name': 'Root', 'select': 'prev'},
+            2: {'name': 'A', 'select': 'select'},
         }
         self.goals.add('B')
         assert self.goals.all(keys='name,select,edge') == {
-            1: {'name': 'Root', 'select': False, 'edge': [2]},
-            2: {'name': 'A', 'select': True, 'edge': [3]},
-            3: {'name': 'B', 'select': False, 'edge': []},
+            1: {'name': 'Root', 'select': 'prev', 'edge': [2]},
+            2: {'name': 'A', 'select': 'select', 'edge': [3]},
+            3: {'name': 'B', 'select': None, 'edge': []},
         }
 
     def test_move_selection_to_the_root_after_closing(self):
@@ -226,9 +226,9 @@ class GoalsTest(TestCase):
         self.goals.select(2)
         self.goals.toggle_close()
         assert self.goals.all(keys='open,select') == {
-                1: {'open': True, 'select': True},
-                2: {'open': False, 'select': False},
-                3: {'open': True, 'select': False}}
+                1: {'open': True, 'select': 'select'},
+                2: {'open': False, 'select': None},
+                3: {'open': True, 'select': None}}
 
     def test_node_enumeration_must_be_keyboard_friendly(self):
         for char in '23456789':
@@ -258,9 +258,9 @@ class GoalsTest(TestCase):
             0: {'name': '0 is next to 9', 'edge': []},
         }
         self.goals.select(0)
-        assert self.goals.all(keys='select') == {1: False, 2: False, 3: False,
-                4: False, 5: False, 6: False, 7: False, 8: False, 9: False,
-                0: True}
+        assert self.goals.all(keys='select') == {1: 'prev', 2: None, 3: None,
+                4: None, 5: None, 6: None, 7: None, 8: None, 9: None,
+                0: 'select'}
         assert self.goals.top() == {2: '2', 3: '3', 4: '4', 5: '5', 6: '6',
                 7: '7', 8: '8', 9: '9', 0: '0 is next to 9'}
 
@@ -278,30 +278,30 @@ class GoalsTest(TestCase):
     def test_selection_should_be_additive(self):
         for char in '234567890A':
             self.goals.add(char)
-        assert self.goals.all(keys='select') == {11: True, 12: False,
-                13: False, 14: False, 15: False, 16: False, 17: False,
-                18: False, 19: False, 10: False, 21: False}
+        assert self.goals.all(keys='select') == {11: 'select', 12: None,
+                13: None, 14: None, 15: None, 16: None, 17: None,
+                18: None, 19: None, 10: None, 21: None}
         # no change yet
         self.goals.select(2)
-        assert self.goals.all(keys='select') == {11: True, 12: False,
-                13: False, 14: False, 15: False, 16: False, 17: False,
-                18: False, 19: False, 10: False, 21: False}
+        assert self.goals.all(keys='select') == {11: 'select', 12: None,
+                13: None, 14: None, 15: None, 16: None, 17: None,
+                18: None, 19: None, 10: None, 21: None}
         # now change happens
         self.goals.select(1)
-        assert self.goals.all(keys='select') == {11: False, 12: False,
-                13: False, 14: False, 15: False, 16: False, 17: False,
-                18: False, 19: False, 10: False, 21: True}
+        assert self.goals.all(keys='select') == {11: 'prev', 12: None,
+                13: None, 14: None, 15: None, 16: None, 17: None,
+                18: None, 19: None, 10: None, 21: 'select'}
 
     def test_enumeration_will_have_3_numbers_when_there_are_more_than_90_goals(self):
         for i in range(89):
             self.goals.add(str(i))
         sel = self.goals.all(keys='select')
         assert all(k < 100 for k in sel.keys())
-        assert sel[11] == True
+        assert sel[11] == 'select'
         self.goals.add('boo')
         sel = self.goals.all(keys='select')
         assert all(k > 100 for k in sel.keys())
-        assert sel[111] == True
+        assert sel[111] == 'select'
         assert all(not sel[k] for k in sel.keys() if k != 111)
 
     def test_select_when_more_than_90_goals(self):
@@ -309,6 +309,6 @@ class GoalsTest(TestCase):
             self.goals.add(str(i))
         self.goals.select(1)
         self.goals.select(4)
-        assert self.goals.all(keys='select')[111]
+        assert self.goals.all(keys='select')[111] == 'select'
         self.goals.select(5)
-        assert self.goals.all(keys='select')[145]
+        assert self.goals.all(keys='select')[145] == 'select'

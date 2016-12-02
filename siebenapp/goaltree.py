@@ -60,7 +60,12 @@ class Goals():
             if 'edge' in keys:
                 value['edge'] = sorted(self.id_mapping(e) for e in self.edges[key])
             if 'select' in keys:
-                value['select'] = (key == self.selection)
+                if key == self.selection:
+                    value['select'] = 'select'
+                elif key == self.previous_selection:
+                    value['select'] = 'prev'
+                else:
+                    value['select'] = None
             result[self.id_mapping(key)] = value if len(keys) > 1 else value[keys[0]]
         return result
 

@@ -40,10 +40,10 @@ def dot_export(goals, view):
         attributes = {
             'label': '"%d: %s"' % (num, goal['name']),
             'color': 'red' if goal['open'] else 'green',
-            'fillcolor': 'lightgray' if goal['select'] else None,
+            'fillcolor': 'lightgray' if goal['select'] == 'select' else None,
             'style': 'bold' if num in tops else None,
         }
-        if goal['select']:
+        if goal['select'] == 'select':
             if attributes['style']:
                 attributes['style'] = '"%s,filled"' % attributes['style']
             else:
