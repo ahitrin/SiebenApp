@@ -1,7 +1,7 @@
 # coding: utf-8
-from goaltree import Goals
 from hypothesis import given, note, assume, example
 from hypothesis.strategies import integers, lists, sampled_from, composite, choices, streaming
+from siebenapp.goaltree import Goals
 
 
 USER_ACTIONS = {

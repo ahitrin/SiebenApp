@@ -1,6 +1,6 @@
 # coding: utf-8
-from goaltree import Goals
-from system import save, load, dot_export
+from siebenapp.goaltree import Goals
+from siebenapp.system import save, load, dot_export
 from tempfile import NamedTemporaryFile
 
 

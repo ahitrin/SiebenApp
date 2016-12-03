@@ -1,5 +1,5 @@
 # coding: utf-8
-from goaltree import Goals
+from siebenapp.goaltree import Goals
 from unittest import TestCase
 
 
