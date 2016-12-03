@@ -22,11 +22,14 @@ def setup_sample_db(conn):
     )''')
     cur.execute('''create table edges (
         parent integer,
-        child integer
+        child integer,
+        foreign key(parent) references goals(goal_id),
+        foreign key(child) references goals(goal_id)
     )''')
     cur.execute('''create table selection (
         name string,
-        goal integer
+        goal integer,
+        foreign key(goal) references goals(goal_id)
     )''')
     conn.commit()
     sample_goals = [(1, 'Root', True), (2, 'A', True), (3, 'B', False)]
