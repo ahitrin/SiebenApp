@@ -21,6 +21,14 @@ def test_save_and_load():
     assert goals.all(keys='open,name,edge,select') == new_goals.all(keys='open,name,edge,select')
 
 
+def test_load_from_missing_file():
+    file_name = NamedTemporaryFile().name
+    expected_goals = Goals('Rename me')
+    new_goals = load(file_name)
+    assert new_goals.all(keys='open,name,edge,select') == \
+            expected_goals.all(keys='open,name,edge,select')
+
+
 def test_dot_export_full_view():
     g = Goals('Root')
     g.add('Middle')

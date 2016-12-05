@@ -1,7 +1,6 @@
 #!/usr/bin/env python3.5
 # coding: utf-8
 import sys
-from os import path
 from siebenapp.goaltree import Goals
 from siebenapp.system import save, load, dot_export
 from subprocess import run
@@ -31,10 +30,7 @@ class SiebenApp(QMainWindow):
         self.refresh.connect(self.reload_image)
         self.quit_app.connect(QApplication.instance().quit)
         self.view  = 'open'
-        if path.exists('sieben.db'):
-            self.goals = load()
-        else:
-            self.goals = Goals('Rename me')
+        self.goals = load()
 
     def setup(self):
         self.setWindowTitle('SiebenApp')

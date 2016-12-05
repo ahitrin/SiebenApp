@@ -38,8 +38,11 @@ def save(obj, filename=DEFAULT_DB):
 
 
 def load(filename=DEFAULT_DB):
-    with open(filename, 'rb') as f:
-        return pickle.load(f)
+    try:
+        with open(filename, 'rb') as f:
+            return pickle.load(f)
+    except FileNotFoundError:
+        return Goals('Rename me')
 
 
 def run_migrations(conn, migrations=MIGRATIONS):
