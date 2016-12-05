@@ -1,4 +1,5 @@
 # coding: utf-8
+import collections
 
 
 class Goals():
@@ -141,3 +142,18 @@ class Goals():
         else:
             # create new link
             self.edges[lower].append(upper)
+
+
+def build_goals(goals, edges, selection):
+    result = Goals('')
+    result.goals = dict((g[0], g[1]) for g in goals)
+    result.closed = set(g[0] for g in goals if not g[2])
+    d = collections.defaultdict(lambda: list())
+    for parent, child in edges:
+        d[parent].append(child)
+    result.edges = dict(d)
+    result.edges.update(dict((g, []) for g in result.goals if g not in d))
+    selects = dict(selection)
+    result.selection = selects['selection']
+    result.previous_selection = selects['previous_selection']
+    return result

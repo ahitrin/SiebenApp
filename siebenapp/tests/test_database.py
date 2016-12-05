@@ -1,5 +1,6 @@
 # coding: utf-8
 import sqlite3
+from siebenapp.goaltree import Goals, build_goals
 from siebenapp.system import MIGRATIONS, run_migrations
 
 
@@ -43,35 +44,24 @@ def setup_sample_db(conn):
     cur.close()
 
 
-def test_goals_table():
+def test_restore_goals_from_db():
     conn = sqlite3.connect(':memory:')
     run_migrations(conn)
     setup_sample_db(conn)
     cur = conn.cursor()
     goals = [row for row in cur.execute('select * from goals')]
-    assert goals == [
-        (1, 'Root', True),
-        (2, 'A', True),
-        (3, 'B', False),
-    ]
-
-
-def test_edges_table():
-    conn = sqlite3.connect(':memory:')
-    run_migrations(conn)
-    setup_sample_db(conn)
-    cur = conn.cursor()
     edges = [row for row in cur.execute('select * from edges')]
-    assert edges == [(1, 2), (1, 3), (2, 3)]
-
-
-def test_selection_table():
-    conn = sqlite3.connect(':memory:')
-    run_migrations(conn)
-    setup_sample_db(conn)
-    cur = conn.cursor()
     selection = [row for row in cur.execute('select * from selection')]
-    assert selection == [
-        ('selection', 2),
-        ('previous_selection', 1),
-    ]
+    expected_goals = Goals('Root')
+    expected_goals.add('A')
+    expected_goals.add('B')
+    expected_goals.select(2)
+    expected_goals.hold_select()
+    expected_goals.select(3)
+    expected_goals.toggle_link()
+    expected_goals.select(3)
+    expected_goals.toggle_close()
+    expected_goals.select(2)
+    actual_goals = build_goals(goals, edges, selection)
+    assert expected_goals.all(keys='name,edge,open,select') == \
+            actual_goals.all(keys='name,edge,open,select')
