@@ -1,5 +1,6 @@
 # coding: utf-8
 import pickle
+import sqlite3
 from siebenapp.goaltree import Goals
 
 DEFAULT_DB = 'sieben.db'
@@ -43,7 +44,14 @@ def load(filename=DEFAULT_DB):
 
 def run_migrations(conn, migrations=MIGRATIONS):
     cur = conn.cursor()
+    try:
+        cur.execute('select version from migrations')
+        current_version = cur.fetchone()[0]
+    except sqlite3.OperationalError:
+        current_version = -1
     for num, migration in enumerate(migrations):
+        if num <= current_version:
+            continue
         for query in migration:
             cur.execute(query)
         cur.execute('update migrations set version=?', (num,))

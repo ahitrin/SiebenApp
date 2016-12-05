@@ -12,6 +12,25 @@ def test_initial_migration_on_empty_db():
     assert version == 0
 
 
+def test_skip_passed_migrations():
+    conn = sqlite3.connect(':memory:')
+    cur = conn.cursor()
+    run_migrations(conn, MIGRATIONS[:1])
+    run_migrations(conn, MIGRATIONS[:1])
+    cur.execute('select version from migrations')
+    version = cur.fetchone()[0]
+    assert version == 0
+
+
+def test_last_known_migration():
+    conn = sqlite3.connect(':memory:')
+    cur = conn.cursor()
+    run_migrations(conn)
+    cur.execute('select version from migrations')
+    version = cur.fetchone()[0]
+    assert version == 1
+
+
 def setup_sample_db(conn):
     cur = conn.cursor()
     sample_goals = [(1, 'Root', True), (2, 'A', True), (3, 'B', False)]
