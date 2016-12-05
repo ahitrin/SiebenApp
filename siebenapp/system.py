@@ -3,6 +3,32 @@ import pickle
 from siebenapp.goaltree import Goals
 
 DEFAULT_DB = 'sieben.db'
+MIGRATIONS = [
+    # 0
+    [
+        'create table migrations (version integer)',
+        'insert into migrations values (-1)'
+    ],
+    # 1
+    [
+        '''create table goals (
+            goal_id integer primary key,
+            name string,
+            open boolean
+        )''',
+        '''create table edges (
+            parent integer,
+            child integer,
+            foreign key(parent) references goals(goal_id),
+            foreign key(child) references goals(goal_id)
+        )''',
+        '''create table selection (
+            name string,
+            goal integer,
+            foreign key(goal) references goals(goal_id)
+        )'''
+    ],
+]
 
 
 def save(obj, filename=DEFAULT_DB):
@@ -13,6 +39,15 @@ def save(obj, filename=DEFAULT_DB):
 def load(filename=DEFAULT_DB):
     with open(filename, 'rb') as f:
         return pickle.load(f)
+
+
+def run_migrations(conn, migrations=MIGRATIONS):
+    cur = conn.cursor()
+    for num, migration in enumerate(migrations):
+        for query in migration:
+            cur.execute(query)
+        cur.execute('update migrations set version=?', (num,))
+        conn.commit()
 
 
 def rescue_db(filename=DEFAULT_DB):
