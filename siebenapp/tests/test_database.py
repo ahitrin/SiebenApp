@@ -1,7 +1,8 @@
 # coding: utf-8
 import sqlite3
-from siebenapp.goaltree import Goals, build_goals
-from siebenapp.system import MIGRATIONS, run_migrations
+from siebenapp.goaltree import Goals
+from siebenapp.system import MIGRATIONS, run_migrations, load
+from tempfile import NamedTemporaryFile
 
 
 def test_initial_migration_on_empty_db():
@@ -45,13 +46,12 @@ def setup_sample_db(conn):
 
 
 def test_restore_goals_from_db():
-    conn = sqlite3.connect(':memory:')
+    file_name = NamedTemporaryFile().name
+    conn = sqlite3.connect(file_name)
     run_migrations(conn)
     setup_sample_db(conn)
-    cur = conn.cursor()
-    goals = [row for row in cur.execute('select * from goals')]
-    edges = [row for row in cur.execute('select * from edges')]
-    selection = [row for row in cur.execute('select * from selection')]
+    conn.close()
+    actual_goals = load(file_name)
     expected_goals = Goals('Root')
     expected_goals.add('A')
     expected_goals.add('B')
@@ -62,6 +62,5 @@ def test_restore_goals_from_db():
     expected_goals.select(3)
     expected_goals.toggle_close()
     expected_goals.select(2)
-    actual_goals = build_goals(goals, edges, selection)
     assert expected_goals.all(keys='name,edge,open,select') == \
             actual_goals.all(keys='name,edge,open,select')
