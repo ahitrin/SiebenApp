@@ -129,3 +129,13 @@ def test_overwrite_old_pickle_dump_on_saving():
     save(tmp_goals, file_name)
     new_goals = load(file_name)
     assert new_goals.all() == goals.all()
+
+
+def test_multiple_saves_works_fine():
+    file_name = NamedTemporaryFile().name
+    goals = Goals('Root')
+    save(goals, file_name)
+    goals.add('Next')
+    save(goals, file_name)
+    new_goals = load(file_name)
+    assert goals.all() == new_goals.all()
