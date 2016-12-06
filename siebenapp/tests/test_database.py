@@ -93,6 +93,16 @@ def test_load_from_pickle_dump():
     assert goals.all(keys='open,name,edge,select') == new_goals.all(keys='open,name,edge,select')
 
 
+def test_save_into_sqlite3_database_by_default():
+    file_name = NamedTemporaryFile().name
+    goals = Goals('Sample')
+    save(goals, file_name)
+    conn = sqlite3.connect(file_name)
+    cur = conn.cursor()
+    cur.execute('select version from migrations')
+    assert cur.fetchone()[0] > 0
+
+
 def test_save_and_load():
     file_name = NamedTemporaryFile().name
     goals = Goals('Root')

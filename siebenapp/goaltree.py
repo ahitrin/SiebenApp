@@ -157,3 +157,13 @@ def build_goals(goals, edges, selection):
     result.selection = selects.get('selection')
     result.previous_selection = selects.get('previous_selection')
     return result
+
+
+def export_goals(goals):
+    gs = [(g_id, g_name, g_id not in goals.closed)
+          for g_id, g_name in goals.goals.items()]
+    es = [(parent, child) for parent in goals.edges
+                          for child in goals.edges[parent]]
+    sel = [('selection', goals.selection),
+           ('previous_selection', goals.previous_selection)]
+    return gs, es, sel
