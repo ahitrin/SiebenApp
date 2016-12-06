@@ -1,7 +1,7 @@
 # coding: utf-8
 import pickle
 import sqlite3
-from os import path
+from os import path, remove
 from siebenapp.goaltree import Goals, build_goals, export_goals
 
 DEFAULT_DB = 'sieben.db'
@@ -34,8 +34,13 @@ MIGRATIONS = [
 
 
 def save(goals, filename=DEFAULT_DB):
-    connection = sqlite3.connect(filename)
-    run_migrations(connection)
+    try:
+        connection = sqlite3.connect(filename)
+        run_migrations(connection)
+    except sqlite3.DatabaseError:
+        remove(filename)
+        connection = sqlite3.connect(filename)
+        run_migrations(connection)
     goals_export, edges_export, select_export = export_goals(goals)
     cur = connection.cursor()
     cur.executemany('insert into goals values (?,?,?)', goals_export)

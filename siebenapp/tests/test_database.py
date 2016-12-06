@@ -118,3 +118,14 @@ def test_save_and_load():
     save(goals, file_name)
     new_goals = load(file_name)
     assert goals.all(keys='open,name,edge,select') == new_goals.all(keys='open,name,edge,select')
+
+
+def test_overwrite_old_pickle_dump_on_saving():
+    file_name = NamedTemporaryFile().name
+    goals = Goals('Root')
+    with open(file_name, 'wb') as f:
+        pickle.dump(goals, f)
+    tmp_goals = load(file_name)
+    save(tmp_goals, file_name)
+    new_goals = load(file_name)
+    assert new_goals.all() == goals.all()
