@@ -154,6 +154,6 @@ def build_goals(goals, edges, selection):
     result.edges = dict(d)
     result.edges.update(dict((g, []) for g in result.goals if g not in d))
     selects = dict(selection)
-    result.selection = selects['selection']
-    result.previous_selection = selects['previous_selection']
+    result.selection = selects.get('selection')
+    result.previous_selection = selects.get('previous_selection')
     return result
