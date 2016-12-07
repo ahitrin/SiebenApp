@@ -89,17 +89,7 @@ Please take into consideration that here you see the very early Alpha release of
 
 1. **No packaging/installation yet** (#1). In order to run app, clone or download the code, and then use `make` to check/install dependencies and `make run` to run.
 2. **Really stupid UI** (#4). Currently, all goals are drawn using [GraphViz](http://www.graphviz.org/), and SiebenApp just shows resulting image. Also, there are no buttons, icons and something like that. The only thing we have is a set of hotkeys.
-3. **Primitive persistence, absence of migrations** (#2). Current state of goal tree is kept in file `sieben.db`. Despite of its extension, it's nothing more than raw dump of app's inner state made with `pickle` module. Therefore it's impossible to keep several goal trees (like several projects and so on) in one file. But you may manage these files by hand or call SiebenApp from another file path. For example, like that:
-
-        # store several files in the current directory
-        mv sieben.db sieben.db.project1
-        mv siben.db.project2 sieben.db
-        make run
-        # or, another way: call SiebenApp from another path but save sieben.db in current path
-        cd ../project1
-        ../SiebenApp/sieben
-
-4. **No actual security** (#5). To draw goals graph, SiebenApp calls external program `dot` which is supposed to be a part of GraphViz package. It's theoretically possible that the called `dot` program may do any unexpected action instead, even something malicious.
+3. **No actual security** (#5). To draw goals graph, SiebenApp calls external program `dot` which is supposed to be a part of GraphViz package. It's theoretically possible that the called `dot` program may do any unexpected action instead, even something malicious.
 
 All these points are planned to be fixed while moving from Alpha to Beta version.
 
