@@ -4,12 +4,12 @@ import collections
 
 class Goals():
     def __init__(self, name):
-        self.goals = {1: name}
-        self.edges = {1: []}
+        self.goals = {}
+        self.edges = {}
         self.closed = set()
         self.selection = 1
-        self.selection_cache = []
         self.previous_selection = 1
+        self.add(name)
 
     def add(self, name, add_to=0):
         if add_to == 0:
