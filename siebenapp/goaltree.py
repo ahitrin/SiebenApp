@@ -143,27 +143,27 @@ class Goals():
             # create new link
             self.edges[lower].append(upper)
 
+    @staticmethod
+    def build(goals, edges, selection):
+        result = Goals('')
+        result.goals = dict((g[0], g[1]) for g in goals)
+        result.closed = set(g[0] for g in goals if not g[2])
+        d = collections.defaultdict(lambda: list())
+        for parent, child in edges:
+            d[parent].append(child)
+        result.edges = dict(d)
+        result.edges.update(dict((g, []) for g in result.goals if g not in d))
+        selects = dict(selection)
+        result.selection = selects.get('selection')
+        result.previous_selection = selects.get('previous_selection')
+        return result
 
-def build_goals(goals, edges, selection):
-    result = Goals('')
-    result.goals = dict((g[0], g[1]) for g in goals)
-    result.closed = set(g[0] for g in goals if not g[2])
-    d = collections.defaultdict(lambda: list())
-    for parent, child in edges:
-        d[parent].append(child)
-    result.edges = dict(d)
-    result.edges.update(dict((g, []) for g in result.goals if g not in d))
-    selects = dict(selection)
-    result.selection = selects.get('selection')
-    result.previous_selection = selects.get('previous_selection')
-    return result
-
-
-def export_goals(goals):
-    gs = [(g_id, g_name, g_id not in goals.closed)
-          for g_id, g_name in goals.goals.items()]
-    es = [(parent, child) for parent in goals.edges
-                          for child in goals.edges[parent]]
-    sel = [('selection', goals.selection),
-           ('previous_selection', goals.previous_selection)]
-    return gs, es, sel
+    @staticmethod
+    def export(goals):
+        gs = [(g_id, g_name, g_id not in goals.closed)
+            for g_id, g_name in goals.goals.items()]
+        es = [(parent, child) for parent in goals.edges
+                            for child in goals.edges[parent]]
+        sel = [('selection', goals.selection),
+            ('previous_selection', goals.previous_selection)]
+        return gs, es, sel

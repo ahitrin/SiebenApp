@@ -1,7 +1,7 @@
 # coding: utf-8
 import sqlite3
 from os import path, remove
-from siebenapp.goaltree import Goals, build_goals, export_goals
+from siebenapp.goaltree import Goals
 
 DEFAULT_DB = 'sieben.db'
 MIGRATIONS = [
@@ -37,7 +37,7 @@ def save(goals, filename=DEFAULT_DB):
         remove(filename)
     connection = sqlite3.connect(filename)
     run_migrations(connection)
-    goals_export, edges_export, select_export = export_goals(goals)
+    goals_export, edges_export, select_export = Goals.export(goals)
     cur = connection.cursor()
     cur.executemany('insert into goals values (?,?,?)', goals_export)
     cur.executemany('insert into edges values (?,?)', edges_export)
@@ -55,7 +55,7 @@ def load(filename=DEFAULT_DB):
     edges = [row for row in cur.execute('select * from edges')]
     selection = [row for row in cur.execute('select * from selection')]
     cur.close()
-    return build_goals(goals, edges, selection)
+    return Goals.build(goals, edges, selection)
 
 
 def run_migrations(conn, migrations=MIGRATIONS):
