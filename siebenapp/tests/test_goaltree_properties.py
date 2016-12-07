@@ -2,6 +2,8 @@
 from hypothesis import given, note, assume, example
 from hypothesis.strategies import integers, lists, sampled_from, composite, choices, streaming
 from siebenapp.goaltree import Goals
+from siebenapp.system import run_migrations
+import sqlite3
 
 
 USER_ACTIONS = {
@@ -81,3 +83,34 @@ def test_all_open_goals_must_be_connected_to_the_root_via_other_open_goals(actio
         queue.extend(g for g in edges[goal] if g not in visited and g in open_goals)
         visited.add(goal)
     assert visited == set(edges.keys())
+
+
+@given(user_actions(skip=['delete', 'insert', 'toggle_link']), streaming(integers(0, 9)))
+def test_full_export_and_streaming_export_must_be_the_same(actions, ints):
+    g = build_from(actions, ints)
+    conn = sqlite3.connect(':memory:')
+    run_migrations(conn)
+    cur = conn.cursor()
+    for event in g.events:
+        note(event)
+        if event[0] == 'add':
+            cur.execute('insert into goals values (?,?,?)', event[1:])
+        elif event[0] == 'toggle_close':
+            cur.execute('update goals set open=? where goal_id=?', event[1:])
+        elif event[0] == 'rename':
+            cur.execute('update goals set name=? where goal_id=?', event[1:])
+        elif event[0] == 'link':
+            cur.execute('insert into edges values (?,?)', event[1:])
+        elif event[0] == 'select':
+            cur.execute('delete from selection where name="selection"')
+            cur.execute('insert into selection values ("selection", ?)', event[1:])
+        elif event[0] == 'hold_select':
+            cur.execute('delete from selection where name="previous_selection"')
+            cur.execute('insert into selection values ("previous_selection", ?)', event[1:])
+    conn.commit()
+    goals = [row for row in cur.execute('select * from goals')]
+    edges = [row for row in cur.execute('select * from edges')]
+    selection = [row for row in cur.execute('select * from selection')]
+    ng = Goals.build(goals, edges, selection)
+    assert g.all('name,open,edge,select') == \
+            ng.all('name,open,edge,select')

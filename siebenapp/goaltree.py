@@ -9,6 +9,7 @@ class Goals():
         self.closed = set()
         self.selection = 1
         self.previous_selection = 1
+        self.events = []
         self.add(name)
 
     def add(self, name, add_to=0):
@@ -19,6 +20,7 @@ class Goals():
         next_id = len(self.goals) + 1
         self.goals[next_id] = name
         self.edges[next_id] = list()
+        self.events.append(('add', next_id, name, True))
         self.toggle_link(add_to, next_id)
         self.selection_cache = []
         return True
@@ -31,6 +33,11 @@ class Goals():
             new_id += 100 * ((goal_id - 1) // 100 + 1)
         return new_id
 
+    def _select(self, goal_id):
+        self.selection_cache = []
+        self.selection = goal_id
+        self.events.append(('select', self.selection))
+
     def select(self, goal_id):
         if goal_id > len(self.goals):
             return
@@ -40,14 +47,14 @@ class Goals():
                                if self.id_mapping(g) == goal_id]
         if len(possible_selections) == 1:
             if self.goals[possible_selections[0]]:
-                self.selection_cache = []
-                self.selection = possible_selections[0]
+                self._select(possible_selections[0])
         else:
             self.selection_cache.append(goal_id)
 
     def hold_select(self):
         self.previous_selection = self.selection
         self.selection_cache = []
+        self.events.append(('hold_select', self.selection))
 
     def all(self, keys='name'):
         keys = keys.split(',')
@@ -89,20 +96,23 @@ class Goals():
     def rename(self, new_name):
         self.goals[self.selection] = new_name
         self.selection_cache = []
+        self.events.append(('rename', new_name, self.selection))
 
     def toggle_close(self):
         if self.selection in self.closed:
             parent_goals = [g for g, v in self.edges.items() if self.selection in v]
-            if any(g for g in parent_goals if g not in self.closed):
+            if not parent_goals or any(g for g in parent_goals if g not in self.closed):
                 self.closed.remove(self.selection)
+                self.events.append(('toggle_close', True, self.selection))
         else:
             linked_goals = [g for g in self.edges[self.selection] if g not in self.closed]
             other_open_goals = [g for g in self.goals if g not in self.closed and g != self.selection]
             accessible_goals = set(g for o in other_open_goals for g in self.edges[o])
             if all(g in accessible_goals for g in linked_goals):
                 self.closed.add(self.selection)
-                self.selection = 1
-                self.previous_selection = 1
+                self.events.append(('toggle_close', False, self.selection))
+                self._select(1)
+                self.hold_select()
         self.selection_cache = []
 
     def delete(self, goal_id=0):
@@ -142,6 +152,7 @@ class Goals():
         else:
             # create new link
             self.edges[lower].append(upper)
+            self.events.append(('link', lower, upper))
 
     @staticmethod
     def build(goals, edges, selection):
@@ -154,8 +165,8 @@ class Goals():
         result.edges = dict(d)
         result.edges.update(dict((g, []) for g in result.goals if g not in d))
         selects = dict(selection)
-        result.selection = selects.get('selection')
-        result.previous_selection = selects.get('previous_selection')
+        result.selection = selects.get('selection', 1)
+        result.previous_selection = selects.get('previous_selection', 1)
         return result
 
     @staticmethod

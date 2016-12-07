@@ -312,3 +312,27 @@ class GoalsTest(TestCase):
         assert self.goals.all(keys='select')[111] == 'select'
         self.goals.select(5)
         assert self.goals.all(keys='select')[145] == 'select'
+
+    def test_add_events(self):
+        assert self.goals.events == [('add', 1, 'Root', True)]
+        self.goals.add('Next')
+        assert self.goals.events[-2:] == [('add', 2, 'Next', True), ('link', 1, 2)]
+
+    def test_select_events(self):
+        self.goals.add('Next')
+        self.goals.select(2)
+        assert self.goals.events[-1] == ('select', 2)
+        self.goals.hold_select()
+        self.goals.select(1)
+        assert self.goals.events[-2:] == [('hold_select', 2), ('select', 1)]
+
+    def test_toggle_close_events(self):
+        self.goals.toggle_close()
+        assert self.goals.events[-3:] == [('toggle_close', False, 1),
+            ('select', 1), ('hold_select', 1)]
+        self.goals.toggle_close()
+        assert self.goals.events[-1] == ('toggle_close', True, 1)
+
+    def test_rename_event(self):
+        self.goals.rename('New')
+        assert self.goals.events[-1] == ('rename', 'New', 1)
