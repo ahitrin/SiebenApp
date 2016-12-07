@@ -1,5 +1,4 @@
 # coding: utf-8
-import pickle
 import sqlite3
 from siebenapp.goaltree import Goals
 from siebenapp.system import MIGRATIONS, run_migrations, load, save
@@ -75,25 +74,7 @@ def test_load_from_missing_file():
             expected_goals.all(keys='open,name,edge,select')
 
 
-def test_load_from_pickle_dump():
-    file_name = NamedTemporaryFile().name
-    goals = Goals('Root')
-    goals.add('Top')
-    goals.add('Middle')
-    goals.select(3)
-    goals.hold_select()
-    goals.select(2)
-    goals.toggle_link()
-    goals.add('Closed')
-    goals.select(4)
-    goals.toggle_close()
-    with open(file_name, 'wb') as f:
-        pickle.dump(goals, f)
-    new_goals = load(file_name)
-    assert goals.all(keys='open,name,edge,select') == new_goals.all(keys='open,name,edge,select')
-
-
-def test_save_into_sqlite3_database_by_default():
+def test_save_into_sqlite3_database():
     file_name = NamedTemporaryFile().name
     goals = Goals('Sample')
     save(goals, file_name)
@@ -118,17 +99,6 @@ def test_save_and_load():
     save(goals, file_name)
     new_goals = load(file_name)
     assert goals.all(keys='open,name,edge,select') == new_goals.all(keys='open,name,edge,select')
-
-
-def test_overwrite_old_pickle_dump_on_saving():
-    file_name = NamedTemporaryFile().name
-    goals = Goals('Root')
-    with open(file_name, 'wb') as f:
-        pickle.dump(goals, f)
-    tmp_goals = load(file_name)
-    save(tmp_goals, file_name)
-    new_goals = load(file_name)
-    assert new_goals.all() == goals.all()
 
 
 def test_multiple_saves_works_fine():

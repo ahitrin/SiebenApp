@@ -1,5 +1,4 @@
 # coding: utf-8
-import pickle
 import sqlite3
 from os import path, remove
 from siebenapp.goaltree import Goals, build_goals, export_goals
@@ -50,18 +49,13 @@ def save(goals, filename=DEFAULT_DB):
 def load(filename=DEFAULT_DB):
     if not path.isfile(filename):
         return Goals('Rename me')
-    try:
-        connection = sqlite3.connect(filename)
-        cur = connection.cursor()
-        goals = [row for row in cur.execute('select * from goals')]
-        edges = [row for row in cur.execute('select * from edges')]
-        selection = [row for row in cur.execute('select * from selection')]
-        cur.close()
-        return build_goals(goals, edges, selection)
-    except sqlite3.DatabaseError:
-        # Temporary fallback to pickle
-        with open(filename, 'rb') as f:
-            return pickle.load(f)
+    connection = sqlite3.connect(filename)
+    cur = connection.cursor()
+    goals = [row for row in cur.execute('select * from goals')]
+    edges = [row for row in cur.execute('select * from edges')]
+    selection = [row for row in cur.execute('select * from selection')]
+    cur.close()
+    return build_goals(goals, edges, selection)
 
 
 def run_migrations(conn, migrations=MIGRATIONS):
