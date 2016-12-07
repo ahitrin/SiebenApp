@@ -65,9 +65,7 @@ def run_migrations(conn, migrations=MIGRATIONS):
         current_version = cur.fetchone()[0]
     except sqlite3.OperationalError:
         current_version = -1
-    for num, migration in enumerate(migrations):
-        if num <= current_version:
-            continue
+    for num, migration in enumerate(migrations[current_version + 1:]):
         for query in migration:
             cur.execute(query)
         cur.execute('update migrations set version=?', (num,))
