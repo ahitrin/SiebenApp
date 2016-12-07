@@ -336,3 +336,10 @@ class GoalsTest(TestCase):
     def test_rename_event(self):
         self.goals.rename('New')
         assert self.goals.events[-1] == ('rename', 'New', 1)
+
+    def test_delete_events(self):
+        self.goals.add('Sheep')
+        self.goals.select(2)
+        self.goals.delete()
+        assert self.goals.events[-3:] == [('delete', 2), ('select', 1),
+                ('hold_select', 1)]

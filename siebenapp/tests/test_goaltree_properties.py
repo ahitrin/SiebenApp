@@ -85,7 +85,7 @@ def test_all_open_goals_must_be_connected_to_the_root_via_other_open_goals(actio
     assert visited == set(edges.keys())
 
 
-@given(user_actions(skip=['delete', 'insert', 'toggle_link']), streaming(integers(0, 9)))
+@given(user_actions(skip=['insert', 'toggle_link']), streaming(integers(0, 9)))
 def test_full_export_and_streaming_export_must_be_the_same(actions, ints):
     g = build_from(actions, ints)
     conn = sqlite3.connect(':memory:')
@@ -107,6 +107,10 @@ def test_full_export_and_streaming_export_must_be_the_same(actions, ints):
         elif event[0] == 'hold_select':
             cur.execute('delete from selection where name="previous_selection"')
             cur.execute('insert into selection values ("previous_selection", ?)', event[1:])
+        elif event[0] == 'delete':
+            cur.execute('delete from goals where goal_id=?', event[1:])
+            cur.execute('delete from edges where child=?', event[1:])
+            cur.execute('delete from edges where parent=?', event[1:])
     conn.commit()
     goals = [row for row in cur.execute('select * from goals')]
     edges = [row for row in cur.execute('select * from edges')]

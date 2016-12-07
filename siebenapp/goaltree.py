@@ -132,8 +132,9 @@ class Goals():
         self.edges.pop(goal_id)
         for key, values in self.edges.items():
             self.edges[key] = [v for v in values if v != goal_id]
-        self.selection = 1
-        self.previous_selection = 1
+        self.events.append(('delete', goal_id))
+        self._select(1)
+        self.hold_select()
 
     def toggle_link(self, lower=0, upper=0):
         if lower == 0:
