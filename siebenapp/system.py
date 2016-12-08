@@ -46,6 +46,32 @@ def save(goals, filename=DEFAULT_DB):
     connection.close()
 
 
+def save_updates(goals, connection):
+    cur = connection.cursor()
+    for event in goals.events:
+        if event[0] == 'add':
+            cur.execute('insert into goals values (?,?,?)', event[1:])
+        elif event[0] == 'toggle_close':
+            cur.execute('update goals set open=? where goal_id=?', event[1:])
+        elif event[0] == 'rename':
+            cur.execute('update goals set name=? where goal_id=?', event[1:])
+        elif event[0] == 'link':
+            cur.execute('insert into edges values (?,?)', event[1:])
+        elif event[0] == 'unlink':
+            cur.execute('delete from edges where parent=? and child=?', event[1:])
+        elif event[0] == 'select':
+            cur.execute('delete from selection where name="selection"')
+            cur.execute('insert into selection values ("selection", ?)', event[1:])
+        elif event[0] == 'hold_select':
+            cur.execute('delete from selection where name="previous_selection"')
+            cur.execute('insert into selection values ("previous_selection", ?)', event[1:])
+        elif event[0] == 'delete':
+            cur.execute('delete from goals where goal_id=?', event[1:])
+            cur.execute('delete from edges where child=?', event[1:])
+            cur.execute('delete from edges where parent=?', event[1:])
+    connection.commit()
+
+
 def load(filename=DEFAULT_DB):
     if not path.isfile(filename):
         return Goals('Rename me')
