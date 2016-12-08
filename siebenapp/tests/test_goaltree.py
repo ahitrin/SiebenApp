@@ -343,3 +343,14 @@ class GoalsTest(TestCase):
         self.goals.delete()
         assert self.goals.events[-3:] == [('delete', 2), ('select', 1),
                 ('hold_select', 1)]
+
+    def test_link_events(self):
+        self.goals.add('Next')
+        self.goals.add('More')
+        self.goals.select(2)
+        self.goals.hold_select()
+        self.goals.select(3)
+        self.goals.toggle_link()
+        assert self.goals.events[-1] == ('link', 2 ,3)
+        self.goals.toggle_link()
+        assert self.goals.events[-1] == ('unlink', 2 ,3)

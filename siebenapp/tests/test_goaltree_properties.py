@@ -85,7 +85,7 @@ def test_all_open_goals_must_be_connected_to_the_root_via_other_open_goals(actio
     assert visited == set(edges.keys())
 
 
-@given(user_actions(skip=['insert', 'toggle_link']), streaming(integers(0, 9)))
+@given(user_actions(), streaming(integers(0, 9)))
 def test_full_export_and_streaming_export_must_be_the_same(actions, ints):
     g = build_from(actions, ints)
     conn = sqlite3.connect(':memory:')
@@ -101,6 +101,8 @@ def test_full_export_and_streaming_export_must_be_the_same(actions, ints):
             cur.execute('update goals set name=? where goal_id=?', event[1:])
         elif event[0] == 'link':
             cur.execute('insert into edges values (?,?)', event[1:])
+        elif event[0] == 'unlink':
+            cur.execute('delete from edges where parent=? and child=?', event[1:])
         elif event[0] == 'select':
             cur.execute('delete from selection where name="selection"')
             cur.execute('insert into selection values ("selection", ?)', event[1:])
