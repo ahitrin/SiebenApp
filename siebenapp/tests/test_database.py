@@ -64,6 +64,7 @@ def test_restore_goals_from_db():
     expected_goals.select(2)
     assert expected_goals.all(keys='name,edge,open,select') == \
             actual_goals.all(keys='name,edge,open,select')
+    assert not actual_goals.events
 
 
 def test_load_from_missing_file():

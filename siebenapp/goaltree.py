@@ -159,6 +159,7 @@ class Goals():
     @staticmethod
     def build(goals, edges, selection):
         result = Goals('')
+        result.events.pop()             # remove initial goal
         result.goals = dict((g[0], g[1]) for g in goals)
         result.closed = set(g[0] for g in goals if not g[2])
         d = collections.defaultdict(lambda: list())
