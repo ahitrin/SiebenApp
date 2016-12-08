@@ -34,16 +34,20 @@ MIGRATIONS = [
 
 def save(goals, filename=DEFAULT_DB):
     if path.isfile(filename):
-        remove(filename)
-    connection = sqlite3.connect(filename)
-    run_migrations(connection)
-    goals_export, edges_export, select_export = Goals.export(goals)
-    cur = connection.cursor()
-    cur.executemany('insert into goals values (?,?,?)', goals_export)
-    cur.executemany('insert into edges values (?,?)', edges_export)
-    cur.executemany('insert into selection values (?,?)', select_export)
-    connection.commit()
-    connection.close()
+        connection = sqlite3.connect(filename)
+        save_updates(goals, connection)
+        connection.close()
+    else:
+        connection = sqlite3.connect(filename)
+        run_migrations(connection)
+        goals_export, edges_export, select_export = Goals.export(goals)
+        cur = connection.cursor()
+        cur.executemany('insert into goals values (?,?,?)', goals_export)
+        cur.executemany('insert into edges values (?,?)', edges_export)
+        cur.executemany('insert into selection values (?,?)', select_export)
+        goals.events.clear()
+        connection.commit()
+        connection.close()
 
 
 def save_updates(goals, connection):
