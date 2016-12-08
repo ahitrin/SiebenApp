@@ -47,29 +47,29 @@ def save(goals, filename=DEFAULT_DB):
 
 
 def save_updates(goals, connection):
+    actions = {
+        'add': ['insert into goals values (?,?,?)'],
+        'toggle_close': ['update goals set open=? where goal_id=?'],
+        'rename': ['update goals set name=? where goal_id=?'],
+        'link': ['insert into edges values (?,?)'],
+        'unlink': ['delete from edges where parent=? and child=?'],
+        'select': ['delete from selection where name="selection"',
+                   'insert into selection values ("selection", ?)'],
+        'hold_select': ['delete from selection where name="previous_selection"',
+                        'insert into selection values ("previous_selection", ?)'],
+        'delete': ['delete from goals where goal_id=?',
+                   'delete from edges where child=?',
+                   'delete from edges where parent=?'],
+    }
     cur = connection.cursor()
     while len(goals.events) > 0:
         event = goals.events.popleft()
-        if event[0] == 'add':
-            cur.execute('insert into goals values (?,?,?)', event[1:])
-        elif event[0] == 'toggle_close':
-            cur.execute('update goals set open=? where goal_id=?', event[1:])
-        elif event[0] == 'rename':
-            cur.execute('update goals set name=? where goal_id=?', event[1:])
-        elif event[0] == 'link':
-            cur.execute('insert into edges values (?,?)', event[1:])
-        elif event[0] == 'unlink':
-            cur.execute('delete from edges where parent=? and child=?', event[1:])
-        elif event[0] == 'select':
-            cur.execute('delete from selection where name="selection"')
-            cur.execute('insert into selection values ("selection", ?)', event[1:])
-        elif event[0] == 'hold_select':
-            cur.execute('delete from selection where name="previous_selection"')
-            cur.execute('insert into selection values ("previous_selection", ?)', event[1:])
-        elif event[0] == 'delete':
-            cur.execute('delete from goals where goal_id=?', event[1:])
-            cur.execute('delete from edges where child=?', event[1:])
-            cur.execute('delete from edges where parent=?', event[1:])
+        if event[0] in actions:
+            for query in actions[event[0]]:
+                if '?' in query:
+                    cur.execute(query, event[1:])
+                else:
+                    cur.execute(query)
     connection.commit()
 
 
