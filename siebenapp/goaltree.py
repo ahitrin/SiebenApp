@@ -9,7 +9,7 @@ class Goals():
         self.closed = set()
         self.selection = 1
         self.previous_selection = 1
-        self.events = []
+        self.events = collections.deque()
         self.add(name)
 
     def add(self, name, add_to=0):

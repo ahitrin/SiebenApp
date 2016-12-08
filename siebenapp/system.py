@@ -48,7 +48,8 @@ def save(goals, filename=DEFAULT_DB):
 
 def save_updates(goals, connection):
     cur = connection.cursor()
-    for event in goals.events:
+    while len(goals.events) > 0:
+        event = goals.events.popleft()
         if event[0] == 'add':
             cur.execute('insert into goals values (?,?,?)', event[1:])
         elif event[0] == 'toggle_close':

@@ -314,9 +314,10 @@ class GoalsTest(TestCase):
         assert self.goals.all(keys='select')[145] == 'select'
 
     def test_add_events(self):
-        assert self.goals.events == [('add', 1, 'Root', True)]
+        assert self.goals.events.pop() == ('add', 1, 'Root', True)
         self.goals.add('Next')
-        assert self.goals.events[-2:] == [('add', 2, 'Next', True), ('link', 1, 2)]
+        assert self.goals.events[-2] == ('add', 2, 'Next', True)
+        assert self.goals.events[-1] == ('link', 1, 2)
 
     def test_select_events(self):
         self.goals.add('Next')
@@ -324,12 +325,14 @@ class GoalsTest(TestCase):
         assert self.goals.events[-1] == ('select', 2)
         self.goals.hold_select()
         self.goals.select(1)
-        assert self.goals.events[-2:] == [('hold_select', 2), ('select', 1)]
+        assert self.goals.events[-2] == ('hold_select', 2)
+        assert self.goals.events[-1] == ('select', 1)
 
     def test_toggle_close_events(self):
         self.goals.toggle_close()
-        assert self.goals.events[-3:] == [('toggle_close', False, 1),
-            ('select', 1), ('hold_select', 1)]
+        assert self.goals.events[-3] == ('toggle_close', False, 1)
+        assert self.goals.events[-2] == ('select', 1)
+        assert self.goals.events[-1] == ('hold_select', 1)
         self.goals.toggle_close()
         assert self.goals.events[-1] == ('toggle_close', True, 1)
 
@@ -341,8 +344,9 @@ class GoalsTest(TestCase):
         self.goals.add('Sheep')
         self.goals.select(2)
         self.goals.delete()
-        assert self.goals.events[-3:] == [('delete', 2), ('select', 1),
-                ('hold_select', 1)]
+        assert self.goals.events[-3] == ('delete', 2)
+        assert self.goals.events[-2] == ('select', 1)
+        assert self.goals.events[-1] == ('hold_select', 1)
 
     def test_link_events(self):
         self.goals.add('Next')

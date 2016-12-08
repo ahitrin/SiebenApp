@@ -91,6 +91,7 @@ def test_full_export_and_streaming_export_must_be_the_same(actions, ints):
     conn = sqlite3.connect(':memory:')
     run_migrations(conn)
     save_updates(g, conn)
+    assert not g.events
     cur = conn.cursor()
     goals = [row for row in cur.execute('select * from goals')]
     edges = [row for row in cur.execute('select * from edges')]
