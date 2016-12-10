@@ -156,6 +156,25 @@ class Goals():
             self.edges[lower].append(upper)
             self.events.append(('link', lower, upper))
 
+    def verify(self):
+        queue, visited = [1], set()
+        while queue:
+            goal = queue.pop()
+            queue.extend(g for g in self.edges[goal] if g not in visited)
+            visited.add(goal)
+        assert visited == set(self.edges.keys()), 'All subgoals must be accessible from the root goal'
+
+        open_goals = set(g for g in self.goals if g not in self.closed)
+        edges = {k: v for k, v in self.edges.items() if k in open_goals}
+        queue, visited = [] if 1 in self.closed else [1], set()
+        while queue:
+            goal = queue.pop()
+            queue.extend(g for g in edges[goal] if g not in visited and g in open_goals)
+            visited.add(goal)
+        assert visited == set(edges.keys()), 'All open goals must be connected to the root via other goals'
+
+        return True
+
     @staticmethod
     def build(goals, edges, selection):
         result = Goals('')

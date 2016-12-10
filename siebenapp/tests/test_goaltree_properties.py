@@ -19,9 +19,9 @@ USER_ACTIONS = {
 
 
 @composite
-def user_actions(draw, min_size=0, skip=[]):
+def user_actions(draw, skip=[], **lists_kwargs):
     return draw(lists(sampled_from(k for k in USER_ACTIONS.keys() if k not in skip),
-                      min_size=min_size))
+                      **lists_kwargs))
 
 
 def build_from(actions, ints):
@@ -59,30 +59,10 @@ def test_any_goal_may_be_selected(all_actions, non_select_actions, ints, choice)
     assert g.all(keys='select')[rnd_goal] == 'select'
 
 
-@given(user_actions(skip=['rename']), streaming(integers(0, 9)))
-def test_all_goals_must_be_connected_to_the_root(actions, ints):
+@given(user_actions(average_size=100), streaming(integers(0, 9)))
+def test_no_modify_action_sequence_could_break_goaltree_correctness(actions, ints):
     g = build_from(actions, ints)
-    edges = g.all(keys='edge')
-    queue, visited = [k for k, v in g.all().items() if v == 'Root'], set()
-    while queue:
-        goal = queue.pop()
-        queue.extend(g for g in edges[goal] if g not in visited)
-        visited.add(goal)
-    assert visited == set(edges.keys())
-
-
-@given(user_actions(skip=['rename']), streaming(integers(0, 9)))
-def test_all_open_goals_must_be_connected_to_the_root_via_other_open_goals(actions, ints):
-    g = build_from(actions, ints)
-    open_goals = set(k for k, v in g.all(keys='open').items() if v)
-    edges = {k: v for k, v in g.all(keys='edge').items() if k in open_goals}
-    assume(edges)
-    queue, visited = [k for k, v in g.all().items() if v == 'Root'], set()
-    while queue:
-        goal = queue.pop()
-        queue.extend(g for g in edges[goal] if g not in visited and g in open_goals)
-        visited.add(goal)
-    assert visited == set(edges.keys())
+    assert g.verify()
 
 
 @given(user_actions(), streaming(integers(0, 9)))
