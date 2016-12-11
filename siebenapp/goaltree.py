@@ -105,10 +105,7 @@ class Goals():
                 self.closed.remove(self.selection)
                 self.events.append(('toggle_close', True, self.selection))
         else:
-            linked_goals = [g for g in self.edges[self.selection] if g not in self.closed]
-            other_open_goals = [g for g in self.goals if g not in self.closed and g != self.selection]
-            accessible_goals = set(g for o in other_open_goals for g in self.edges[o])
-            if all(g in accessible_goals for g in linked_goals):
+            if all(g in self.closed for g in self.edges[self.selection]):
                 self.closed.add(self.selection)
                 self.events.append(('toggle_close', False, self.selection))
                 self._select(1)
@@ -172,6 +169,9 @@ class Goals():
             queue.extend(g for g in edges[goal] if g not in visited and g in open_goals)
             visited.add(goal)
         assert visited == set(edges.keys()), 'All open goals must be connected to the root via other goals'
+
+        assert all(g in self.closed for p in self.closed for g in self.edges.get(p, [])), \
+                'Open goals could not be blocked by closed ones'
 
         return True
 

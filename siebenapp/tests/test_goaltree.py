@@ -118,6 +118,20 @@ class GoalsTest(TestCase):
         assert self.goals.all(keys='open') == {1: True, 2: False, 3: False}
         assert self.goals.top() == {1: 'Root'}
 
+    def test_goal_in_the_middle_could_not_be_closed(self):
+        self.goals.add('A')
+        self.goals.add('B')
+        self.goals.select(2)
+        self.goals.add('C')
+        self.goals.select(3)
+        self.goals.hold_select()
+        self.goals.select(4)
+        self.goals.toggle_link()
+        # now goals 2 and 3 are blocked by the goal 4
+        self.goals.select(3)
+        self.goals.toggle_close()
+        assert self.goals.all(keys='open') == {1: True, 2: True, 3: True, 4: True}
+
     def test_delete_single_goal(self):
         self.goals.add('A')
         self.goals.select(2)
