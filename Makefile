@@ -5,12 +5,12 @@ ENV:=.env
 all: check venv test
 
 check:
-	if [ ! `which python3` ] ; then echo Please install Python3 ; exit 1; fi
+	if [ ! `which python3.5` ] ; then echo Please install Python 3.5 ; exit 1; fi
 	if [ ! `which virtualenv` ] ; then echo Please install virtualenv ; exit 1; fi
 	if [ ! `which dot` ] ; then echo Please install Graphviz ; fi
 
 venv:
-	virtualenv -p /usr/bin/python3 $(ENV)
+	virtualenv -p python3.5 $(ENV)
 	$(ENV)/bin/pip3 install -r requirements.txt
 
 test:
