@@ -159,10 +159,14 @@ class Goals():
             goal = queue.pop()
             queue.extend(g for g in self.edges[goal] if g not in visited)
             visited.add(goal)
-        assert visited == set(self.edges.keys()), 'All subgoals must be accessible from the root goal'
+        assert visited == set(self.edges.keys()), \
+                'All subgoals must be accessible from the root goal'
 
         assert all(g in self.closed for p in self.closed for g in self.edges.get(p, [])), \
                 'Open goals could not be blocked by closed ones'
+
+        assert len(self.goals) + 1 > max(self.goals.keys()), \
+                'It must be always possible to add a new goal'
 
         return True
 
