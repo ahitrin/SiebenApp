@@ -154,6 +154,12 @@ class Goals():
             self.events.append(('link', lower, upper))
 
     def verify(self):
+        assert len(self.goals) + 1 > max(self.goals.keys()), \
+                'It must be always possible to add a new goal'
+
+        assert all(g in self.closed for p in self.closed for g in self.edges.get(p, [])), \
+                'Open goals could not be blocked by closed ones'
+
         queue, visited = [1], set()
         while queue:
             goal = queue.pop()
@@ -163,12 +169,6 @@ class Goals():
         assert visited == set(x for x in self.goals.keys()
                                 if self.goals[x] is not None), \
                 'All subgoals must be accessible from the root goal'
-
-        assert all(g in self.closed for p in self.closed for g in self.edges.get(p, [])), \
-                'Open goals could not be blocked by closed ones'
-
-        assert len(self.goals) + 1 > max(self.goals.keys()), \
-                'It must be always possible to add a new goal'
 
         return True
 
@@ -186,6 +186,7 @@ class Goals():
         selects = dict(selection)
         result.selection = selects.get('selection', 1)
         result.previous_selection = selects.get('previous_selection', 1)
+        result.verify()
         return result
 
     @staticmethod

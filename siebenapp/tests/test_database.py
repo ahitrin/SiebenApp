@@ -1,4 +1,5 @@
 # coding: utf-8
+import pytest
 import sqlite3
 from siebenapp.goaltree import Goals
 from siebenapp.system import MIGRATIONS, run_migrations, load, save
@@ -110,3 +111,15 @@ def test_multiple_saves_works_fine():
     save(goals, file_name)
     new_goals = load(file_name)
     assert goals.all() == new_goals.all()
+
+
+def test_do_not_load_from_broken_data():
+    file_name = NamedTemporaryFile().name
+    conn = sqlite3.connect(file_name)
+    run_migrations(conn)
+    setup_sample_db(conn)
+    cur = conn.cursor()
+    cur.execute('delete from goals where goal_id = 2')
+    conn.commit()
+    with pytest.raises(AssertionError):
+        g = load(file_name)
