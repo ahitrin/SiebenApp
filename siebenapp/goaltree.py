@@ -149,9 +149,18 @@ class Goals():
                 self.edges[lower].remove(upper)
                 self.events.append(('unlink', lower, upper))
         else:
-            # create new link
-            self.edges[lower].append(upper)
-            self.events.append(('link', lower, upper))
+            # create a new link unless it creates a loop
+            front, visited, total = set([upper]), set(), set()
+            while front:
+                g = front.pop()
+                visited.add(g)
+                for e in self.edges[g]:
+                    total.add(e)
+                    if e not in visited:
+                        front.add(e)
+            if lower not in total:
+                self.edges[lower].append(upper)
+                self.events.append(('link', lower, upper))
 
     def verify(self):
         assert len(self.goals) + 1 > max(self.goals.keys()), \

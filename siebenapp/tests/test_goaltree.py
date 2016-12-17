@@ -182,6 +182,19 @@ class GoalsTest(TestCase):
         self.goals.toggle_link()
         assert self.goals.all(keys='edge') == {1: []}
 
+    def test_no_loops_allowed(self):
+        self.goals.add('step')
+        self.goals.select(2)
+        self.goals.add('next')
+        self.goals.select(3)
+        self.goals.add('more')
+        self.goals.select(4)
+        self.goals.hold_select()
+        self.goals.select(1)
+        self.goals.toggle_link()
+        assert self.goals.all(keys='edge') == {
+            1: [2], 2: [3], 3: [4], 4: []}
+
     def test_remove_link_between_goals(self):
         self.goals.add('A')
         self.goals.add('B')
