@@ -157,9 +157,11 @@ class Goals():
         queue, visited = [1], set()
         while queue:
             goal = queue.pop()
-            queue.extend(g for g in self.edges[goal] if g not in visited)
+            queue.extend(g for g in self.edges[goal]
+                           if g not in visited and self.goals[g] is not None)
             visited.add(goal)
-        assert visited == set(self.edges.keys()), \
+        assert visited == set(x for x in self.goals.keys()
+                                if self.goals[x] is not None), \
                 'All subgoals must be accessible from the root goal'
 
         assert all(g in self.closed for p in self.closed for g in self.edges.get(p, [])), \
