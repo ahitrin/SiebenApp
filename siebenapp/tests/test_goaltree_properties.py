@@ -27,6 +27,8 @@ def user_actions(draw, skip=[], **lists_kwargs):
 def build_from(actions, ints):
     ints_index = 0
     g = Goals('Root')
+    note(actions)
+    note(ints)
     for name in actions:
         int_val = 0
         if name == 'select':
@@ -70,12 +72,16 @@ def test_full_export_and_streaming_export_must_be_the_same(actions, ints):
     g = build_from(actions, ints)
     conn = sqlite3.connect(':memory:')
     run_migrations(conn)
+    note(g.events)
     save_updates(g, conn)
     assert not g.events
     cur = conn.cursor()
     goals = [row for row in cur.execute('select * from goals')]
     edges = [row for row in cur.execute('select * from edges')]
     selection = [row for row in cur.execute('select * from selection')]
+    note(goals)
+    note(edges)
+    note(selection)
     ng = Goals.build(goals, edges, selection)
     assert g.all('name,open,edge,select') == \
             ng.all('name,open,edge,select')
