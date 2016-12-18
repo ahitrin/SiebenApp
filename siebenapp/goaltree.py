@@ -17,7 +17,7 @@ class Goals():
             add_to = self.selection
         if add_to in self.closed:
             return False
-        next_id = len(self.goals) + 1
+        next_id = max(list(self.goals.keys()) + [0]) + 1
         self.goals[next_id] = name
         self.edges[next_id] = list()
         self.events.append(('add', next_id, name, True))
@@ -163,9 +163,6 @@ class Goals():
                 self.events.append(('link', lower, upper))
 
     def verify(self):
-        assert len(self.goals) + 1 > max(self.goals.keys()), \
-                'It must be always possible to add a new goal'
-
         assert all(g in self.closed for p in self.closed for g in self.edges.get(p, [])), \
                 'Open goals could not be blocked by closed ones'
 
@@ -179,13 +176,19 @@ class Goals():
                                 if self.goals[x] is not None), \
                 'All subgoals must be accessible from the root goal'
 
+        deleted_nodes = [g for g, v in self.goals.items() if v is None]
+        assert all(not self.edges.get(n) for n in deleted_nodes), \
+                'Deleted goals must have no dependencies'
+
         return True
 
     @staticmethod
     def build(goals, edges, selection):
         result = Goals('')
         result.events.pop()             # remove initial goal
-        result.goals = dict((g[0], g[1]) for g in goals)
+        goals_dict = dict((g[0], g[1]) for g in goals)
+        result.goals = dict((i, goals_dict.get(i))
+                            for i in range(1, max(goals_dict.keys()) + 1))
         result.closed = set(g[0] for g in goals if not g[2])
         d = collections.defaultdict(lambda: list())
         for parent, child in edges:
