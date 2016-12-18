@@ -1,3 +1,11 @@
+Alpha version 0.2
+-----
+
+New features:
+
+ * Use SqliteDB for save/load #2
+ * Add several validation checks
+
 Alpha version 0.1
 ------
 
