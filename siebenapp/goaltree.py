@@ -149,7 +149,9 @@ class Goals():
                 self.edges[lower].remove(upper)
                 self.events.append(('unlink', lower, upper))
         else:
-            # create a new link unless it creates a loop
+            # create a new link unless it breaks validity
+            if lower in self.closed and upper not in self.closed:
+                return
             front, visited, total = set([upper]), set(), set()
             while front:
                 g = front.pop()
