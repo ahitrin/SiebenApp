@@ -3,6 +3,7 @@ from hypothesis import given, note, assume, example
 from hypothesis.strategies import integers, lists, sampled_from, composite, choices, streaming
 from siebenapp.goaltree import Goals
 from siebenapp.system import run_migrations, save_updates
+import pytest
 import sqlite3
 
 
@@ -24,18 +25,32 @@ def user_actions(draw, skip=[], **lists_kwargs):
                       **lists_kwargs))
 
 
-def build_from(actions, ints):
+def build_from(actions, ints, show_notes=True):
     ints_index = 0
     g = Goals('Root')
-    note(actions)
-    note(ints)
+    actual_ints = []
     for name in actions:
         int_val = 0
         if name == 'select':
             int_val = ints[ints_index]
+            actual_ints.append(int_val)
             ints_index += 1
         USER_ACTIONS[name](g, int_val)
+    if show_notes:
+        note(actions)
+        note(actual_ints)
     return g
+
+
+@pytest.mark.parametrize('actions,ints', [
+    (['add', 'add', 'select', 'toggle_close', 'select', 'hold_select',
+      'select', 'toggle_link'], [2, 2, 3]),
+    (['add', 'select', 'add', 'add', 'select', 'hold_select', 'select',
+      'insert', 'select', 'delete'], [2, 4, 3, 2]),
+])
+def test_bad_examples_found_by_hypothesis(actions, ints):
+    g = build_from(actions, ints, show_notes=False)
+    assert g.verify()
 
 
 @given(user_actions(), streaming(integers(0, 9)))
