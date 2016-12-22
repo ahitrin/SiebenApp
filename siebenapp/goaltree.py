@@ -118,20 +118,21 @@ class Goals():
             goal_id = self.selection
         if goal_id == 1:
             return
-        self.goals[goal_id] = None
-        self.closed.add(goal_id)
-        for next_goal in self.edges[goal_id]:
-            other_edges = list()
-            for k in (k for k in self.edges if k != goal_id):
-                other_edges.extend(self.edges[k])
-            if next_goal not in set(other_edges):
-                self.delete(next_goal)
-        self.edges.pop(goal_id)
-        for key, values in self.edges.items():
-            self.edges[key] = [v for v in values if v != goal_id]
-        self.events.append(('delete', goal_id))
+        self._delete(goal_id)
         self._select(1)
         self.hold_select()
+
+    def _delete(self, goal_id):
+        self.goals[goal_id] = None
+        self.closed.add(goal_id)
+        next_to_remove = self.edges.pop(goal_id)
+        for key, values in self.edges.items():
+            self.edges[key] = [v for v in values if v != goal_id]
+        for next_goal in next_to_remove:
+            other_edges = set(e for es in self.edges.values() for e in es)
+            if next_goal not in other_edges:
+                self._delete(next_goal)
+        self.events.append(('delete', goal_id))
 
     def toggle_link(self, lower=0, upper=0):
         if lower == 0:
