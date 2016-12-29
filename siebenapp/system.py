@@ -29,6 +29,29 @@ MIGRATIONS = [
             foreign key(goal) references goals(goal_id)
         )'''
     ],
+    # 2
+    [
+        # change type of goals.name: string -> text
+        '''alter table goals rename to old_goals''',
+        '''create table goals (
+            goal_id integer primary key,
+            name text,
+            open boolean
+        )''',
+        '''insert into goals (goal_id, name, open)
+           select goal_id, name, open from old_goals''',
+        '''drop table old_goals''',
+        # change type of selection.name: string -> text
+        '''alter table selection rename to old_selection''',
+        '''create table selection (
+            name text,
+            goal integer,
+            foreign key(goal) references goals(goal_id)
+        )''',
+        '''insert into selection (name, goal)
+           select name, goal from old_selection''',
+        '''drop table old_selection''',
+    ],
 ]
 
 
