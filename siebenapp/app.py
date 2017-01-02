@@ -15,6 +15,7 @@ from PyQt5.QtWidgets import (
     QScrollArea,
     QSizePolicy
 )
+from PyQt5.uic import loadUi
 
 
 class SiebenApp(QMainWindow):
@@ -23,29 +24,12 @@ class SiebenApp(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.scr = QScrollArea()
-        self.l = QLabel()
-        self.dock = QDockWidget('Edit area')
-        self.input = QLineEdit()
         self.refresh.connect(self.reload_image)
         self.quit_app.connect(QApplication.instance().quit)
         self.view  = 'open'
         self.goals = load()
 
     def setup(self):
-        self.setWindowTitle('SiebenApp')
-        self.showMaximized()
-        self.scr.setWidget(self.l)
-        self.setCentralWidget(self.scr)
-        self.l.setScaledContents(True)
-        self.dock.setFeatures(QDockWidget.NoDockWidgetFeatures)
-        self.dock.setWidget(self.input)
-        self.addDockWidget(Qt.BottomDockWidgetArea, self.dock)
-        self.l.setVisible(True)
-        self.scr.setVisible(True)
-        self.dock.setVisible(True)
-        self.input.setVisible(True)
-        self.input.setEnabled(False)
         self.refresh.emit()
 
     def reload_image(self):
@@ -54,8 +38,8 @@ class SiebenApp(QMainWindow):
             f.write(dot_export(self.goals, self.view))
         run(['dot', '-Tpng', '-o', 'work.png', 'work.dot'])
         img = QImage('work.png')
-        self.l.setPixmap(QPixmap.fromImage(img))
-        self.l.resize(img.size().width(), img.size().height())
+        self.label.setPixmap(QPixmap.fromImage(img))
+        self.label.resize(img.size().width(), img.size().height())
 
     def keyPressEvent(self, event):
         key_handlers = {
@@ -122,7 +106,7 @@ class SiebenApp(QMainWindow):
 
 def main():
     app = QApplication(sys.argv)
-    w = SiebenApp()
+    w = loadUi('siebenapp/main.ui', SiebenApp())
     w.setup()
-    w.show()
+    w.showMaximized()
     sys.exit(app.exec_())
