@@ -106,7 +106,7 @@ class SiebenApp(QMainWindow):
 
 def main():
     app = QApplication(sys.argv)
-    w = loadUi('siebenapp/main.ui', SiebenApp())
+    w = loadUi('ui/main.ui', SiebenApp())
     w.setup()
     w.showMaximized()
     sys.exit(app.exec_())
