@@ -54,13 +54,13 @@ class SiebenApp(QMainWindow):
             Qt.Key_8: lambda: self.select_number(8),
             Qt.Key_9: lambda: self.select_number(9),
             Qt.Key_0: lambda: self.select_number(0),
-            Qt.Key_A: self.start_edit(self.goals.add),
+            Qt.Key_A: self.start_edit(self.goals.add, 'Add new goal'),
             Qt.Key_C: self.with_refresh(self.goals.toggle_close),
             Qt.Key_D: self.with_refresh(self.goals.delete),
-            Qt.Key_I: self.start_edit(self.goals.insert),
+            Qt.Key_I: self.start_edit(self.goals.insert, 'Insert new goal'),
             Qt.Key_L: self.with_refresh(self.goals.toggle_link),
             Qt.Key_Q: self.quit_app.emit,
-            Qt.Key_R: self.start_edit(self.goals.rename),
+            Qt.Key_R: self.start_edit(self.goals.rename, 'Rename goal'),
             Qt.Key_V: self.toggle_view,
             Qt.Key_Space: self.with_refresh(self.goals.hold_select),
         }
@@ -69,8 +69,9 @@ class SiebenApp(QMainWindow):
         else:
             super().keyPressEvent(event)
 
-    def start_edit(self, fn):
+    def start_edit(self, fn, dock_label):
         def inner():
+            self.dockWidget.setWindowTitle(dock_label)
             self.input.setEnabled(True)
             self.input.setFocus(True)
             self.input.returnPressed.connect(self.finish_edit(fn))
@@ -78,6 +79,7 @@ class SiebenApp(QMainWindow):
 
     def finish_edit(self, fn):
         def inner():
+            self.dockWidget.setWindowTitle('')
             self.input.returnPressed.disconnect()
             fn(self.input.text())
             self.input.setEnabled(False)

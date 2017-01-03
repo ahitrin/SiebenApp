@@ -82,7 +82,7 @@
     <set>QDockWidget::NoDockWidgetFeatures</set>
    </property>
    <property name="windowTitle">
-    <string>Edit goal</string>
+    <string/>
    </property>
    <attribute name="dockWidgetArea">
     <number>8</number>
