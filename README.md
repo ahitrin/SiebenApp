@@ -103,4 +103,4 @@ All kinds of feedback and contribution are kindly welcome!
 
 In case you have a GitHub account, please use traditional ways of feedback: issues and pull requests.
 
-In case you don't have an account, you may e-mail author directly: siebenapp plus andrey dot hitrin at gmail dot com.
+In case you don't have an account, you may e-mail author directly: andrey dot hitrin plus sebenapp at gmail dot com.
