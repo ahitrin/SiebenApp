@@ -30,6 +30,7 @@ class SiebenApp(QMainWindow):
         self.goals = load()
 
     def setup(self):
+        self.action_About.triggered.connect(lambda: self.about.show())
         self.refresh.emit()
 
     def reload_image(self):
@@ -107,6 +108,7 @@ class SiebenApp(QMainWindow):
 def main():
     app = QApplication(sys.argv)
     w = loadUi('ui/main.ui', SiebenApp())
+    w.about = loadUi('ui/about.ui')
     w.setup()
     w.showMaximized()
     sys.exit(app.exec_())
