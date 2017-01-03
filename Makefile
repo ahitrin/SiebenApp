@@ -7,7 +7,7 @@ all: check venv test
 check:
 	if [ ! `which python3.5` ] ; then echo Please install Python 3.5 ; exit 1; fi
 	if [ ! `which virtualenv` ] ; then echo Please install virtualenv ; exit 1; fi
-	if [ ! `which dot` ] ; then echo Please install Graphviz ; fi
+	if [ ! `which dot` ] ; then echo Please install Graphviz ; exit 1; fi
 
 venv:
 	virtualenv -p python3.5 $(ENV)
