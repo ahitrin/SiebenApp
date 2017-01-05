@@ -1,6 +1,7 @@
 #!/usr/bin/env python3.5
 # coding: utf-8
 import sys
+from os.path import dirname, join, realpath
 from siebenapp.goaltree import Goals
 from siebenapp.system import save, load, dot_export
 from subprocess import run
@@ -107,10 +108,11 @@ class SiebenApp(QMainWindow):
         self.refresh.emit()
 
 
-def main():
+def main(root_script):
     app = QApplication(sys.argv)
-    w = loadUi('ui/main.ui', SiebenApp())
-    w.about = loadUi('ui/about.ui')
+    root = dirname(realpath(root_script))
+    w = loadUi(join(root, 'ui', 'main.ui'), SiebenApp())
+    w.about = loadUi(join(root, 'ui', 'about.ui'))
     w.setup()
     w.showMaximized()
     sys.exit(app.exec_())
