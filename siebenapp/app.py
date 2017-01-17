@@ -62,6 +62,7 @@ class SiebenApp(QMainWindow):
             Qt.Key_L: self.with_refresh(self.goals.toggle_link),
             Qt.Key_Q: self.quit_app.emit,
             Qt.Key_R: self.start_edit(self.goals.rename, 'Rename goal'),
+            Qt.Key_S: self.with_refresh(self.goals.swap_goals),
             Qt.Key_V: self.toggle_view,
             Qt.Key_Space: self.with_refresh(self.goals.hold_select),
         }

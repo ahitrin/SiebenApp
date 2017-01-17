@@ -93,10 +93,18 @@ class Goals():
             if self.selection in self.edges[self.previous_selection]:
                 self.toggle_link(self.previous_selection, self.selection)
 
-    def rename(self, new_name):
-        self.goals[self.selection] = new_name
+    def rename(self, new_name, goal_id=0):
+        if goal_id == 0:
+            goal_id = self.selection
+        self.goals[goal_id] = new_name
         self.selection_cache = []
-        self.events.append(('rename', new_name, self.selection))
+        self.events.append(('rename', new_name, goal_id))
+
+    def swap_goals(self):
+        first, second = self.selection, self.previous_selection
+        first_name, second_name = self.goals[first], self.goals[second]
+        self.rename(first_name, second)
+        self.rename(second_name, first)
 
     def toggle_close(self):
         if self.selection in self.closed:
