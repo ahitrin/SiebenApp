@@ -29,12 +29,16 @@ class SiebenApp(QMainWindow):
         self.quit_app.connect(QApplication.instance().quit)
         self.view  = 'open'
         self.goals = load()
+        self.first_run = True
 
     def setup(self):
         self.action_About.triggered.connect(lambda: self.about.show())
         self.refresh.emit()
 
     def reload_image(self):
+        if not self.goals.events and not self.first_run:
+            return
+        self.first_run = False
         save(self.goals)
         with open('work.dot', 'w') as f:
             f.write(dot_export(self.goals, self.view))
