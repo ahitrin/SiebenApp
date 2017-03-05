@@ -1,5 +1,5 @@
 # coding: utf-8
-from siebenapp.goaltree import Goals
+from siebenapp.goaltree import Goals, Enumeration
 from unittest import TestCase
 
 
@@ -404,3 +404,38 @@ class GoalsTest(TestCase):
         assert self.goals.events[-1] == ('link', 2 ,3)
         self.goals.toggle_link()
         assert self.goals.events[-1] == ('unlink', 2 ,3)
+
+
+class FakeGoals():
+    def __init__(self, result):
+        self.result = result
+
+    def all(self, keys=''):
+        return self.result
+
+
+class EnumerationTest(TestCase):
+    def test_simple_enumeration_is_not_changed(self):
+        goals = FakeGoals({
+            1: 'a', 2: 'b', 3: 'c'
+        })
+        e = Enumeration(goals)
+        assert e.all() == {
+            1: 'a', 2: 'b', 3: 'c'
+        }
+
+    def test_apply_mapping_for_the_10th_element(self):
+        goals = FakeGoals({
+            1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e', 6: 'f', 7: 'g',
+            8: 'h', 9: 'i', 10: 'j'
+        })
+        e = Enumeration(goals)
+        assert e.all() == {
+            1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e', 6: 'f', 7: 'g',
+            8: 'h', 9: 'i', 0: 'j'
+        }
+        goals.result[11] = 'k'
+        assert e.all() == {
+            11: 'a', 12: 'b', 13: 'c', 14: 'd', 15: 'e', 16: 'f',
+            17: 'g', 18: 'h', 19: 'i', 10: 'j', 21: 'k'
+        }

@@ -2,7 +2,6 @@
 # coding: utf-8
 import sys
 from os.path import dirname, join, realpath
-from siebenapp.goaltree import Goals
 from siebenapp.system import save, load, dot_export
 from subprocess import run
 from PyQt5.QtCore import pyqtSignal, Qt

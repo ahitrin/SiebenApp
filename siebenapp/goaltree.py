@@ -220,3 +220,42 @@ class Goals():
         sel = [('selection', goals.selection),
             ('previous_selection', goals.previous_selection)]
         return gs, es, sel
+
+
+class Enumeration():
+    proxied = ['add', 'closed', 'delete', 'edges', 'events', 'goals',
+               'hold_select', 'insert', 'previous_selection', 'rename',
+               'select', 'selection', 'swap_goals', 'toggle_close',
+               'toggle_link', 'top', 'verify',
+              ]
+
+    @classmethod
+    def _id_mapping(self, goals):
+        length = len(goals)
+        def mapping_fn(goal_id):
+            new_id = goal_id % 10
+            if length > 10:
+                new_id += 10 * ((goal_id - 1) // 10 + 1)
+            if length > 90:
+                new_id += 100 * ((goal_id - 1) // 100 + 1)
+            return new_id
+        return mapping_fn
+
+    def __init__(self, goaltree):
+        self.goaltree = goaltree
+
+    def all(self, *args, **kwargs):
+        result = dict()
+        goals = self.goaltree.all(*args, **kwargs)
+        mapping = self._id_mapping(goals)
+        for old_id, val in goals.items():
+            new_id = mapping(old_id)
+            result[new_id] = val
+        return result
+
+    def __getattribute__(self, attr):
+        proxied = object.__getattribute__(self, 'proxied')
+        if attr in proxied:
+            return getattr(object.__getattribute__(self, "goaltree"), attr)
+        else:
+            return object.__getattribute__(self, attr)
