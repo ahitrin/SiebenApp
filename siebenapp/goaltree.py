@@ -74,7 +74,7 @@ class Goals():
                     value['select'] = 'prev'
                 else:
                     value['select'] = None
-            result[self.id_mapping(key)] = value if len(keys) > 1 else value[keys[0]]
+            result[self.id_mapping(key)] = value
         return result
 
     def top(self):

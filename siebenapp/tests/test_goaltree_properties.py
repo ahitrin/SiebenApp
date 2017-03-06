@@ -63,7 +63,7 @@ def test_there_is_always_at_least_one_goal(actions, ints):
 @given(user_actions(), streaming(integers(0, 9)))
 def test_there_is_always_one_selected_goal(actions, ints):
     g = build_from(actions, ints)
-    assert len([1 for k, v in g.all(keys='select').items() if v == 'select']) == 1
+    assert len([1 for k, v in g.all(keys='select').items() if v['select'] == 'select']) == 1
 
 
 @given(user_actions(min_size=15,skip=['rename']),
@@ -74,7 +74,7 @@ def test_any_goal_may_be_selected(all_actions, non_select_actions, ints, choice)
     rnd_goal = choice(list(g.all().keys()))
     for i in str(rnd_goal):
         g.select(int(i))
-    assert g.all(keys='select')[rnd_goal] == 'select'
+    assert g.all(keys='select')[rnd_goal]['select'] == 'select'
 
 
 @given(user_actions(average_size=100), streaming(integers(0, 9)))
