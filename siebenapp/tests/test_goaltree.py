@@ -505,3 +505,19 @@ class EnumerationTest(TestCase):
             9: {'name': 'i', 'select': None},
             0: {'name': 'j', 'select': 'select'},
         }
+        goals.result[11] = {'name': 'k', 'select': None}
+        e.select(1)
+        e.select(6)
+        assert e.all() == {
+            11: {'name': 'a', 'select': None},
+            12: {'name': 'b', 'select': None},
+            13: {'name': 'c', 'select': None},
+            14: {'name': 'd', 'select': None},
+            15: {'name': 'e', 'select': None},
+            16: {'name': 'f', 'select': 'select'},
+            17: {'name': 'g', 'select': None},
+            18: {'name': 'h', 'select': None},
+            19: {'name': 'i', 'select': None},
+            10: {'name': 'j', 'select': None},
+            21: {'name': 'k', 'select': None},
+        }

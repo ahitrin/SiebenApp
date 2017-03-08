@@ -243,6 +243,7 @@ class Enumeration():
 
     def __init__(self, goaltree):
         self.goaltree = goaltree
+        self.selection_cache = []
 
     def all(self, *args, **kwargs):
         result = dict()
@@ -258,9 +259,14 @@ class Enumeration():
     def select(self, goal_id):
         goals = self.goaltree.all()
         mapping = self._id_mapping(goals)
+        if self.selection_cache:
+            goal_id = 10 * self.selection_cache.pop() + goal_id
         possible_selections = [g for g in goals if mapping(g) == goal_id]
         if len(possible_selections) == 1:
             self.goaltree.select(possible_selections[0])
+            self.selection_cache = []
+        else:
+            self.selection_cache.append(goal_id)
 
     def __getattribute__(self, attr):
         proxied = object.__getattribute__(self, 'proxied')
