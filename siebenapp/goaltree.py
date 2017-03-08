@@ -78,10 +78,9 @@ class Goals():
         return result
 
     def top(self):
-        return {self.id_mapping(key): value
-                for key, value in self.goals.items()
-                if key not in self.closed and
-                   all(g in self.closed for g in self.edges[key])}
+        return set([self.id_mapping(goal) for goal in self.goals
+                    if goal not in self.closed and
+                        all(g in self.closed for g in self.edges[goal])])
 
     def insert(self, name):
         self.selection_cache = []

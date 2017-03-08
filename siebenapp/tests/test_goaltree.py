@@ -9,24 +9,24 @@ class GoalsTest(TestCase):
 
     def test_there_is_one_goal_at_start(self):
         assert self.goals.all() == {1: {'name': 'Root'}}
-        assert self.goals.top() == {1: 'Root'}
+        assert self.goals.top() == set([1])
 
     def test_new_goal_moves_to_top(self):
         self.goals.add('A')
         assert self.goals.all() == {1: {'name': 'Root'}, 2: {'name': 'A'}}
-        assert self.goals.top() == {2: 'A'}
+        assert self.goals.top() == set([2])
 
     def test_two_new_goals_move_to_top(self):
         self.goals.add('A')
         self.goals.add('B')
         assert self.goals.all() == {1: {'name': 'Root'}, 2: {'name': 'A'}, 3: {'name': 'B'}}
-        assert self.goals.top() == {2: 'A', 3: 'B'}
+        assert self.goals.top() == set([2, 3])
 
     def test_two_goals_in_a_chain(self):
         self.goals.add('A')
         self.goals.add('AA', 2)
         assert self.goals.all() == {1: {'name': 'Root'}, 2: {'name': 'A'}, 3: {'name': 'AA'}}
-        assert self.goals.top() == {3: 'AA'}
+        assert self.goals.top() == set([3])
 
     def test_rename_goal(self):
         self.goals.add('Boom')
@@ -51,7 +51,7 @@ class GoalsTest(TestCase):
                 2: {'name': 'B', 'edge': []},
                 3: {'name': 'A', 'edge': [2]},
         }
-        assert self.goals.top() == {2: 'B'}
+        assert self.goals.top() == set([2])
 
     def test_insert_goal_between_independent_goals(self):
         self.goals.add('A')
@@ -66,14 +66,14 @@ class GoalsTest(TestCase):
                 3: {'name': 'B', 'edge': []},
                 4: {'name': 'Wow', 'edge': [3]},
         }
-        assert self.goals.top() == {3: 'B'}
+        assert self.goals.top() == set([3])
 
     def test_close_single_goal(self):
         assert self.goals.all(keys='name,open') == {
                 1: {'name': 'Root', 'open': True}}
         self.goals.toggle_close()
         assert self.goals.all() == {1: {'name': 'Root'}}
-        assert self.goals.top() == {}
+        assert self.goals.top() == set()
         assert self.goals.all(keys='name,open') == {
                 1: {'name': 'Root', 'open': False}}
 
@@ -86,7 +86,7 @@ class GoalsTest(TestCase):
         self.goals.select(2)
         self.goals.toggle_close()
         assert self.goals.all(keys='open') == {1: {'open': True}, 2: {'open': True}}
-        assert self.goals.top() == {2: 'A'}
+        assert self.goals.top() == set([2])
 
     def test_close_goal_again(self):
         self.goals.add('A')
@@ -95,19 +95,19 @@ class GoalsTest(TestCase):
         self.goals.select(3)
         self.goals.toggle_close()
         assert self.goals.all(keys='open') == {1: {'open': True}, 2: {'open': True}, 3: {'open': False}}
-        assert self.goals.top() == {2: 'A'}
+        assert self.goals.top() == set([2])
         self.goals.select(2)
         self.goals.toggle_close()
         assert self.goals.all(keys='open') == {1: {'open': True}, 2: {'open': False}, 3: {'open': False}}
-        assert self.goals.top() == {1: 'Root'}
+        assert self.goals.top() == set([1])
         self.goals.select(2)
         self.goals.toggle_close()
         assert self.goals.all(keys='open') == {1: {'open': True}, 2: {'open': True}, 3: {'open': False}}
-        assert self.goals.top() == {2: 'A'}
+        assert self.goals.top() == set([2])
         self.goals.select(2)
         self.goals.toggle_close()
         assert self.goals.all(keys='open') == {1: {'open': True}, 2: {'open': False}, 3: {'open': False}}
-        assert self.goals.top() == {1: 'Root'}
+        assert self.goals.top() == set([1])
 
     def test_closed_leaf_goal_could_not_be_reopened(self):
         self.goals.add('A')
@@ -118,12 +118,12 @@ class GoalsTest(TestCase):
         self.goals.select(2)
         self.goals.toggle_close()
         assert self.goals.all(keys='open') == {1: {'open': True}, 2: {'open': False}, 3: {'open': False}}
-        assert self.goals.top() == {1: 'Root'}
+        assert self.goals.top() == set([1])
         self.goals.select(3)
         self.goals.toggle_close()
         # nothing should change
         assert self.goals.all(keys='open') == {1: {'open': True}, 2: {'open': False}, 3: {'open': False}}
-        assert self.goals.top() == {1: 'Root'}
+        assert self.goals.top() == set([1])
 
     def test_goal_in_the_middle_could_not_be_closed(self):
         self.goals.add('A')
@@ -147,7 +147,7 @@ class GoalsTest(TestCase):
         assert self.goals.all(keys='name,select') == {
                 1: {'name': 'Root', 'select': 'select'},
         }
-        assert self.goals.top() == {1: 'Root'}
+        assert self.goals.top() == set([1])
 
     def test_enumeration_should_not_be_changed_after_delete(self):
         self.goals.add('A')
@@ -156,7 +156,7 @@ class GoalsTest(TestCase):
         self.goals.select(2)
         self.goals.delete()
         assert self.goals.all() == {1: {'name': 'Root'}, 3: {'name': 'B'}}
-        assert self.goals.top() == {3: 'B'}
+        assert self.goals.top() == set([3])
 
     def test_remove_goal_chain(self):
         self.goals.add('A')
@@ -172,7 +172,7 @@ class GoalsTest(TestCase):
         self.goals.hold_select()
         self.goals.select(3)
         self.goals.toggle_link()
-        assert self.goals.top() == {3: 'B'}
+        assert self.goals.top() == set([3])
 
     def test_view_edges(self):
         self.goals.add('A')
@@ -182,7 +182,7 @@ class GoalsTest(TestCase):
         self.goals.hold_select()
         self.goals.select(4)
         self.goals.toggle_link()
-        assert self.goals.top() == {4: 'C'}
+        assert self.goals.top() == set([4])
         assert self.goals.all(keys='edge') == {
                 1: {'edge': [2, 3]}, 2: {'edge': [4]}, 3: {'edge': [4]}, 4: {'edge': []}}
 
@@ -211,7 +211,7 @@ class GoalsTest(TestCase):
         self.goals.select(3)
         self.goals.toggle_link()
         self.goals.toggle_link()
-        assert self.goals.top() == {2: 'A', 3: 'B'}
+        assert self.goals.top() == set([2, 3])
 
     def test_remove_goal_in_the_middle(self):
         self.goals.add('A')
@@ -232,7 +232,7 @@ class GoalsTest(TestCase):
                 1: {'name': 'Root', 'edge': [2]},
                 2: {'name': 'A', 'edge': [4]},
                 4: {'name': 'C', 'edge': []}}
-        assert self.goals.top() == {4: 'C'}
+        assert self.goals.top() == set([4])
 
     def test_root_goal_is_selected_by_default(self):
         assert self.goals.all(keys='select') == {1: {'select': 'select'}}
@@ -296,8 +296,7 @@ class GoalsTest(TestCase):
         assert self.goals.all(keys='select') == {1: {'select': 'prev'}, 2: {'select': None},
                 3: {'select': None}, 4: {'select': None}, 5: {'select': None}, 6: {'select': None},
                 7: {'select': None}, 8: {'select': None}, 9: {'select': None}, 0: {'select': 'select'}}
-        assert self.goals.top() == {2: '2', 3: '3', 4: '4', 5: '5', 6: '6',
-                7: '7', 8: '8', 9: '9', 0: '0 is next to 9'}
+        assert self.goals.top() == set([2, 3, 4, 5, 6, 7, 8, 9, 0])
 
     def test_node_enumeration_has_equal_numbers_count_for_all_nodes(self):
         for char in '234567890':
@@ -309,8 +308,7 @@ class GoalsTest(TestCase):
         assert self.goals.all() == {11: {'name': 'Root'}, 12: {'name': '2'}, 13: {'name': '3'},
                 14: {'name': '4'}, 15: {'name': '5'}, 16: {'name': '6'}, 17: {'name': '7'},
                 18: {'name': '8'}, 19: {'name': '9'}, 10: {'name': '0'}, 21: {'name': 'A'}}
-        assert self.goals.top() == {12: '2', 13: '3', 14: '4', 15: '5',
-                16: '6', 17: '7', 18: '8', 19: '9', 10: '0', 21: 'A'}
+        assert self.goals.top() == set([12, 13, 14, 15, 16, 17, 18, 19, 10, 21])
 
     def test_selection_should_be_additive(self):
         for char in '234567890A':
