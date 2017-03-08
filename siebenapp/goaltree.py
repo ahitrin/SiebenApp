@@ -250,7 +250,9 @@ class Enumeration():
         mapping = self._id_mapping(goals)
         for old_id, val in goals.items():
             new_id = mapping(old_id)
-            result[new_id] = val
+            result[new_id] = dict((k, v) for k, v in val.items() if k != 'edge')
+            if 'edge' in val:
+                result[new_id]['edge'] = [mapping(goal_id) for goal_id in val['edge']]
         return result
 
     def __getattribute__(self, attr):

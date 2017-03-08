@@ -417,25 +417,56 @@ class FakeGoals():
 class EnumerationTest(TestCase):
     def test_simple_enumeration_is_not_changed(self):
         goals = FakeGoals({
-            1: 'a', 2: 'b', 3: 'c'
+            1: {'name': 'a', 'edge': [2, 3]},
+            2: {'name': 'b', 'edge': [3]},
+            3: {'name': 'c', 'edge': []},
         })
         e = Enumeration(goals)
         assert e.all() == {
-            1: 'a', 2: 'b', 3: 'c'
+            1: {'name': 'a', 'edge': [2, 3]},
+            2: {'name': 'b', 'edge': [3]},
+            3: {'name': 'c', 'edge': []},
         }
 
     def test_apply_mapping_for_the_10th_element(self):
         goals = FakeGoals({
-            1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e', 6: 'f', 7: 'g',
-            8: 'h', 9: 'i', 10: 'j'
+            1: {'name': 'a', 'edge': [2]},
+            2: {'name': 'b', 'edge': [3]},
+            3: {'name': 'c', 'edge': [4]},
+            4: {'name': 'd', 'edge': [5]},
+            5: {'name': 'e', 'edge': [6]},
+            6: {'name': 'f', 'edge': [7]},
+            7: {'name': 'g', 'edge': [8]},
+            8: {'name': 'h', 'edge': [9]},
+            9: {'name': 'i', 'edge': [10]},
+            10: {'name': 'j', 'edge': []},
         })
         e = Enumeration(goals)
         assert e.all() == {
-            1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e', 6: 'f', 7: 'g',
-            8: 'h', 9: 'i', 0: 'j'
+            1: {'name': 'a', 'edge': [2]},
+            2: {'name': 'b', 'edge': [3]},
+            3: {'name': 'c', 'edge': [4]},
+            4: {'name': 'd', 'edge': [5]},
+            5: {'name': 'e', 'edge': [6]},
+            6: {'name': 'f', 'edge': [7]},
+            7: {'name': 'g', 'edge': [8]},
+            8: {'name': 'h', 'edge': [9]},
+            9: {'name': 'i', 'edge': [0]},
+            0: {'name': 'j', 'edge': []},
         }
-        goals.result[11] = 'k'
+        # simulate goal addition
+        goals.result[1]['edge'].append(11)
+        goals.result[11] = {'name': 'k', 'edge': []}
         assert e.all() == {
-            11: 'a', 12: 'b', 13: 'c', 14: 'd', 15: 'e', 16: 'f',
-            17: 'g', 18: 'h', 19: 'i', 10: 'j', 21: 'k'
+            11: {'name': 'a', 'edge': [12, 21]},
+            12: {'name': 'b', 'edge': [13]},
+            13: {'name': 'c', 'edge': [14]},
+            14: {'name': 'd', 'edge': [15]},
+            15: {'name': 'e', 'edge': [16]},
+            16: {'name': 'f', 'edge': [17]},
+            17: {'name': 'g', 'edge': [18]},
+            18: {'name': 'h', 'edge': [19]},
+            19: {'name': 'i', 'edge': [10]},
+            10: {'name': 'j', 'edge': []},
+            21: {'name': 'k', 'edge': []},
         }
