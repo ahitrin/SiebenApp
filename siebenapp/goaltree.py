@@ -225,8 +225,8 @@ class Goals():
 class Enumeration():
     proxied = ['add', 'closed', 'delete', 'edges', 'events', 'goals',
                'hold_select', 'insert', 'previous_selection', 'rename',
-               'select', 'selection', 'swap_goals', 'toggle_close',
-               'toggle_link', 'top', 'verify',
+               'selection', 'swap_goals', 'toggle_close', 'toggle_link', 'top',
+               'verify',
               ]
 
     @classmethod
@@ -254,6 +254,13 @@ class Enumeration():
             if 'edge' in val:
                 result[new_id]['edge'] = [mapping(goal_id) for goal_id in val['edge']]
         return result
+
+    def select(self, goal_id):
+        goals = self.goaltree.all()
+        mapping = self._id_mapping(goals)
+        possible_selections = [g for g in goals if mapping(g) == goal_id]
+        if len(possible_selections) == 1:
+            self.goaltree.select(possible_selections[0])
 
     def __getattribute__(self, attr):
         proxied = object.__getattribute__(self, 'proxied')

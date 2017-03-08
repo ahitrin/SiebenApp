@@ -413,6 +413,13 @@ class FakeGoals():
     def all(self, keys=''):
         return self.result
 
+    def select(self, goal_id):
+        assert goal_id in self.result
+        assert all('select' in g for g in self.result.values())
+        for v in self.result.values():
+            v['select'] = None
+        self.result[goal_id]['select'] = 'select'
+
 
 class EnumerationTest(TestCase):
     def test_simple_enumeration_is_not_changed(self):
@@ -469,4 +476,32 @@ class EnumerationTest(TestCase):
             19: {'name': 'i', 'edge': [10]},
             10: {'name': 'j', 'edge': []},
             21: {'name': 'k', 'edge': []},
+        }
+
+    def test_use_mapping_in_selection(self):
+        goals = FakeGoals({
+            1:  {'name': 'a', 'select': 'select'},
+            2:  {'name': 'b', 'select': None},
+            3:  {'name': 'c', 'select': None},
+            4:  {'name': 'd', 'select': None},
+            5:  {'name': 'e', 'select': None},
+            6:  {'name': 'f', 'select': None},
+            7:  {'name': 'g', 'select': None},
+            8:  {'name': 'h', 'select': None},
+            9:  {'name': 'i', 'select': None},
+            10: {'name': 'j', 'select': None},
+        })
+        e = Enumeration(goals)
+        e.select(0)
+        assert e.all() == {
+            1: {'name': 'a', 'select': None},
+            2: {'name': 'b', 'select': None},
+            3: {'name': 'c', 'select': None},
+            4: {'name': 'd', 'select': None},
+            5: {'name': 'e', 'select': None},
+            6: {'name': 'f', 'select': None},
+            7: {'name': 'g', 'select': None},
+            8: {'name': 'h', 'select': None},
+            9: {'name': 'i', 'select': None},
+            0: {'name': 'j', 'select': 'select'},
         }
