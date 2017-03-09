@@ -231,8 +231,10 @@ class Enumeration():
 
     @classmethod
     def _id_mapping(self, goals):
-        length = len(goals)
+        m = {g: i+1 for i, g in enumerate(sorted(goals.keys()))}
+        length = len(m)
         def mapping_fn(goal_id):
+            goal_id = m[goal_id]
             new_id = goal_id % 10
             if length > 10:
                 new_id += 10 * ((goal_id - 1) // 10 + 1)
