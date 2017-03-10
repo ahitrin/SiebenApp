@@ -29,16 +29,16 @@ class SiebenApp(QMainWindow):
         self.quit_app.connect(QApplication.instance().quit)
         self.view  = 'open'
         self.goals = load()
-        self.first_run = True
+        self.force_refresh = True
 
     def setup(self):
         self.action_About.triggered.connect(lambda: self.about.show())
         self.refresh.emit()
 
     def reload_image(self):
-        if not self.goals.events and not self.first_run:
+        if not self.goals.events and not self.force_refresh:
             return
-        self.first_run = False
+        self.force_refresh = False
         save(self.goals)
         with open('work.dot', 'w') as f:
             f.write(dot_export(self.goals, self.view))
@@ -110,6 +110,7 @@ class SiebenApp(QMainWindow):
             'top': 'full',
         }
         self.view = next_view[self.view]
+        self.force_refresh = True
         self.refresh.emit()
 
 
