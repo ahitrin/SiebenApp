@@ -407,11 +407,15 @@ class GoalsTest(TestCase):
 
 
 class FakeGoals():
-    def __init__(self, result):
+    def __init__(self, result, top=set()):
         self.result = result
+        self.top_goals = top
 
     def all(self, keys=''):
         return self.result
+
+    def top(self):
+        return self.top_goals
 
     def select(self, goal_id):
         assert goal_id in self.result
@@ -521,3 +525,17 @@ class EnumerationTest(TestCase):
             10: {'name': 'j', 'select': None},
             21: {'name': 'k', 'select': None},
         }
+
+    def test_mapping_for_top(self):
+        goals = FakeGoals({
+            1: {'name': 'a'},
+            3: {'name': 'c'},
+            11: {'name': 'x'},
+        }, top=set([3, 11]))
+        e = Enumeration(goals)
+        assert e.all('name') == {
+            1: {'name': 'a'},
+            2: {'name': 'c'},
+            3: {'name': 'x'},
+        }
+        assert e.top() == set([2, 3])

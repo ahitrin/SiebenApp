@@ -225,13 +225,13 @@ class Goals():
 class Enumeration():
     proxied = ['add', 'closed', 'delete', 'edges', 'events', 'goals',
                'hold_select', 'insert', 'previous_selection', 'rename',
-               'selection', 'swap_goals', 'toggle_close', 'toggle_link', 'top',
+               'selection', 'swap_goals', 'toggle_close', 'toggle_link',
                'verify',
               ]
 
     @classmethod
     def _id_mapping(self, goals):
-        m = {g: i+1 for i, g in enumerate(sorted(goals.keys()))}
+        m = {g: i+1 for i, g in enumerate(sorted(goals))}
         length = len(m)
         def mapping_fn(goal_id):
             goal_id = m[goal_id]
@@ -250,7 +250,7 @@ class Enumeration():
     def all(self, *args, **kwargs):
         result = dict()
         goals = self.goaltree.all(*args, **kwargs)
-        mapping = self._id_mapping(goals)
+        mapping = self._id_mapping(goals.keys())
         for old_id, val in goals.items():
             new_id = mapping(old_id)
             result[new_id] = dict((k, v) for k, v in val.items() if k != 'edge')
@@ -258,9 +258,14 @@ class Enumeration():
                 result[new_id]['edge'] = [mapping(goal_id) for goal_id in val['edge']]
         return result
 
-    def select(self, goal_id):
+    def top(self):
         goals = self.goaltree.all()
         mapping = self._id_mapping(goals)
+        return set([mapping(g) for g in self.goaltree.top()])
+
+    def select(self, goal_id):
+        goals = self.goaltree.all()
+        mapping = self._id_mapping(goals.keys())
         if self.selection_cache:
             goal_id = 10 * self.selection_cache.pop() + goal_id
         possible_selections = [g for g in goals if mapping(g) == goal_id]
