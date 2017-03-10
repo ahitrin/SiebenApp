@@ -1,7 +1,7 @@
 # coding: utf-8
 import sqlite3
 from os import path, remove
-from siebenapp.goaltree import Goals
+from siebenapp.goaltree import Goals, Enumeration
 
 DEFAULT_DB = 'sieben.db'
 MIGRATIONS = [
@@ -102,14 +102,14 @@ def save_updates(goals, connection):
 
 def load(filename=DEFAULT_DB):
     if not path.isfile(filename):
-        return Goals('Rename me')
+        return Enumeration(Goals('Rename me'))
     connection = sqlite3.connect(filename)
     cur = connection.cursor()
     goals = [row for row in cur.execute('select * from goals')]
     edges = [row for row in cur.execute('select * from edges')]
     selection = [row for row in cur.execute('select * from selection')]
     cur.close()
-    return Goals.build(goals, edges, selection)
+    return Enumeration(Goals.build(goals, edges, selection))
 
 
 def run_migrations(conn, migrations=MIGRATIONS):

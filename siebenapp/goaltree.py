@@ -22,38 +22,15 @@ class Goals():
         self.edges[next_id] = list()
         self.events.append(('add', next_id, name, True))
         self.toggle_link(add_to, next_id)
-        self.selection_cache = []
         return True
 
-    def id_mapping(self, goal_id):
-        new_id = goal_id % 10
-        if len(self.goals) > 10:
-            new_id += 10 * ((goal_id - 1) // 10 + 1)
-        if len(self.goals) > 90:
-            new_id += 100 * ((goal_id - 1) // 100 + 1)
-        return new_id
-
-    def _select(self, goal_id):
-        self.selection_cache = []
-        self.selection = goal_id
-        self.events.append(('select', self.selection))
-
     def select(self, goal_id):
-        if goal_id > len(self.goals):
-            return
-        if self.selection_cache:
-            goal_id = 10 * self.selection_cache.pop() + goal_id
-        possible_selections = [g for g in self.goals.keys()
-                               if self.id_mapping(g) == goal_id]
-        if len(possible_selections) == 1:
-            if self.goals[possible_selections[0]]:
-                self._select(possible_selections[0])
-        else:
-            self.selection_cache.append(goal_id)
+        if goal_id in self.goals and self.goals[goal_id] is not None:
+            self.selection = goal_id
+            self.events.append(('select', self.selection))
 
     def hold_select(self):
         self.previous_selection = self.selection
-        self.selection_cache = []
         self.events.append(('hold_select', self.selection))
 
     def all(self, keys='name'):
@@ -66,7 +43,7 @@ class Goals():
             if 'name' in keys:
                 value['name'] = name
             if 'edge' in keys:
-                value['edge'] = sorted(self.id_mapping(e) for e in self.edges[key])
+                value['edge'] = sorted(self.edges[key])
             if 'select' in keys:
                 if key == self.selection:
                     value['select'] = 'select'
@@ -74,16 +51,15 @@ class Goals():
                     value['select'] = 'prev'
                 else:
                     value['select'] = None
-            result[self.id_mapping(key)] = value
+            result[key] = value
         return result
 
     def top(self):
-        return set([self.id_mapping(goal) for goal in self.goals
+        return set([goal for goal in self.goals
                     if goal not in self.closed and
                         all(g in self.closed for g in self.edges[goal])])
 
     def insert(self, name):
-        self.selection_cache = []
         if self.selection == self.previous_selection:
             return
         if self.add(name, self.previous_selection):
@@ -96,7 +72,6 @@ class Goals():
         if goal_id == 0:
             goal_id = self.selection
         self.goals[goal_id] = new_name
-        self.selection_cache = []
         self.events.append(('rename', new_name, goal_id))
 
     def swap_goals(self):
@@ -115,18 +90,16 @@ class Goals():
             if all(g in self.closed for g in self.edges[self.selection]):
                 self.closed.add(self.selection)
                 self.events.append(('toggle_close', False, self.selection))
-                self._select(1)
+                self.select(1)
                 self.hold_select()
-        self.selection_cache = []
 
     def delete(self, goal_id=0):
-        self.selection_cache = []
         if goal_id == 0:
             goal_id = self.selection
         if goal_id == 1:
             return
         self._delete(goal_id)
-        self._select(1)
+        self.select(1)
         self.hold_select()
 
     def _delete(self, goal_id):
@@ -146,7 +119,6 @@ class Goals():
             lower = self.previous_selection
         if upper == 0:
             upper = self.selection
-        self.selection_cache = []
         if lower == upper:
             return
         if upper in self.edges[lower]:

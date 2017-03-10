@@ -73,8 +73,7 @@ def test_there_is_always_one_selected_goal(actions, ints):
 def test_any_goal_may_be_selected(all_actions, non_select_actions, ints, choice):
     g = build_from(all_actions + non_select_actions, ints)
     rnd_goal = choice(list(g.all().keys()))
-    for i in str(rnd_goal):
-        g.select(int(i))
+    g.select(rnd_goal)
     assert g.all(keys='select')[rnd_goal]['select'] == 'select'
 
 

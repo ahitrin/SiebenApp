@@ -265,91 +265,38 @@ class GoalsTest(TestCase):
                 2: {'open': False, 'select': None},
                 3: {'open': True, 'select': None}}
 
-    def test_node_enumeration_must_be_keyboard_friendly(self):
-        for char in '23456789':
-            self.goals.add(char)
-        assert self.goals.all(keys='name,edge') == {
-            1: {'name': 'Root', 'edge': [2, 3, 4, 5, 6, 7, 8, 9]},
-            2: {'name': '2', 'edge': []},
-            3: {'name': '3', 'edge': []},
-            4: {'name': '4', 'edge': []},
-            5: {'name': '5', 'edge': []},
-            6: {'name': '6', 'edge': []},
-            7: {'name': '7', 'edge': []},
-            8: {'name': '8', 'edge': []},
-            9: {'name': '9', 'edge': []},
-        }
-        self.goals.add('0 is next to 9')
-        assert self.goals.all(keys='name,edge') == {
-            1: {'name': 'Root', 'edge': [0, 2, 3, 4, 5, 6, 7, 8, 9]},
-            2: {'name': '2', 'edge': []},
-            3: {'name': '3', 'edge': []},
-            4: {'name': '4', 'edge': []},
-            5: {'name': '5', 'edge': []},
-            6: {'name': '6', 'edge': []},
-            7: {'name': '7', 'edge': []},
-            8: {'name': '8', 'edge': []},
-            9: {'name': '9', 'edge': []},
-            0: {'name': '0 is next to 9', 'edge': []},
-        }
-        self.goals.select(0)
-        assert self.goals.all(keys='select') == {1: {'select': 'prev'}, 2: {'select': None},
-                3: {'select': None}, 4: {'select': None}, 5: {'select': None}, 6: {'select': None},
-                7: {'select': None}, 8: {'select': None}, 9: {'select': None}, 0: {'select': 'select'}}
-        assert self.goals.top() == set([2, 3, 4, 5, 6, 7, 8, 9, 0])
+    def test_ignore_wrong_selection(self):
+        self.goals.select(2)
+        assert self.goals.all(keys='select') == {
+            1: {'select': 'select'}}
 
-    def test_node_enumeration_has_equal_numbers_count_for_all_nodes(self):
-        for char in '234567890':
-            self.goals.add(char)
-        assert self.goals.all() == {1: {'name': 'Root'}, 2: {'name': '2'}, 3: {'name': '3'},
-                4: {'name': '4'}, 5: {'name': '5'}, 6: {'name': '6'}, 7: {'name': '7'},
-                8: {'name': '8'}, 9: {'name': '9'}, 0: {'name': '0'}}
-        self.goals.add('A')
-        assert self.goals.all() == {11: {'name': 'Root'}, 12: {'name': '2'}, 13: {'name': '3'},
-                14: {'name': '4'}, 15: {'name': '5'}, 16: {'name': '6'}, 17: {'name': '7'},
-                18: {'name': '8'}, 19: {'name': '9'}, 10: {'name': '0'}, 21: {'name': 'A'}}
-        assert self.goals.top() == set([12, 13, 14, 15, 16, 17, 18, 19, 10, 21])
+    def test_do_not_select_deleted_goals(self):
+        self.goals.add('broken')
+        self.goals.select(2)
+        assert self.goals.all(keys='select') == {
+            1: {'select': 'prev'}, 2: {'select': 'select'}}
+        self.goals.delete()
+        self.goals.select(2)
+        assert self.goals.all(keys='select') == {
+            1: {'select': 'select'}}
 
-    def test_selection_should_be_additive(self):
+    def test_selection_should_be_instant(self):
         for char in '234567890A':
             self.goals.add(char)
-        assert self.goals.all(keys='select') == {11: {'select': 'select'}, 12: {'select': None},
-                13: {'select': None}, 14: {'select': None}, 15: {'select': None}, 16: {'select': None},
-                17: {'select': None}, 18: {'select': None}, 19: {'select': None}, 10: {'select': None},
-                21: {'select': None}}
-        # no change yet
+        assert self.goals.all(keys='select') == {1: {'select': 'select'}, 2: {'select': None},
+                3: {'select': None}, 4: {'select': None}, 5: {'select': None}, 6: {'select': None},
+                7: {'select': None}, 8: {'select': None}, 9: {'select': None}, 10: {'select': None},
+                11: {'select': None}}
         self.goals.select(2)
-        assert self.goals.all(keys='select') == {11: {'select': 'select'}, 12: {'select': None},
-                13: {'select': None}, 14: {'select': None}, 15: {'select': None}, 16: {'select': None},
-                17: {'select': None}, 18: {'select': None}, 19: {'select': None}, 10: {'select': None},
-                21: {'select': None}}
-        # now change happens
-        self.goals.select(1)
-        assert self.goals.all(keys='select') == {11: {'select': 'prev'}, 12: {'select': None},
-                13: {'select': None}, 14: {'select': None}, 15: {'select': None}, 16: {'select': None},
-                17: {'select': None}, 18: {'select': None}, 19: {'select': None}, 10: {'select': None},
-                21: {'select': 'select'}}
-
-    def test_enumeration_will_have_3_numbers_when_there_are_more_than_90_goals(self):
-        for i in range(89):
-            self.goals.add(str(i))
-        sel = self.goals.all(keys='select')
-        assert all(k < 100 for k in sel.keys())
-        assert sel[11]['select'] == 'select'
-        self.goals.add('boo')
-        sel = self.goals.all(keys='select')
-        assert all(k > 100 for k in sel.keys())
-        assert sel[111]['select'] == 'select'
-        assert all(not sel[k]['select'] for k in sel.keys() if k != 111)
-
-    def test_select_when_more_than_90_goals(self):
-        for i in range(100):
-            self.goals.add(str(i))
-        self.goals.select(1)
-        self.goals.select(4)
-        assert self.goals.all(keys='select')[111]['select'] == 'select'
-        self.goals.select(5)
-        assert self.goals.all(keys='select')[145]['select'] == 'select'
+        assert self.goals.all(keys='select') == {1: {'select': 'prev'}, 2: {'select': 'select'},
+                3: {'select': None}, 4: {'select': None}, 5: {'select': None}, 6: {'select': None},
+                7: {'select': None}, 8: {'select': None}, 9: {'select': None}, 10: {'select': None},
+                11: {'select': None}}
+        self.goals.select(11)
+        assert self.goals.all(keys='select') == {1: {'select': 'prev'}, 2: {'select': None},
+                3: {'select': None}, 4: {'select': None}, 5: {'select': None}, 6: {'select': None},
+                7: {'select': None}, 8: {'select': None}, 9: {'select': None}, 10: {'select': None},
+                11: {'select': 'select'}}
 
     def test_add_events(self):
         assert self.goals.events.pop() == ('add', 1, 'Root', True)
