@@ -1,5 +1,7 @@
 # SiebenApp: experimental dependency-aware goal manager
 
+![Logo](docs/Logo.png)
+
 [![Build Status](https://travis-ci.org/ahitrin/SiebenApp.svg?branch=master)](https://travis-ci.org/ahitrin/SiebenApp)
 
 ## Motivation
