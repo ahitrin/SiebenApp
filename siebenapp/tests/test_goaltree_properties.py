@@ -89,15 +89,6 @@ def test_any_goal_may_be_selected_through_enumeration(raw_data, choice):
     assert e.all()[rnd_goal]['select'] == 'select'
 
 
-@given(dictionaries(integers(min_value=1), text(), min_size=1))
-def test_all_keys_in_enumeration_must_be_of_the_same_length(raw_data):
-    data = {key: {'name': value, 'select': None}
-            for key, value in raw_data.items()}
-    e = Enumeration(FakeGoals(data))
-    numbers = set(len(str(k)) for k in e.all())
-    assert len(numbers) == 1
-
-
 @given(user_actions(average_size=100), streaming(integers(0, 9)))
 def test_no_modify_action_sequence_could_break_goaltree_correctness(actions, ints):
     g = build_from(actions, ints)

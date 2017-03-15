@@ -486,3 +486,13 @@ class EnumerationTest(TestCase):
             3: {'name': 'x'},
         }
         assert e.top() == set([2, 3])
+
+
+def test_all_keys_in_enumeration_must_be_of_the_same_length():
+    data = {i: {'name': str(i), 'select': 'select' if i == 1 else None}
+            for i in range(1, 3000)}
+    e = Enumeration(FakeGoals(data))
+    mapping = e.all()
+    assert len(mapping) == len(data)
+    numbers = set(len(str(k)) for k in mapping)
+    assert len(numbers) == 1

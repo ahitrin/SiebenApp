@@ -212,6 +212,8 @@ class Enumeration():
                 new_id += 10 * ((goal_id - 1) // 10 + 1)
             if length > 90:
                 new_id += 100 * ((goal_id - 1) // 100 + 1)
+            if length > 900:
+                new_id += 1000 * ((goal_id - 1) // 1000 + 1)
             return new_id
         return mapping_fn
 
