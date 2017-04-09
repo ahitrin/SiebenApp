@@ -132,7 +132,7 @@ class Goals():
             # create a new link unless it breaks validity
             if lower in self.closed and upper not in self.closed:
                 return
-            front, visited, total = set([upper]), set(), set()
+            front, visited, total = {upper}, set(), set()
             while front:
                 g = front.pop()
                 visited.add(g)
@@ -235,7 +235,7 @@ class Enumeration():
     def top(self):
         goals = self.goaltree.all()
         mapping = self._id_mapping(goals)
-        return set([mapping(g) for g in self.goaltree.top()])
+        return {mapping(g) for g in self.goaltree.top()}
 
     def select(self, goal_id):
         goals = self.goaltree.all()
