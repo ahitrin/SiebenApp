@@ -136,17 +136,20 @@ def dot_export(goals, view):
             continue
         if view == 'top' and num not in tops:
             continue
+        style = []
+        if num in tops:
+            style.append('bold')
         attributes = {
             'label': '"%d: %s"' % (num, goal['name']),
             'color': 'red' if goal['open'] else 'green',
             'fillcolor': {'select': 'gray', 'prev': 'lightgray'}.get(goal['select']),
-            'style': 'bold' if num in tops else None,
         }
         if goal['select'] is not None:
-            if attributes['style']:
-                attributes['style'] = '"%s,filled"' % attributes['style']
-            else:
-                attributes['style'] = 'filled'
+            style.append('filled')
+        if len(style) > 1:
+            attributes['style'] = '"%s"' % ','.join(style)
+        elif len(style) == 1:
+            attributes['style'] = style[0]
         attributes_str = ', '.join(
             '%s=%s' % (k, attributes[k])
             for k in ['label', 'color', 'style', 'fillcolor']
