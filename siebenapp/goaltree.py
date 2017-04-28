@@ -51,6 +51,8 @@ class Goals:
                     value['select'] = 'prev'
                 else:
                     value['select'] = None
+            if 'top' in keys:
+                value['top'] = key in self.top()
             result[key] = value
         return result
 
