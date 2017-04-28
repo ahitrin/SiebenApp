@@ -148,6 +148,9 @@ class Goals:
         assert all(g in self.closed for p in self.closed for g in self.edges.get(p, [])), \
             'Open goals could not be blocked by closed ones'
 
+        assert all(k not in self.top() for k, v in self.goals.items() if v is None), \
+            'Deleted goals must not be considered as top'
+
         queue, visited = [1], set()
         while queue:
             goal = queue.pop()
@@ -167,11 +170,12 @@ class Goals:
     @staticmethod
     def build(goals, edges, selection):
         result = Goals('')
-        result.events.pop()  # remove initial goal
+        result.events.clear()  # remove initial goal
         goals_dict = dict((g[0], g[1]) for g in goals)
         result.goals = dict((i, goals_dict.get(i))
                             for i in range(1, max(goals_dict.keys()) + 1))
-        result.closed = set(g[0] for g in goals if not g[2])
+        result.closed = set(g[0] for g in goals if not g[2]).union(
+            set(k for k, v in result.goals.items() if v is None))
         d = collections.defaultdict(lambda: list())
         for parent, child in edges:
             d[parent].append(child)
