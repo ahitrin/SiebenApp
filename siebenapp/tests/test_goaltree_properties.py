@@ -45,10 +45,12 @@ def build_from(actions, ints, show_notes=True):
 
 
 @pytest.mark.parametrize('actions,ints', [
-    (['add', 'add', 'select', 'toggle_close', 'select', 'hold_select',
-      'select', 'toggle_link'], [2, 2, 3]),
-    (['add', 'select', 'add', 'add', 'select', 'hold_select', 'select',
-      'insert', 'select', 'delete'], [2, 4, 3, 2]),
+    (['add', 'add', 'select', 'toggle_close', 'select', 'hold_select', 'select', 'toggle_link'],
+     [2, 2, 3]),
+    (['add', 'select', 'add', 'add', 'select', 'hold_select', 'select', 'insert', 'select', 'delete'],
+     [2, 4, 3, 2]),
+    (['add', 'select', 'insert', 'toggle_link', 'toggle_close', 'select', 'toggle_close', 'select', 'toggle_close'],
+     [2, 3, 2]),
 ])
 def test_bad_examples_found_by_hypothesis(actions, ints):
     g = build_from(actions, ints, show_notes=False)

@@ -82,16 +82,22 @@ class Goals:
 
     def toggle_close(self):
         if self.selection in self.closed:
-            parent_goals = [g for g, v in self.edges.items() if self.selection in v]
-            if not parent_goals or any(g for g in parent_goals if g not in self.closed):
+            if self._may_be_reopened():
                 self.closed.remove(self.selection)
                 self.events.append(('toggle_close', True, self.selection))
         else:
-            if all(g in self.closed for g in self.edges[self.selection]):
+            if self._may_be_closed():
                 self.closed.add(self.selection)
                 self.events.append(('toggle_close', False, self.selection))
                 self.select(1)
                 self.hold_select()
+
+    def _may_be_closed(self):
+        return all(g in self.closed for g in self.edges[self.selection])
+
+    def _may_be_reopened(self):
+        parent_goals = [g for g, v in self.edges.items() if self.selection in v]
+        return all(g not in self.closed for g in parent_goals)
 
     def delete(self, goal_id=0):
         if goal_id == 0:
