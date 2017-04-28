@@ -1,7 +1,7 @@
 # coding: utf-8
-from hypothesis import given, note, assume, example
-from hypothesis.strategies import (dictionaries, integers, lists,
-        sampled_from, composite, choices, streaming, text)
+from hypothesis import given, note
+from hypothesis.strategies import (
+    dictionaries, integers, lists, sampled_from, composite, choices, streaming, text)
 from siebenapp.goaltree import Goals, Enumeration
 from siebenapp.system import run_migrations, save_updates
 from siebenapp.tests.test_goaltree import FakeGoals
@@ -22,7 +22,7 @@ USER_ACTIONS = {
 
 
 @composite
-def user_actions(draw, skip=[], **lists_kwargs):
+def user_actions(draw, skip=list(), **lists_kwargs):
     return draw(lists(sampled_from(k for k in USER_ACTIONS.keys() if k not in skip),
                       **lists_kwargs))
 
@@ -67,7 +67,7 @@ def test_there_is_always_one_selected_goal(actions, ints):
     assert len([1 for k, v in g.all(keys='select').items() if v['select'] == 'select']) == 1
 
 
-@given(user_actions(min_size=15,skip=['rename']),
+@given(user_actions(min_size=15, skip=['rename']),
        user_actions(min_size=1, skip=['select']),
        streaming(integers(0, 9)), choices())
 def test_any_goal_may_be_selected(all_actions, non_select_actions, ints, choice):
@@ -111,8 +111,7 @@ def test_full_export_and_streaming_export_must_be_the_same(actions, ints):
     note(edges)
     note(selection)
     ng = Goals.build(goals, edges, selection)
-    assert g.all('name,open,edge,select') == \
-            ng.all('name,open,edge,select')
+    assert g.all('name,open,edge,select') == ng.all('name,open,edge,select')
 
 
 @given(text())
@@ -131,5 +130,4 @@ def test_all_goal_names_must_be_saved_correctly(name):
     note(edges)
     note(selection)
     ng = Goals.build(goals, edges, selection)
-    assert g.all('name,open,edge,select') == \
-            ng.all('name,open,edge,select')
+    assert g.all('name,open,edge,select') == ng.all('name,open,edge,select')

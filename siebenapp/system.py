@@ -1,6 +1,6 @@
 # coding: utf-8
 import sqlite3
-from os import path, remove
+from os import path
 from siebenapp.goaltree import Goals, Enumeration
 
 DEFAULT_DB = 'sieben.db'

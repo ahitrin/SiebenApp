@@ -2,7 +2,7 @@
 import collections
 
 
-class Goals():
+class Goals:
     def __init__(self, name):
         self.goals = {}
         self.edges = {}
@@ -57,7 +57,7 @@ class Goals():
     def top(self):
         return set([goal for goal in self.goals
                     if goal not in self.closed and
-                        all(g in self.closed for g in self.edges[goal])])
+                    all(g in self.closed for g in self.edges[goal])])
 
     def insert(self, name):
         if self.selection == self.previous_selection:
@@ -146,28 +146,28 @@ class Goals():
 
     def verify(self):
         assert all(g in self.closed for p in self.closed for g in self.edges.get(p, [])), \
-                'Open goals could not be blocked by closed ones'
+            'Open goals could not be blocked by closed ones'
 
         queue, visited = [1], set()
         while queue:
             goal = queue.pop()
             queue.extend(g for g in self.edges[goal]
-                           if g not in visited and self.goals[g] is not None)
+                         if g not in visited and self.goals[g] is not None)
             visited.add(goal)
         assert visited == set(x for x in self.goals.keys()
-                                if self.goals[x] is not None), \
-                'All subgoals must be accessible from the root goal'
+                              if self.goals[x] is not None), \
+            'All subgoals must be accessible from the root goal'
 
         deleted_nodes = [g for g, v in self.goals.items() if v is None]
         assert all(not self.edges.get(n) for n in deleted_nodes), \
-                'Deleted goals must have no dependencies'
+            'Deleted goals must have no dependencies'
 
         return True
 
     @staticmethod
     def build(goals, edges, selection):
         result = Goals('')
-        result.events.pop()             # remove initial goal
+        result.events.pop()  # remove initial goal
         goals_dict = dict((g[0], g[1]) for g in goals)
         result.goals = dict((i, goals_dict.get(i))
                             for i in range(1, max(goals_dict.keys()) + 1))
@@ -186,25 +186,26 @@ class Goals():
     @staticmethod
     def export(goals):
         gs = [(g_id, g_name, g_id not in goals.closed)
-            for g_id, g_name in goals.goals.items()]
+              for g_id, g_name in goals.goals.items()]
         es = [(parent, child) for parent in goals.edges
-                            for child in goals.edges[parent]]
+              for child in goals.edges[parent]]
         sel = [('selection', goals.selection),
-            ('previous_selection', goals.previous_selection)]
+               ('previous_selection', goals.previous_selection)]
         return gs, es, sel
 
 
-class Enumeration():
+class Enumeration:
     proxied = ['add', 'closed', 'delete', 'edges', 'events', 'goals',
                'hold_select', 'insert', 'previous_selection', 'rename',
                'selection', 'swap_goals', 'toggle_close', 'toggle_link',
                'verify',
-              ]
+               ]
 
     @classmethod
-    def _id_mapping(self, goals):
-        m = {g: i+1 for i, g in enumerate(sorted(goals))}
+    def _id_mapping(cls, goals):
+        m = {g: i + 1 for i, g in enumerate(sorted(goals))}
         length = len(m)
+
         def mapping_fn(goal_id):
             goal_id = m[goal_id]
             new_id = goal_id % 10
@@ -215,6 +216,7 @@ class Enumeration():
             if length > 900:
                 new_id += 1000 * ((goal_id - 1) // 1000 + 1)
             return new_id
+
         return mapping_fn
 
     def __init__(self, goaltree):

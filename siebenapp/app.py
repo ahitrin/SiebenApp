@@ -6,15 +6,7 @@ from siebenapp.system import save, load, dot_export
 from subprocess import run
 from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtGui import QImage, QPixmap
-from PyQt5.QtWidgets import (
-    QApplication,
-    QDockWidget,
-    QLabel,
-    QLineEdit,
-    QMainWindow,
-    QScrollArea,
-    QSizePolicy
-)
+from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.uic import loadUi
 
 

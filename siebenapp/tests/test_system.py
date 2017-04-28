@@ -32,6 +32,7 @@ node [shape=box];
 3 -> 2 [color=black];
 }'''
 
+
 def test_dot_export_open_view():
     g = Goals('Root')
     g.add('Middle')
@@ -47,6 +48,7 @@ node [shape=box];
 2 -> 1 [color=black];
 3 -> 2 [color=black];
 }'''
+
 
 def test_dot_export_top_view():
     g = Goals('Root')

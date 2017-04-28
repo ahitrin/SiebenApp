@@ -138,7 +138,7 @@ class GoalsTest(TestCase):
         self.goals.select(3)
         self.goals.toggle_close()
         assert self.goals.all(keys='open') == {1: {'open': True}, 2: {'open': True}, 3: {'open': True},
-                4: {'open': True}}
+                                               4: {'open': True}}
 
     def test_delete_single_goal(self):
         self.goals.add('A')
@@ -283,20 +283,20 @@ class GoalsTest(TestCase):
     def test_selection_should_be_instant(self):
         for char in '234567890A':
             self.goals.add(char)
-        assert self.goals.all(keys='select') == {1: {'select': 'select'}, 2: {'select': None},
-                3: {'select': None}, 4: {'select': None}, 5: {'select': None}, 6: {'select': None},
-                7: {'select': None}, 8: {'select': None}, 9: {'select': None}, 10: {'select': None},
-                11: {'select': None}}
+        assert self.goals.all(keys='select') == {
+            1: {'select': 'select'}, 2: {'select': None}, 3: {'select': None},
+            4: {'select': None}, 5: {'select': None}, 6: {'select': None}, 7: {'select': None},
+            8: {'select': None}, 9: {'select': None}, 10: {'select': None}, 11: {'select': None}}
         self.goals.select(2)
-        assert self.goals.all(keys='select') == {1: {'select': 'prev'}, 2: {'select': 'select'},
-                3: {'select': None}, 4: {'select': None}, 5: {'select': None}, 6: {'select': None},
-                7: {'select': None}, 8: {'select': None}, 9: {'select': None}, 10: {'select': None},
-                11: {'select': None}}
+        assert self.goals.all(keys='select') == {
+            1: {'select': 'prev'}, 2: {'select': 'select'}, 3: {'select': None}, 4: {'select': None},
+            5: {'select': None}, 6: {'select': None}, 7: {'select': None}, 8: {'select': None},
+            9: {'select': None}, 10: {'select': None}, 11: {'select': None}}
         self.goals.select(11)
-        assert self.goals.all(keys='select') == {1: {'select': 'prev'}, 2: {'select': None},
-                3: {'select': None}, 4: {'select': None}, 5: {'select': None}, 6: {'select': None},
-                7: {'select': None}, 8: {'select': None}, 9: {'select': None}, 10: {'select': None},
-                11: {'select': 'select'}}
+        assert self.goals.all(keys='select') == {
+            1: {'select': 'prev'}, 2: {'select': None}, 3: {'select': None}, 4: {'select': None},
+            5: {'select': None}, 6: {'select': None}, 7: {'select': None}, 8: {'select': None},
+            9: {'select': None}, 10: {'select': None}, 11: {'select': 'select'}}
 
     def test_add_events(self):
         assert self.goals.events.pop() == ('add', 1, 'Root', True)
@@ -348,12 +348,12 @@ class GoalsTest(TestCase):
         self.goals.hold_select()
         self.goals.select(3)
         self.goals.toggle_link()
-        assert self.goals.events[-1] == ('link', 2 ,3)
+        assert self.goals.events[-1] == ('link', 2, 3)
         self.goals.toggle_link()
-        assert self.goals.events[-1] == ('unlink', 2 ,3)
+        assert self.goals.events[-1] == ('unlink', 2, 3)
 
 
-class FakeGoals():
+class FakeGoals:
     def __init__(self, result, top=set()):
         self.result = result
         self.top_goals = top

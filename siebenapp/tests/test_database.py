@@ -122,4 +122,4 @@ def test_do_not_load_from_broken_data():
     cur.execute('delete from goals where goal_id = 2')
     conn.commit()
     with pytest.raises(AssertionError):
-        g = load(file_name)
+        load(file_name)
