@@ -52,11 +52,11 @@ class Goals:
                 else:
                     value['select'] = None
             if 'top' in keys:
-                value['top'] = key in self.top()
+                value['top'] = key in self._top()
             result[key] = value
         return result
 
-    def top(self):
+    def _top(self):
         return set([goal for goal in self.goals
                     if goal not in self.closed and
                     all(g in self.closed for g in self.edges[goal])])
@@ -156,7 +156,7 @@ class Goals:
         assert all(g in self.closed for p in self.closed for g in self.edges.get(p, [])), \
             'Open goals could not be blocked by closed ones'
 
-        assert all(k not in self.top() for k, v in self.goals.items() if v is None), \
+        assert all(k not in self._top() for k, v in self.goals.items() if v is None), \
             'Deleted goals must not be considered as top'
 
         queue, visited = [1], set()
@@ -245,11 +245,6 @@ class Enumeration:
             if 'edge' in val:
                 result[new_id]['edge'] = [mapping(goal_id) for goal_id in val['edge']]
         return result
-
-    def top(self):
-        goals = self.goaltree.all()
-        mapping = self._id_mapping(goals)
-        return {mapping(g) for g in self.goaltree.top()}
 
     def select(self, goal_id):
         goals = self.goaltree.all()

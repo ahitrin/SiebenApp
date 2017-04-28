@@ -127,17 +127,16 @@ def run_migrations(conn, migrations=MIGRATIONS):
 
 
 def dot_export(goals, view):
-    data = goals.all(keys='open,name,edge,select')
-    tops = goals.top()
+    data = goals.all(keys='open,name,edge,select,top')
     lines = []
     for num in sorted(data.keys()):
         goal = data[num]
         if view == 'open' and not goal['open']:
             continue
-        if view == 'top' and num not in tops:
+        if view == 'top' and not goal['top']:
             continue
         style = []
-        if num in tops:
+        if goal['top']:
             style.append('bold')
         attributes = {
             'label': '"%d: %s"' % (num, goal['name']),
