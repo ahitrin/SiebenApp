@@ -34,26 +34,23 @@ class Goals:
         self.events.append(('hold_select', self.selection))
 
     def all(self, keys='name'):
+        def sel(x):
+            if x == self.selection:
+                return 'select'
+            elif x == self.previous_selection:
+                return 'prev'
+            return None
         keys = keys.split(',')
         result = dict()
         for key, name in ((k, n) for k, n in self.goals.items() if n is not None):
-            value = {}
-            if 'open' in keys:
-                value['open'] = key not in self.closed
-            if 'name' in keys:
-                value['name'] = name
-            if 'edge' in keys:
-                value['edge'] = sorted(self.edges[key])
-            if 'select' in keys:
-                if key == self.selection:
-                    value['select'] = 'select'
-                elif key == self.previous_selection:
-                    value['select'] = 'prev'
-                else:
-                    value['select'] = None
-            if 'top' in keys:
-                value['top'] = key in self._top()
-            result[key] = value
+            value = {
+                'edge': sorted(self.edges[key]),
+                'name': name,
+                'open': key not in self.closed,
+                'select': sel(key),
+                'top': key in self._top(),
+            }
+            result[key] = {k: v for k, v in value.items() if k in keys}
         return result
 
     def _top(self):
