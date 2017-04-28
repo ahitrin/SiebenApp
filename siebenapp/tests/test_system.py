@@ -1,10 +1,10 @@
 # coding: utf-8
-from siebenapp.goaltree import Goals
+from siebenapp.goaltree import Goals, Enumeration
 from siebenapp.system import dot_export
 
 
 def test_dot_export_full_view():
-    g = Goals('Root')
+    g = Enumeration(Goals('Root'))
     g.add('Middle')
     g.add('Top', 2)
     g.add('Closed')
@@ -34,7 +34,7 @@ node [shape=box];
 
 
 def test_dot_export_open_view():
-    g = Goals('Root')
+    g = Enumeration(Goals('Root'))
     g.add('Middle')
     g.add('Top', 2)
     g.add('Closed')
@@ -51,7 +51,7 @@ node [shape=box];
 
 
 def test_dot_export_top_view():
-    g = Goals('Root')
+    g = Enumeration(Goals('Root'))
     g.add('Middle')
     g.add('Top', 2)
     g.add('Closed')
