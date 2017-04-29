@@ -368,15 +368,11 @@ class GoalsTest(TestCase):
 
 
 class FakeGoals:
-    def __init__(self, result, top=set()):
+    def __init__(self, result):
         self.result = result
-        self.top_goals = top
 
     def all(self, keys=''):
         return self.result
-
-    def top(self):
-        return self.top_goals
 
     def select(self, goal_id):
         assert goal_id in self.result
@@ -386,119 +382,121 @@ class FakeGoals:
         self.result[goal_id]['select'] = 'select'
 
 
-class EnumerationTest(TestCase):
-    def test_simple_enumeration_is_not_changed(self):
-        goals = FakeGoals({
-            1: {'name': 'a', 'edge': [2, 3]},
-            2: {'name': 'b', 'edge': [3]},
-            3: {'name': 'c', 'edge': []},
-        })
-        e = Enumeration(goals)
-        assert e.all() == {
-            1: {'name': 'a', 'edge': [2, 3]},
-            2: {'name': 'b', 'edge': [3]},
-            3: {'name': 'c', 'edge': []},
-        }
+def test_simple_enumeration_is_not_changed():
+    goals = FakeGoals({
+        1: {'name': 'a', 'edge': [2, 3]},
+        2: {'name': 'b', 'edge': [3]},
+        3: {'name': 'c', 'edge': []},
+    })
+    e = Enumeration(goals)
+    assert e.all() == {
+        1: {'name': 'a', 'edge': [2, 3]},
+        2: {'name': 'b', 'edge': [3]},
+        3: {'name': 'c', 'edge': []},
+    }
 
-    def test_apply_mapping_for_the_10th_element(self):
-        goals = FakeGoals({
-            1: {'name': 'a', 'edge': [2]},
-            2: {'name': 'b', 'edge': [3]},
-            3: {'name': 'c', 'edge': [4]},
-            4: {'name': 'd', 'edge': [5]},
-            5: {'name': 'e', 'edge': [6]},
-            6: {'name': 'f', 'edge': [7]},
-            7: {'name': 'g', 'edge': [8]},
-            8: {'name': 'h', 'edge': [9]},
-            9: {'name': 'i', 'edge': [10]},
-            10: {'name': 'j', 'edge': []},
-        })
-        e = Enumeration(goals)
-        assert e.all() == {
-            1: {'name': 'a', 'edge': [2]},
-            2: {'name': 'b', 'edge': [3]},
-            3: {'name': 'c', 'edge': [4]},
-            4: {'name': 'd', 'edge': [5]},
-            5: {'name': 'e', 'edge': [6]},
-            6: {'name': 'f', 'edge': [7]},
-            7: {'name': 'g', 'edge': [8]},
-            8: {'name': 'h', 'edge': [9]},
-            9: {'name': 'i', 'edge': [0]},
-            0: {'name': 'j', 'edge': []},
-        }
-        # simulate goal addition
-        goals.result[1]['edge'].append(11)
-        goals.result[11] = {'name': 'k', 'edge': []}
-        assert e.all() == {
-            11: {'name': 'a', 'edge': [12, 21]},
-            12: {'name': 'b', 'edge': [13]},
-            13: {'name': 'c', 'edge': [14]},
-            14: {'name': 'd', 'edge': [15]},
-            15: {'name': 'e', 'edge': [16]},
-            16: {'name': 'f', 'edge': [17]},
-            17: {'name': 'g', 'edge': [18]},
-            18: {'name': 'h', 'edge': [19]},
-            19: {'name': 'i', 'edge': [10]},
-            10: {'name': 'j', 'edge': []},
-            21: {'name': 'k', 'edge': []},
-        }
 
-    def test_use_mapping_in_selection(self):
-        goals = FakeGoals({
-            1:  {'name': 'a', 'select': 'select'},
-            2:  {'name': 'b', 'select': None},
-            3:  {'name': 'c', 'select': None},
-            4:  {'name': 'd', 'select': None},
-            5:  {'name': 'e', 'select': None},
-            6:  {'name': 'f', 'select': None},
-            7:  {'name': 'g', 'select': None},
-            8:  {'name': 'h', 'select': None},
-            9:  {'name': 'i', 'select': None},
-            10: {'name': 'j', 'select': None},
-        })
-        e = Enumeration(goals)
-        e.select(0)
-        assert e.all() == {
-            1: {'name': 'a', 'select': None},
-            2: {'name': 'b', 'select': None},
-            3: {'name': 'c', 'select': None},
-            4: {'name': 'd', 'select': None},
-            5: {'name': 'e', 'select': None},
-            6: {'name': 'f', 'select': None},
-            7: {'name': 'g', 'select': None},
-            8: {'name': 'h', 'select': None},
-            9: {'name': 'i', 'select': None},
-            0: {'name': 'j', 'select': 'select'},
-        }
-        goals.result[11] = {'name': 'k', 'select': None}
-        e.select(1)
-        e.select(6)
-        assert e.all() == {
-            11: {'name': 'a', 'select': None},
-            12: {'name': 'b', 'select': None},
-            13: {'name': 'c', 'select': None},
-            14: {'name': 'd', 'select': None},
-            15: {'name': 'e', 'select': None},
-            16: {'name': 'f', 'select': 'select'},
-            17: {'name': 'g', 'select': None},
-            18: {'name': 'h', 'select': None},
-            19: {'name': 'i', 'select': None},
-            10: {'name': 'j', 'select': None},
-            21: {'name': 'k', 'select': None},
-        }
+def test_apply_mapping_for_the_10th_element():
+    goals = FakeGoals({
+        1: {'name': 'a', 'edge': [2]},
+        2: {'name': 'b', 'edge': [3]},
+        3: {'name': 'c', 'edge': [4]},
+        4: {'name': 'd', 'edge': [5]},
+        5: {'name': 'e', 'edge': [6]},
+        6: {'name': 'f', 'edge': [7]},
+        7: {'name': 'g', 'edge': [8]},
+        8: {'name': 'h', 'edge': [9]},
+        9: {'name': 'i', 'edge': [10]},
+        10: {'name': 'j', 'edge': []},
+    })
+    e = Enumeration(goals)
+    assert e.all() == {
+        1: {'name': 'a', 'edge': [2]},
+        2: {'name': 'b', 'edge': [3]},
+        3: {'name': 'c', 'edge': [4]},
+        4: {'name': 'd', 'edge': [5]},
+        5: {'name': 'e', 'edge': [6]},
+        6: {'name': 'f', 'edge': [7]},
+        7: {'name': 'g', 'edge': [8]},
+        8: {'name': 'h', 'edge': [9]},
+        9: {'name': 'i', 'edge': [0]},
+        0: {'name': 'j', 'edge': []},
+    }
+    # simulate goal addition
+    goals.result[1]['edge'].append(11)
+    goals.result[11] = {'name': 'k', 'edge': []}
+    assert e.all() == {
+        11: {'name': 'a', 'edge': [12, 21]},
+        12: {'name': 'b', 'edge': [13]},
+        13: {'name': 'c', 'edge': [14]},
+        14: {'name': 'd', 'edge': [15]},
+        15: {'name': 'e', 'edge': [16]},
+        16: {'name': 'f', 'edge': [17]},
+        17: {'name': 'g', 'edge': [18]},
+        18: {'name': 'h', 'edge': [19]},
+        19: {'name': 'i', 'edge': [10]},
+        10: {'name': 'j', 'edge': []},
+        21: {'name': 'k', 'edge': []},
+    }
 
-    def test_mapping_for_top(self):
-        goals = FakeGoals({
-            1: {'name': 'a', 'top': False},
-            3: {'name': 'c', 'top': True},
-            11: {'name': 'x', 'top': True},
-        }, top={3, 11})
-        e = Enumeration(goals)
-        assert e.all(keys='name,top') == {
-            1: {'name': 'a', 'top': False},
-            2: {'name': 'c', 'top': True},
-            3: {'name': 'x', 'top': True},
-        }
+
+def test_use_mapping_in_selection():
+    goals = FakeGoals({
+        1:  {'name': 'a', 'select': 'select'},
+        2:  {'name': 'b', 'select': None},
+        3:  {'name': 'c', 'select': None},
+        4:  {'name': 'd', 'select': None},
+        5:  {'name': 'e', 'select': None},
+        6:  {'name': 'f', 'select': None},
+        7:  {'name': 'g', 'select': None},
+        8:  {'name': 'h', 'select': None},
+        9:  {'name': 'i', 'select': None},
+        10: {'name': 'j', 'select': None},
+    })
+    e = Enumeration(goals)
+    e.select(0)
+    assert e.all() == {
+        1: {'name': 'a', 'select': None},
+        2: {'name': 'b', 'select': None},
+        3: {'name': 'c', 'select': None},
+        4: {'name': 'd', 'select': None},
+        5: {'name': 'e', 'select': None},
+        6: {'name': 'f', 'select': None},
+        7: {'name': 'g', 'select': None},
+        8: {'name': 'h', 'select': None},
+        9: {'name': 'i', 'select': None},
+        0: {'name': 'j', 'select': 'select'},
+    }
+    goals.result[11] = {'name': 'k', 'select': None}
+    e.select(1)
+    e.select(6)
+    assert e.all() == {
+        11: {'name': 'a', 'select': None},
+        12: {'name': 'b', 'select': None},
+        13: {'name': 'c', 'select': None},
+        14: {'name': 'd', 'select': None},
+        15: {'name': 'e', 'select': None},
+        16: {'name': 'f', 'select': 'select'},
+        17: {'name': 'g', 'select': None},
+        18: {'name': 'h', 'select': None},
+        19: {'name': 'i', 'select': None},
+        10: {'name': 'j', 'select': None},
+        21: {'name': 'k', 'select': None},
+    }
+
+
+def test_mapping_for_top():
+    goals = FakeGoals({
+        1: {'name': 'a', 'top': False},
+        3: {'name': 'c', 'top': True},
+        11: {'name': 'x', 'top': True},
+    })
+    e = Enumeration(goals)
+    assert e.all(keys='name,top') == {
+        1: {'name': 'a', 'top': False},
+        2: {'name': 'c', 'top': True},
+        3: {'name': 'x', 'top': True},
+    }
 
 
 def test_all_keys_in_enumeration_must_be_of_the_same_length():
