@@ -126,8 +126,9 @@ def run_migrations(conn, migrations=MIGRATIONS):
         conn.commit()
 
 
-def dot_export(goals, view):
+def dot_export(goals):
     data = goals.all(keys='open,name,edge,select,top')
+    view = goals.view
     lines = []
     for num in sorted(data.keys()):
         goal = data[num]

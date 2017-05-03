@@ -210,6 +210,8 @@ class Enumeration:
                'verify',
                ]
 
+    views = {'open': 'top', 'top': 'full', 'full': 'open'}
+
     @classmethod
     def _id_mapping(cls, goals):
         m = {g: i + 1 for i, g in enumerate(sorted(goals))}
@@ -231,6 +233,7 @@ class Enumeration:
     def __init__(self, goaltree):
         self.goaltree = goaltree
         self.selection_cache = []
+        self.view = 'open'
 
     def all(self, *args, **kwargs):
         result = dict()
@@ -254,6 +257,9 @@ class Enumeration:
             self.selection_cache = []
         else:
             self.selection_cache.append(goal_id)
+
+    def next_view(self):
+        self.view = self.views[self.view]
 
     def __getattribute__(self, attr):
         proxied = object.__getattribute__(self, 'proxied')

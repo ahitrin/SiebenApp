@@ -18,7 +18,6 @@ class SiebenApp(QMainWindow):
         super().__init__()
         self.refresh.connect(self.reload_image)
         self.quit_app.connect(QApplication.instance().quit)
-        self.view  = 'open'
         self.goals = load()
         self.force_refresh = True
 
@@ -32,7 +31,7 @@ class SiebenApp(QMainWindow):
         self.force_refresh = False
         save(self.goals)
         with open('work.dot', 'w') as f:
-            f.write(dot_export(self.goals, self.view))
+            f.write(dot_export(self.goals))
         run(['dot', '-Tpng', '-o', 'work.png', 'work.dot'])
         img = QImage('work.png')
         self.label.setPixmap(QPixmap.fromImage(img))
@@ -95,13 +94,8 @@ class SiebenApp(QMainWindow):
         self.refresh.emit()
 
     def toggle_view(self):
-        next_view = {
-            'full': 'open',
-            'open': 'top',
-            'top': 'full',
-        }
-        self.view = next_view[self.view]
         self.force_refresh = True
+        self.goals.next_view()
         self.refresh.emit()
 
 

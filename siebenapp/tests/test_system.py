@@ -10,7 +10,9 @@ def test_dot_export_full_view():
     g.add('Closed')
     g.select(4)
     g.toggle_close()
-    assert dot_export(g, 'full') == '''digraph g {
+    g.next_view()
+    g.next_view()
+    assert dot_export(g) == '''digraph g {
 node [shape=box];
 1 [label="1: Root", color=red, style=filled, fillcolor=gray];
 2 [label="2: Middle", color=red];
@@ -21,7 +23,7 @@ node [shape=box];
 3 -> 2 [color=black];
 }'''
     g.select(3)
-    assert dot_export(g, 'full') == '''digraph g {
+    assert dot_export(g) == '''digraph g {
 node [shape=box];
 1 [label="1: Root", color=red, style=filled, fillcolor=lightgray];
 2 [label="2: Middle", color=red];
@@ -40,7 +42,7 @@ def test_dot_export_open_view():
     g.add('Closed')
     g.select(4)
     g.toggle_close()
-    assert dot_export(g, 'open') == '''digraph g {
+    assert dot_export(g) == '''digraph g {
 node [shape=box];
 1 [label="1: Root", color=red, style=filled, fillcolor=gray];
 2 [label="2: Middle", color=red];
@@ -57,7 +59,8 @@ def test_dot_export_top_view():
     g.add('Closed')
     g.select(4)
     g.toggle_close()
-    assert dot_export(g, 'top') == '''digraph g {
+    g.next_view()
+    assert dot_export(g) == '''digraph g {
 node [shape=box];
 3 [label="3: Top", color=red, style=bold];
 }'''

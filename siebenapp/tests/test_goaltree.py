@@ -507,3 +507,14 @@ def test_all_keys_in_enumeration_must_be_of_the_same_length():
     assert len(mapping) == len(data)
     numbers = set(len(str(k)) for k in mapping)
     assert len(numbers) == 1
+
+
+def test_toggle_switch_view():
+    e = Enumeration(FakeGoals({1: {'name': 'Root'}}))
+    assert e.view == 'open'
+    e.next_view()
+    assert e.view == 'top'
+    e.next_view()
+    assert e.view == 'full'
+    e.next_view()
+    assert e.view == 'open'
