@@ -218,8 +218,8 @@ class Enumeration:
 
     views = {'open': 'top', 'top': 'full', 'full': 'open'}
 
-    @classmethod
-    def _id_mapping(cls, goals):
+    def _id_mapping(self, *args, **kwargs):
+        goals = self.goaltree.all(*args, **kwargs)
         m = {g: i + 1 for i, g in enumerate(sorted(goals))}
         length = len(m)
 
@@ -234,7 +234,7 @@ class Enumeration:
                 new_id += 1000 * ((goal_id - 1) // 1000 + 1)
             return new_id
 
-        return mapping_fn
+        return goals, mapping_fn
 
     def __init__(self, goaltree):
         self.goaltree = goaltree
@@ -243,8 +243,7 @@ class Enumeration:
 
     def all(self, *args, **kwargs):
         result = dict()
-        goals = self.goaltree.all(*args, **kwargs)
-        mapping = self._id_mapping(goals.keys())
+        goals, mapping = self._id_mapping(*args, **kwargs)
         for old_id, val in goals.items():
             new_id = mapping(old_id)
             result[new_id] = dict((k, v) for k, v in val.items() if k != 'edge')
@@ -253,8 +252,7 @@ class Enumeration:
         return result
 
     def select(self, goal_id):
-        goals = self.goaltree.all()
-        mapping = self._id_mapping(goals.keys())
+        goals, mapping = self._id_mapping()
         if self.selection_cache:
             goal_id = 10 * self.selection_cache.pop() + goal_id
         possible_selections = [g for g in goals if mapping(g) == goal_id]
