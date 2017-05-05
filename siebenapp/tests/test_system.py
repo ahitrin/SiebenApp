@@ -57,10 +57,13 @@ def test_dot_export_top_view():
     g.add('Middle')
     g.add('Top', 2)
     g.add('Closed')
+    g.add('More closed', 3)
     g.select(4)
+    g.toggle_close()
+    g.select(5)
     g.toggle_close()
     g.next_view()
     assert dot_export(g) == '''digraph g {
 node [shape=box];
-3 [label="3: Top", color=red, style=bold];
+1 [label="1: Top", color=red, style=bold];
 }'''

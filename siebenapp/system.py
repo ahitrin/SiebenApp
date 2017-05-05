@@ -134,8 +134,6 @@ def dot_export(goals):
         goal = data[num]
         if view == 'open' and not goal['open']:
             continue
-        if view == 'top' and not goal['top']:
-            continue
         style = []
         if goal['top']:
             style.append('bold')
@@ -158,8 +156,6 @@ def dot_export(goals):
         lines.append('%d [%s];' % (num, attributes_str))
     for num in sorted(data.keys()):
         for edge in data[num]['edge']:
-            if view == 'top':
-                continue
             if view == 'open' and not data[edge]['open']:
                 continue
             color = 'black' if data[edge]['open'] else 'gray'

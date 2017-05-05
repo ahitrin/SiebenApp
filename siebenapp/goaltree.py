@@ -220,6 +220,12 @@ class Enumeration:
 
     def _id_mapping(self, *args, **kwargs):
         goals = self.goaltree.all(*args, **kwargs)
+        if self.view == 'top':
+            goals = {k:v for k, v in goals.items() if v['top']}
+            for attrs in goals.values():
+                if 'edge' in attrs:
+                    attrs['edge'] = []
+
         m = {g: i + 1 for i, g in enumerate(sorted(goals))}
         length = len(m)
 
