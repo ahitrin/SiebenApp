@@ -12,16 +12,18 @@ def test_dot_export_full_view():
     g.toggle_close()
     g.next_view()
     g.next_view()
+    g.select(1)
     assert dot_export(g) == '''digraph g {
 node [shape=box];
 1 [label="1: Root", color=red, style=filled, fillcolor=gray];
 2 [label="2: Middle", color=red];
-3 [label="3: Top", color=red, style=bold];
+3 [label="3: Top", color=red, style="bold,filled", fillcolor=lightgray];
 4 [label="4: Closed", color=green];
 2 -> 1 [color=black];
 4 -> 1 [color=gray];
 3 -> 2 [color=black];
 }'''
+    g.hold_select()
     g.select(3)
     assert dot_export(g) == '''digraph g {
 node [shape=box];
@@ -65,5 +67,5 @@ def test_dot_export_top_view():
     g.next_view()
     assert dot_export(g) == '''digraph g {
 node [shape=box];
-1 [label="1: Top", color=red, style=bold];
+1 [label="1: Top", color=red, style="bold,filled", fillcolor=gray];
 }'''

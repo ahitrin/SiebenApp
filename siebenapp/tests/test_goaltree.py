@@ -480,3 +480,50 @@ def test_toggle_switch_view():
     assert e.view == 'full'
     e.next_view()
     assert e.view == 'open'
+
+
+def test_goaltree_selection_may_be_changed_in_top_view():
+    goals = Goals('Root')
+    goals.add('Top 1')
+    goals.add('Top 2')
+    e = Enumeration(goals)
+    assert e.all(keys='name,top,select') == {
+        1: {'name': 'Root', 'top': False, 'select': 'select'},
+        2: {'name': 'Top 1', 'top': True, 'select': None},
+        3: {'name': 'Top 2', 'top': True, 'select': None},
+    }
+    e.next_view()
+    assert e.events[-2] == ('select', 2)
+    assert e.events[-1] == ('hold_select', 2)
+    assert e.all(keys='name,top,select') == {
+        1: {'name': 'Top 1', 'top': True, 'select': 'select'},
+        2: {'name': 'Top 2', 'top': True, 'select': None}
+    }
+
+
+def test_goaltree_previous_selection_may_be_changed_in_top_view():
+    goals = Goals('Root')
+    goals.add('Top 1')
+    goals.add('Top 2')
+    goals.hold_select()
+    goals.select(2)
+    e = Enumeration(goals)
+    assert e.all(keys='name,top,select') == {
+        1: {'name': 'Root', 'top': False, 'select': 'prev'},
+        2: {'name': 'Top 1', 'top': True, 'select': 'select'},
+        3: {'name': 'Top 2', 'top': True, 'select': None},
+    }
+    e.next_view()
+    assert e.events[-1] == ('hold_select', 2)
+    assert e.all(keys='name,top,select') == {
+        1: {'name': 'Top 1', 'top': True, 'select': 'select'},
+        2: {'name': 'Top 2', 'top': True, 'select': None}
+    }
+    e.insert('Illegal goal')
+    # New goal must not be inserted because previous selection is reset after the view switching
+    e.next_view()
+    assert e.all(keys='name,top,select') == {
+        1: {'name': 'Root', 'top': False, 'select': None},
+        2: {'name': 'Top 1', 'top': True, 'select': 'select'},
+        3: {'name': 'Top 2', 'top': True, 'select': None},
+    }

@@ -270,6 +270,12 @@ class Enumeration:
 
     def next_view(self):
         self.view = self.views[self.view]
+        if self.view == 'top':
+            goals = {k for k, v in self.goaltree.all(keys='top').items() if v['top']}
+            if self.goaltree.selection not in goals:
+                self.goaltree.select(min(goals))
+            if self.goaltree.previous_selection not in goals:
+                self.goaltree.hold_select()
 
     def __getattribute__(self, attr):
         proxied = object.__getattribute__(self, 'proxied')
