@@ -4,7 +4,6 @@ from hypothesis.strategies import (
     dictionaries, integers, lists, sampled_from, composite, choices, streaming, text)
 from siebenapp.goaltree import Goals, Enumeration
 from siebenapp.system import run_migrations, save_updates
-from siebenapp.tests.test_goaltree import FakeGoals
 import pytest
 import sqlite3
 
@@ -79,16 +78,15 @@ def test_any_goal_may_be_selected(all_actions, non_select_actions, ints, choice)
     assert g.all(keys='select')[rnd_goal]['select'] == 'select'
 
 
-@given(dictionaries(integers(min_value=1), text(), min_size=1),
+@given(user_actions(average_size=100, skip=['rename']), streaming(integers(0, 9)),
        choices())
-def test_any_goal_may_be_selected_through_enumeration(raw_data, choice):
-    data = {key: {'name': value, 'select': None}
-            for key, value in raw_data.items()}
-    e = Enumeration(FakeGoals(data))
+def test_any_goal_may_be_selected_through_enumeration(actions, ints, choice):
+    g = build_from(actions, ints)
+    e = Enumeration(g)
     rnd_goal = choice(list(e.all().keys()))
     for i in str(rnd_goal):
         e.select(int(i))
-    assert e.all()[rnd_goal]['select'] == 'select'
+    assert e.all(keys='select')[rnd_goal]['select'] == 'select'
 
 
 @given(user_actions(average_size=100), streaming(integers(0, 9)))
@@ -133,3 +131,13 @@ def test_all_goal_names_must_be_saved_correctly(name):
     note(selection)
     ng = Goals.build(goals, edges, selection)
     assert g.all('name,open,edge,select') == ng.all('name,open,edge,select')
+
+
+def test_all_keys_in_enumeration_must_be_of_the_same_length():
+    g = Goals('Root')
+    for i in range(2999):
+        g.add(str(i))
+    e = Enumeration(g)
+    mapping = e.all()
+    assert len(mapping) == len(g.all())
+    assert set(len(str(k)) for k in mapping) == {4}
