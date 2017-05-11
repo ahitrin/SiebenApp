@@ -52,7 +52,7 @@ def test_restore_goals_from_db():
     run_migrations(conn)
     setup_sample_db(conn)
     conn.close()
-    actual_goals = load(file_name)
+    actual_goals = load(file_name).goaltree
     expected_goals = Goals('Root')
     expected_goals.add('A')
     expected_goals.add('B')
@@ -99,7 +99,7 @@ def test_save_and_load():
     goals.select(4)
     goals.toggle_close()
     save(goals, file_name)
-    new_goals = load(file_name)
+    new_goals = load(file_name).goaltree
     assert goals.all(keys='open,name,edge,select') == new_goals.all(keys='open,name,edge,select')
 
 

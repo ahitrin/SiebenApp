@@ -60,9 +60,11 @@ def test_dot_export_top_view():
     g.add('Top', 2)
     g.add('Closed')
     g.add('More closed', 3)
-    g.select(4)
-    g.toggle_close()
+    # close 'More closed'
     g.select(5)
+    g.toggle_close()
+    # close 'Closed'
+    g.select(4)
     g.toggle_close()
     g.next_view()
     assert dot_export(g) == '''digraph g {

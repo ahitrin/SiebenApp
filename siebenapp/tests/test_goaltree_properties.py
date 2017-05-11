@@ -83,6 +83,8 @@ def test_any_goal_may_be_selected(all_actions, non_select_actions, ints, choice)
 def test_any_goal_may_be_selected_through_enumeration(actions, ints, choice):
     g = build_from(actions, ints)
     e = Enumeration(g)
+    e.next_view()
+    e.next_view()
     rnd_goal = choice(list(e.all().keys()))
     for i in str(rnd_goal):
         e.select(int(i))

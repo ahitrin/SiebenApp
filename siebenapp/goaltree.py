@@ -227,21 +227,27 @@ class Enumeration:
     def _update_mapping(self):
         if self.view == 'top':
             goals = {k for k, v in self.goaltree.all(keys='top').items() if v['top']}
-            if self.goaltree.selection not in goals:
+            if goals and self.goaltree.selection not in goals:
                 self.goaltree.select(min(goals))
-            if self.goaltree.previous_selection not in goals:
+            if goals and self.goaltree.previous_selection not in goals:
                 self.goaltree.hold_select()
             self._goal_filter = goals
+        elif self.view == 'open':
+            self._goal_filter = {k for k, v in self.goaltree.all(keys='open').items() if v['open']}
         else:
             self._goal_filter = {g for g in self.goaltree.all()}
 
     def _id_mapping(self, *args, **kwargs):
         goals = self.goaltree.all(*args, **kwargs)
+        goals = {k:v for k, v in goals.items() if k in self._goal_filter}
         if self.view == 'top':
-            goals = {k:v for k, v in goals.items() if k in self._goal_filter}
             for attrs in goals.values():
                 if 'edge' in attrs:
                     attrs['edge'] = []
+        elif self.view == 'open':
+            for attrs in goals.values():
+                if 'edge' in attrs:
+                    attrs['edge'] = [e for e in attrs['edge'] if e in self._goal_filter]
 
         m = {g: i + 1 for i, g in enumerate(sorted(goals))}
         length = len(m)
@@ -260,6 +266,7 @@ class Enumeration:
         return goals, mapping_fn
 
     def all(self, *args, **kwargs):
+        self._update_mapping()
         result = dict()
         goals, mapping = self._id_mapping(*args, **kwargs)
         for old_id, val in goals.items():
@@ -270,6 +277,7 @@ class Enumeration:
         return result
 
     def select(self, goal_id):
+        self._update_mapping()
         goals, mapping = self._id_mapping()
         if self.selection_cache:
             goal_id = 10 * self.selection_cache.pop() + goal_id

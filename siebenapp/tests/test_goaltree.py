@@ -529,6 +529,13 @@ def test_goaltree_previous_selection_may_be_changed_in_top_view():
     }
 
 
+def test_top_view_may_be_empty():
+    e = Enumeration(Goals('closed'))
+    e.toggle_close()
+    e.next_view()
+    assert e.all() == {}
+
+
 def test_simple_top_enumeration_workflow():
     e = Enumeration(Goals('root'))
     e.add('1')
@@ -539,4 +546,27 @@ def test_simple_top_enumeration_workflow():
     assert e.all() == {
         1: {'name': '1'},
         2: {'name': '2'}
+    }
+
+
+def test_open_view_may_be_empty():
+    e = Enumeration(Goals('closed'))
+    e.toggle_close()
+    assert e.all() == {}
+
+
+def test_simple_open_enumeration_workflow():
+    e = Enumeration(Goals('Root'))
+    e.add('1')
+    e.add('2')
+    e.select(2)
+    assert e.all(keys='name,select,open,edge') == {
+        1: {'name': 'Root', 'select': 'prev', 'open': True, 'edge': [2, 3]},
+        2: {'name': '1', 'select': 'select', 'open': True, 'edge': []},
+        3: {'name': '2', 'select': None, 'open': True, 'edge': []},
+    }
+    e.toggle_close()
+    assert e.all(keys='name,select,open,edge') == {
+        1: {'name': 'Root', 'select': 'select', 'open': True, 'edge': [2]},
+        2: {'name': '2', 'select': None, 'open': True, 'edge': []}
     }

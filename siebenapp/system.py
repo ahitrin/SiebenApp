@@ -128,12 +128,9 @@ def run_migrations(conn, migrations=MIGRATIONS):
 
 def dot_export(goals):
     data = goals.all(keys='open,name,edge,select,top')
-    view = goals.view
     lines = []
     for num in sorted(data.keys()):
         goal = data[num]
-        if view == 'open' and not goal['open']:
-            continue
         style = []
         if goal['top']:
             style.append('bold')
@@ -156,8 +153,6 @@ def dot_export(goals):
         lines.append('%d [%s];' % (num, attributes_str))
     for num in sorted(data.keys()):
         for edge in data[num]['edge']:
-            if view == 'open' and not data[edge]['open']:
-                continue
             color = 'black' if data[edge]['open'] else 'gray'
             lines.append('%d -> %d [color=%s];' % (edge, num, color))
     return 'digraph g {\nnode [shape=box];\n%s\n}' % '\n'.join(lines)
