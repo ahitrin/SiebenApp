@@ -218,10 +218,27 @@ class Enumeration:
 
     views = {'open': 'top', 'top': 'full', 'full': 'open'}
 
+    def __init__(self, goaltree):
+        self.goaltree = goaltree
+        self.selection_cache = []
+        self.view = 'open'
+        self._update_mapping()
+
+    def _update_mapping(self):
+        if self.view == 'top':
+            goals = {k for k, v in self.goaltree.all(keys='top').items() if v['top']}
+            if self.goaltree.selection not in goals:
+                self.goaltree.select(min(goals))
+            if self.goaltree.previous_selection not in goals:
+                self.goaltree.hold_select()
+            self._goal_filter = goals
+        else:
+            self._goal_filter = {g for g in self.goaltree.all()}
+
     def _id_mapping(self, *args, **kwargs):
         goals = self.goaltree.all(*args, **kwargs)
         if self.view == 'top':
-            goals = {k:v for k, v in goals.items() if v['top']}
+            goals = {k:v for k, v in goals.items() if k in self._goal_filter}
             for attrs in goals.values():
                 if 'edge' in attrs:
                     attrs['edge'] = []
@@ -241,11 +258,6 @@ class Enumeration:
             return new_id
 
         return goals, mapping_fn
-
-    def __init__(self, goaltree):
-        self.goaltree = goaltree
-        self.selection_cache = []
-        self.view = 'open'
 
     def all(self, *args, **kwargs):
         result = dict()
@@ -270,16 +282,12 @@ class Enumeration:
 
     def next_view(self):
         self.view = self.views[self.view]
-        if self.view == 'top':
-            goals = {k for k, v in self.goaltree.all(keys='top').items() if v['top']}
-            if self.goaltree.selection not in goals:
-                self.goaltree.select(min(goals))
-            if self.goaltree.previous_selection not in goals:
-                self.goaltree.hold_select()
+        self._update_mapping()
 
     def __getattribute__(self, attr):
         proxied = object.__getattribute__(self, 'proxied')
+        goaltree = object.__getattribute__(self, 'goaltree')
         if attr in proxied:
-            return getattr(object.__getattribute__(self, "goaltree"), attr)
+            return getattr(goaltree, attr)
         else:
             return object.__getattribute__(self, attr)

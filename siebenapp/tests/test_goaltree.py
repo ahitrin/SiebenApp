@@ -527,3 +527,16 @@ def test_goaltree_previous_selection_may_be_changed_in_top_view():
         2: {'name': 'Top 1', 'top': True, 'select': 'select'},
         3: {'name': 'Top 2', 'top': True, 'select': None},
     }
+
+
+def test_simple_top_enumeration_workflow():
+    e = Enumeration(Goals('root'))
+    e.add('1')
+    e.add('2')
+    e.select(2)
+    e.next_view()
+    e.select(2)
+    assert e.all() == {
+        1: {'name': '1'},
+        2: {'name': '2'}
+    }
