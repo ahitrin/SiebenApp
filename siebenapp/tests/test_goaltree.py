@@ -529,6 +529,26 @@ def test_goaltree_previous_selection_may_be_changed_in_top_view():
     }
 
 
+def test_selection_cache_should_be_reset_after_view_switch():
+    g = Goals('Root')
+    # 1 -> 2 -> 3 -> .. -> 10 -> 11
+    for i in range(10):
+        g.add(str(i+2), i+1)
+    g.add('Also top', 1)
+    e = Enumeration(g)
+    e.select(1)
+    e.next_view()
+    assert e.all('name,select') == {
+        1: {'name': '11', 'select': 'select'},
+        2: {'name': 'Also top', 'select': None},
+    }
+    e.select(2)
+    assert e.all('name,select') == {
+        1: {'name': '11', 'select': 'prev'},
+        2: {'name': 'Also top', 'select': 'select'},
+    }
+
+
 def test_top_view_may_be_empty():
     e = Enumeration(Goals('closed'))
     e.toggle_close()

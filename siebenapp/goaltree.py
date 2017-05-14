@@ -291,6 +291,7 @@ class Enumeration:
     def next_view(self):
         self.view = self.views[self.view]
         self._update_mapping()
+        self.selection_cache.clear()
 
     def __getattribute__(self, attr):
         proxied = object.__getattribute__(self, 'proxied')
