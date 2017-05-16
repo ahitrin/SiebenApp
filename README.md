@@ -36,6 +36,10 @@ SiebenApp starts with a single default goal.
 
 Let's _rename_ this goal! Press `r`, type new goal name into the text field and press `Enter`.
 
+![rename](docs/example1.1.png)
+
+So it changes:
+
 ![step2](docs/example2.png)
 
 There are two obvious subgoals: book a hotel and buy airplane tickets. Also, Wonderstan has strict visiting rules: it requires visa for all visitors. To _add_ a subgoal, press `a`, enter its name, and then press `Enter` to finish. Repeat it for all goals.
@@ -58,6 +62,8 @@ Now we have one big goal with 3 smaller subgoals. And only 2 of these subgoals a
 
 ![step7](docs/example7.png)
 
+As you may see, enumeration of goals has been changed. This is done in order to simplify work with a large amount of goals. Even when your goaltree has tens of subgoals, there are only few of them on the top usually. With using enumeration only for the visible goals we make goal selection easier.
+
 Now you don't need to think about visa. Being focused well on a single goal, you find good tickets and buy them. Now it's time to _close_ current subgoal. Just press `c` for that.
 
 ![step8](docs/example8.png)
@@ -70,13 +76,13 @@ Something interesting happens. Your current goal has been replaced with the new 
 
 ![step10](docs/example10.png)
 
-Here we see that two closed goals still exists in a graph, but now they are marked green. And subgoal 4 is marked with bold border because no other open goal blocks it.
+Here we see that two closed goals still exists in a graph, but now they are marked green. And subgoal 4 is marked with bold border because no other open goal blocks it. Goal enumeration also changes back to the order you've created goals in.
 
-Now just freely play around using following buttons:
+Now just play around freely using following buttons:
 
  * `1`..`0` (according to the keyboard layout) for _selecting_ goals (when you have more than 10 goals, each selection needs 2 key presses);
  * `a` for _adding_ new subgoals;
- * `d` for _removing_ them (please note that removing is **undoable**, and may remove all subgoals of the current one);;
+ * `d` for _removing_ them (please note that removing is **undoable**, and may remove all subgoals of the current one);
  * `c` for _closing_ current goal, and also for re-open closed one;
  * `r` for _renaming_
  * `Space` for _holding_ (remembering) current selection;
