@@ -1,14 +1,15 @@
 # coding: utf-8
 import os
+import sqlite3
 from contextlib import closing
 
+import pytest
 from hypothesis import given, note, settings
 from hypothesis.strategies import lists, sampled_from, composite, choices, text
-from siebenapp.goaltree import Goals
+
 from siebenapp.enumeration import Enumeration
+from siebenapp.goaltree import Goals
 from siebenapp.system import run_migrations, save_updates
-import pytest
-import sqlite3
 
 
 settings.register_profile('ci', settings(max_examples=2000))

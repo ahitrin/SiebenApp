@@ -1,14 +1,14 @@
 # coding: utf-8
+import sqlite3
+
 from contextlib import closing
+from tempfile import NamedTemporaryFile
 
 import pytest
-import sqlite3
 
 from siebenapp.enumeration import Enumeration
 from siebenapp.goaltree import Goals
 from siebenapp.system import MIGRATIONS, run_migrations, load, save
-from tempfile import NamedTemporaryFile
-
 from siebenapp.zoom import Zoom
 
 

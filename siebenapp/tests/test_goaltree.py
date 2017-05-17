@@ -1,6 +1,7 @@
 # coding: utf-8
-from siebenapp.goaltree import Goals
 from unittest import TestCase
+
+from siebenapp.goaltree import Goals
 
 
 class GoalsTest(TestCase):
