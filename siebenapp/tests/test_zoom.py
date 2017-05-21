@@ -38,12 +38,25 @@ class TestZoom(TestCase):
         self.goals.add('Hidden 2')
         self.goals.select(2)
         self.goals.toggle_zoom()
-        self.goals.toggle_zoom()
         assert self.goals.all(keys='name,edge') == {
-            1: {'name': 'Root', 'edge': [2, 3, 4]},
+            -1: {'name': 'Root', 'edge': [2]},
             2: {'name': 'Zoomed', 'edge': []},
-            3: {'name': 'Hidden 1', 'edge': []},
-            4: {'name': 'Hidden 2', 'edge': []},
+        }
+
+    def test_double_zoom_means_unzoom(self):
+        self.goals.add('Zoomed')
+        self.goals.add("Hidden")
+        self.goals.select(2)
+        self.goals.toggle_zoom()
+        assert self.goals.all() == {
+            -1: {'name': 'Root'},
+            2: {'name': 'Zoomed'},
+        }
+        self.goals.toggle_zoom()
+        assert self.goals.all('name,edge') == {
+            1: {'name': 'Root', 'edge': [2, 3]},
+            2: {'name': 'Zoomed', 'edge': []},
+            3: {'name': 'Hidden', 'edge': []},
         }
 
     def test_do_not_hide_subgoals(self):
