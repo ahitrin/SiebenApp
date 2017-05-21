@@ -1,9 +1,7 @@
 class Enumeration:
-    proxied = ['add', 'closed', 'delete', 'edges', 'events', 'goals',
-               'hold_select', 'insert', 'previous_selection', 'rename',
-               'selection', 'swap_goals', 'toggle_close', 'toggle_link',
-               'verify',
-               ]
+    overriden = ['_goal_filter', '_id_mapping', '_update_mapping', 'all',
+                 'goaltree', 'next_view', 'select', 'selection_cache', 'view',
+                 'views']
 
     views = {'open': 'top', 'top': 'full', 'full': 'open'}
 
@@ -83,9 +81,9 @@ class Enumeration:
         self.selection_cache.clear()
 
     def __getattribute__(self, attr):
-        proxied = object.__getattribute__(self, 'proxied')
+        overriden = object.__getattribute__(self, 'overriden')
         goaltree = object.__getattribute__(self, 'goaltree')
-        if attr in proxied:
-            return getattr(goaltree, attr)
-        else:
+        if attr in overriden:
             return object.__getattribute__(self, attr)
+        else:
+            return getattr(goaltree, attr)
