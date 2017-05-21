@@ -36,10 +36,12 @@ class Enumeration:
                 if 'edge' in attrs:
                     attrs['edge'] = [e for e in attrs['edge'] if e in self._goal_filter]
 
-        m = {g: i + 1 for i, g in enumerate(sorted(goals))}
+        m = {g: i + 1 for i, g in enumerate(sorted(g for g in goals if g > 0))}
         length = len(m)
 
         def mapping_fn(goal_id):
+            if goal_id < 0:
+                return goal_id
             goal_id = m[goal_id]
             new_id = goal_id % 10
             if length > 10:

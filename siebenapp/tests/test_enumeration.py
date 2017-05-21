@@ -225,3 +225,29 @@ def test_simple_open_enumeration_workflow():
         1: {'name': 'Root', 'select': 'select', 'open': True, 'edge': [2]},
         2: {'name': '2', 'select': None, 'open': True, 'edge': []}
     }
+
+
+class PseudoZoomedGoals(Goals):
+    def all(self, keys='name'):
+        goals = super(PseudoZoomedGoals, self).all(keys)
+        goals[-1] = goals.pop(1)
+        return goals
+
+
+def test_do_not_enumerate_goals_with_negative_id():
+    g = PseudoZoomedGoals('Root')
+    g.add('Zoomed')
+    g.select(2)
+    g.hold_select()
+    g.add('Top')
+    assert g.all('name,select,edge') == {
+        -1: {'name': 'Root', 'select': None, 'edge': [2]},
+        2: {'name': 'Zoomed', 'select': 'select', 'edge': [3]},
+        3: {'name': 'Top', 'select': None, 'edge': []},
+    }
+    e = Enumeration(g)
+    assert e.all('name,select,edge') == {
+        -1: {'name': 'Root', 'select': None, 'edge': [1]},
+        1: {'name': 'Zoomed', 'select': 'select', 'edge': [2]},
+        2: {'name': 'Top', 'select': None, 'edge': []},
+    }
