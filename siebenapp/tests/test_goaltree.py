@@ -1,5 +1,6 @@
 # coding: utf-8
-from siebenapp.goaltree import Goals, Enumeration
+from siebenapp.goaltree import Goals
+from siebenapp.enumeration import Enumeration
 from unittest import TestCase
 
 

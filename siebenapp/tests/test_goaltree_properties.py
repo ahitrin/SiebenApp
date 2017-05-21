@@ -2,7 +2,8 @@
 from hypothesis import given, note
 from hypothesis.strategies import (
     dictionaries, integers, lists, sampled_from, composite, choices, streaming, text)
-from siebenapp.goaltree import Goals, Enumeration
+from siebenapp.goaltree import Goals
+from siebenapp.enumeration import Enumeration
 from siebenapp.system import run_migrations, save_updates
 import pytest
 import sqlite3

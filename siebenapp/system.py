@@ -1,7 +1,8 @@
 # coding: utf-8
 import sqlite3
 from os import path
-from siebenapp.goaltree import Goals, Enumeration
+from siebenapp.goaltree import Goals
+from siebenapp.enumeration import Enumeration
 
 DEFAULT_DB = 'sieben.db'
 MIGRATIONS = [
