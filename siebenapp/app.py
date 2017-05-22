@@ -58,6 +58,7 @@ class SiebenApp(QMainWindow):
             Qt.Key_R: self.start_edit(self.goals.rename, 'Rename goal'),
             Qt.Key_S: self.with_refresh(self.goals.swap_goals),
             Qt.Key_V: self.toggle_view,
+            Qt.Key_Z: self.toggle_zoom,
             Qt.Key_Space: self.with_refresh(self.goals.hold_select),
         }
         if event.key() in key_handlers:
@@ -98,6 +99,10 @@ class SiebenApp(QMainWindow):
         self.goals.next_view()
         self.refresh.emit()
 
+    def toggle_zoom(self):
+        self.force_refresh = True
+        self.goals.toggle_zoom()
+        self.refresh.emit()
 
 def main(root_script):
     app = QApplication(sys.argv)

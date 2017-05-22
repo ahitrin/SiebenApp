@@ -3,6 +3,7 @@ import sqlite3
 from os import path
 from siebenapp.goaltree import Goals
 from siebenapp.enumeration import Enumeration
+from siebenapp.zoom import Zoom
 
 DEFAULT_DB = 'sieben.db'
 MIGRATIONS = [
@@ -102,15 +103,17 @@ def save_updates(goals, connection):
 
 
 def load(filename=DEFAULT_DB):
-    if not path.isfile(filename):
-        return Enumeration(Goals('Rename me'))
-    connection = sqlite3.connect(filename)
-    cur = connection.cursor()
-    goals = [row for row in cur.execute('select * from goals')]
-    edges = [row for row in cur.execute('select * from edges')]
-    selection = [row for row in cur.execute('select * from selection')]
-    cur.close()
-    return Enumeration(Goals.build(goals, edges, selection))
+    if path.isfile(filename):
+        connection = sqlite3.connect(filename)
+        cur = connection.cursor()
+        goals = [row for row in cur.execute('select * from goals')]
+        edges = [row for row in cur.execute('select * from edges')]
+        selection = [row for row in cur.execute('select * from selection')]
+        cur.close()
+        goals = Goals.build(goals, edges, selection)
+    else:
+        goals = Goals('Rename me')
+    return Enumeration(Zoom(goals))
 
 
 def run_migrations(conn, migrations=MIGRATIONS):
