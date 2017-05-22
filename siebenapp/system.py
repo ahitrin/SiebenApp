@@ -127,6 +127,12 @@ def run_migrations(conn, migrations=MIGRATIONS):
         conn.commit()
 
 
+def _format_name(num, goal):
+    if num > 0:
+        return '"%d: %s"' % (num, goal['name'])
+    return '"%s"' % goal['name']
+
+
 def dot_export(goals):
     data = goals.all(keys='open,name,edge,select,top')
     lines = []
@@ -136,7 +142,7 @@ def dot_export(goals):
         if goal['top']:
             style.append('bold')
         attributes = {
-            'label': '"%d: %s"' % (num, goal['name']),
+            'label': _format_name(num, goal),
             'color': 'red' if goal['open'] else 'green',
             'fillcolor': {'select': 'gray', 'prev': 'lightgray'}.get(goal['select']),
         }
@@ -155,5 +161,8 @@ def dot_export(goals):
     for num in sorted(data.keys()):
         for edge in data[num]['edge']:
             color = 'black' if data[edge]['open'] else 'gray'
-            lines.append('%d -> %d [color=%s];' % (edge, num, color))
+            line_attrs = 'color=%s' % color
+            if num < 0:
+                line_attrs += ', style=dashed'
+            lines.append('%d -> %d [%s];' % (edge, num, line_attrs))
     return 'digraph g {\nnode [shape=box];\n%s\n}' % '\n'.join(lines)

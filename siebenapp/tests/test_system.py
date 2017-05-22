@@ -2,6 +2,7 @@
 from siebenapp.goaltree import Goals
 from siebenapp.enumeration import Enumeration
 from siebenapp.system import dot_export
+from siebenapp.zoom import Zoom
 
 
 def test_dot_export_full_view():
@@ -71,4 +72,23 @@ def test_dot_export_top_view():
     assert dot_export(g) == '''digraph g {
 node [shape=box];
 1 [label="1: Top", color=red, style="bold,filled", fillcolor=gray];
+}'''
+
+
+def test_dot_export_zoomed_goal_tree():
+    g = Enumeration(Zoom(Goals('Root goal')))
+    g.add('Hidden intermediate')
+    g.add('Zoom root', 2)
+    g.add('Hidden neighbour', 2)
+    g.add('Visible top', 3)
+    g.toggle_link(4, 5)
+    g.select(3)
+    g.toggle_zoom()
+    assert dot_export(g) == '''digraph g {
+node [shape=box];
+-1 [label="Root goal", color=red];
+1 [label="1: Zoom root", color=red, style=filled, fillcolor=gray];
+2 [label="2: Visible top", color=red, style=bold];
+1 -> -1 [color=black, style=dashed];
+2 -> 1 [color=black];
 }'''
