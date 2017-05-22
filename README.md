@@ -84,10 +84,11 @@ Now just play around freely using following buttons:
  * `a` for _adding_ new subgoals;
  * `d` for _removing_ them (please note that removing is **undoable**, and may remove all subgoals of the current one);
  * `c` for _closing_ current goal, and also for re-open closed one;
- * `r` for _renaming_
+ * `r` for _renaming_;
  * `Space` for _holding_ (remembering) current selection;
  * `l` for creating new _link_ between remembered and current selections (current selection becomes subgoal of the remembered one), and also for removing existing links;
  * `i` for _inserting_ new goal between remembered and current selections;
+ * `z` for _zooming_ to the given goal or _unzooming_ back to all goals;
  * `v` for circular switching current _view_: only open goals → only "top" goals → all goals → ...;
  * `q` for quitting when you are impressed enough.
 
