@@ -131,7 +131,7 @@ def run_migrations(conn, migrations=MIGRATIONS):
 
 
 def _format_name(num, goal):
-    if num > 0:
+    if num >= 0:
         return '"%d: %s"' % (num, goal['name'])
     return '"%s"' % goal['name']
 
