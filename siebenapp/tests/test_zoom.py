@@ -100,6 +100,44 @@ class TestZoom(TestCase):
         self.goals.toggle_zoom()
         assert self.goals.events[-1] == ('hold_select', 3)
 
+    def test_goal_closing_must_not_cause_root_selection(self):
+        self.goals.add('Zoom root')
+        self.goals.add('Close me', 2)
+        self.goals.select(2)
+        self.goals.toggle_zoom()
+        assert self.goals.all(keys='name,select,open') == {
+            -1: {'name': 'Root', 'select': None, 'open': True},
+            2: {'name': 'Zoom root', 'select': 'select', 'open': True},
+            3: {'name': 'Close me', 'select': None, 'open': True},
+        }
+        self.goals.select(3)
+        self.goals.toggle_close()
+        assert self.goals.all(keys='name,select,open') == {
+            -1: {'name': 'Root', 'select': None, 'open': True},
+            2: {'name': 'Zoom root', 'select': 'select', 'open': True},
+            3: {'name': 'Close me', 'select': None, 'open': False},
+        }
+
+    def test_goal_reopening_must_not_change_selection(self):
+        self.goals.add('Zoom root')
+        self.goals.add('Reopen me', 2)
+        self.goals.select(2)
+        self.goals.toggle_zoom()
+        self.goals.select(3)
+        self.goals.toggle_close()
+        assert self.goals.all(keys='name,select,open') == {
+            -1: {'name': 'Root', 'select': None, 'open': True},
+            2: {'name': 'Zoom root', 'select': 'select', 'open': True},
+            3: {'name': 'Reopen me', 'select': None, 'open': False},
+        }
+        self.goals.select(3)
+        self.goals.toggle_close()
+        assert self.goals.all(keys='name,select,open') == {
+            -1: {'name': 'Root', 'select': None, 'open': True},
+            2: {'name': 'Zoom root', 'select': 'prev', 'open': True},
+            3: {'name': 'Reopen me', 'select': 'select', 'open': True},
+        }
+
     def test_goal_deletion_must_not_cause_root_selection(self):
         self.goals.add('Hidden')
         self.goals.add('Zoom root', 2)
