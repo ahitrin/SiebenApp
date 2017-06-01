@@ -1,6 +1,6 @@
 class Zoom:
     override = ['goals', 'zoom_root', 'toggle_zoom', 'all',
-                '_build_visible_goals']
+                'delete', '_build_visible_goals']
 
     def __init__(self, goaltree):
         self.goals = goaltree
@@ -28,6 +28,12 @@ class Zoom:
         if 'edge' in keys:
             zoomed_goals[-1]['edge'] = [self.zoom_root]
         return zoomed_goals
+
+    def delete(self, goal_id=0):
+        self.goals.delete(goal_id)
+        if self.goals.selection != self.zoom_root:
+            self.goals.select(self.zoom_root)
+            self.goals.hold_select()
 
     def _build_visible_goals(self):
         edges = self.goals.all('edge')

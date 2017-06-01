@@ -99,3 +99,21 @@ class TestZoom(TestCase):
         assert self.goals.events[-1] == ('select', 3)
         self.goals.toggle_zoom()
         assert self.goals.events[-1] == ('hold_select', 3)
+
+    def test_goal_deletion_must_not_cause_root_selection(self):
+        self.goals.add('Hidden')
+        self.goals.add('Zoom root', 2)
+        self.goals.add('Deleted', 3)
+        self.goals.select(3)
+        self.goals.toggle_zoom()
+        assert self.goals.all(keys='name,select') == {
+            -1: {'name': 'Root', 'select': None},
+            3: {'name': 'Zoom root', 'select': 'select'},
+            4: {'name': 'Deleted', 'select': None},
+        }
+        self.goals.select(4)
+        self.goals.delete()
+        assert self.goals.all(keys='name,select') == {
+            -1: {'name': 'Root', 'select': None},
+            3: {'name': 'Zoom root', 'select': 'select'},
+        }
