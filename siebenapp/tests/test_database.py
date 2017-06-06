@@ -1,9 +1,13 @@
 # coding: utf-8
 import pytest
 import sqlite3
+
+from siebenapp.enumeration import Enumeration
 from siebenapp.goaltree import Goals
 from siebenapp.system import MIGRATIONS, run_migrations, load, save
 from tempfile import NamedTemporaryFile
+
+from siebenapp.zoom import Zoom
 
 
 def test_initial_migration_on_empty_db():
@@ -88,7 +92,7 @@ def test_save_into_sqlite3_database():
 
 def test_save_and_load():
     file_name = NamedTemporaryFile().name
-    goals = Goals('Root')
+    goals = Enumeration(Zoom(Goals('Root')))
     goals.add('Top')
     goals.add('Middle')
     goals.select(3)
@@ -99,8 +103,13 @@ def test_save_and_load():
     goals.select(4)
     goals.toggle_close()
     save(goals, file_name)
-    new_goals = load(file_name).goaltree
-    assert goals.all(keys='open,name,edge,select') == new_goals.all(keys='open,name,edge,select')
+    new_goals = load(file_name)
+    goals.next_view()
+    goals.next_view()
+    new_goals.next_view()
+    new_goals.next_view()
+    assert goals.all(keys='open,name,edge,select,top') == \
+           new_goals.all(keys='open,name,edge,select,top')
 
 
 def test_multiple_saves_works_fine():
