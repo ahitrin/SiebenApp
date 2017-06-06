@@ -90,6 +90,21 @@ def test_save_into_sqlite3_database():
     assert cur.fetchone()[0] > 0
 
 
+def test_migration_must_run_on_existing_db():
+    file_name = NamedTemporaryFile().name
+    goals = Goals('Just a simple goal tree')
+    last_migration = MIGRATIONS.pop(-1)
+    save(goals, file_name)
+    MIGRATIONS.append(last_migration)
+    load(file_name)
+    conn = sqlite3.connect(file_name)
+    cur = conn.cursor()
+    cur.execute('select version from migrations')
+    version = cur.fetchone()[0]
+    cur.close()
+    assert version == len(MIGRATIONS) - 1
+
+
 def test_save_and_load():
     file_name = NamedTemporaryFile().name
     goals = Enumeration(Zoom(Goals('Root')))

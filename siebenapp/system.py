@@ -60,6 +60,7 @@ MIGRATIONS = [
 def save(goals, filename=DEFAULT_DB):
     if path.isfile(filename):
         connection = sqlite3.connect(filename)
+        run_migrations(connection)
         save_updates(goals, connection)
         connection.close()
     else:
@@ -105,6 +106,7 @@ def save_updates(goals, connection):
 def load(filename=DEFAULT_DB):
     if path.isfile(filename):
         connection = sqlite3.connect(filename)
+        run_migrations(connection)
         cur = connection.cursor()
         goals = [row for row in cur.execute('select * from goals')]
         edges = [row for row in cur.execute('select * from edges')]
@@ -116,14 +118,15 @@ def load(filename=DEFAULT_DB):
     return Enumeration(Zoom(goals))
 
 
-def run_migrations(conn, migrations=MIGRATIONS):
+def run_migrations(conn, migrations=None):
+    if migrations is None: migrations = MIGRATIONS
     cur = conn.cursor()
     try:
         cur.execute('select version from migrations')
         current_version = cur.fetchone()[0]
     except sqlite3.OperationalError:
         current_version = -1
-    for num, migration in enumerate(migrations[current_version + 1:]):
+    for num, migration in [(n, m) for n, m in enumerate(migrations)][current_version + 1:]:
         for query in migration:
             cur.execute(query)
         cur.execute('update migrations set version=?', (num,))
