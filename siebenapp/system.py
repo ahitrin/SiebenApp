@@ -90,6 +90,8 @@ def save_updates(goals, connection):
         'delete': ['delete from goals where goal_id=?',
                    'delete from edges where child=?',
                    'delete from edges where parent=?'],
+        'zoom': ['delete from selection where name="zoom"',
+                 'insert into selection values ("zoom", ?)'],
     }
     cur = connection.cursor()
     while len(goals.events) > 0:

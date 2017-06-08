@@ -10,10 +10,12 @@ class Zoom:
         selection = self.goaltree.selection
         if selection == self.zoom_root:
             self.zoom_root = 1
+            self.events.append(('zoom', self.zoom_root))
             return
         self.zoom_root = selection
         visible_goals = self._build_visible_goals()
         prev_selection = self.goaltree.previous_selection
+        self.events.append(('zoom', self.zoom_root))
         if prev_selection not in visible_goals:
             self.goaltree.hold_select()
 

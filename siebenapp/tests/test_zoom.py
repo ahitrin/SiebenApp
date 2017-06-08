@@ -100,6 +100,18 @@ class TestZoom(TestCase):
         self.goals.toggle_zoom()
         assert self.goals.events[-1] == ('hold_select', 3)
 
+    def test_zoom_events(self):
+        self.goals.add('Intermediate')
+        self.goals.add('Zoom here', 2)
+        self.goals.toggle_zoom()
+        assert all(e[0] != 'select' for e in self.goals.events)
+        self.goals.select(3)
+        self.goals.hold_select()
+        self.goals.toggle_zoom()
+        assert self.goals.events[-1] == ('zoom', 3)
+        self.goals.toggle_zoom()
+        assert self.goals.events[-1] == ('zoom', 1)
+
     def test_goal_closing_must_not_cause_root_selection(self):
         self.goals.add('Zoom root')
         self.goals.add('Close me', 2)
