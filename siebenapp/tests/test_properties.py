@@ -1,7 +1,9 @@
 # coding: utf-8
+from contextlib import closing
+
 from hypothesis import given, note
 from hypothesis.strategies import (
-    dictionaries, integers, lists, sampled_from, composite, choices, streaming, text)
+    integers, lists, sampled_from, composite, choices, streaming, text)
 from siebenapp.goaltree import Goals
 from siebenapp.enumeration import Enumeration
 from siebenapp.system import run_migrations, save_updates
@@ -98,42 +100,39 @@ def test_no_modify_action_sequence_could_break_goaltree_correctness(actions, int
     assert g.verify()
 
 
+def build_goals(conn):
+    with closing(conn.cursor()) as cur:
+        goals = [row for row in cur.execute('select * from goals')]
+        edges = [row for row in cur.execute('select * from edges')]
+        selection = [row for row in cur.execute('select * from settings')]
+        note(goals)
+        note(edges)
+        note(selection)
+        return Goals.build(goals, edges, selection)
+
+
 @given(user_actions(), streaming(integers(0, 9)))
 def test_full_export_and_streaming_export_must_be_the_same(actions, ints):
     g = build_from(actions, ints)
-    conn = sqlite3.connect(':memory:')
-    run_migrations(conn)
-    note(g.events)
-    save_updates(g, conn)
-    assert not g.events
-    cur = conn.cursor()
-    goals = [row for row in cur.execute('select * from goals')]
-    edges = [row for row in cur.execute('select * from edges')]
-    selection = [row for row in cur.execute('select * from settings')]
-    note(goals)
-    note(edges)
-    note(selection)
-    ng = Goals.build(goals, edges, selection)
-    assert g.all('name,open,edge,select') == ng.all('name,open,edge,select')
+    with closing(sqlite3.connect(':memory:')) as conn:
+        run_migrations(conn)
+        note(g.events)
+        save_updates(g, conn)
+        assert not g.events
+        ng = build_goals(conn)
+        assert g.all('name,open,edge,select') == ng.all('name,open,edge,select')
 
 
 @given(text())
 def test_all_goal_names_must_be_saved_correctly(name):
     g = Goals('renamed')
     g.rename(name)
-    conn = sqlite3.connect(':memory:')
-    note(g.events)
-    run_migrations(conn)
-    save_updates(g, conn)
-    cur = conn.cursor()
-    goals = [row for row in cur.execute('select * from goals')]
-    edges = [row for row in cur.execute('select * from edges')]
-    selection = [row for row in cur.execute('select * from settings')]
-    note(goals)
-    note(edges)
-    note(selection)
-    ng = Goals.build(goals, edges, selection)
-    assert g.all('name,open,edge,select') == ng.all('name,open,edge,select')
+    with closing(sqlite3.connect(':memory:')) as conn:
+        note(g.events)
+        run_migrations(conn)
+        save_updates(g, conn)
+        ng = build_goals(conn)
+        assert g.all('name,open,edge,select') == ng.all('name,open,edge,select')
 
 
 def test_all_keys_in_enumeration_must_be_of_the_same_length():
