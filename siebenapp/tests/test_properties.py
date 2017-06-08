@@ -109,7 +109,7 @@ def test_full_export_and_streaming_export_must_be_the_same(actions, ints):
     cur = conn.cursor()
     goals = [row for row in cur.execute('select * from goals')]
     edges = [row for row in cur.execute('select * from edges')]
-    selection = [row for row in cur.execute('select * from selection')]
+    selection = [row for row in cur.execute('select * from settings')]
     note(goals)
     note(edges)
     note(selection)
@@ -128,7 +128,7 @@ def test_all_goal_names_must_be_saved_correctly(name):
     cur = conn.cursor()
     goals = [row for row in cur.execute('select * from goals')]
     edges = [row for row in cur.execute('select * from edges')]
-    selection = [row for row in cur.execute('select * from selection')]
+    selection = [row for row in cur.execute('select * from settings')]
     note(goals)
     note(edges)
     note(selection)

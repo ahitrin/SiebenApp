@@ -54,6 +54,10 @@ MIGRATIONS = [
            select name, goal from old_selection''',
         '''drop table old_selection''',
     ],
+    # 3
+    [
+        'alter table selection rename to settings',
+    ],
 ]
 
 
@@ -70,7 +74,7 @@ def save(goals, filename=DEFAULT_DB):
         cur = connection.cursor()
         cur.executemany('insert into goals values (?,?,?)', goals_export)
         cur.executemany('insert into edges values (?,?)', edges_export)
-        cur.executemany('insert into selection values (?,?)', select_export)
+        cur.executemany('insert into settings values (?,?)', select_export)
         goals.events.clear()
         connection.commit()
         connection.close()
@@ -83,15 +87,15 @@ def save_updates(goals, connection):
         'rename': ['update goals set name=? where goal_id=?'],
         'link': ['insert into edges values (?,?)'],
         'unlink': ['delete from edges where parent=? and child=?'],
-        'select': ['delete from selection where name="selection"',
-                   'insert into selection values ("selection", ?)'],
-        'hold_select': ['delete from selection where name="previous_selection"',
-                        'insert into selection values ("previous_selection", ?)'],
+        'select': ['delete from settings where name="selection"',
+                   'insert into settings values ("selection", ?)'],
+        'hold_select': ['delete from settings where name="previous_selection"',
+                        'insert into settings values ("previous_selection", ?)'],
         'delete': ['delete from goals where goal_id=?',
                    'delete from edges where child=?',
                    'delete from edges where parent=?'],
-        'zoom': ['delete from selection where name="zoom"',
-                 'insert into selection values ("zoom", ?)'],
+        'zoom': ['delete from settings where name="zoom"',
+                 'insert into settings values ("zoom", ?)'],
     }
     cur = connection.cursor()
     while len(goals.events) > 0:
@@ -112,7 +116,7 @@ def load(filename=DEFAULT_DB):
         cur = connection.cursor()
         goals = [row for row in cur.execute('select * from goals')]
         edges = [row for row in cur.execute('select * from edges')]
-        selection = [row for row in cur.execute('select * from selection')]
+        selection = [row for row in cur.execute('select * from settings')]
         cur.close()
         goals = Goals.build(goals, edges, selection)
     else:
