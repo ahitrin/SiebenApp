@@ -121,6 +121,8 @@ def test_save_and_load():
     goals.add('Closed')
     goals.select(4)
     goals.toggle_close()
+    goals.select(2)
+    goals.toggle_zoom()
     save(goals, file_name)
     new_goals = load(file_name)
     goals.next_view()

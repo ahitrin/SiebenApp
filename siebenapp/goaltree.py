@@ -6,6 +6,7 @@ class Goals:
     def __init__(self, name):
         self.goals = {}
         self.edges = {}
+        self.settings = {}
         self.closed = set()
         self.selection = 1
         self.previous_selection = 1
@@ -178,7 +179,7 @@ class Goals:
         return True
 
     @staticmethod
-    def build(goals, edges, selection):
+    def build(goals, edges, settings):
         result = Goals('')
         result.events.clear()  # remove initial goal
         goals_dict = dict((g[0], g[1]) for g in goals)
@@ -191,9 +192,9 @@ class Goals:
             d[parent].append(child)
         result.edges = dict(d)
         result.edges.update(dict((g, []) for g in result.goals if g not in d))
-        selects = dict(selection)
-        result.selection = selects.get('selection', 1)
-        result.previous_selection = selects.get('previous_selection', 1)
+        result.settings = dict(settings)
+        result.selection = result.settings.pop('selection', 1)
+        result.previous_selection = result.settings.pop('previous_selection', 1)
         result._update_top()
         result.verify()
         return result

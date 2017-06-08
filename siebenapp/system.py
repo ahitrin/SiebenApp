@@ -116,9 +116,9 @@ def load(filename=DEFAULT_DB):
         cur = connection.cursor()
         goals = [row for row in cur.execute('select * from goals')]
         edges = [row for row in cur.execute('select * from edges')]
-        selection = [row for row in cur.execute('select * from settings')]
+        settings = [row for row in cur.execute('select * from settings')]
         cur.close()
-        goals = Goals.build(goals, edges, selection)
+        goals = Goals.build(goals, edges, settings)
     else:
         goals = Goals('Rename me')
     return Enumeration(Zoom(goals))

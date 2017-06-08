@@ -1,10 +1,10 @@
 class Zoom:
-    override = ['_build_visible_goals', 'all', 'delete', 'goaltree',
+    override = ['_build_visible_goals', 'all', 'delete', 'export', 'goaltree',
                 'toggle_close', 'toggle_zoom', 'zoom_root']
 
     def __init__(self, goaltree):
         self.goaltree = goaltree
-        self.zoom_root = 1
+        self.zoom_root = goaltree.settings.pop('zoom', 1)
 
     def toggle_zoom(self):
         selection = self.goaltree.selection
