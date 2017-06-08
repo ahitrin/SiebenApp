@@ -6,16 +6,17 @@ class Goals:
     def __init__(self, name):
         self.goals = {}
         self.edges = {}
-        self.settings = {}
         self.closed = set()
-        self.selection = 1
-        self.previous_selection = 1
+        self.settings = {
+            'selection': 1,
+            'previous_selection': 1,
+        }
         self.events = collections.deque()
         self.add(name)
 
     def add(self, name, add_to=0):
         if add_to == 0:
-            add_to = self.selection
+            add_to = self.settings['selection']
         if add_to in self.closed:
             return False
         next_id = max(list(self.goals.keys()) + [0]) + 1
@@ -28,18 +29,18 @@ class Goals:
 
     def select(self, goal_id):
         if goal_id in self.goals and self.goals[goal_id] is not None:
-            self.selection = goal_id
-            self.events.append(('select', self.selection))
+            self.settings['selection'] = goal_id
+            self.events.append(('select', goal_id))
 
     def hold_select(self):
-        self.previous_selection = self.selection
-        self.events.append(('hold_select', self.selection))
+        self.settings['previous_selection'] = self.settings['selection']
+        self.events.append(('hold_select', self.settings['selection']))
 
     def all(self, keys='name'):
         def sel(x):
-            if x == self.selection:
+            if x == self.settings['selection']:
                 return 'select'
-            elif x == self.previous_selection:
+            elif x == self.settings['previous_selection']:
                 return 'prev'
             return None
         keys = keys.split(',')
@@ -61,50 +62,50 @@ class Goals:
                          all(g in self.closed for g in self.edges[goal])])
 
     def insert(self, name):
-        if self.selection == self.previous_selection:
+        if self.settings['selection'] == self.settings['previous_selection']:
             return
-        if self.add(name, self.previous_selection):
+        if self.add(name, self.settings['previous_selection']):
             key = len(self.goals)
-            self.toggle_link(key, self.selection)
-            if self.selection in self.edges[self.previous_selection]:
-                self.toggle_link(self.previous_selection, self.selection)
+            self.toggle_link(key, self.settings['selection'])
+            if self.settings['selection'] in self.edges[self.settings['previous_selection']]:
+                self.toggle_link(self.settings['previous_selection'], self.settings['selection'])
 
     def rename(self, new_name, goal_id=0):
         if goal_id == 0:
-            goal_id = self.selection
+            goal_id = self.settings['selection']
         self.goals[goal_id] = new_name
         self.events.append(('rename', new_name, goal_id))
 
     def swap_goals(self):
-        first, second = self.selection, self.previous_selection
+        first, second = self.settings['selection'], self.settings['previous_selection']
         first_name, second_name = self.goals[first], self.goals[second]
         self.rename(first_name, second)
         self.rename(second_name, first)
         self._update_top()
 
     def toggle_close(self):
-        if self.selection in self.closed:
+        if self.settings['selection'] in self.closed:
             if self._may_be_reopened():
-                self.closed.remove(self.selection)
-                self.events.append(('toggle_close', True, self.selection))
+                self.closed.remove(self.settings['selection'])
+                self.events.append(('toggle_close', True, self.settings['selection']))
         else:
             if self._may_be_closed():
-                self.closed.add(self.selection)
-                self.events.append(('toggle_close', False, self.selection))
+                self.closed.add(self.settings['selection'])
+                self.events.append(('toggle_close', False, self.settings['selection']))
                 self.select(1)
                 self.hold_select()
         self._update_top()
 
     def _may_be_closed(self):
-        return all(g in self.closed for g in self.edges[self.selection])
+        return all(g in self.closed for g in self.edges[self.settings['selection']])
 
     def _may_be_reopened(self):
-        parent_goals = [g for g, v in self.edges.items() if self.selection in v]
+        parent_goals = [g for g, v in self.edges.items() if self.settings['selection'] in v]
         return all(g not in self.closed for g in parent_goals)
 
     def delete(self, goal_id=0):
         if goal_id == 0:
-            goal_id = self.selection
+            goal_id = self.settings['selection']
         if goal_id == 1:
             return
         self._delete(goal_id)
@@ -126,9 +127,9 @@ class Goals:
 
     def toggle_link(self, lower=0, upper=0):
         if lower == 0:
-            lower = self.previous_selection
+            lower = self.settings['previous_selection']
         if upper == 0:
-            upper = self.selection
+            upper = self.settings['selection']
         if lower == upper:
             return
         if upper in self.edges[lower]:
@@ -176,6 +177,8 @@ class Goals:
         assert all(not self.edges.get(n) for n in deleted_nodes), \
             'Deleted goals must have no dependencies'
 
+        assert all(k in self.settings for k in {'selection', 'previous_selection'})
+
         return True
 
     @staticmethod
@@ -192,9 +195,7 @@ class Goals:
             d[parent].append(child)
         result.edges = dict(d)
         result.edges.update(dict((g, []) for g in result.goals if g not in d))
-        result.settings = dict(settings)
-        result.selection = result.settings.pop('selection', 1)
-        result.previous_selection = result.settings.pop('previous_selection', 1)
+        result.settings.update(settings)
         result._update_top()
         result.verify()
         return result
@@ -205,6 +206,5 @@ class Goals:
               for g_id, g_name in goals.goals.items()]
         es = [(parent, child) for parent in goals.edges
               for child in goals.edges[parent]]
-        sel = [('selection', goals.selection),
-               ('previous_selection', goals.previous_selection)]
-        return gs, es, sel
+        set = list(goals.settings.items())
+        return gs, es, set

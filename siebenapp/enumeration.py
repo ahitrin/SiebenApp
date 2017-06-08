@@ -14,9 +14,9 @@ class Enumeration:
     def _update_mapping(self):
         if self.view == 'top':
             goals = {k for k, v in self.goaltree.all(keys='top').items() if v['top']}
-            if goals and self.goaltree.selection not in goals:
+            if goals and self.settings['selection'] not in goals:
                 self.goaltree.select(min(goals))
-            if goals and self.goaltree.previous_selection not in goals:
+            if goals and self.settings['previous_selection'] not in goals:
                 self.goaltree.hold_select()
             self._goal_filter = goals
         elif self.view == 'open':
