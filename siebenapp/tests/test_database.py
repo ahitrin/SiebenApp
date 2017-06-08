@@ -1,4 +1,6 @@
 # coding: utf-8
+from contextlib import closing
+
 import pytest
 import sqlite3
 
@@ -11,51 +13,49 @@ from siebenapp.zoom import Zoom
 
 
 def test_initial_migration_on_empty_db():
-    conn = sqlite3.connect(':memory:')
-    cur = conn.cursor()
-    run_migrations(conn, MIGRATIONS[:1])
-    cur.execute('select version from migrations')
-    version = cur.fetchone()[0]
-    assert version == 0
+    with closing(sqlite3.connect(':memory:')) as conn:
+        with closing(conn.cursor()) as cur:
+            run_migrations(conn, MIGRATIONS[:1])
+            cur.execute('select version from migrations')
+            version = cur.fetchone()[0]
+            assert version == 0
 
 
 def test_skip_passed_migrations():
-    conn = sqlite3.connect(':memory:')
-    cur = conn.cursor()
-    run_migrations(conn, MIGRATIONS[:1])
-    run_migrations(conn, MIGRATIONS[:1])
-    cur.execute('select version from migrations')
-    version = cur.fetchone()[0]
-    assert version == 0
+    with closing(sqlite3.connect(':memory:')) as conn:
+        with closing(conn.cursor()) as cur:
+            run_migrations(conn, MIGRATIONS[:1])
+            run_migrations(conn, MIGRATIONS[:1])
+            cur.execute('select version from migrations')
+            version = cur.fetchone()[0]
+            assert version == 0
 
 
 def test_last_known_migration():
-    conn = sqlite3.connect(':memory:')
-    cur = conn.cursor()
-    run_migrations(conn)
-    cur.execute('select version from migrations')
-    version = cur.fetchone()[0]
-    assert version == 3
+    with closing(sqlite3.connect(':memory:')) as conn:
+        with closing(conn.cursor()) as cur:
+            run_migrations(conn)
+            cur.execute('select version from migrations')
+            version = cur.fetchone()[0]
+            assert version == 3
 
 
 def setup_sample_db(conn):
-    cur = conn.cursor()
-    sample_goals = [(1, 'Root', True), (2, 'A', True), (3, 'B', False)]
-    cur.executemany('insert into goals values (?,?,?)', sample_goals)
-    sample_edges = [(1, 2), (1, 3), (2, 3)]
-    cur.executemany('insert into edges values (?,?)', sample_edges)
-    sample_selects = [('selection', 2), ('previous_selection', 1)]
-    cur.executemany('insert into settings values (?,?)', sample_selects)
-    conn.commit()
-    cur.close()
+    with closing(conn.cursor()) as cur:
+        sample_goals = [(1, 'Root', True), (2, 'A', True), (3, 'B', False)]
+        cur.executemany('insert into goals values (?,?,?)', sample_goals)
+        sample_edges = [(1, 2), (1, 3), (2, 3)]
+        cur.executemany('insert into edges values (?,?)', sample_edges)
+        sample_selects = [('selection', 2), ('previous_selection', 1)]
+        cur.executemany('insert into settings values (?,?)', sample_selects)
+        conn.commit()
 
 
 def test_restore_goals_from_db():
     file_name = NamedTemporaryFile().name
-    conn = sqlite3.connect(file_name)
-    run_migrations(conn)
-    setup_sample_db(conn)
-    conn.close()
+    with sqlite3.connect(file_name) as conn:
+        run_migrations(conn)
+        setup_sample_db(conn)
     actual_goals = load(file_name).goaltree
     expected_goals = Goals('Root')
     expected_goals.add('A')
@@ -84,10 +84,10 @@ def test_save_into_sqlite3_database():
     file_name = NamedTemporaryFile().name
     goals = Goals('Sample')
     save(goals, file_name)
-    conn = sqlite3.connect(file_name)
-    cur = conn.cursor()
-    cur.execute('select version from migrations')
-    assert cur.fetchone()[0] > 0
+    with sqlite3.connect(file_name) as conn:
+        with closing(conn.cursor()) as cur:
+            cur.execute('select version from migrations')
+            assert cur.fetchone()[0] > 0
 
 
 def x_test_migration_must_run_on_existing_db():
@@ -139,11 +139,10 @@ def test_multiple_saves_works_fine():
 
 def test_do_not_load_from_broken_data():
     file_name = NamedTemporaryFile().name
-    conn = sqlite3.connect(file_name)
-    run_migrations(conn)
-    setup_sample_db(conn)
-    cur = conn.cursor()
-    cur.execute('delete from goals where goal_id = 2')
-    conn.commit()
+    with sqlite3.connect(file_name) as conn:
+        run_migrations(conn)
+        setup_sample_db(conn)
+        with closing(conn.cursor()) as cur:
+            cur.execute('delete from goals where goal_id = 2')
     with pytest.raises(AssertionError):
         load(file_name)
