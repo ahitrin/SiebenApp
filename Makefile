@@ -5,7 +5,8 @@ ENV:=.env
 all: check venv test
 
 check:
-	if [ ! `which python3.5` ] ; then echo Please install Python 3.5 ; exit 1; fi
+	if [ ! `which python3` ] ; then echo Please install Python 3.5 or greater ; exit 1; fi
+	if [ `python3 -V | cut -d. -f2` -lt 5 ]; then echo Please install Python 3.5 or greater; exit 1; fi
 	if [ ! `which virtualenv` ] ; then echo Please install virtualenv ; exit 1; fi
 	if [ ! `which dot` ] ; then echo Please install Graphviz ; exit 1; fi
 
