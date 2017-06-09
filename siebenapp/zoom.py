@@ -41,6 +41,8 @@ class Zoom:
             self.goaltree.hold_select()
 
     def delete(self, goal_id=0):
+        if self.settings['selection'] == self.settings['zoom']:
+            self.toggle_zoom()
         self.goaltree.delete(goal_id)
         if self.settings['selection'] != self.settings['zoom']:
             self.goaltree.select(self.settings['zoom'])
