@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.5
+#!/usr/bin/env python3
 # coding: utf-8
 import sys
 from os.path import dirname, join, realpath
@@ -103,6 +103,7 @@ class SiebenApp(QMainWindow):
         self.force_refresh = True
         self.goals.toggle_zoom()
         self.refresh.emit()
+
 
 def main(root_script):
     app = QApplication(sys.argv)
