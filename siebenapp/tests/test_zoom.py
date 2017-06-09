@@ -167,3 +167,15 @@ class TestZoom(TestCase):
             -1: {'name': 'Root', 'select': None},
             3: {'name': 'Zoom root', 'select': 'select'},
         }
+
+    def test_closing_zoom_root_should_cause_unzoom(self):
+        self.goals.add('Intermediate')
+        self.goals.add('Zoom here', 2)
+        self.goals.select(3)
+        self.goals.toggle_zoom()
+        self.goals.toggle_close()
+        assert self.goals.all(keys='name,select,open') == {
+            1: {'name': 'Root', 'select': 'select', 'open': True},
+            2: {'name': 'Intermediate', 'select': None, 'open': True},
+            3: {'name': 'Zoom here', 'select': None, 'open': False},
+        }

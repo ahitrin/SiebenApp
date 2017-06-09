@@ -33,6 +33,8 @@ class Zoom:
         return zoomed_goals
 
     def toggle_close(self):
+        if self.settings['selection'] == self.settings['zoom']:
+            self.toggle_zoom()
         self.goaltree.toggle_close()
         if self.settings['selection'] not in self._build_visible_goals():
             self.goaltree.select(self.settings['zoom'])
