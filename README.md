@@ -92,6 +92,8 @@ Now just play around freely using following buttons:
  * `v` for circular switching current _view_: only open goals → only "top" goals → all goals → ...;
  * `q` for quitting when you are impressed enough.
 
+For more examples, please visit `docs/examples` folder.
+
 ## Alpha version warning
 
 Please take into consideration that here you see the very early Alpha release of the app. It means that a lot of compromises have taken place during its development. Among them there are following ones:
