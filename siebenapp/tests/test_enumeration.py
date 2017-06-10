@@ -184,6 +184,22 @@ def test_selection_cache_should_be_reset_after_view_switch():
     }
 
 
+def test_selection_cache_should_avoid_overflow():
+    g = Goals('Root')
+    for i in range(10):
+        g.add(str(i+2))
+    e = Enumeration(g)
+    assert e.all(keys='select')[11] == {'select': 'select'}
+    e.select(5)
+    assert e.all(keys='select')[11] == {'select': 'select'}
+    e.select(1)
+    assert e.all(keys='select')[11] == {'select': 'select'}
+    assert e.all(keys='select')[14] == {'select': None}
+    e.select(4)
+    assert e.all(keys='select')[11] == {'select': 'prev'}
+    assert e.all(keys='select')[14] == {'select': 'select'}
+
+
 def test_top_view_may_be_empty():
     e = Enumeration(Goals('closed'))
     e.toggle_close()

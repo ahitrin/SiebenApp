@@ -1,3 +1,6 @@
+import math
+
+
 class Enumeration:
     overriden = ['_goal_filter', '_id_mapping', '_update_mapping', 'all',
                  'goaltree', 'next_view', 'select', 'selection_cache', 'view',
@@ -70,6 +73,8 @@ class Enumeration:
         goals, mapping = self._id_mapping()
         if self.selection_cache:
             goal_id = 10 * self.selection_cache.pop() + goal_id
+            if goal_id > max(mapping(k) for k in goals.keys()):
+                goal_id %= int(pow(10, int(math.log(goal_id, 10))))
         possible_selections = [g for g in goals if mapping(g) == goal_id]
         if len(possible_selections) == 1:
             self.goaltree.select(possible_selections[0])
