@@ -39,16 +39,18 @@ def build_from(actions, ints, show_notes=True):
     ints_index = 0
     g = Goals('Root')
     actual_ints = []
-    for name in actions:
-        int_val = 0
-        if name == 'select':
-            int_val = ints[ints_index]
-            actual_ints.append(int_val)
-            ints_index += 1
-        USER_ACTIONS[name](g, int_val)
-    if show_notes:
-        note(actions)
-        note(actual_ints)
+    try:
+        for name in actions:
+            int_val = 0
+            if name == 'select':
+                int_val = ints[ints_index]
+                actual_ints.append(int_val)
+                ints_index += 1
+            USER_ACTIONS[name](g, int_val)
+    finally:
+        if show_notes:
+            note(actions)
+            note(actual_ints)
     return g
 
 
