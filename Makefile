@@ -11,7 +11,7 @@ check:
 	if [ ! `which dot` ] ; then echo Please install Graphviz ; exit 1; fi
 
 venv:
-	virtualenv -p python3.5 $(ENV)
+	virtualenv -p python3 $(ENV)
 	$(ENV)/bin/pip3 install -r requirements.txt
 
 test:
