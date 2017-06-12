@@ -1,7 +1,8 @@
 # coding: utf-8
+import os
 from contextlib import closing
 
-from hypothesis import given, note
+from hypothesis import given, note, settings
 from hypothesis.strategies import (
     integers, lists, sampled_from, composite, choices, streaming, text)
 from siebenapp.goaltree import Goals
@@ -9,6 +10,11 @@ from siebenapp.enumeration import Enumeration
 from siebenapp.system import run_migrations, save_updates
 import pytest
 import sqlite3
+
+
+settings.register_profile('ci', settings(max_examples=2000))
+settings.register_profile('dev', settings(max_examples=200))
+settings.load_profile(os.getenv('HYPOTHESIS_PROFILE', 'dev'))
 
 
 USER_ACTIONS = {
