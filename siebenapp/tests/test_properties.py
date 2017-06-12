@@ -55,6 +55,8 @@ def build_from(actions, choice_fn, show_notes=True):
      [2, 4, 3, 2]),
     (['add', 'select', 'insert', 'toggle_link', 'toggle_close', 'select', 'toggle_close', 'select', 'toggle_close'],
      [2, 3, 2]),
+    (['add', 'select', 'hold_select', 'add', 'select', 'insert', 'toggle_link', 'select', 'delete'],
+     [2, 3, 2]),
 ])
 def test_bad_examples_found_by_hypothesis(actions, ints):
     def repeat_choices(l):

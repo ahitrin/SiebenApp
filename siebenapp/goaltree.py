@@ -115,7 +115,7 @@ class Goals:
     def _delete(self, goal_id):
         self.goals[goal_id] = None
         self.closed.add(goal_id)
-        next_to_remove = self.edges.pop(goal_id)
+        next_to_remove = self.edges.pop(goal_id, {})
         for key, values in self.edges.items():
             self.edges[key] = [v for v in values if v != goal_id]
         for next_goal in next_to_remove:
