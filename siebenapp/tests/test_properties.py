@@ -3,8 +3,7 @@ import os
 from contextlib import closing
 
 from hypothesis import given, note, settings
-from hypothesis.strategies import (
-    integers, lists, sampled_from, composite, choices, streaming, text)
+from hypothesis.strategies import lists, sampled_from, composite, choices, text
 from siebenapp.goaltree import Goals
 from siebenapp.enumeration import Enumeration
 from siebenapp.system import run_migrations, save_updates
@@ -35,22 +34,17 @@ def user_actions(draw, skip=list(), **lists_kwargs):
                       **lists_kwargs))
 
 
-def build_from(actions, ints, show_notes=True):
-    ints_index = 0
+def build_from(actions, choice_fn, show_notes=True):
     g = Goals('Root')
-    actual_ints = []
     try:
         for name in actions:
             int_val = 0
             if name == 'select':
-                int_val = ints[ints_index]
-                actual_ints.append(int_val)
-                ints_index += 1
+                int_val = choice_fn(list(g.all().keys()))
             USER_ACTIONS[name](g, int_val)
     finally:
         if show_notes:
             note(actions)
-            note(actual_ints)
     return g
 
 
@@ -63,36 +57,44 @@ def build_from(actions, ints, show_notes=True):
      [2, 3, 2]),
 ])
 def test_bad_examples_found_by_hypothesis(actions, ints):
-    g = build_from(actions, ints, show_notes=False)
+    def repeat_choices(l):
+        def inner(gs):
+            assert l, 'There are no more selects expected'
+            next_result = l.pop(0)
+            assert next_result in gs, 'Goal with id %d should be selected, but existing goals are %s' % (
+                next_result, gs
+            )
+            return next_result
+        return inner
+    g = build_from(actions, repeat_choices(ints), show_notes=False)
     assert g.verify()
 
 
-@given(user_actions(), streaming(integers(0, 9)))
-def test_there_is_always_at_least_one_goal(actions, ints):
-    g = build_from(actions, ints)
+@given(user_actions(), choices())
+def test_there_is_always_at_least_one_goal(actions, ch):
+    g = build_from(actions, ch)
     assert g.all()
 
 
-@given(user_actions(), streaming(integers(0, 9)))
-def test_there_is_always_one_selected_goal(actions, ints):
-    g = build_from(actions, ints)
+@given(user_actions(), choices())
+def test_there_is_always_one_selected_goal(actions, ch):
+    g = build_from(actions, ch)
     assert len([1 for k, v in g.all(keys='select').items() if v['select'] == 'select']) == 1
 
 
 @given(user_actions(min_size=15, skip=['rename']),
        user_actions(min_size=1, skip=['select']),
-       streaming(integers(0, 9)), choices())
-def test_any_goal_may_be_selected(all_actions, non_select_actions, ints, choice):
-    g = build_from(all_actions + non_select_actions, ints)
+       choices(), choices())
+def test_any_goal_may_be_selected(all_actions, non_select_actions, ch, choice):
+    g = build_from(all_actions + non_select_actions, ch)
     rnd_goal = choice(list(g.all().keys()))
     g.select(rnd_goal)
     assert g.all(keys='select')[rnd_goal]['select'] == 'select'
 
 
-@given(user_actions(average_size=100, skip=['rename']), streaming(integers(0, 9)),
-       choices())
-def test_any_goal_may_be_selected_through_enumeration(actions, ints, choice):
-    g = build_from(actions, ints)
+@given(user_actions(average_size=100, skip=['rename']), choices(), choices())
+def test_any_goal_may_be_selected_through_enumeration(actions, ch, choice):
+    g = build_from(actions, ch)
     e = Enumeration(g)
     e.next_view()
     e.next_view()
@@ -102,9 +104,9 @@ def test_any_goal_may_be_selected_through_enumeration(actions, ints, choice):
     assert e.all(keys='select')[rnd_goal]['select'] == 'select'
 
 
-@given(user_actions(average_size=100), streaming(integers(0, 9)))
-def test_no_modify_action_sequence_could_break_goaltree_correctness(actions, ints):
-    g = build_from(actions, ints)
+@given(user_actions(average_size=100), choices())
+def test_no_modify_action_sequence_could_break_goaltree_correctness(actions, ch):
+    g = build_from(actions, ch)
     assert g.verify()
 
 
@@ -119,9 +121,9 @@ def build_goals(conn):
         return Goals.build(goals, edges, selection)
 
 
-@given(user_actions(), streaming(integers(0, 9)))
-def test_full_export_and_streaming_export_must_be_the_same(actions, ints):
-    g = build_from(actions, ints)
+@given(user_actions(), choices())
+def test_full_export_and_streaming_export_must_be_the_same(actions, ch):
+    g = build_from(actions, ch)
     with closing(sqlite3.connect(':memory:')) as conn:
         run_migrations(conn)
         note(g.events)
