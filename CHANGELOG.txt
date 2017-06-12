@@ -1,3 +1,32 @@
+Alpha version 0.3
+-----
+
+New features:
+
+ * Allow SiebenApp to be called from another dir
+ * Redesing main window
+ * New action: swap goals
+ * New actions: zoom / unzoom #6
+ * Use adaptive goal tree enumeration #7
+
+Bug fixes:
+
+ * Fix wrong column types in DB
+ * Fix issue with complex delete
+ * Fix bad link issue
+ * Fix contact email
+ * Exit when Graphviz is not found
+ * Disallow to re-open goal atop of the closed one
+ * Fix: goal deletion may cause failure on the next startup
+ * Fix: migrations did not run for existing DB #2
+ * Improve selection UX: avoid buffer overflow
+
+Other improvements:
+
+ * Add support for Python 3.6
+ * Update PyQt version: 5.7->5.8.2
+ * Use special Hypothesis profile for CI
+
 Alpha version 0.2
 -----
 
