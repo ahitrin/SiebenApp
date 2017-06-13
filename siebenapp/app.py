@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # coding: utf-8
 import sys
+from argparse import ArgumentParser
 from os.path import dirname, join, realpath
-from siebenapp.system import save, load, dot_export
+from siebenapp.system import save, load, dot_export, DEFAULT_DB
 from subprocess import run
 from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtGui import QImage, QPixmap
@@ -14,11 +15,12 @@ class SiebenApp(QMainWindow):
     refresh = pyqtSignal()
     quit_app = pyqtSignal()
 
-    def __init__(self):
+    def __init__(self, db):
         super().__init__()
         self.refresh.connect(self.reload_image)
         self.quit_app.connect(QApplication.instance().quit)
-        self.goals = load()
+        self.db = db
+        self.goals = load(db)
         self.force_refresh = True
 
     def setup(self):
@@ -29,7 +31,7 @@ class SiebenApp(QMainWindow):
         if not self.goals.events and not self.force_refresh:
             return
         self.force_refresh = False
-        save(self.goals)
+        save(self.goals, self.db)
         with open('work.dot', 'w') as f:
             f.write(dot_export(self.goals))
         run(['dot', '-Tpng', '-o', 'work.png', 'work.dot'])
@@ -106,9 +108,13 @@ class SiebenApp(QMainWindow):
 
 
 def main(root_script):
+    parser = ArgumentParser()
+    parser.add_argument('db', nargs='?', default=DEFAULT_DB,
+                        help='Path to the database file (sieben.db by default)')
+    args = parser.parse_args()
     app = QApplication(sys.argv)
     root = dirname(realpath(root_script))
-    w = loadUi(join(root, 'ui', 'main.ui'), SiebenApp())
+    w = loadUi(join(root, 'ui', 'main.ui'), SiebenApp(args.db))
     w.about = loadUi(join(root, 'ui', 'about.ui'))
     w.setup()
     w.showMaximized()
