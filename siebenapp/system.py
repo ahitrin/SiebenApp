@@ -1,5 +1,6 @@
 # coding: utf-8
 import sqlite3
+from html import escape
 from os import path
 from siebenapp.goaltree import Goals
 from siebenapp.enumeration import Enumeration
@@ -140,9 +141,10 @@ def run_migrations(conn, migrations=None):
 
 
 def _format_name(num, goal):
+    goal_name = escape(goal['name'])
     if num >= 0:
-        return '"%d: %s"' % (num, goal['name'])
-    return '"%s"' % goal['name']
+        return '"%d: %s"' % (num, goal_name)
+    return '"%s"' % goal_name
 
 
 def dot_export(goals):
