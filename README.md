@@ -93,13 +93,23 @@ Now just play around freely using following buttons:
  * `v` for circular switching current _view_: only open goals → only "top" goals → all goals → ...;
  * `q` for quitting when you are impressed enough.
 
+## Usage tips
+
+You might not want to keep all of your tasks in a single file (`sieben.db` by default). So you could provide path to another database file in the command line:
+
+    ./sieben another.db
+
+In case this file doesn't exist, SiebenApp will create it!
+
+This simple feature may help a lot when you want to use SiebenApp for different goals. Just create a new DB file for each separate goal you want to achieve. Store all DB files in any folder you want.
+
 For more examples, please visit `docs/examples` folder.
 
 ## Alpha version warning
 
 Please take into consideration that here you see the very early Alpha release of the app. It means that a lot of compromises have taken place during its development. Among them there are following ones:
 
-1. **No packaging/installation yet** (#1). In order to run app, clone or download the code, and then use `make` to check/install dependencies and `make run` to run.
+1. **No packaging/installation yet** (#1). In order to run app, clone or download the code, and then use `make` to check/install dependencies and `make run` or `./sieben` to run.
 2. **Really stupid UI** (#4). Currently, all goals are drawn using [GraphViz](http://www.graphviz.org/), and SiebenApp just shows resulting image. Also, there are no buttons, icons and something like that. The only thing we have is a set of hotkeys.
 3. **No actual security** (#5). To draw goals graph, SiebenApp calls external program `dot` which is supposed to be a part of GraphViz package. It's theoretically possible that the called `dot` program may do any unexpected action instead, even something malicious.
 
