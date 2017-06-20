@@ -8,8 +8,8 @@ from siebenapp.zoom import Zoom
 def test_dot_export_full_view():
     g = Enumeration(Goals('Root'))
     g.add('Middle')
-    g.add('"Top"', 2)
-    g.add('<Closed>')
+    g.add('Top', 2)
+    g.add('Closed')
     g.select(4)
     g.toggle_close()
     g.next_view()
@@ -19,8 +19,8 @@ def test_dot_export_full_view():
 node [shape=box];
 1 [label="1: Root", color=red, style=filled, fillcolor=gray];
 2 [label="2: Middle", color=red];
-3 [label="3: &quot;Top&quot;", color=red, style="bold,filled", fillcolor=lightgray];
-4 [label="4: &lt;Closed&gt;", color=green];
+3 [label="3: Top", color=red, style="bold,filled", fillcolor=lightgray];
+4 [label="4: Closed", color=green];
 2 -> 1 [color=black];
 4 -> 1 [color=gray];
 3 -> 2 [color=black];
@@ -31,8 +31,8 @@ node [shape=box];
 node [shape=box];
 1 [label="1: Root", color=red, style=filled, fillcolor=lightgray];
 2 [label="2: Middle", color=red];
-3 [label="3: &quot;Top&quot;", color=red, style="bold,filled", fillcolor=gray];
-4 [label="4: &lt;Closed&gt;", color=green];
+3 [label="3: Top", color=red, style="bold,filled", fillcolor=gray];
+4 [label="4: Closed", color=green];
 2 -> 1 [color=black];
 4 -> 1 [color=gray];
 3 -> 2 [color=black];
@@ -109,4 +109,12 @@ node [shape=box];
 8 -> 1 [color=black];
 9 -> 1 [color=black];
 0 -> 1 [color=black];
+}'''
+
+
+def test_dot_export_escape_symbols():
+    g = Enumeration(Goals("""Escape: ', ", <, >, &"""))
+    assert dot_export(g) == '''digraph g {
+node [shape=box];
+1 [label="1: Escape: &#x27;, &quot;, &lt;, &gt;, &amp;", color=red, style="bold,filled", fillcolor=gray];
 }'''
