@@ -61,6 +61,7 @@ class SiebenApp(QMainWindow):
             Qt.Key_S: self.with_refresh(self.goals.swap_goals),
             Qt.Key_V: self.toggle_view,
             Qt.Key_Z: self.toggle_zoom,
+            Qt.Key_Escape: self.cancel_edit,
             Qt.Key_Space: self.with_refresh(self.goals.hold_select),
         }
         if event.key() in key_handlers:
@@ -74,6 +75,8 @@ class SiebenApp(QMainWindow):
             self.input.setEnabled(True)
             self.input.setFocus(True)
             self.input.returnPressed.connect(self.finish_edit(fn))
+            self.cancel.setEnabled(True)
+            self.cancel.clicked.connect(self.cancel_edit)
         return inner
 
     def finish_edit(self, fn):
@@ -83,8 +86,21 @@ class SiebenApp(QMainWindow):
             fn(self.input.text())
             self.input.setEnabled(False)
             self.input.setText('')
+            self.cancel.setEnabled(False)
+            self.cancel.clicked.disconnect()
             self.refresh.emit()
         return inner
+
+    def cancel_edit(self):
+        self.dockWidget.setWindowTitle('')
+        self.input.setEnabled(False)
+        self.input.setText('')
+        self.cancel.setEnabled(False)
+        try:
+            self.input.returnPressed.disconnect()
+            self.cancel.clicked.disconnect()
+        except TypeError:
+            pass
 
     def with_refresh(self, fn):
         def inner():

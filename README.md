@@ -28,7 +28,7 @@ Let's take a look at simple example: travel planning.
 
 Imagine that you want to travel into the beautiful country Wonderstan. Inspired by this idea, you run SiebenApp and start to plan your travel.
 
-    make run
+    ./sieben
 
 SiebenApp starts with a single default goal.
 
@@ -88,6 +88,7 @@ Now just play around freely using following buttons:
  * `Space` for _holding_ (remembering) current selection;
  * `l` for creating new _link_ between remembered and current selections (current selection becomes subgoal of the remembered one), and also for removing existing links;
  * `i` for _inserting_ new goal between remembered and current selections;
+* `Esc` to cancel changes you're currently doing when _add_, _insert_, or _rename_ a goal.
  * `z` for _zooming_ to the given goal or _unzooming_ back to all goals;
  * `v` for circular switching current _view_: only open goals → only "top" goals → all goals → ...;
  * `q` for quitting when you are impressed enough.
