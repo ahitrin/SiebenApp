@@ -125,12 +125,17 @@ class SiebenApp(QMainWindow):
 
 def main(root_script):
     parser = ArgumentParser()
+    parser.add_argument('--devel', '-d', action='store_true', default=False,
+                        help='Run in developer mode (affects GUI behavior)')
     parser.add_argument('db', nargs='?', default=DEFAULT_DB,
                         help='Path to the database file (sieben.db by default)')
     args = parser.parse_args()
     app = QApplication(sys.argv)
     root = dirname(realpath(root_script))
-    w = loadUi(join(root, 'ui', 'main.ui'), SiebenApp(args.db))
+    if args.devel:
+        w = loadUi(join(root, 'ui', 'main-devel.ui'), SiebenApp(args.db))
+    else:
+        w = loadUi(join(root, 'ui', 'main.ui'), SiebenApp(args.db))
     w.about = loadUi(join(root, 'ui', 'about.ui'))
     w.setup()
     w.showMaximized()
