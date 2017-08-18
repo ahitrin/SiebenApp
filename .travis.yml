@@ -4,4 +4,4 @@ python:
  - "3.6"
 env:
  - HYPOTHESIS_PROFILE=ci
-script: make test
+script: make test lint
