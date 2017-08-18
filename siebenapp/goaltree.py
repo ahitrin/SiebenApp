@@ -12,6 +12,7 @@ class Goals:
             'previous_selection': 1,
         }
         self.events = collections.deque()
+        self._top = set()
         self.add(name)
 
     def add(self, name, add_to=0):
@@ -24,7 +25,7 @@ class Goals:
         self.edges[next_id] = list()
         self.events.append(('add', next_id, name, True))
         self.toggle_link(add_to, next_id)
-        self._update_top()
+        self.update_top()
         return True
 
     def select(self, goal_id):
@@ -56,7 +57,7 @@ class Goals:
             result[key] = {k: v for k, v in value.items() if k in keys}
         return result
 
-    def _update_top(self):
+    def update_top(self):
         self._top = set([goal for goal in self.goals
                          if goal not in self.closed and
                          all(g in self.closed for g in self.edges[goal])])
@@ -81,7 +82,7 @@ class Goals:
         first_name, second_name = self.goals[first], self.goals[second]
         self.rename(first_name, second)
         self.rename(second_name, first)
-        self._update_top()
+        self.update_top()
 
     def toggle_close(self):
         if self.settings['selection'] in self.closed:
@@ -94,7 +95,7 @@ class Goals:
                 self.events.append(('toggle_close', False, self.settings['selection']))
                 self.select(1)
                 self.hold_select()
-        self._update_top()
+        self.update_top()
 
     def _may_be_closed(self):
         return all(g in self.closed for g in self.edges[self.settings['selection']])
@@ -123,7 +124,7 @@ class Goals:
             if next_goal not in other_edges:
                 self._delete(next_goal)
         self.events.append(('delete', goal_id))
-        self._update_top()
+        self.update_top()
 
     def toggle_link(self, lower=0, upper=0):
         if lower == 0:
@@ -154,7 +155,7 @@ class Goals:
             if lower not in total:
                 self.edges[lower].append(upper)
                 self.events.append(('link', lower, upper))
-        self._update_top()
+        self.update_top()
 
     def verify(self):
         assert all(g in self.closed for p in self.closed for g in self.edges.get(p, [])), \
@@ -169,8 +170,7 @@ class Goals:
             queue.extend(g for g in self.edges[goal]
                          if g not in visited and self.goals[g] is not None)
             visited.add(goal)
-        assert visited == set(x for x in self.goals.keys()
-                              if self.goals[x] is not None), \
+        assert visited == set(x for x in self.goals if self.goals[x] is not None), \
             'All subgoals must be accessible from the root goal'
 
         deleted_nodes = [g for g, v in self.goals.items() if v is None]
@@ -190,21 +190,21 @@ class Goals:
                             for i in range(1, max(goals_dict.keys()) + 1))
         result.closed = set(g[0] for g in goals if not g[2]).union(
             set(k for k, v in result.goals.items() if v is None))
-        d = collections.defaultdict(lambda: list())
+        d = collections.defaultdict(list)
         for parent, child in edges:
             d[parent].append(child)
         result.edges = dict(d)
         result.edges.update(dict((g, []) for g in result.goals if g not in d))
         result.settings.update(settings)
-        result._update_top()
+        result.update_top()
         result.verify()
         return result
 
     @staticmethod
     def export(goals):
-        gs = [(g_id, g_name, g_id not in goals.closed)
-              for g_id, g_name in goals.goals.items()]
-        es = [(parent, child) for parent in goals.edges
-              for child in goals.edges[parent]]
-        set = list(goals.settings.items())
-        return gs, es, set
+        nodes = [(g_id, g_name, g_id not in goals.closed)
+                 for g_id, g_name in goals.goals.items()]
+        edges = [(parent, child) for parent in goals.edges
+                 for child in goals.edges[parent]]
+        settings = list(goals.settings.items())
+        return nodes, edges, settings

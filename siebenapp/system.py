@@ -99,7 +99,7 @@ def save_updates(goals, connection):
                  'insert into settings values ("zoom", ?)'],
     }
     cur = connection.cursor()
-    while len(goals.events) > 0:
+    while goals.events:
         event = goals.events.popleft()
         if event[0] in actions:
             for query in actions[event[0]]:
@@ -126,7 +126,8 @@ def load(filename=DEFAULT_DB):
 
 
 def run_migrations(conn, migrations=None):
-    if migrations is None: migrations = MIGRATIONS
+    if migrations is None:
+        migrations = MIGRATIONS
     cur = conn.cursor()
     try:
         cur.execute('select version from migrations')

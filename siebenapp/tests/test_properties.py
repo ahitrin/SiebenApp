@@ -29,9 +29,10 @@ USER_ACTIONS = {
 
 
 @composite
-def user_actions(draw, skip=list(), **lists_kwargs):
-    return draw(lists(sampled_from(k for k in USER_ACTIONS.keys() if k not in skip),
-                      **lists_kwargs))
+def user_actions(draw, skip=None, **lists_kwargs):
+    if skip is None:
+        skip = []
+    return draw(lists(sampled_from(k for k in USER_ACTIONS if k not in skip), **lists_kwargs))
 
 
 def build_from(actions, choice_fn, show_notes=True):

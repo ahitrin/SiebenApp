@@ -24,7 +24,7 @@ class SiebenApp(QMainWindow):
         self.force_refresh = True
 
     def setup(self):
-        self.action_About.triggered.connect(lambda: self.about.show())
+        self.action_About.triggered.connect(self.about.show)
         self.refresh.emit()
 
     def reload_image(self):

@@ -92,5 +92,4 @@ class Enumeration:
         goaltree = object.__getattribute__(self, 'goaltree')
         if attr in overriden:
             return object.__getattribute__(self, attr)
-        else:
-            return getattr(goaltree, attr)
+        return getattr(goaltree, attr)
