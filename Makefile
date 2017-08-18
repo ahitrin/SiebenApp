@@ -1,6 +1,6 @@
 ENV:=.env
 
-.PHONY: check venv test install run clean distclean
+.PHONY: check venv test install lint run clean distclean
 
 all: check venv test
 
@@ -19,6 +19,9 @@ test:
 
 install:
 	PATH=$(ENV)/bin:${PATH} python3 setup.py install
+
+lint:
+	$(ENV)/bin/pylint siebenapp
 
 run:
 	PATH=$(ENV)/bin:${PATH} ./sieben
