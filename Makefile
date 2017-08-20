@@ -21,7 +21,7 @@ install:
 	PATH=$(ENV)/bin:${PATH} python3 setup.py install
 
 lint:
-	$(ENV)/bin/pylint siebenapp
+	PATH=$(ENV)/bin:${PATH} pylint siebenapp
 
 run:
 	PATH=$(ENV)/bin:${PATH} ./sieben
