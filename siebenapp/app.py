@@ -8,6 +8,8 @@ from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.uic import loadUi
+
+from siebenapp.render import render_tree
 from siebenapp.system import save, load, dot_export, DEFAULT_DB
 
 
@@ -129,7 +131,9 @@ class SiebenAppDevelopment(SiebenApp):
         self.refresh.connect(self.native_render)
 
     def native_render(self):
-        self.renderingLog.setPlainText('Rendering log...')
+        rendering_log = []
+        render_tree(self.goals, rendering_log)
+        self.renderingLog.setPlainText('\n'.join(rendering_log))
 
 
 def main(root_script):
