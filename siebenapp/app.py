@@ -123,6 +123,15 @@ class SiebenApp(QMainWindow):
         self.refresh.emit()
 
 
+class SiebenAppDevelopment(SiebenApp):
+    def __init__(self, db):
+        super(SiebenAppDevelopment, self).__init__(db)
+        self.refresh.connect(self.native_render)
+
+    def native_render(self):
+        self.renderingLog.setPlainText('Rendering log...')
+
+
 def main(root_script):
     parser = ArgumentParser()
     parser.add_argument('--devel', '-d', action='store_true', default=False,
@@ -133,7 +142,7 @@ def main(root_script):
     app = QApplication(sys.argv)
     root = dirname(realpath(root_script))
     if args.devel:
-        w = loadUi(join(root, 'ui', 'main-devel.ui'), SiebenApp(args.db))
+        w = loadUi(join(root, 'ui', 'main-devel.ui'), SiebenAppDevelopment(args.db))
     else:
         w = loadUi(join(root, 'ui', 'main.ui'), SiebenApp(args.db))
     w.about = loadUi(join(root, 'ui', 'about.ui'))
