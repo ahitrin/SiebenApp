@@ -141,11 +141,22 @@ def run_migrations(conn, migrations=None):
         conn.commit()
 
 
+def split_long(line):
+    margin = 20
+    parts = []
+    space_position = line.find(' ', margin)
+    while space_position > 0:
+        part, line = line[:space_position], line[(space_position + 1):]
+        parts.append(part)
+        space_position = line.find(' ', margin)
+    parts.append(line)
+    return '\n'.join(parts)
+
+
 def _format_name(num, goal):
     goal_name = escape(goal['name'])
-    if num >= 0:
-        return '"%d: %s"' % (num, goal_name)
-    return '"%s"' % goal_name
+    label = '"%d: %s"' % (num, goal_name) if num >= 0 else '"%s"' % goal_name
+    return split_long(label)
 
 
 def dot_export(goals):

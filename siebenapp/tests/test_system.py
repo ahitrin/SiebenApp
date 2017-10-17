@@ -1,7 +1,9 @@
 # coding: utf-8
-from siebenapp.goaltree import Goals
+import pytest
+
 from siebenapp.enumeration import Enumeration
-from siebenapp.system import dot_export
+from siebenapp.goaltree import Goals
+from siebenapp.system import dot_export, split_long
 from siebenapp.zoom import Zoom
 
 
@@ -112,9 +114,22 @@ node [shape=box];
 }'''
 
 
-def test_dot_export_escape_symbols():
-    g = Enumeration(Goals("""Escape: ', ", <, >, &"""))
+@pytest.mark.parametrize('unescaped,escaped', [
+    ('\'', '&#x27;'), ('"', '&quot;'), ('<', '&lt;'), ('>', '&gt;'), ('&', '&amp;'),
+])
+def test_dot_export_escape_symbols(unescaped, escaped):
+    g = Enumeration(Goals("Escape: %s" % unescaped))
     assert dot_export(g) == '''digraph g {
 node [shape=box];
-1 [label="1: Escape: &#x27;, &quot;, &lt;, &gt;, &amp;", color=red, style="bold,filled", fillcolor=gray];
-}'''
+1 [label="1: Escape: %s", color=red, style="bold,filled", fillcolor=gray];
+}''' % escaped
+
+
+@pytest.mark.parametrize('source,result', [
+    ('short', 'short'),
+    ('10: Example multi-word Sieben label', '10: Example multi-word\nSieben label'),
+    ('123: Example very-very long multi-word Sieben label', '123: Example very-very\nlong multi-word Sieben\nlabel'),
+    ('43: Manual-placed\nnewlines\nare ignored', '43: Manual-placed\nnewlines\nare\nignored'),
+])
+def test_split_long_labels(source, result):
+    assert split_long(source) == result
