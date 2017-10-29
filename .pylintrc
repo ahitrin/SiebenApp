@@ -16,3 +16,6 @@ disable=missing-docstring,invalid-name,line-too-long,bad-continuation,no-name-in
 # multiple time (only on the command line, not in the configuration file where
 # it should appear only once). See also the "--disable" option for examples.
 enable=
+
+[MASTER]
+ignore=siebenapp/ui
