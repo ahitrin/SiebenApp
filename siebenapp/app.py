@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
 from PyQt5.uic import loadUi
 
 from siebenapp.render import render_tree
-from siebenapp.system import save, load, dot_export, DEFAULT_DB
+from siebenapp.system import save, load, dot_export, DEFAULT_DB, split_long
 from siebenapp.ui.goalwidget import Ui_GoalBody
 
 
@@ -129,11 +129,15 @@ class SiebenApp(QMainWindow):
 
 
 class GoalWidget(QWidget, Ui_GoalBody):
-    def __init__(self, name, number):
+    def __init__(self, name, number, selection):
         super().__init__()
         self.setupUi(self)
         self.label_goal_name.setText(name)
         self.label_number.setText(str(number))
+        if selection == 'select':
+            self.setStyleSheet('background-color:#808080;')
+        elif selection == 'prev':
+            self.setStyleSheet('background-color:#C0C0C0;')
 
 
 class SiebenAppDevelopment(SiebenApp):
@@ -144,7 +148,7 @@ class SiebenAppDevelopment(SiebenApp):
     def native_render(self):
         graph = render_tree(self.goals)
         for goal_id, attributes in graph.items():
-            widget = GoalWidget(attributes['name'], goal_id)
+            widget = GoalWidget(split_long(attributes['name']), goal_id, attributes['select'])
             self.centralWidget().layout().addWidget(widget, attributes['row'], attributes['col'])
 
 
