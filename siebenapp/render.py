@@ -1,12 +1,17 @@
 from collections import defaultdict
 
 
-def render_tree(goals, render_log):
-    edges = {key: values['edge'] for key, values in goals.all(keys='edge').items()}
-    render_log.append("Total goals: %d" % len(edges))
+def render_tree(goals):
+    graph = goals.all(keys='name,edge,open,select,top')
+    edges = {key: values['edge'] for key, values in graph.items()}
     layers = min_width(edges, 6)
-    for l in sorted(layers.keys()):
-        render_log.append('Layer %s -> %s' % (l, layers[l]))
+    for row in sorted(layers.keys()):
+        for col, goal_id in enumerate(layers[row]):
+            graph[goal_id].update({
+                'row': row,
+                'col': col,
+            })
+    return graph
 
 
 def min_width(source, width):

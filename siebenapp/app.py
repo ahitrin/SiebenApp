@@ -4,13 +4,15 @@ import sys
 from argparse import ArgumentParser
 from os.path import dirname, join, realpath
 from subprocess import run
+
 from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtGui import QImage, QPixmap
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
 from PyQt5.uic import loadUi
 
 from siebenapp.render import render_tree
 from siebenapp.system import save, load, dot_export, DEFAULT_DB
+from siebenapp.ui.goalwidget import Ui_GoalBody
 
 
 class SiebenApp(QMainWindow):
@@ -36,10 +38,11 @@ class SiebenApp(QMainWindow):
         save(self.goals, self.db)
         with open('work.dot', 'w') as f:
             f.write(dot_export(self.goals))
-        run(['dot', '-Tpng', '-o', 'work.png', 'work.dot'])
-        img = QImage('work.png')
-        self.label.setPixmap(QPixmap.fromImage(img))
-        self.label.resize(img.size().width(), img.size().height())
+        if 'label' in self.__dict__:
+            run(['dot', '-Tpng', '-o', 'work.png', 'work.dot'])
+            img = QImage('work.png')
+            self.label.setPixmap(QPixmap.fromImage(img))
+            self.label.resize(img.size().width(), img.size().height())
 
     def keyPressEvent(self, event):
         key_handlers = {
@@ -125,15 +128,24 @@ class SiebenApp(QMainWindow):
         self.refresh.emit()
 
 
+class GoalWidget(QWidget, Ui_GoalBody):
+    def __init__(self, name, number):
+        super().__init__()
+        self.setupUi(self)
+        self.label_goal_name.setText(name)
+        self.label_number.setText(str(number))
+
+
 class SiebenAppDevelopment(SiebenApp):
     def __init__(self, db):
         super(SiebenAppDevelopment, self).__init__(db)
         self.refresh.connect(self.native_render)
 
     def native_render(self):
-        rendering_log = []
-        render_tree(self.goals, rendering_log)
-        self.renderingLog.setPlainText('\n'.join(rendering_log))
+        graph = render_tree(self.goals)
+        for goal_id, attributes in graph.items():
+            widget = GoalWidget(attributes['name'], goal_id)
+            self.centralWidget().layout().addWidget(widget, attributes['row'], attributes['col'])
 
 
 def main(root_script):
