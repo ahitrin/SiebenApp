@@ -129,9 +129,11 @@ class SiebenApp(QMainWindow):
 
 
 class GoalWidget(QWidget, Ui_GoalBody):
-    def __init__(self, name, number, selection):
+    def __init__(self):
         super().__init__()
         self.setupUi(self)
+
+    def setup_data(self, name, number, selection):
         self.label_goal_name.setText(name)
         self.label_number.setText(str(number))
         if selection == 'select':
@@ -143,13 +145,23 @@ class GoalWidget(QWidget, Ui_GoalBody):
 class SiebenAppDevelopment(SiebenApp):
     def __init__(self, db):
         super(SiebenAppDevelopment, self).__init__(db)
+        self.widgets = dict()
         self.refresh.connect(self.native_render)
 
     def native_render(self):
+        for child in self.centralWidget().children():
+            if isinstance(child, GoalWidget):
+                child.hide()
         graph = render_tree(self.goals)
         for goal_id, attributes in graph.items():
-            widget = GoalWidget(split_long(attributes['name']), goal_id, attributes['select'])
-            self.centralWidget().layout().addWidget(widget, attributes['row'], attributes['col'])
+            row, col = attributes['row'], attributes['col']
+            if (row, col) in self.widgets:
+                widget = self.widgets[(row, col)]
+                widget.show()
+            else:
+                widget = GoalWidget()
+                self.centralWidget().layout().addWidget(widget, row, col)
+            widget.setup_data(split_long(attributes['name']), goal_id, attributes['select'])
 
 
 def main(root_script):
