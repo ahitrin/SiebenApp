@@ -145,7 +145,6 @@ class GoalWidget(QWidget, Ui_GoalBody):
 class SiebenAppDevelopment(SiebenApp):
     def __init__(self, db):
         super(SiebenAppDevelopment, self).__init__(db)
-        self.widgets = dict()
         self.refresh.connect(self.native_render)
 
     def native_render(self):
@@ -154,13 +153,8 @@ class SiebenAppDevelopment(SiebenApp):
                 child.hide()
         graph = render_tree(self.goals)
         for goal_id, attributes in graph.items():
-            row, col = attributes['row'], attributes['col']
-            if (row, col) in self.widgets:
-                widget = self.widgets[(row, col)]
-                widget.show()
-            else:
-                widget = GoalWidget()
-                self.centralWidget().layout().addWidget(widget, row, col)
+            widget = GoalWidget()
+            self.centralWidget().layout().addWidget(widget, attributes['row'], attributes['col'])
             widget.setup_data(split_long(attributes['name']), goal_id, attributes['select'])
 
 
