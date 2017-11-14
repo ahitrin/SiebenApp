@@ -25,6 +25,7 @@ class SiebenApp(QMainWindow):
         self.quit_app.connect(QApplication.instance().quit)
         self.db = db
         self.goals = load(db)
+        self.use_dot = True
         self.force_refresh = True
 
     def setup(self):
@@ -38,7 +39,7 @@ class SiebenApp(QMainWindow):
         save(self.goals, self.db)
         with open('work.dot', 'w') as f:
             f.write(dot_export(self.goals))
-        if 'label' in self.__dict__:
+        if self.use_dot:
             run(['dot', '-Tpng', '-o', 'work.png', 'work.dot'])
             img = QImage('work.png')
             self.label.setPixmap(QPixmap.fromImage(img))
@@ -148,13 +149,13 @@ class SiebenAppDevelopment(SiebenApp):
         self.refresh.connect(self.native_render)
 
     def native_render(self):
-        for child in self.centralWidget().children():
+        for child in self.scrollAreaWidgetContents.children():
             if isinstance(child, GoalWidget):
                 child.hide()
         graph = render_tree(self.goals)
         for goal_id, attributes in graph.items():
             widget = GoalWidget()
-            self.centralWidget().layout().addWidget(widget, attributes['row'], attributes['col'])
+            self.scrollAreaWidgetContents.layout().addWidget(widget, attributes['row'], attributes['col'])
             widget.setup_data(split_long(attributes['name']), goal_id, attributes['select'])
 
 
@@ -171,6 +172,7 @@ def main(root_script):
         w = loadUi(join(root, 'ui', 'main-devel.ui'), SiebenAppDevelopment(args.db))
     else:
         w = loadUi(join(root, 'ui', 'main.ui'), SiebenApp(args.db))
+    w.use_dot = not args.devel
     w.about = loadUi(join(root, 'ui', 'about.ui'))
     w.setup()
     w.showMaximized()
