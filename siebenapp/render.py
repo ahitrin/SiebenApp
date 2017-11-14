@@ -4,7 +4,7 @@ from collections import defaultdict
 def render_tree(goals):
     graph = goals.all(keys='name,edge,open,select,top')
     edges = {key: values['edge'] for key, values in graph.items()}
-    layers = min_width(edges, 6)
+    layers = min_width(edges, 4)
     for row in sorted(layers.keys()):
         for col, goal_id in enumerate(layers[row]):
             graph[goal_id].update({
