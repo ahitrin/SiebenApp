@@ -71,6 +71,8 @@ class Enumeration:
     def select(self, goal_id):
         self._update_mapping()
         goals, mapping = self._id_mapping()
+        if goal_id >= 10:
+            self.selection_cache = []
         if self.selection_cache:
             goal_id = 10 * self.selection_cache.pop() + goal_id
             if goal_id > max(mapping(k) for k in goals.keys()):

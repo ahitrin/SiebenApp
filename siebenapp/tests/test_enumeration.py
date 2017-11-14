@@ -91,6 +91,74 @@ def test_use_mapping_in_selection():
     }
 
 
+def test_select_goal_by_full_id():
+    goals = Goals('a')
+    for c in 'bcdefghijk':
+        goals.add(c)
+    e = Enumeration(goals)
+    assert e.all(keys='name,select') == {
+        11: {'name': 'a', 'select': 'select'},
+        12: {'name': 'b', 'select': None},
+        13: {'name': 'c', 'select': None},
+        14: {'name': 'd', 'select': None},
+        15: {'name': 'e', 'select': None},
+        16: {'name': 'f', 'select': None},
+        17: {'name': 'g', 'select': None},
+        18: {'name': 'h', 'select': None},
+        19: {'name': 'i', 'select': None},
+        10: {'name': 'j', 'select': None},
+        21: {'name': 'k', 'select': None},
+    }
+    e.select(13)
+    assert e.all(keys='name,select') == {
+        11: {'name': 'a', 'select': 'prev'},
+        12: {'name': 'b', 'select': None},
+        13: {'name': 'c', 'select': 'select'},
+        14: {'name': 'd', 'select': None},
+        15: {'name': 'e', 'select': None},
+        16: {'name': 'f', 'select': None},
+        17: {'name': 'g', 'select': None},
+        18: {'name': 'h', 'select': None},
+        19: {'name': 'i', 'select': None},
+        10: {'name': 'j', 'select': None},
+        21: {'name': 'k', 'select': None},
+    }
+
+
+def test_select_goal_by_full_id_with_non_empty_cache():
+    goals = Goals('a')
+    for c in 'bcdefghijk':
+        goals.add(c)
+    e = Enumeration(goals)
+    assert e.all(keys='name,select') == {
+        11: {'name': 'a', 'select': 'select'},
+        12: {'name': 'b', 'select': None},
+        13: {'name': 'c', 'select': None},
+        14: {'name': 'd', 'select': None},
+        15: {'name': 'e', 'select': None},
+        16: {'name': 'f', 'select': None},
+        17: {'name': 'g', 'select': None},
+        18: {'name': 'h', 'select': None},
+        19: {'name': 'i', 'select': None},
+        10: {'name': 'j', 'select': None},
+        21: {'name': 'k', 'select': None},
+    }
+    e.select(2)
+    e.select(13)
+    assert e.all(keys='name,select') == {
+        11: {'name': 'a', 'select': 'prev'},
+        12: {'name': 'b', 'select': None},
+        13: {'name': 'c', 'select': 'select'},
+        14: {'name': 'd', 'select': None},
+        15: {'name': 'e', 'select': None},
+        16: {'name': 'f', 'select': None},
+        17: {'name': 'g', 'select': None},
+        18: {'name': 'h', 'select': None},
+        19: {'name': 'i', 'select': None},
+        10: {'name': 'j', 'select': None},
+        21: {'name': 'k', 'select': None},
+    }
+
 def test_mapping_for_top():
     goals = Goals('a')
     goals.add('b')

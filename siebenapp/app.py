@@ -130,8 +130,11 @@ class SiebenApp(QMainWindow):
 
 
 class GoalWidget(QWidget, Ui_GoalBody):
+    clicked = pyqtSignal()
+
     def __init__(self):
         super().__init__()
+        self._click_in_progress = False
         self.setupUi(self)
 
     def setup_data(self, name, number, selection):
@@ -142,11 +145,24 @@ class GoalWidget(QWidget, Ui_GoalBody):
         elif selection == 'prev':
             self.setStyleSheet('background-color:#C0C0C0;')
 
+    def mousePressEvent(self, event):
+        self._click_in_progress = True
+
+    def mouseReleaseEvent(self, event):
+        if self._click_in_progress:
+            self.clicked.emit()
+        self._click_in_progress = False
+
 
 class SiebenAppDevelopment(SiebenApp):
     def __init__(self, db):
         super(SiebenAppDevelopment, self).__init__(db)
         self.refresh.connect(self.native_render)
+
+    def lazy_select_number(self, goal_id):
+        def inner():
+            self.select_number(goal_id)
+        return inner
 
     def native_render(self):
         for child in self.scrollAreaWidgetContents.children():
@@ -157,6 +173,7 @@ class SiebenAppDevelopment(SiebenApp):
             widget = GoalWidget()
             self.scrollAreaWidgetContents.layout().addWidget(widget, attributes['row'], attributes['col'])
             widget.setup_data(split_long(attributes['name']), goal_id, attributes['select'])
+            widget.clicked.connect(self.lazy_select_number(goal_id))
 
 
 def main(root_script):
