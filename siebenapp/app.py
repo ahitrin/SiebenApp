@@ -37,9 +37,9 @@ class SiebenApp(QMainWindow):
             return
         self.force_refresh = False
         save(self.goals, self.db)
-        with open('work.dot', 'w') as f:
-            f.write(dot_export(self.goals))
         if self.use_dot:
+            with open('work.dot', 'w') as f:
+                f.write(dot_export(self.goals))
             run(['dot', '-Tpng', '-o', 'work.png', 'work.dot'])
             img = QImage('work.png')
             self.label.setPixmap(QPixmap.fromImage(img))
