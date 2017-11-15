@@ -145,10 +145,10 @@ class GoalWidget(QWidget, Ui_GoalBody):
         elif selection == 'prev':
             self.setStyleSheet('background-color:#C0C0C0;')
 
-    def mousePressEvent(self, event):
+    def mousePressEvent(self, event):                           # pylint: disable=unused-argument
         self._click_in_progress = True
 
-    def mouseReleaseEvent(self, event):
+    def mouseReleaseEvent(self, event):                         # pylint: disable=unused-argument
         if self._click_in_progress:
             self.clicked.emit()
         self._click_in_progress = False
