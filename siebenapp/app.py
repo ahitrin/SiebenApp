@@ -151,7 +151,7 @@ class SiebenAppDevelopment(SiebenApp):
     def native_render(self):
         for child in self.scrollAreaWidgetContents.children():
             if isinstance(child, GoalWidget):
-                child.hide()
+                child.deleteLater()
         graph = render_tree(self.goals)
         for goal_id, attributes in graph.items():
             widget = GoalWidget()
