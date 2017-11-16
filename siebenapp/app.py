@@ -137,9 +137,10 @@ class GoalWidget(QWidget, Ui_GoalBody):
         self._click_in_progress = False
         self.setupUi(self)
 
-    def setup_data(self, name, number, selection):
-        self.label_goal_name.setText(name)
+    def setup_data(self, number, attributes):
+        self.label_goal_name.setText(split_long(attributes['name']))
         self.label_number.setText(str(number))
+        selection = attributes['select']
         if selection == 'select':
             self.setStyleSheet('background-color:#808080;')
         elif selection == 'prev':
@@ -172,7 +173,7 @@ class SiebenAppDevelopment(SiebenApp):
         for goal_id, attributes in graph.items():
             widget = GoalWidget()
             self.scrollAreaWidgetContents.layout().addWidget(widget, attributes['row'], attributes['col'])
-            widget.setup_data(split_long(attributes['name']), goal_id, attributes['select'])
+            widget.setup_data(goal_id, attributes)
             widget.clicked.connect(self.lazy_select_number(goal_id))
 
 
