@@ -142,6 +142,7 @@ class GoalWidget(QWidget, Ui_GoalBody):
     def setup_data(self, number, attributes):
         self.label_goal_name.setText(split_long(attributes['name']))
         self.label_number.setText(str(number))
+        self.check_open.setVisible(attributes['switchable'])
         selection = attributes['select']
         if selection == 'select':
             self.setStyleSheet('background-color:#808080;')
@@ -162,6 +163,13 @@ class SiebenAppDevelopment(SiebenApp):
         super(SiebenAppDevelopment, self).__init__(db)
         self.refresh.connect(self.native_render)
 
+    def close_goal(self, goal_id):
+        def inner():
+            self.goals.select(goal_id)
+            self.goals.toggle_close()
+            self.refresh.emit()
+        return inner
+
     def native_render(self):
         for child in self.scrollAreaWidgetContents.children():
             if isinstance(child, GoalWidget):
@@ -172,6 +180,7 @@ class SiebenAppDevelopment(SiebenApp):
             self.scrollAreaWidgetContents.layout().addWidget(widget, attributes['row'], attributes['col'])
             widget.setup_data(goal_id, attributes)
             widget.clicked.connect(self.select_number(goal_id))
+            widget.check_open.clicked.connect(self.close_goal(goal_id))
 
 
 def main(root_script):
