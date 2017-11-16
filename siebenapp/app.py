@@ -47,16 +47,16 @@ class SiebenApp(QMainWindow):
 
     def keyPressEvent(self, event):
         key_handlers = {
-            Qt.Key_1: lambda: self.select_number(1),
-            Qt.Key_2: lambda: self.select_number(2),
-            Qt.Key_3: lambda: self.select_number(3),
-            Qt.Key_4: lambda: self.select_number(4),
-            Qt.Key_5: lambda: self.select_number(5),
-            Qt.Key_6: lambda: self.select_number(6),
-            Qt.Key_7: lambda: self.select_number(7),
-            Qt.Key_8: lambda: self.select_number(8),
-            Qt.Key_9: lambda: self.select_number(9),
-            Qt.Key_0: lambda: self.select_number(0),
+            Qt.Key_1: self.select_number(1),
+            Qt.Key_2: self.select_number(2),
+            Qt.Key_3: self.select_number(3),
+            Qt.Key_4: self.select_number(4),
+            Qt.Key_5: self.select_number(5),
+            Qt.Key_6: self.select_number(6),
+            Qt.Key_7: self.select_number(7),
+            Qt.Key_8: self.select_number(8),
+            Qt.Key_9: self.select_number(9),
+            Qt.Key_0: self.select_number(0),
             Qt.Key_A: self.start_edit(self.goals.add, 'Add new goal'),
             Qt.Key_C: self.with_refresh(self.goals.toggle_close),
             Qt.Key_D: self.with_refresh(self.goals.delete),
@@ -115,8 +115,10 @@ class SiebenApp(QMainWindow):
         return inner
 
     def select_number(self, num):
-        self.goals.select(num)
-        self.refresh.emit()
+        def inner():
+            self.goals.select(num)
+            self.refresh.emit()
+        return inner
 
     def toggle_view(self):
         self.force_refresh = True
@@ -160,11 +162,6 @@ class SiebenAppDevelopment(SiebenApp):
         super(SiebenAppDevelopment, self).__init__(db)
         self.refresh.connect(self.native_render)
 
-    def lazy_select_number(self, goal_id):
-        def inner():
-            self.select_number(goal_id)
-        return inner
-
     def native_render(self):
         for child in self.scrollAreaWidgetContents.children():
             if isinstance(child, GoalWidget):
@@ -174,7 +171,7 @@ class SiebenAppDevelopment(SiebenApp):
             widget = GoalWidget()
             self.scrollAreaWidgetContents.layout().addWidget(widget, attributes['row'], attributes['col'])
             widget.setup_data(goal_id, attributes)
-            widget.clicked.connect(self.lazy_select_number(goal_id))
+            widget.clicked.connect(self.select_number(goal_id))
 
 
 def main(root_script):
