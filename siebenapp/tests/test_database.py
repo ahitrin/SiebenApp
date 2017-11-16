@@ -129,8 +129,8 @@ def test_save_and_load():
     goals.next_view()
     new_goals.next_view()
     new_goals.next_view()
-    assert goals.all(keys='open,name,edge,select,top') == \
-           new_goals.all(keys='open,name,edge,select,top')
+    assert goals.all(keys='open,name,edge,select,switchable') == \
+           new_goals.all(keys='open,name,edge,select,switchable')
 
 
 def test_multiple_saves_works_fine():

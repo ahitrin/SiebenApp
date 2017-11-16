@@ -2,7 +2,7 @@ from collections import defaultdict
 
 
 def render_tree(goals):
-    graph = goals.all(keys='name,edge,open,select,top')
+    graph = goals.all(keys='name,edge,open,select,switchable')
     edges = {key: values['edge'] for key, values in graph.items()}
     layers = min_width(edges, 4)
     for row in sorted(layers.keys()):

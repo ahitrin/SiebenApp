@@ -159,6 +159,7 @@ def test_select_goal_by_full_id_with_non_empty_cache():
         21: {'name': 'k', 'select': None},
     }
 
+
 def test_mapping_for_top():
     goals = Goals('a')
     goals.add('b')
@@ -167,10 +168,10 @@ def test_mapping_for_top():
         goals.delete(i + 3)         # 1: a, 2: b, 3 (i==0): c, 4 (i==1): d, ...
     goals.add('x')
     e = Enumeration(goals)
-    assert e.all(keys='name,top,select') == {
-        1: {'name': 'a', 'top': False, 'select': 'select'},
-        2: {'name': 'b', 'top': True, 'select': None},
-        3: {'name': 'x', 'top': True, 'select': None},
+    assert e.all(keys='name,switchable,select') == {
+        1: {'name': 'a', 'switchable': False, 'select': 'select'},
+        2: {'name': 'b', 'switchable': True, 'select': None},
+        3: {'name': 'x', 'switchable': True, 'select': None},
     }
 
 
@@ -190,17 +191,17 @@ def test_goaltree_selection_may_be_changed_in_top_view():
     goals.add('Top 1')
     goals.add('Top 2')
     e = Enumeration(goals)
-    assert e.all(keys='name,top,select') == {
-        1: {'name': 'Root', 'top': False, 'select': 'select'},
-        2: {'name': 'Top 1', 'top': True, 'select': None},
-        3: {'name': 'Top 2', 'top': True, 'select': None},
+    assert e.all(keys='name,switchable,select') == {
+        1: {'name': 'Root', 'switchable': False, 'select': 'select'},
+        2: {'name': 'Top 1', 'switchable': True, 'select': None},
+        3: {'name': 'Top 2', 'switchable': True, 'select': None},
     }
     e.next_view()
     assert e.events[-2] == ('select', 2)
     assert e.events[-1] == ('hold_select', 2)
-    assert e.all(keys='name,top,select') == {
-        1: {'name': 'Top 1', 'top': True, 'select': 'select'},
-        2: {'name': 'Top 2', 'top': True, 'select': None}
+    assert e.all(keys='name,switchable,select') == {
+        1: {'name': 'Top 1', 'switchable': True, 'select': 'select'},
+        2: {'name': 'Top 2', 'switchable': True, 'select': None}
     }
 
 
@@ -211,24 +212,24 @@ def test_goaltree_previous_selection_may_be_changed_in_top_view():
     goals.hold_select()
     goals.select(2)
     e = Enumeration(goals)
-    assert e.all(keys='name,top,select') == {
-        1: {'name': 'Root', 'top': False, 'select': 'prev'},
-        2: {'name': 'Top 1', 'top': True, 'select': 'select'},
-        3: {'name': 'Top 2', 'top': True, 'select': None},
+    assert e.all(keys='name,switchable,select') == {
+        1: {'name': 'Root', 'switchable': False, 'select': 'prev'},
+        2: {'name': 'Top 1', 'switchable': True, 'select': 'select'},
+        3: {'name': 'Top 2', 'switchable': True, 'select': None},
     }
     e.next_view()
     assert e.events[-1] == ('hold_select', 2)
-    assert e.all(keys='name,top,select') == {
-        1: {'name': 'Top 1', 'top': True, 'select': 'select'},
-        2: {'name': 'Top 2', 'top': True, 'select': None}
+    assert e.all(keys='name,switchable,select') == {
+        1: {'name': 'Top 1', 'switchable': True, 'select': 'select'},
+        2: {'name': 'Top 2', 'switchable': True, 'select': None}
     }
     e.insert('Illegal goal')
     # New goal must not be inserted because previous selection is reset after the view switching
     e.next_view()
-    assert e.all(keys='name,top,select') == {
-        1: {'name': 'Root', 'top': False, 'select': None},
-        2: {'name': 'Top 1', 'top': True, 'select': 'select'},
-        3: {'name': 'Top 2', 'top': True, 'select': None},
+    assert e.all(keys='name,switchable,select') == {
+        1: {'name': 'Root', 'switchable': False, 'select': None},
+        2: {'name': 'Top 1', 'switchable': True, 'select': 'select'},
+        3: {'name': 'Top 2', 'switchable': True, 'select': None},
     }
 
 

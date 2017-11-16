@@ -160,12 +160,12 @@ def _format_name(num, goal):
 
 
 def dot_export(goals):
-    data = goals.all(keys='open,name,edge,select,top')
+    data = goals.all(keys='open,name,edge,select,switchable')
     lines = []
     for num in sorted(data.keys()):
         goal = data[num]
         style = []
-        if goal['top']:
+        if goal['switchable'] and goal['open']:
             style.append('bold')
         attributes = {
             'label': _format_name(num, goal),

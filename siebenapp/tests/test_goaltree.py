@@ -9,29 +9,31 @@ class GoalsTest(TestCase):
         self.goals = Goals('Root')
 
     def test_there_is_one_goal_at_start(self):
-        assert self.goals.all(keys='name,top') == {1: {'name': 'Root', 'top': True}}
+        assert self.goals.all(keys='name,switchable') == {
+            1: {'name': 'Root', 'switchable': True}
+        }
 
     def test_new_goal_moves_to_top(self):
         self.goals.add('A')
-        assert self.goals.all(keys='name,top') == {
-            1: {'name': 'Root', 'top': False},
-            2: {'name': 'A', 'top': True}}
+        assert self.goals.all(keys='name,switchable') == {
+            1: {'name': 'Root', 'switchable': False},
+            2: {'name': 'A', 'switchable': True}}
 
     def test_two_new_goals_move_to_top(self):
         self.goals.add('A')
         self.goals.add('B')
-        assert self.goals.all(keys='name,top') == {
-            1: {'name': 'Root', 'top': False},
-            2: {'name': 'A', 'top': True},
-            3: {'name': 'B', 'top': True}}
+        assert self.goals.all(keys='name,switchable') == {
+            1: {'name': 'Root', 'switchable': False},
+            2: {'name': 'A', 'switchable': True},
+            3: {'name': 'B', 'switchable': True}}
 
     def test_two_goals_in_a_chain(self):
         self.goals.add('A')
         self.goals.add('AA', 2)
-        assert self.goals.all(keys='name,top') == {
-            1: {'name': 'Root', 'top': False},
-            2: {'name': 'A', 'top': False},
-            3: {'name': 'AA', 'top': True}}
+        assert self.goals.all(keys='name,switchable') == {
+            1: {'name': 'Root', 'switchable': False},
+            2: {'name': 'A', 'switchable': False},
+            3: {'name': 'AA', 'switchable': True}}
 
     def test_rename_goal(self):
         self.goals.add('Boom')
@@ -51,10 +53,10 @@ class GoalsTest(TestCase):
         self.goals.hold_select()
         self.goals.select(2)
         self.goals.insert('A')
-        assert self.goals.all(keys='name,edge,top') == {
-                1: {'name': 'Root', 'edge': [3], 'top': False},
-                2: {'name': 'B', 'edge': [], 'top': True},
-                3: {'name': 'A', 'edge': [2], 'top': False},
+        assert self.goals.all(keys='name,edge,switchable') == {
+                1: {'name': 'Root', 'edge': [3], 'switchable': False},
+                2: {'name': 'B', 'edge': [], 'switchable': True},
+                3: {'name': 'A', 'edge': [2], 'switchable': False},
         }
 
     def test_insert_goal_between_independent_goals(self):
@@ -64,19 +66,19 @@ class GoalsTest(TestCase):
         self.goals.hold_select()
         self.goals.select(3)
         self.goals.insert('Wow')
-        assert self.goals.all(keys='name,edge,top') == {
-                1: {'name': 'Root', 'edge': [2, 3], 'top': False},
-                2: {'name': 'A', 'edge': [4], 'top': False},
-                3: {'name': 'B', 'edge': [], 'top': True},
-                4: {'name': 'Wow', 'edge': [3], 'top': False},
+        assert self.goals.all(keys='name,edge,switchable') == {
+                1: {'name': 'Root', 'edge': [2, 3], 'switchable': False},
+                2: {'name': 'A', 'edge': [4], 'switchable': False},
+                3: {'name': 'B', 'edge': [], 'switchable': True},
+                4: {'name': 'Wow', 'edge': [3], 'switchable': False},
         }
 
     def test_close_single_goal(self):
         assert self.goals.all(keys='name,open') == {
                 1: {'name': 'Root', 'open': True}}
         self.goals.toggle_close()
-        assert self.goals.all(keys='name,open,top') == {
-                1: {'name': 'Root', 'open': False, 'top': False}}
+        assert self.goals.all(keys='name,open,switchable') == {
+                1: {'name': 'Root', 'open': False, 'switchable': True}}
 
     def test_reopen_goal(self):
         self.goals.add('A')
@@ -86,9 +88,9 @@ class GoalsTest(TestCase):
         assert self.goals.all(keys='select') == {1: {'select': 'select'}, 2: {'select': None}}
         self.goals.select(2)
         self.goals.toggle_close()
-        assert self.goals.all(keys='open,top') == {
-            1: {'open': True, 'top': False},
-            2: {'open': True, 'top': True}}
+        assert self.goals.all(keys='open,switchable') == {
+            1: {'open': True, 'switchable': False},
+            2: {'open': True, 'switchable': True}}
 
     def test_close_goal_again(self):
         self.goals.add('A')
@@ -96,28 +98,28 @@ class GoalsTest(TestCase):
         self.goals.add('Ab')
         self.goals.select(3)
         self.goals.toggle_close()
-        assert self.goals.all(keys='open,top') == {
-            1: {'open': True, 'top': False},
-            2: {'open': True, 'top': True},
-            3: {'open': False, 'top': False}}
+        assert self.goals.all(keys='open,switchable') == {
+            1: {'open': True, 'switchable': False},
+            2: {'open': True, 'switchable': True},
+            3: {'open': False, 'switchable': True}}
         self.goals.select(2)
         self.goals.toggle_close()
-        assert self.goals.all(keys='open,top') == {
-            1: {'open': True, 'top': True},
-            2: {'open': False, 'top': False},
-            3: {'open': False, 'top': False}}
+        assert self.goals.all(keys='open,switchable') == {
+            1: {'open': True, 'switchable': True},
+            2: {'open': False, 'switchable': True},
+            3: {'open': False, 'switchable': False}}
         self.goals.select(2)
         self.goals.toggle_close()
-        assert self.goals.all(keys='open,top') == {
-            1: {'open': True, 'top': False},
-            2: {'open': True, 'top': True},
-            3: {'open': False, 'top': False}}
+        assert self.goals.all(keys='open,switchable') == {
+            1: {'open': True, 'switchable': False},
+            2: {'open': True, 'switchable': True},
+            3: {'open': False, 'switchable': True}}
         self.goals.select(2)
         self.goals.toggle_close()
-        assert self.goals.all(keys='open,top') == {
-            1: {'open': True, 'top': True},
-            2: {'open': False, 'top': False},
-            3: {'open': False, 'top': False}}
+        assert self.goals.all(keys='open,switchable') == {
+            1: {'open': True, 'switchable': True},
+            2: {'open': False, 'switchable': True},
+            3: {'open': False, 'switchable': False}}
 
     def test_closed_leaf_goal_could_not_be_reopened(self):
         self.goals.add('A')
@@ -127,17 +129,17 @@ class GoalsTest(TestCase):
         self.goals.toggle_close()
         self.goals.select(2)
         self.goals.toggle_close()
-        assert self.goals.all(keys='open,top') == {
-            1: {'open': True, 'top': True},
-            2: {'open': False, 'top': False},
-            3: {'open': False, 'top': False}}
+        assert self.goals.all(keys='open,switchable') == {
+            1: {'open': True, 'switchable': True},
+            2: {'open': False, 'switchable': True},
+            3: {'open': False, 'switchable': False}}
         self.goals.select(3)
         self.goals.toggle_close()
         # nothing should change
-        assert self.goals.all(keys='open,top') == {
-            1: {'open': True, 'top': True},
-            2: {'open': False, 'top': False},
-            3: {'open': False, 'top': False}}
+        assert self.goals.all(keys='open,switchable') == {
+            1: {'open': True, 'switchable': True},
+            2: {'open': False, 'switchable': True},
+            3: {'open': False, 'switchable': False}}
 
     def test_goal_in_the_middle_could_not_be_closed(self):
         self.goals.add('A')
@@ -158,8 +160,8 @@ class GoalsTest(TestCase):
         self.goals.add('A')
         self.goals.select(2)
         self.goals.delete()
-        assert self.goals.all(keys='name,select,top') == {
-                1: {'name': 'Root', 'select': 'select', 'top': True},
+        assert self.goals.all(keys='name,select,switchable') == {
+                1: {'name': 'Root', 'select': 'select', 'switchable': True},
         }
 
     def test_enumeration_should_not_be_changed_after_delete(self):
@@ -168,9 +170,9 @@ class GoalsTest(TestCase):
         assert self.goals.all() == {1: {'name': 'Root'}, 2: {'name': 'A'}, 3: {'name': 'B'}}
         self.goals.select(2)
         self.goals.delete()
-        assert self.goals.all(keys='name,top') == {
-            1: {'name': 'Root', 'top': False},
-            3: {'name': 'B', 'top': True}}
+        assert self.goals.all(keys='name,switchable') == {
+            1: {'name': 'Root', 'switchable': False},
+            3: {'name': 'B', 'switchable': True}}
 
     def test_remove_goal_chain(self):
         self.goals.add('A')
@@ -186,7 +188,9 @@ class GoalsTest(TestCase):
         self.goals.hold_select()
         self.goals.select(3)
         self.goals.toggle_link()
-        assert self.goals.all(keys='top') == {1: {'top': False}, 2: {'top': False}, 3: {'top': True}}
+        assert self.goals.all(keys='switchable') == {
+            1: {'switchable': False}, 2: {'switchable': False}, 3: {'switchable': True}
+        }
 
     def test_view_edges(self):
         self.goals.add('A')
@@ -196,11 +200,11 @@ class GoalsTest(TestCase):
         self.goals.hold_select()
         self.goals.select(4)
         self.goals.toggle_link()
-        assert self.goals.all(keys='edge,top') == {
-            1: {'edge': [2, 3], 'top': False},
-            2: {'edge': [4], 'top': False},
-            3: {'edge': [4], 'top': False},
-            4: {'edge': [], 'top': True}}
+        assert self.goals.all(keys='edge,switchable') == {
+            1: {'edge': [2, 3], 'switchable': False},
+            2: {'edge': [4], 'switchable': False},
+            3: {'edge': [4], 'switchable': False},
+            4: {'edge': [], 'switchable': True}}
 
     def test_no_link_to_self_is_allowed(self):
         self.goals.toggle_link()
@@ -227,7 +231,9 @@ class GoalsTest(TestCase):
         self.goals.select(3)
         self.goals.toggle_link()
         self.goals.toggle_link()
-        assert self.goals.all(keys='top') == {1: {'top': False}, 2: {'top': True}, 3: {'top': True}}
+        assert self.goals.all(keys='switchable') == {
+            1: {'switchable': False}, 2: {'switchable': True}, 3: {'switchable': True}
+        }
 
     def test_remove_goal_in_the_middle(self):
         self.goals.add('A')
@@ -244,10 +250,10 @@ class GoalsTest(TestCase):
                 4: {'name': 'C', 'edge': []}}
         self.goals.select(3)
         self.goals.delete()
-        assert self.goals.all(keys='name,edge,top') == {
-                1: {'name': 'Root', 'edge': [2], 'top': False},
-                2: {'name': 'A', 'edge': [4], 'top': False},
-                4: {'name': 'C', 'edge': [], 'top': True}}
+        assert self.goals.all(keys='name,edge,switchable') == {
+                1: {'name': 'Root', 'edge': [2], 'switchable': False},
+                2: {'name': 'A', 'edge': [4], 'switchable': False},
+                4: {'name': 'C', 'edge': [], 'switchable': True}}
 
     def test_root_goal_is_selected_by_default(self):
         assert self.goals.all(keys='select') == {1: {'select': 'select'}}

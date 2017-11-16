@@ -12,7 +12,6 @@ class Goals:
             'previous_selection': 1,
         }
         self.events = collections.deque()
-        self._top = set()
         self.add(name)
 
     def add(self, name, add_to=0):
@@ -25,7 +24,6 @@ class Goals:
         self.edges[next_id] = list()
         self.events.append(('add', next_id, name, True))
         self.toggle_link(add_to, next_id)
-        self.update_top()
         return True
 
     def select(self, goal_id):
@@ -47,20 +45,21 @@ class Goals:
         keys = keys.split(',')
         result = dict()
         for key, name in ((k, n) for k, n in self.goals.items() if n is not None):
+            back_references = [x for x, es in self.edges.items() if key in es]
+            switchable = (
+                (key not in self.closed and
+                 all(x in self.closed for x in self.edges[key])) or
+                (key in self.closed and (not back_references or
+                                         any(x for x in back_references if x not in self.closed))))
             value = {
                 'edge': sorted(self.edges[key]),
                 'name': name,
                 'open': key not in self.closed,
                 'select': sel(key),
-                'top': key in self._top,
+                'switchable': switchable,
             }
             result[key] = {k: v for k, v in value.items() if k in keys}
         return result
-
-    def update_top(self):
-        self._top = set([goal for goal in self.goals
-                         if goal not in self.closed and
-                         all(g in self.closed for g in self.edges[goal])])
 
     def insert(self, name):
         if self.settings['selection'] == self.settings['previous_selection']:
@@ -82,7 +81,6 @@ class Goals:
         first_name, second_name = self.goals[first], self.goals[second]
         self.rename(first_name, second)
         self.rename(second_name, first)
-        self.update_top()
 
     def toggle_close(self):
         if self.settings['selection'] in self.closed:
@@ -95,7 +93,6 @@ class Goals:
                 self.events.append(('toggle_close', False, self.settings['selection']))
                 self.select(1)
                 self.hold_select()
-        self.update_top()
 
     def _may_be_closed(self):
         return all(g in self.closed for g in self.edges[self.settings['selection']])
@@ -124,7 +121,6 @@ class Goals:
             if next_goal not in other_edges:
                 self._delete(next_goal)
         self.events.append(('delete', goal_id))
-        self.update_top()
 
     def toggle_link(self, lower=0, upper=0):
         if lower == 0:
@@ -155,14 +151,10 @@ class Goals:
             if lower not in total:
                 self.edges[lower].append(upper)
                 self.events.append(('link', lower, upper))
-        self.update_top()
 
     def verify(self):
         assert all(g in self.closed for p in self.closed for g in self.edges.get(p, [])), \
             'Open goals could not be blocked by closed ones'
-
-        assert all(k not in self._top for k, v in self.goals.items() if v is None), \
-            'Deleted goals must not be considered as top'
 
         queue, visited = [1], set()
         while queue:
@@ -196,7 +188,6 @@ class Goals:
         result.edges = dict(d)
         result.edges.update(dict((g, []) for g in result.goals if g not in d))
         result.settings.update(settings)
-        result.update_top()
         result.verify()
         return result
 
