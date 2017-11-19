@@ -148,6 +148,8 @@ class GoalWidget(QWidget, Ui_GoalBody):
             self.setStyleSheet('background-color:#808080;')
         elif selection == 'prev':
             self.setStyleSheet('background-color:#C0C0C0;')
+        frame_color = 'red' if attributes['open'] else 'green'
+        self.frame.setStyleSheet('.QFrame{ border: 1px solid %s }' % frame_color)
 
     def mousePressEvent(self, event):                           # pylint: disable=unused-argument
         self._click_in_progress = True
