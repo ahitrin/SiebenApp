@@ -5,9 +5,9 @@ from argparse import ArgumentParser
 from os.path import dirname, join, realpath
 from subprocess import run
 
-from PyQt5.QtCore import pyqtSignal, Qt
+from PyQt5.QtCore import pyqtSignal, Qt, QRect
 from PyQt5.QtGui import QImage, QPixmap
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QLabel
 from PyQt5.uic import loadUi
 
 from siebenapp.render import render_tree
@@ -160,10 +160,31 @@ class GoalWidget(QWidget, Ui_GoalBody):
         self._click_in_progress = False
 
 
+class CentralWidget(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setGeometry(QRect(0, 0, 576, 273))
+        self.setObjectName('scrollAreaWidgetContents')
+        layout = QGridLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(layout)
+
+
 class SiebenAppDevelopment(SiebenApp):
     def __init__(self, db):
         super(SiebenAppDevelopment, self).__init__(db)
         self.refresh.connect(self.native_render)
+
+    def setup(self):
+        super().setup()
+        # Re-creation of scrollAreaWidgetContents looks like dirty hack,
+        # but at the current moment I haven't found a better solution.
+        # Widget creation in __init__ does not work: lines disappear.
+        # Also we have to disable pylint warning in order to make build green.
+        self.scrollAreaWidgetContents = CentralWidget()         # pylint: disable=attribute-defined-outside-init
+        # End of 'looks like dirty hack'
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+        self.refresh.emit()
 
     def close_goal(self, goal_id):
         def inner():
