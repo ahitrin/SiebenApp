@@ -6,8 +6,8 @@ from os.path import dirname, join, realpath
 from subprocess import run
 
 from PyQt5.QtCore import pyqtSignal, Qt, QRect
-from PyQt5.QtGui import QImage, QPixmap
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QLabel
+from PyQt5.QtGui import QImage, QPixmap, QPainter
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout
 from PyQt5.uic import loadUi
 
 from siebenapp.render import render_tree
@@ -159,6 +159,9 @@ class GoalWidget(QWidget, Ui_GoalBody):
             self.clicked.emit()
         self._click_in_progress = False
 
+    def get_id(self):
+        return int(self.label_number.text())
+
 
 class CentralWidget(QWidget):
     def __init__(self):
@@ -168,6 +171,30 @@ class CentralWidget(QWidget):
         layout = QGridLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
+        self.dependencies = dict()
+
+    def setDependencies(self, new_dependencies):
+        self.dependencies = new_dependencies
+
+    @staticmethod
+    def top_point(rect):
+        return (rect.topLeft() + rect.topRight()) / 2
+
+    @staticmethod
+    def bottom_point(rect):
+        return (rect.bottomLeft() + rect.bottomRight()) / 2
+
+    def paintEvent(self, event):                                    # pylint: disable=unused-argument
+        painter = QPainter(self)
+        painter.setPen(Qt.black)
+
+        widgets = {w.get_id(): (self.top_point(w.geometry()), self.bottom_point(w.geometry()))
+                   for w in self.children() if isinstance(w, GoalWidget)}
+        for widget_id, points in widgets.items():
+            line_start = points[0]
+            for parent_widget in self.dependencies[widget_id]:
+                line_end = widgets[parent_widget][1]
+                painter.drawLine(line_start, line_end)
 
 
 class SiebenAppDevelopment(SiebenApp):
@@ -198,12 +225,15 @@ class SiebenAppDevelopment(SiebenApp):
             if isinstance(child, GoalWidget):
                 child.deleteLater()
         graph = render_tree(self.goals)
+        if 'setDependencies' in dir(self.scrollAreaWidgetContents):
+            self.scrollAreaWidgetContents.setDependencies({g: graph[g]['edge'] for g in graph})
         for goal_id, attributes in graph.items():
             widget = GoalWidget()
             self.scrollAreaWidgetContents.layout().addWidget(widget, attributes['row'], attributes['col'])
             widget.setup_data(goal_id, attributes)
             widget.clicked.connect(self.select_number(goal_id))
             widget.check_open.clicked.connect(self.close_goal(goal_id))
+        self.scrollAreaWidgetContents.update()
 
 
 def main(root_script):
