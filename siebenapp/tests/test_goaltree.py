@@ -2,6 +2,7 @@
 from unittest import TestCase
 
 from siebenapp.goaltree import Goals
+from siebenapp.tests.dsl import build_goaltree, open_, selected
 
 
 class GoalsTest(TestCase):
@@ -236,13 +237,12 @@ class GoalsTest(TestCase):
         }
 
     def test_remove_goal_in_the_middle(self):
-        self.goals.add('A')
-        self.goals.add('B')
-        self.goals.add('C', 2)
-        self.goals.select(3)
-        self.goals.hold_select()
-        self.goals.select(4)
-        self.goals.toggle_link()
+        self.goals = build_goaltree(
+            open_(1, 'Root', [2, 3]),
+            open_(2, 'A', [4]),
+            open_(3, 'B', [4]),
+            open_(4, 'C', select=selected)
+        )
         assert self.goals.all(keys='name,edge') == {
                 1: {'name': 'Root', 'edge': [2, 3]},
                 2: {'name': 'A', 'edge': [4]},
