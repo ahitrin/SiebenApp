@@ -2,7 +2,7 @@
 from unittest import TestCase
 
 from siebenapp.goaltree import Goals
-from siebenapp.tests.dsl import build_goaltree, open_, selected
+from siebenapp.tests.dsl import build_goaltree, open_, selected, previous, clos_
 
 
 class GoalsTest(TestCase):
@@ -61,11 +61,11 @@ class GoalsTest(TestCase):
         }
 
     def test_insert_goal_between_independent_goals(self):
-        self.goals.add('A')
-        self.goals.add('B')
-        self.goals.select(2)
-        self.goals.hold_select()
-        self.goals.select(3)
+        self.goals = build_goaltree(
+            open_(1, 'Root', [2, 3]),
+            open_(2, 'A', select=previous),
+            open_(3, 'B', select=selected)
+        )
         self.goals.insert('Wow')
         assert self.goals.all(keys='name,edge,switchable') == {
                 1: {'name': 'Root', 'edge': [2, 3], 'switchable': False},
@@ -82,27 +82,22 @@ class GoalsTest(TestCase):
                 1: {'name': 'Root', 'open': False, 'switchable': True}}
 
     def test_reopen_goal(self):
-        self.goals.add('A')
-        self.goals.select(2)
-        self.goals.toggle_close()
+        self.goals = build_goaltree(
+            open_(1, 'Root', [2]),
+            clos_(2, 'A', select=selected)
+        )
         assert self.goals.all(keys='open') == {1: {'open': True}, 2: {'open': False}}
-        assert self.goals.all(keys='select') == {1: {'select': 'select'}, 2: {'select': None}}
-        self.goals.select(2)
         self.goals.toggle_close()
         assert self.goals.all(keys='open,switchable') == {
             1: {'open': True, 'switchable': False},
             2: {'open': True, 'switchable': True}}
 
     def test_close_goal_again(self):
-        self.goals.add('A')
-        self.goals.select(2)
-        self.goals.add('Ab')
-        self.goals.select(3)
-        self.goals.toggle_close()
-        assert self.goals.all(keys='open,switchable') == {
-            1: {'open': True, 'switchable': False},
-            2: {'open': True, 'switchable': True},
-            3: {'open': False, 'switchable': True}}
+        self.goals = build_goaltree(
+            open_(1, 'Root', [2], selected),
+            open_(2, 'A', [3]),
+            clos_(3, 'Ab'),
+        )
         self.goals.select(2)
         self.goals.toggle_close()
         assert self.goals.all(keys='open,switchable') == {
@@ -123,13 +118,11 @@ class GoalsTest(TestCase):
             3: {'open': False, 'switchable': False}}
 
     def test_closed_leaf_goal_could_not_be_reopened(self):
-        self.goals.add('A')
-        self.goals.select(2)
-        self.goals.add('B')
-        self.goals.select(3)
-        self.goals.toggle_close()
-        self.goals.select(2)
-        self.goals.toggle_close()
+        self.goals = build_goaltree(
+            open_(1, 'Root', [2], selected),
+            clos_(2, 'A', [3]),
+            clos_(3, 'B')
+        )
         assert self.goals.all(keys='open,switchable') == {
             1: {'open': True, 'switchable': True},
             2: {'open': False, 'switchable': True},
@@ -143,64 +136,64 @@ class GoalsTest(TestCase):
             3: {'open': False, 'switchable': False}}
 
     def test_goal_in_the_middle_could_not_be_closed(self):
-        self.goals.add('A')
-        self.goals.add('B')
-        self.goals.select(2)
-        self.goals.add('C')
-        self.goals.select(3)
-        self.goals.hold_select()
-        self.goals.select(4)
-        self.goals.toggle_link()
-        # now goals 2 and 3 are blocked by the goal 4
-        self.goals.select(3)
+        self.goals = build_goaltree(
+            open_(1, 'Root', [2, 3]),
+            open_(2, 'A', [4]),
+            open_(3, 'B', [4], selected),
+            open_(4, 'C')
+        )
         self.goals.toggle_close()
         assert self.goals.all(keys='open') == {1: {'open': True}, 2: {'open': True}, 3: {'open': True},
                                                4: {'open': True}}
 
     def test_delete_single_goal(self):
-        self.goals.add('A')
-        self.goals.select(2)
+        self.goals = build_goaltree(
+            open_(1, 'Root', [2]),
+            open_(2, 'A', select=selected)
+        )
         self.goals.delete()
         assert self.goals.all(keys='name,select,switchable') == {
                 1: {'name': 'Root', 'select': 'select', 'switchable': True},
         }
 
     def test_enumeration_should_not_be_changed_after_delete(self):
-        self.goals.add('A')
-        self.goals.add('B')
-        assert self.goals.all() == {1: {'name': 'Root'}, 2: {'name': 'A'}, 3: {'name': 'B'}}
-        self.goals.select(2)
+        self.goals = build_goaltree(
+            open_(1, 'Root', [2, 3]),
+            open_(2, 'A', select=selected),
+            open_(3, 'B')
+        )
         self.goals.delete()
         assert self.goals.all(keys='name,switchable') == {
             1: {'name': 'Root', 'switchable': False},
             3: {'name': 'B', 'switchable': True}}
 
     def test_remove_goal_chain(self):
-        self.goals.add('A')
-        self.goals.add('B', 2)
-        self.goals.select(2)
+        self.goals = build_goaltree(
+            open_(1, 'Root', [2]),
+            open_(2, 'A', [3], selected),
+            open_(3, 'B')
+        )
         self.goals.delete()
         assert self.goals.all() == {1: {'name': 'Root'}}
 
     def test_add_link_between_goals(self):
-        self.goals.add('A')
-        self.goals.add('B')
-        self.goals.select(2)
-        self.goals.hold_select()
-        self.goals.select(3)
+        self.goals = build_goaltree(
+            open_(1, 'Root', [2, 3]),
+            open_(2, 'A', select=previous),
+            open_(3, 'B', select=selected)
+        )
         self.goals.toggle_link()
         assert self.goals.all(keys='switchable') == {
             1: {'switchable': False}, 2: {'switchable': False}, 3: {'switchable': True}
         }
 
     def test_view_edges(self):
-        self.goals.add('A')
-        self.goals.add('B')
-        self.goals.add('C', 2)
-        self.goals.select(3)
-        self.goals.hold_select()
-        self.goals.select(4)
-        self.goals.toggle_link()
+        self.goals = build_goaltree(
+            open_(1, 'Root', [2, 3]),
+            open_(2, 'A', [4]),
+            open_(3, 'B', [4], previous),
+            open_(4, 'C', select=selected)
+        )
         assert self.goals.all(keys='edge,switchable') == {
             1: {'edge': [2, 3], 'switchable': False},
             2: {'edge': [4], 'switchable': False},
@@ -212,28 +205,27 @@ class GoalsTest(TestCase):
         assert self.goals.all(keys='edge') == {1: {'edge': []}}
 
     def test_no_loops_allowed(self):
-        self.goals.add('step')
-        self.goals.select(2)
-        self.goals.add('next')
-        self.goals.select(3)
-        self.goals.add('more')
-        self.goals.select(4)
-        self.goals.hold_select()
-        self.goals.select(1)
+        self.goals = build_goaltree(
+            open_(1, 'Root', [2], selected),
+            open_(2, 'step', [3]),
+            open_(3, 'next', [4]),
+            open_(4, 'more', select=previous)
+        )
         self.goals.toggle_link()
         assert self.goals.all(keys='edge') == {
             1: {'edge': [2]}, 2: {'edge': [3]}, 3: {'edge': [4]}, 4: {'edge': []}}
 
     def test_remove_link_between_goals(self):
-        self.goals.add('A')
-        self.goals.add('B')
-        self.goals.select(2)
-        self.goals.hold_select()
-        self.goals.select(3)
+        self.goals = build_goaltree(
+            open_(1, 'Root', [2, 3]),
+            open_(2, 'A', [3], previous),
+            open_(3, 'B', select=selected)
+        )
         self.goals.toggle_link()
-        self.goals.toggle_link()
-        assert self.goals.all(keys='switchable') == {
-            1: {'switchable': False}, 2: {'switchable': True}, 3: {'switchable': True}
+        assert self.goals.all(keys='edge,switchable') == {
+            1: {'edge': [2, 3], 'switchable': False},
+            2: {'edge': [], 'switchable': True},
+            3: {'edge': [], 'switchable': True}
         }
 
     def test_remove_goal_in_the_middle(self):
@@ -277,9 +269,11 @@ class GoalsTest(TestCase):
         }
 
     def test_move_selection_to_the_root_after_closing(self):
-        self.goals.add('A')
-        self.goals.add('B')
-        self.goals.select(2)
+        self.goals = build_goaltree(
+            open_(1, 'Root', [2, 3]),
+            open_(2, 'A', select=selected),
+            open_(3, 'B')
+        )
         self.goals.toggle_close()
         assert self.goals.all(keys='open,select') == {
                 1: {'open': True, 'select': 'select'},
@@ -292,22 +286,22 @@ class GoalsTest(TestCase):
             1: {'select': 'select'}}
 
     def test_do_not_select_deleted_goals(self):
-        self.goals.add('broken')
-        self.goals.select(2)
-        assert self.goals.all(keys='select') == {
-            1: {'select': 'prev'}, 2: {'select': 'select'}}
+        self.goals = build_goaltree(
+            open_(1, 'Root', [2]),
+            open_(2, 'broken', select=selected)
+        )
         self.goals.delete()
         self.goals.select(2)
         assert self.goals.all(keys='select') == {
             1: {'select': 'select'}}
 
     def test_selection_should_be_instant(self):
-        for char in '234567890A':
-            self.goals.add(char)
-        assert self.goals.all(keys='select') == {
-            1: {'select': 'select'}, 2: {'select': None}, 3: {'select': None},
-            4: {'select': None}, 5: {'select': None}, 6: {'select': None}, 7: {'select': None},
-            8: {'select': None}, 9: {'select': None}, 10: {'select': None}, 11: {'select': None}}
+        self.goals = build_goaltree(
+            open_(1, 'Root', [2, 3, 4, 5, 6, 7, 8, 9, 10, 11], selected),
+            open_(2, 'A'), open_(3, 'B'), open_(4, 'C'), open_(5, 'D'),
+            open_(6, 'E'), open_(7, 'F'), open_(8, 'G'), open_(9, 'H'),
+            open_(10, 'I'), open_(11, 'J'),
+        )
         self.goals.select(2)
         assert self.goals.all(keys='select') == {
             1: {'select': 'prev'}, 2: {'select': 'select'}, 3: {'select': None}, 4: {'select': None},
