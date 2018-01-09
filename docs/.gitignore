@@ -1,0 +1,12 @@
+*.db
+*.db.bak
+*.ipynb
+*.pyc
+.cache
+.env
+.hypothesis
+.idea
+.ipynb_checkpoints
+.jekyll-metadata
+.sass-cache
+_site
