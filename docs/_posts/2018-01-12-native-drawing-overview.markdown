@@ -21,7 +21,7 @@ Some of them are already implemented in SiebenApp, some not.
 
 Currently, it looks like this:
 
-![goals intersected with edges](/images/2018-01-12-native/native_drawing.jpg)
+![goals intersected with edges](/SiebenApp/images/2018-01-12-native/native_drawing.jpg)
 
 As you can see, a number of edge-edge and edge-goal intersections is big.
 This is the main reason why I haven't switched rendering to the native implementation yet.
