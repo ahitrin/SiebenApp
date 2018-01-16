@@ -57,13 +57,13 @@ class SiebenApp(QMainWindow):
             Qt.Key_8: self.select_number(8),
             Qt.Key_9: self.select_number(9),
             Qt.Key_0: self.select_number(0),
-            Qt.Key_A: self.start_edit(self.goals.add, 'Add new goal'),
+            Qt.Key_A: self.start_edit('Add new goal', self.goals.add),
             Qt.Key_C: self.with_refresh(self.goals.toggle_close),
             Qt.Key_D: self.with_refresh(self.goals.delete),
-            Qt.Key_I: self.start_edit(self.goals.insert, 'Insert new goal'),
+            Qt.Key_I: self.start_edit('Insert new goal', self.goals.insert),
             Qt.Key_L: self.with_refresh(self.goals.toggle_link),
             Qt.Key_Q: self.quit_app.emit,
-            Qt.Key_R: self.start_edit(self.goals.rename, 'Rename goal'),
+            Qt.Key_R: self.start_edit('Rename goal', self.goals.rename, self._current_goal_label),
             Qt.Key_S: self.with_refresh(self.goals.swap_goals),
             Qt.Key_V: self.toggle_view,
             Qt.Key_Z: self.toggle_zoom,
@@ -75,11 +75,13 @@ class SiebenApp(QMainWindow):
         else:
             super().keyPressEvent(event)
 
-    def start_edit(self, fn, dock_label):
+    def start_edit(self, label, fn, pre_fn=None):
         def inner():
-            self.dockWidget.setWindowTitle(dock_label)
+            self.dockWidget.setWindowTitle(label)
             self.input.setEnabled(True)
             self.input.setFocus(True)
+            if pre_fn is not None:
+                self.input.setText(pre_fn())
             self.input.returnPressed.connect(self.finish_edit(fn))
             self.cancel.setEnabled(True)
             self.cancel.clicked.connect(self.cancel_edit)
@@ -107,6 +109,10 @@ class SiebenApp(QMainWindow):
             self.cancel.clicked.disconnect()
         except TypeError:
             pass
+
+    def _current_goal_label(self):
+        data = self.goals.all(keys='name,select').values()
+        return [x['name'] for x in data if x['select'] == 'select'].pop()
 
     def with_refresh(self, fn):
         def inner():
