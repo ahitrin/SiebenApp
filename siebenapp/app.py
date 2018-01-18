@@ -144,18 +144,23 @@ class GoalWidget(QWidget, Ui_GoalBody):
         super().__init__()
         self._click_in_progress = False
         self.setupUi(self)
+        self.is_real = True
 
     def setup_data(self, number, attributes):
         self.label_goal_name.setText(split_long(attributes['name']))
         self.label_number.setText(str(number))
         self.check_open.setVisible(attributes['switchable'])
+        self.is_real = isinstance(number, int)
         selection = attributes['select']
         if selection == 'select':
             self.setStyleSheet('background-color:#808080;')
         elif selection == 'prev':
             self.setStyleSheet('background-color:#C0C0C0;')
         frame_color = 'red' if attributes['open'] else 'green'
-        self.frame.setStyleSheet('.QFrame{ border: 1px solid %s }' % frame_color)
+        if self.is_real:
+            self.frame.setStyleSheet('.QFrame{ border: 1px solid %s }' % frame_color)
+        else:
+            self.setStyleSheet('color: #EEEEEE; border: #EEEEEE')
 
     def mousePressEvent(self, event):                           # pylint: disable=unused-argument
         self._click_in_progress = True
@@ -166,7 +171,18 @@ class GoalWidget(QWidget, Ui_GoalBody):
         self._click_in_progress = False
 
     def get_id(self):
-        return int(self.label_number.text())
+        try:
+            return int(self.label_number.text())
+        except ValueError:
+            return self.label_number.text()
+
+    def top_point(self):
+        rect = self.geometry()
+        return (rect.topLeft() + rect.topRight()) / 2
+
+    def bottom_point(self):
+        rect = self.geometry()
+        return (rect.bottomLeft() + rect.bottomRight()) / 2
 
 
 class CentralWidget(QWidget):
@@ -182,25 +198,19 @@ class CentralWidget(QWidget):
     def setDependencies(self, new_dependencies):
         self.dependencies = new_dependencies
 
-    @staticmethod
-    def top_point(rect):
-        return (rect.topLeft() + rect.topRight()) / 2
-
-    @staticmethod
-    def bottom_point(rect):
-        return (rect.bottomLeft() + rect.bottomRight()) / 2
-
     def paintEvent(self, event):                                    # pylint: disable=unused-argument
         painter = QPainter(self)
         painter.setPen(Qt.black)
 
-        widgets = {w.get_id(): (self.top_point(w.geometry()), self.bottom_point(w.geometry()))
+        widgets = {w.get_id(): (w.top_point(), w.bottom_point(), w.is_real)
                    for w in self.children() if isinstance(w, GoalWidget)}
         for widget_id, points in widgets.items():
             line_start = points[0]
             for parent_widget in self.dependencies[widget_id]:
                 line_end = widgets[parent_widget][1]
                 painter.drawLine(line_start, line_end)
+            if not points[2]:
+                painter.drawLine(points[0], points[1])
 
 
 class SiebenAppDevelopment(SiebenApp):
@@ -237,8 +247,9 @@ class SiebenAppDevelopment(SiebenApp):
             widget = GoalWidget()
             self.scrollAreaWidgetContents.layout().addWidget(widget, attributes['row'], attributes['col'])
             widget.setup_data(goal_id, attributes)
-            widget.clicked.connect(self.select_number(goal_id))
-            widget.check_open.clicked.connect(self.close_goal(goal_id))
+            if isinstance(goal_id, int):
+                widget.clicked.connect(self.select_number(goal_id))
+                widget.check_open.clicked.connect(self.close_goal(goal_id))
         self.scrollAreaWidgetContents.update()
 
 
