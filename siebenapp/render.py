@@ -21,20 +21,16 @@ def min_width(source, width):
     while unsorted_goals:
         candidates = [(goal, len(edges)) for goal, edges in unsorted_goals.items()
                       if all(v in goals_on_previous_layers for v in edges)]
-        best_candidates = sorted(candidates, key=lambda x: x[1], reverse=True)
-        edges = 0
-        if best_candidates:
-            goal, edges = best_candidates[0]
+        for goal, edges in sorted(candidates, key=lambda x: x[1], reverse=True):
             unsorted_goals.pop(goal)
             sorted_goals.add(goal)
             layers[current_layer].append(goal)
             back_edges = len([k for k, vs in source.items() if goal in vs])
             width_current += 1 - edges
             width_up += back_edges
-        # pylint: disable=consider-using-ternary
-        must_go_up = (width_current >= width and edges < 1) or (width_up >= width)
-        if not best_candidates or must_go_up:
-            current_layer += 1
-            goals_on_previous_layers.update(sorted_goals)
-            width_current, width_up = width_up, 0
+            if (width_current >= width and edges < 1) or (width_up >= width):
+                break
+        current_layer += 1
+        goals_on_previous_layers.update(sorted_goals)
+        width_current, width_up = width_up, 0
     return dict(layers)
