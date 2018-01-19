@@ -65,17 +65,19 @@ def min_width(source, width):
 
 
 def reorder(edges, layers):
-    for curr_layer in sorted(layers.keys())[:-1]:
+    for curr_layer in sorted(layers.keys(), reverse=True)[:-1]:
         fixed_line = layers[curr_layer]
         fixed_positions = {g: i for i, g in enumerate(fixed_line)}
-        random_line = layers[curr_layer + 1]
-        random_positions = {g:i for i, g in enumerate(random_line)}
+        random_line = layers[curr_layer - 1]
+        random_positions = {g: i for i, g in enumerate(random_line)}
+        deltas = defaultdict(list)
+        for goal in fixed_line:
+            for e in edges[goal]:
+                deltas[e].append(fixed_positions[goal] - random_positions[e])
         gravity = []
         for goal in random_line:
-            deltas = []
-            for e in edges[goal]:
-                deltas.append(fixed_positions[e] - random_positions[goal])
-            force = sum(deltas) / len(deltas) if deltas else 0
+            goal_deltas = deltas[goal]
+            force = sum(goal_deltas) / len(goal_deltas) if goal_deltas else 0
             gravity.append((goal, force))
         new_line = [g for g, f in sorted(gravity, key=lambda x: x[1])]
-        layers[curr_layer + 1] = new_line
+        layers[curr_layer - 1] = new_line
