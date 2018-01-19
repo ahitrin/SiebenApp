@@ -156,9 +156,10 @@ class GoalWidget(QWidget, Ui_GoalBody):
             self.setStyleSheet('background-color:#808080;')
         elif selection == 'prev':
             self.setStyleSheet('background-color:#C0C0C0;')
-        frame_color = 'red' if attributes['open'] else 'green'
         if self.is_real:
-            self.frame.setStyleSheet('.QFrame{ border: 1px solid %s }' % frame_color)
+            frame_color = 'red' if attributes['open'] else 'green'
+            border = 2 if attributes['switchable'] else 1
+            self.frame.setStyleSheet('.QFrame{ border: %dpx solid %s }' % (border, frame_color))
         else:
             self.setStyleSheet('color: #EEEEEE; border: #EEEEEE')
 
