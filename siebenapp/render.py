@@ -47,10 +47,8 @@ class Renderer:
             for goal, edges in sorted(candidates, key=lambda x: len(x[1]), reverse=True):
                 unsorted_goals.pop(goal)
                 sorted_goals.add(goal)
-                try:
+                if goal in incoming_edges:
                     incoming_edges.remove(goal)
-                except KeyError:
-                    pass
                 layers[current_layer].append(goal)
                 back_edges = [k for k, vs in self.edges.items() if goal in vs]
                 outgoing_edges.update(e for e in back_edges)
