@@ -6,6 +6,8 @@ def render_tree(goals):
 
 
 class Renderer:
+    WIDTH_LIMIT = 4
+
     def __init__(self, goals):
         self.goals = goals
         self.edges = {}
@@ -13,7 +15,7 @@ class Renderer:
     def build(self):
         graph = self.goals.all(keys='name,edge,open,select,switchable')
         self.edges = {key: values['edge'] for key, values in graph.items()}
-        layers = self.min_width(4)
+        layers = self.min_width()
         self.reorder(layers)
         for row in sorted(layers.keys()):
             for col, goal_id in enumerate(layers[row]):
@@ -33,7 +35,7 @@ class Renderer:
         return graph
 
     # pylint: disable=too-many-locals
-    def min_width(self, width):
+    def min_width(self):
         unsorted_goals, sorted_goals, goals_on_previous_layers = dict(self.edges), set(), set()
         layers = defaultdict(list)
         current_layer, width_current, width_up = 0, 0, 0
@@ -53,7 +55,7 @@ class Renderer:
                 outgoing_edges.update(e for e in back_edges)
                 width_current += 1 - len(edges)
                 width_up += len(back_edges)
-                if (width_current >= width and len(edges) < 1) or (width_up >= width):
+                if (width_current >= self.WIDTH_LIMIT and len(edges) < 1) or (width_up >= self.WIDTH_LIMIT):
                     break
             for original_id in incoming_edges:
                 new_goal_name = '%d_%d' % (original_id, current_layer)
