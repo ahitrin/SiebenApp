@@ -10,7 +10,7 @@ from PyQt5.QtGui import QImage, QPixmap, QPainter
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout
 from PyQt5.uic import loadUi
 
-from siebenapp.render import render_tree
+from siebenapp.render import Renderer
 from siebenapp.system import save, load, dot_export, DEFAULT_DB, split_long
 from siebenapp.ui.goalwidget import Ui_GoalBody
 
@@ -241,7 +241,7 @@ class SiebenAppDevelopment(SiebenApp):
         for child in self.scrollAreaWidgetContents.children():
             if isinstance(child, GoalWidget):
                 child.deleteLater()
-        graph = render_tree(self.goals)
+        graph = Renderer(self.goals).build()
         if 'setDependencies' in dir(self.scrollAreaWidgetContents):
             self.scrollAreaWidgetContents.setDependencies({g: graph[g]['edge'] for g in graph})
         for goal_id, attributes in graph.items():
