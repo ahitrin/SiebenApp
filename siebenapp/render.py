@@ -9,17 +9,16 @@ class Renderer:
     WIDTH_LIMIT = 4
 
     def __init__(self, goals):
-        self.goals = goals
+        self.graph = goals.all(keys='name,edge,open,select,switchable')
         self.edges = {}
         self.layers = defaultdict(list)
 
     def build(self):
-        graph = self.goals.all(keys='name,edge,open,select,switchable')
-        self.edges = {key: values['edge'] for key, values in graph.items()}
+        self.edges = {key: values['edge'] for key, values in self.graph.items()}
         self.split_by_layers()
         self.reorder()
-        self.update_graph(graph)
-        return graph
+        self.update_graph()
+        return self.graph
 
     def split_by_layers(self):
         unsorted_goals, sorted_goals = dict(self.edges), set()
@@ -73,18 +72,18 @@ class Renderer:
             new_line = [g for g, f in sorted(gravity, key=lambda x: x[1])]
             self.layers[curr_layer - 1] = new_line
 
-    def update_graph(self, graph):
+    def update_graph(self):
         for row in sorted(self.layers.keys()):
             for col, goal_id in enumerate(self.layers[row]):
-                if goal_id not in graph:
-                    graph[goal_id] = {
+                if goal_id not in self.graph:
+                    self.graph[goal_id] = {
                         'name': '',
                         'edge': [],
                         'switchable': False,
                         'select': None,
                         'open': True,
                     }
-                graph[goal_id].update({
+                self.graph[goal_id].update({
                     'row': row,
                     'col': col,
                     'edge': self.edges[goal_id],
