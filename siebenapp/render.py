@@ -35,7 +35,6 @@ class Renderer:
                 })
         return graph
 
-    # pylint: disable=too-many-locals
     def split_by_layers(self):
         unsorted_goals, sorted_goals = dict(self.edges), set()
         current_layer, width_current, width_up = 0, 0, 0
