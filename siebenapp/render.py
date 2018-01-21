@@ -18,21 +18,7 @@ class Renderer:
         self.edges = {key: values['edge'] for key, values in graph.items()}
         self.split_by_layers()
         self.reorder()
-        for row in sorted(self.layers.keys()):
-            for col, goal_id in enumerate(self.layers[row]):
-                if goal_id not in graph:
-                    graph[goal_id] = {
-                        'name': '',
-                        'edge': [],
-                        'switchable': False,
-                        'select': None,
-                        'open': True,
-                    }
-                graph[goal_id].update({
-                    'row': row,
-                    'col': col,
-                    'edge': self.edges[goal_id],
-                })
+        self.update_graph(graph)
         return graph
 
     def split_by_layers(self):
@@ -86,3 +72,20 @@ class Renderer:
                 gravity.append((goal, force))
             new_line = [g for g, f in sorted(gravity, key=lambda x: x[1])]
             self.layers[curr_layer - 1] = new_line
+
+    def update_graph(self, graph):
+        for row in sorted(self.layers.keys()):
+            for col, goal_id in enumerate(self.layers[row]):
+                if goal_id not in graph:
+                    graph[goal_id] = {
+                        'name': '',
+                        'edge': [],
+                        'switchable': False,
+                        'select': None,
+                        'open': True,
+                    }
+                graph[goal_id].update({
+                    'row': row,
+                    'col': col,
+                    'edge': self.edges[goal_id],
+                })
