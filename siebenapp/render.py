@@ -1,10 +1,6 @@
 from collections import defaultdict
 
 
-def render_tree(goals):
-    return Renderer(goals).build()
-
-
 class Renderer:
     WIDTH_LIMIT = 4
 
