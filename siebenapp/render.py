@@ -37,12 +37,12 @@ class Renderer:
 
     # pylint: disable=too-many-locals
     def split_by_layers(self):
-        unsorted_goals, sorted_goals, goals_on_previous_layers = dict(self.edges), set(), set()
+        unsorted_goals, sorted_goals = dict(self.edges), set()
         current_layer, width_current, width_up = 0, 0, 0
         incoming_edges, outgoing_edges = set(), set()
         while unsorted_goals:
             candidates = [(goal, edges) for goal, edges in unsorted_goals.items()
-                          if all(v in goals_on_previous_layers for v in edges)]
+                          if all(v in sorted_goals for v in edges)]
             candidates.sort(key=lambda x: len(x[1]), reverse=True)
             for goal, edges in candidates:
                 unsorted_goals.pop(goal)
@@ -66,7 +66,6 @@ class Renderer:
                 self.layers[current_layer].append(new_goal_name)
                 sorted_goals.add(new_goal_name)
             current_layer += 1
-            goals_on_previous_layers.update(sorted_goals)
             width_current, width_up = width_up, 0
             incoming_edges.update(outgoing_edges)
             outgoing_edges.clear()
