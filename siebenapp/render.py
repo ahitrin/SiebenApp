@@ -44,7 +44,8 @@ class Renderer:
         while unsorted_goals:
             candidates = [(goal, edges) for goal, edges in unsorted_goals.items()
                           if all(v in goals_on_previous_layers for v in edges)]
-            for goal, edges in sorted(candidates, key=lambda x: len(x[1]), reverse=True):
+            candidates.sort(key=lambda x: len(x[1]), reverse=True)
+            for goal, edges in candidates:
                 unsorted_goals.pop(goal)
                 sorted_goals.add(goal)
                 if goal in incoming_edges:
