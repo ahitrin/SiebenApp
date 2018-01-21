@@ -10,11 +10,10 @@ class Renderer:
 
     def __init__(self, goals):
         self.graph = goals.all(keys='name,edge,open,select,switchable')
-        self.edges = {}
+        self.edges = {key: values['edge'] for key, values in self.graph.items()}
         self.layers = defaultdict(list)
 
     def build(self):
-        self.edges = {key: values['edge'] for key, values in self.graph.items()}
         self.split_by_layers()
         self.reorder()
         self.update_graph()
