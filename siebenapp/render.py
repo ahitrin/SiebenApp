@@ -15,7 +15,7 @@ class Renderer:
     def build(self):
         graph = self.goals.all(keys='name,edge,open,select,switchable')
         self.edges = {key: values['edge'] for key, values in graph.items()}
-        layers = self.min_width()
+        layers = self.split_by_layers()
         self.reorder(layers)
         for row in sorted(layers.keys()):
             for col, goal_id in enumerate(layers[row]):
@@ -35,7 +35,7 @@ class Renderer:
         return graph
 
     # pylint: disable=too-many-locals
-    def min_width(self):
+    def split_by_layers(self):
         unsorted_goals, sorted_goals, goals_on_previous_layers = dict(self.edges), set(), set()
         layers = defaultdict(list)
         current_layer, width_current, width_up = 0, 0, 0
