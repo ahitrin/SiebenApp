@@ -26,10 +26,10 @@ class Renderer:
         current_layer, width_current, width_up = 0, 0, 0
         incoming_edges, outgoing_edges = set(), set()
         while unsorted_goals:
-            candidates = [(goal, edges) for goal, edges in unsorted_goals.items()
+            candidates = [(goal, len(edges)) for goal, edges in unsorted_goals.items()
                           if all(v in sorted_goals for v in edges)]
-            candidates.sort(key=lambda x: len(x[1]), reverse=True)
-            for goal, edges in candidates:
+            candidates.sort(key=lambda x: x[1], reverse=True)
+            for goal, edges_len in candidates:
                 unsorted_goals.pop(goal)
                 sorted_goals.add(goal)
                 if goal in incoming_edges:
@@ -37,9 +37,9 @@ class Renderer:
                 self.layers[current_layer].append(goal)
                 back_edges = [k for k, vs in self.edges.items() if goal in vs]
                 outgoing_edges.update(e for e in back_edges)
-                width_current += 1 - len(edges)
+                width_current += 1 - edges_len
                 width_up += len(back_edges)
-                if (width_current >= self.WIDTH_LIMIT and len(edges) < 1) or (width_up >= self.WIDTH_LIMIT):
+                if (width_current >= self.WIDTH_LIMIT and edges_len < 1) or (width_up >= self.WIDTH_LIMIT):
                     break
             for original_id in incoming_edges:
                 new_goal_name = '%d_%d' % (original_id, current_layer)
