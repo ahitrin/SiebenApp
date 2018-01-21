@@ -11,14 +11,15 @@ class Renderer:
     def __init__(self, goals):
         self.goals = goals
         self.edges = {}
+        self.layers = {}
 
     def build(self):
         graph = self.goals.all(keys='name,edge,open,select,switchable')
         self.edges = {key: values['edge'] for key, values in graph.items()}
-        layers = self.split_by_layers()
-        self.reorder(layers)
-        for row in sorted(layers.keys()):
-            for col, goal_id in enumerate(layers[row]):
+        self.split_by_layers()
+        self.reorder()
+        for row in sorted(self.layers.keys()):
+            for col, goal_id in enumerate(self.layers[row]):
                 if goal_id not in graph:
                     graph[goal_id] = {
                         'name': '',
@@ -71,13 +72,13 @@ class Renderer:
             width_current, width_up = width_up, 0
             incoming_edges.update(outgoing_edges)
             outgoing_edges.clear()
-        return dict(layers)
+        self.layers = dict(layers)
 
-    def reorder(self, layers):
-        for curr_layer in sorted(layers.keys(), reverse=True)[:-1]:
-            fixed_line = layers[curr_layer]
+    def reorder(self):
+        for curr_layer in sorted(self.layers.keys(), reverse=True)[:-1]:
+            fixed_line = self.layers[curr_layer]
             fixed_positions = {g: i for i, g in enumerate(fixed_line)}
-            random_line = layers[curr_layer - 1]
+            random_line = self.layers[curr_layer - 1]
             random_positions = {g: i for i, g in enumerate(random_line)}
             deltas = defaultdict(list)
             for goal in fixed_line:
@@ -89,4 +90,4 @@ class Renderer:
                 force = sum(goal_deltas) / len(goal_deltas) if goal_deltas else 0
                 gravity.append((goal, force))
             new_line = [g for g, f in sorted(gravity, key=lambda x: x[1])]
-            layers[curr_layer - 1] = new_line
+            self.layers[curr_layer - 1] = new_line
