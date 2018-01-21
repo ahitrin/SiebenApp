@@ -11,7 +11,7 @@ class Renderer:
     def __init__(self, goals):
         self.goals = goals
         self.edges = {}
-        self.layers = {}
+        self.layers = defaultdict(list)
 
     def build(self):
         graph = self.goals.all(keys='name,edge,open,select,switchable')
@@ -38,7 +38,6 @@ class Renderer:
     # pylint: disable=too-many-locals
     def split_by_layers(self):
         unsorted_goals, sorted_goals, goals_on_previous_layers = dict(self.edges), set(), set()
-        layers = defaultdict(list)
         current_layer, width_current, width_up = 0, 0, 0
         incoming_edges, outgoing_edges = set(), set()
         while unsorted_goals:
@@ -50,7 +49,7 @@ class Renderer:
                 sorted_goals.add(goal)
                 if goal in incoming_edges:
                     incoming_edges.remove(goal)
-                layers[current_layer].append(goal)
+                self.layers[current_layer].append(goal)
                 back_edges = [k for k, vs in self.edges.items() if goal in vs]
                 outgoing_edges.update(e for e in back_edges)
                 width_current += 1 - len(edges)
@@ -60,18 +59,17 @@ class Renderer:
             for original_id in incoming_edges:
                 new_goal_name = '%d_%d' % (original_id, current_layer)
                 self.edges[new_goal_name] = [g for g in self.edges[original_id]
-                                             if g in sorted_goals and g not in layers[current_layer]]
+                                             if g in sorted_goals and g not in self.layers[current_layer]]
                 for g in self.edges[new_goal_name]:
                     self.edges[original_id].remove(g)
                 self.edges[original_id].append(new_goal_name)
-                layers[current_layer].append(new_goal_name)
+                self.layers[current_layer].append(new_goal_name)
                 sorted_goals.add(new_goal_name)
             current_layer += 1
             goals_on_previous_layers.update(sorted_goals)
             width_current, width_up = width_up, 0
             incoming_edges.update(outgoing_edges)
             outgoing_edges.clear()
-        self.layers = dict(layers)
 
     def reorder(self):
         for curr_layer in sorted(self.layers.keys(), reverse=True)[:-1]:
