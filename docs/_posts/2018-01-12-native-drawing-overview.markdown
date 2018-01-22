@@ -2,7 +2,7 @@
 layout: post
 title:  "Native drawing overview"
 date:   2018-01-12 23:32:15 +0500
-tags: architecture notes
+tags: architecture notes, rendering
 ---
 
 A bit of light must be shed on [long-running (endless?) feature "native rendering"][task_5].
