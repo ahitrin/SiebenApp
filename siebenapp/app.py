@@ -29,6 +29,7 @@ class SiebenApp(QMainWindow):
         self.force_refresh = True
 
     def setup(self):
+        self.action_Hotkeys.triggered.connect(self.hotkeys.show)
         self.action_About.triggered.connect(self.about.show)
         self.refresh.emit()
 
@@ -69,6 +70,7 @@ class SiebenApp(QMainWindow):
             Qt.Key_Z: self.toggle_zoom,
             Qt.Key_Escape: self.cancel_edit,
             Qt.Key_Space: self.with_refresh(self.goals.hold_select),
+            Qt.Key_Slash: self.show_keys_help,
         }
         if event.key() in key_handlers:
             key_handlers[event.key()]()
@@ -135,6 +137,9 @@ class SiebenApp(QMainWindow):
         self.force_refresh = True
         self.goals.toggle_zoom()
         self.refresh.emit()
+
+    def show_keys_help(self):
+        self.action_Hotkeys.trigger()
 
 
 class GoalWidget(QWidget, Ui_GoalBody):
@@ -269,6 +274,7 @@ def main(root_script):
         w = loadUi(join(root, 'ui', 'main.ui'), SiebenApp(args.db))
     w.use_dot = not args.devel
     w.about = loadUi(join(root, 'ui', 'about.ui'))
+    w.hotkeys = loadUi(join(root, 'ui', 'hotkeys.ui'))
     w.setup()
     w.showMaximized()
     sys.exit(app.exec_())

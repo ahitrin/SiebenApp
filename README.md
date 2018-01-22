@@ -93,6 +93,8 @@ Now just play around freely using following buttons:
  * `v` for circular switching current _view_: only open goals → only "top" goals → all goals → ...;
  * `q` for quitting when you are impressed enough.
 
+To view this list in the application itself, please use `/` button (or menu item).
+
 ## Usage tips
 
 You might not want to keep all of your tasks in a single file (`sieben.db` by default). So you could provide path to another database file in the command line:
