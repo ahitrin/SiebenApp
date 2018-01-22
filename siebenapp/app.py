@@ -264,7 +264,7 @@ def main(root_script):
     app = QApplication(sys.argv)
     root = dirname(realpath(root_script))
     if args.devel:
-        w = loadUi(join(root, 'ui', 'main-devel.ui'), SiebenAppDevelopment(args.db))
+        w = loadUi(join(root, 'ui', 'main.ui'), SiebenAppDevelopment(args.db))
     else:
         w = loadUi(join(root, 'ui', 'main.ui'), SiebenApp(args.db))
     w.use_dot = not args.devel
