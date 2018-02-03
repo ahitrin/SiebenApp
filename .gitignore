@@ -1,3 +1,4 @@
+*.pyc
 .cache
 .env
 .hypothesis
