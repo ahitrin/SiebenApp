@@ -9,6 +9,7 @@ class Renderer:
         self.graph = goals.all(keys='name,edge,open,select,switchable')
         self.edges = {key: values['edge'] for key, values in self.graph.items()}
         self.layers = defaultdict(list)
+        self.positions = {}
 
     def build(self):
         self.split_by_layers()
@@ -21,37 +22,42 @@ class Renderer:
         current_layer, width_current, width_up = 0, 0, 0
         incoming_edges, outgoing_edges = set(), set()
         while unsorted_goals:
-            candidates = [(goal, len(edges)) for goal, edges in unsorted_goals.items()
-                          if all(v in sorted_goals for v in edges)]
-            candidates.sort(key=lambda x: x[1], reverse=True)
-            for goal, edges_len in candidates:
+            new_layer = []
+            for goal, edges_len in self.candidates_for_new_layer(sorted_goals, unsorted_goals):
                 unsorted_goals.pop(goal)
                 sorted_goals.add(goal)
-                if goal in incoming_edges:
-                    incoming_edges.remove(goal)
-                self.layers[current_layer].append(goal)
+                new_layer.append(goal)
                 back_edges = [k for k, vs in self.edges.items() if goal in vs]
                 outgoing_edges.update(e for e in back_edges)
                 width_current += 1 - edges_len
                 width_up += len(back_edges)
                 if (width_current >= self.WIDTH_LIMIT and edges_len < 1) or (width_up >= self.WIDTH_LIMIT):
                     break
+            incoming_edges = incoming_edges.difference(set(new_layer))
             for original_id in incoming_edges:
                 new_goal_name = '%d_%d' % (original_id, current_layer)
                 self.edges[new_goal_name] = [g for g in self.edges[original_id]
-                                             if g in sorted_goals and g not in self.layers[current_layer]]
+                                             if g in sorted_goals and g not in new_layer]
                 for g in self.edges[new_goal_name]:
                     self.edges[original_id].remove(g)
                 self.edges[original_id].append(new_goal_name)
-                self.layers[current_layer].append(new_goal_name)
+                new_layer.append(new_goal_name)
                 sorted_goals.add(new_goal_name)
+            self.layers[current_layer] = new_layer
             current_layer += 1
             width_current, width_up = width_up, 0
             incoming_edges.update(outgoing_edges)
             outgoing_edges.clear()
+        self.positions = {g: idx for layer in self.layers.values() for idx, g in enumerate(layer)}
+
+    @staticmethod
+    def candidates_for_new_layer(sorted_goals, unsorted_goals):
+        candidates = [(goal, len(edges)) for goal, edges in unsorted_goals.items()
+                      if all(v in sorted_goals for v in edges)]
+        candidates.sort(key=lambda x: x[1], reverse=True)
+        return candidates
 
     def reorder(self):
-        positions = {g: idx for layer in self.layers.values() for idx, g in enumerate(layer)}
         for curr_layer in sorted(self.layers.keys(), reverse=True)[:-1]:
             if self.intersections(curr_layer) == 0:
                 continue
@@ -60,10 +66,10 @@ class Renderer:
             deltas = defaultdict(list)
             for goal in fixed_line:
                 for e in self.edges[goal]:
-                    deltas[e].append(positions[goal] - positions[e])
+                    deltas[e].append(self.positions[goal] - self.positions[e])
 
             random_line.sort(key=partial(self.safe_average, deltas))
-            positions.update({g: idx for idx, g in enumerate(random_line)})
+            self.positions.update({g: idx for idx, g in enumerate(random_line)})
             self.layers[curr_layer - 1] = random_line
 
     @staticmethod
@@ -71,8 +77,7 @@ class Renderer:
         return sum(deltas[g]) / len(deltas[g]) if deltas[g] else 0
 
     def intersections(self, layer):
-        positions = {g: idx for layer in self.layers.values() for idx, g in enumerate(layer)}
-        enumerated_edges = [(positions[t], positions[e])
+        enumerated_edges = [(self.positions[t], self.positions[e])
                             for t in self.layers[layer]
                             for e in self.edges[t]]
         return len([1 for a in enumerated_edges for b in enumerated_edges
