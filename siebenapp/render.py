@@ -53,6 +53,8 @@ class Renderer:
     def reorder(self):
         positions = {g: idx for layer in self.layers.values() for idx, g in enumerate(layer)}
         for curr_layer in sorted(self.layers.keys(), reverse=True)[:-1]:
+            if self.intersections(curr_layer) == 0:
+                continue
             fixed_line = self.layers[curr_layer]
             random_line = self.layers[curr_layer - 1]
             deltas = defaultdict(list)
@@ -67,6 +69,14 @@ class Renderer:
     @staticmethod
     def safe_average(deltas, g):
         return sum(deltas[g]) / len(deltas[g]) if deltas[g] else 0
+
+    def intersections(self, layer):
+        positions = {g: idx for layer in self.layers.values() for idx, g in enumerate(layer)}
+        enumerated_edges = [(positions[t], positions[e])
+                            for t in self.layers[layer]
+                            for e in self.edges[t]]
+        return len([1 for a in enumerated_edges for b in enumerated_edges
+                    if a[0] < b[0] and a[1] > b[1]])
 
     def update_graph(self):
         for row in sorted(self.layers.keys()):
