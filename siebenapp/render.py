@@ -1,4 +1,5 @@
 from collections import defaultdict
+from functools import partial
 
 
 class Renderer:
@@ -50,22 +51,22 @@ class Renderer:
             outgoing_edges.clear()
 
     def reorder(self):
+        positions = {g: idx for layer in self.layers.values() for idx, g in enumerate(layer)}
         for curr_layer in sorted(self.layers.keys(), reverse=True)[:-1]:
             fixed_line = self.layers[curr_layer]
-            fixed_positions = {g: i for i, g in enumerate(fixed_line)}
             random_line = self.layers[curr_layer - 1]
-            random_positions = {g: i for i, g in enumerate(random_line)}
             deltas = defaultdict(list)
             for goal in fixed_line:
                 for e in self.edges[goal]:
-                    deltas[e].append(fixed_positions[goal] - random_positions[e])
-            gravity = []
-            for goal in random_line:
-                goal_deltas = deltas[goal]
-                force = sum(goal_deltas) / len(goal_deltas) if goal_deltas else 0
-                gravity.append((goal, force))
-            new_line = [g for g, f in sorted(gravity, key=lambda x: x[1])]
-            self.layers[curr_layer - 1] = new_line
+                    deltas[e].append(positions[goal] - positions[e])
+
+            random_line.sort(key=partial(self.safe_average, deltas))
+            positions.update({g: idx for idx, g in enumerate(random_line)})
+            self.layers[curr_layer - 1] = random_line
+
+    @staticmethod
+    def safe_average(deltas, g):
+        return sum(deltas[g]) / len(deltas[g]) if deltas[g] else 0
 
     def update_graph(self):
         for row in sorted(self.layers.keys()):
