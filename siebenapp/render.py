@@ -68,13 +68,13 @@ class Renderer:
                 for e in self.edges[goal]:
                     deltas[e].append(self.positions[goal] - self.positions[e])
 
-            random_line.sort(key=partial(self.safe_average, deltas))
+            random_line.sort(key=partial(self.position_after_move, deltas))
             self.positions.update({g: idx for idx, g in enumerate(random_line)})
             self.layers[curr_layer - 1] = random_line
 
-    @staticmethod
-    def safe_average(deltas, g):
-        return sum(deltas[g]) / len(deltas[g]) if deltas[g] else 0
+    def position_after_move(self, deltas, g):
+        current_position = self.positions[g]
+        return current_position + sum(deltas[g]) / len(deltas[g]) if deltas[g] else current_position
 
     def intersections(self, layer):
         enumerated_edges = [(self.positions[t], self.positions[e])
