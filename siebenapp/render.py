@@ -1,5 +1,8 @@
 from collections import defaultdict
-from functools import partial
+
+
+def safe_average(l):
+    return sum(l) / len(l) if l else 0
 
 
 class Renderer:
@@ -57,22 +60,22 @@ class Renderer:
 
     def reorder(self):
         for curr_layer in sorted(self.layers.keys(), reverse=True)[:-1]:
-            if self.intersections(curr_layer) == 0:
-                continue
             fixed_line = self.layers[curr_layer]
             random_line = self.layers[curr_layer - 1]
-            deltas = defaultdict(list)
-            for goal in fixed_line:
-                for e in self.edges[goal]:
-                    deltas[e].append(self.positions[goal] - self.positions[e])
+            deltas = self.count_deltas(fixed_line)
+            new_positions = {g: self.positions[g] + deltas[g]
+                             for g in random_line}
 
-            random_line.sort(key=partial(self.position_after_move, deltas))
+            random_line.sort(key=lambda x: new_positions[x])
             self.positions.update({g: idx for idx, g in enumerate(random_line)})
             self.layers[curr_layer - 1] = random_line
 
-    def position_after_move(self, deltas, g):
-        current_position = self.positions[g]
-        return current_position + sum(deltas[g]) / len(deltas[g]) if deltas[g] else current_position
+    def count_deltas(self, fixed_line):
+        deltas = defaultdict(list)
+        for goal in fixed_line:
+            for e in self.edges[goal]:
+                deltas[e].append(self.positions[goal] - self.positions[e])
+        return {k: safe_average(v) for k, v in deltas.items()}
 
     def intersections(self, layer):
         enumerated_edges = [(self.positions[t], self.positions[e])
