@@ -63,18 +63,19 @@ class Renderer:
             fixed_line = self.layers[curr_layer]
             random_line = self.layers[curr_layer - 1]
             deltas = self.count_deltas(fixed_line)
-            new_positions = {g: self.positions[g] + deltas[g]
+            new_positions = {g: int(self.positions[g] + deltas[g])
                              for g in random_line}
 
-            random_line.sort(key=lambda x: new_positions[x])
+            random_line = place(new_positions)
             self.positions.update({g: idx for idx, g in enumerate(random_line)})
             self.layers[curr_layer - 1] = random_line
 
     def count_deltas(self, fixed_line):
         deltas = defaultdict(list)
         for goal in fixed_line:
-            for e in self.edges[goal]:
-                deltas[e].append(self.positions[goal] - self.positions[e])
+            if goal is not None:
+                for e in self.edges[goal]:
+                    deltas[e].append(self.positions[goal] - self.positions[e])
         return {k: safe_average(v) for k, v in deltas.items()}
 
     def intersections(self, layer):
@@ -87,6 +88,8 @@ class Renderer:
     def update_graph(self):
         for row in sorted(self.layers.keys()):
             for col, goal_id in enumerate(self.layers[row]):
+                if goal_id is None:
+                    continue
                 if goal_id not in self.graph:
                     self.graph[goal_id] = {
                         'name': '',
@@ -100,3 +103,19 @@ class Renderer:
                     'col': col,
                     'edge': self.edges[goal_id],
                 })
+
+
+def place(source):
+    result = []
+    unsorted = list(source.items())
+    while unsorted:
+        value, index = unsorted.pop(0)
+        if len(result) < index + 1:
+            result.extend([None] * (index + 1 - len(result)))
+        if result[index] is None:
+            result[index] = value
+        else:
+            unsorted.insert(0, (value, index + 1))
+    while len(result) > 4 and result[0] is None:
+        result.pop(0)
+    return result

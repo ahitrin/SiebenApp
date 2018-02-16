@@ -1,4 +1,6 @@
-from siebenapp.render import Renderer
+import pytest
+
+from siebenapp.render import Renderer, place
 from siebenapp.tests.dsl import build_goaltree, open_, selected
 
 
@@ -102,3 +104,28 @@ def test_split_long_edges_using_fake_goals():
         2: [3], '1_3': ['1_2'],
         1: [2, '1_3'],
     }
+
+
+def test_balance_upper_level():
+    goals = build_goaltree(
+        open_(1, 'Root', [2, 3, 4], selected),
+        open_(2, 'A', [5]),
+        open_(3, 'B', [5]),
+        open_(4, 'C', [5]),
+        open_(5, 'Top')
+    )
+    result = Renderer(goals).build()
+    # Top goal should be placed in the middle of the layer
+    assert result[5]['col'] == 1
+
+
+@pytest.mark.parametrize('before,after', [
+    ({1: 0}, [1]),
+    ({5: 1, 6: 0, 3: 2}, [6, 5, 3]),
+    ({3: 0, 4: 0, 2: 0}, [2, 3, 4]),
+    ({5: 1}, [None, 5]),
+    ({6: 0, 3: 3}, [6, None, None, 3]),
+    ({6: 1, 3: 4}, [6, None, None, 3]),
+])
+def test_place(before, after):
+    assert place(before) == after
