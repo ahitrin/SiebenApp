@@ -19,8 +19,8 @@ class Renderer:
 
     def split_by_layers(self):
         unsorted_goals, sorted_goals = dict(self.edges), set()
-        current_layer, width_current, width_up = 0, 0, 0
         incoming_edges, outgoing_edges = set(), set()
+        current_layer = 0
         while unsorted_goals:
             new_layer = []
             for goal, edges_len in self.candidates_for_new_layer(sorted_goals, unsorted_goals):
@@ -29,9 +29,8 @@ class Renderer:
                 new_layer.append(goal)
                 back_edges = [k for k, vs in self.edges.items() if goal in vs]
                 outgoing_edges.update(e for e in back_edges)
-                width_current += 1 - edges_len
-                width_up += len(back_edges)
-                if (width_current >= self.WIDTH_LIMIT and edges_len < 1) or (width_up >= self.WIDTH_LIMIT):
+                if (len(new_layer) >= self.WIDTH_LIMIT and edges_len < 1) or \
+                        (len(outgoing_edges) >= self.WIDTH_LIMIT):
                     break
             incoming_edges = incoming_edges.difference(set(new_layer))
             for original_id in incoming_edges:
@@ -45,7 +44,6 @@ class Renderer:
                 sorted_goals.add(new_goal_name)
             self.layers[current_layer] = new_layer
             current_layer += 1
-            width_current, width_up = width_up, 0
             incoming_edges.update(outgoing_edges)
             outgoing_edges.clear()
         self.positions = {g: idx for layer in self.layers.values() for idx, g in enumerate(layer)}
