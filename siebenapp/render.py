@@ -107,7 +107,7 @@ class Renderer:
 
 def place(source):
     result = []
-    unsorted = list(source.items())
+    unsorted = sorted(list(source.items()), key=as_int)
     while unsorted:
         value, index = unsorted.pop(0)
         if len(result) < index + 1:
