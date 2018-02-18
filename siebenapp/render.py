@@ -116,13 +116,13 @@ def place(source):
             result[index] = value
         else:
             unsorted.insert(0, (value, index + 1))
-    while len(result) > 4 and result[0] is None:
-        result.pop(0)
+    while len(result) > 4 and None in result:
+        result.remove(None)
     return result
 
 
 def as_int(tup):
     goal_id, goal_pos = tup
     if isinstance(goal_id, str):
-        return (int(goal_id.split('_')[0]), goal_pos)
+        return int(goal_id.split('_')[0]), goal_pos
     return tup
