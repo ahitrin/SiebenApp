@@ -119,3 +119,10 @@ def place(source):
     while len(result) > 4 and result[0] is None:
         result.pop(0)
     return result
+
+
+def as_int(tup):
+    goal_id, goal_pos = tup
+    if isinstance(goal_id, str):
+        return (int(goal_id.split('_')[0]), goal_pos)
+    return tup
