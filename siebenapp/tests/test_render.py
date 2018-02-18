@@ -127,6 +127,7 @@ def test_balance_upper_level():
     ({6: 0, 3: 3}, [6, None, None, 3]),
     ({6: 1, 3: 4}, [6, None, None, 3]),
     ({6: 1, 3: 12}, [6, None, None, 3]),
+    ({17: 0, 16: 1, 18: 2, 22: 2, 24: 0}, [17, 24, 16, 18, 22]),
 ])
 def test_place(before, after):
-    assert place(before) == after
+    assert after == place(before)

@@ -107,7 +107,7 @@ class Renderer:
 
 def place(source):
     result = []
-    unsorted = sorted(list(source.items()), key=as_int)
+    unsorted = sorted(list(source.items()), key=goal_key)
     while unsorted:
         value, index = unsorted.pop(0)
         if len(result) < index + 1:
@@ -121,8 +121,9 @@ def place(source):
     return result
 
 
-def as_int(tup):
+def goal_key(tup):
+    """Sort goals by position first and by id second (transform str ids into ints)"""
     goal_id, goal_pos = tup
     if isinstance(goal_id, str):
-        return int(goal_id.split('_')[0]), goal_pos
-    return tup
+        return goal_pos, int(goal_id.split('_')[0])
+    return goal_pos, goal_id
