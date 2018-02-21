@@ -63,7 +63,7 @@ class Renderer:
             fixed_line = self.layers[curr_layer]
             random_line = self.layers[curr_layer - 1]
             deltas = self.count_deltas(fixed_line)
-            new_positions = {g: int(self.positions[g] + deltas[g])
+            new_positions = {g: int(self.positions[g] + deltas.get(g, 0))
                              for g in random_line}
 
             random_line = place(new_positions)

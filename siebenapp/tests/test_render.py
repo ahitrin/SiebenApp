@@ -1,5 +1,6 @@
 import pytest
 
+from siebenapp.enumeration import Enumeration
 from siebenapp.render import Renderer, place
 from siebenapp.tests.dsl import build_goaltree, open_, selected
 
@@ -117,6 +118,22 @@ def test_balance_upper_level():
     result = Renderer(goals).build()
     # Top goal should be placed in the middle of the layer
     assert result[5]['col'] == 1
+
+
+def test_render_in_top_view():
+    goals = build_goaltree(
+        open_(1, 'Root', [2, 3, 4, 5, 6], selected),
+        open_(2, 'A'),
+        open_(3, 'B'),
+        open_(4, 'C'),
+        open_(5, 'D'),
+        open_(6, 'E')
+    )
+    view = Enumeration(goals)
+    view.next_view()
+    result = Renderer(view).build()
+    # Just verify that it renders fine
+    assert len(result) == 5
 
 
 @pytest.mark.parametrize('before,after', [
