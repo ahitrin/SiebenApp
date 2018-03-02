@@ -150,10 +150,11 @@ class GoalWidget(QWidget, Ui_GoalBody):
         self._click_in_progress = False
         self.setupUi(self)
         self.is_real = True
+        self.widget_id = None
 
     def setup_data(self, number, attributes):
+        self.widget_id = number
         self.label_goal_name.setText(split_long(attributes['name']))
-        self.label_number.setText(str(number))
         self.check_open.setVisible(attributes['switchable'])
         self.is_real = isinstance(number, int)
         selection = attributes['select']
@@ -165,6 +166,7 @@ class GoalWidget(QWidget, Ui_GoalBody):
             frame_color = 'red' if attributes['open'] else 'green'
             border = 2 if attributes['switchable'] else 1
             self.frame.setStyleSheet('.QFrame{ border: %dpx solid %s }' % (border, frame_color))
+            self.label_number.setText(str(number))
         else:
             self.setStyleSheet('color: #EEEEEE; border: #EEEEEE')
 
@@ -175,12 +177,6 @@ class GoalWidget(QWidget, Ui_GoalBody):
         if self._click_in_progress:
             self.clicked.emit()
         self._click_in_progress = False
-
-    def get_id(self):
-        try:
-            return int(self.label_number.text())
-        except ValueError:
-            return self.label_number.text()
 
     def top_point(self):
         rect = self.geometry()
@@ -208,7 +204,7 @@ class CentralWidget(QWidget):
         painter = QPainter(self)
         painter.setPen(Qt.black)
 
-        widgets = {w.get_id(): (w.top_point(), w.bottom_point(), w.is_real)
+        widgets = {w.widget_id: (w.top_point(), w.bottom_point(), w.is_real)
                    for w in self.children() if isinstance(w, GoalWidget)}
         for widget_id, points in widgets.items():
             line_start = points[0]
