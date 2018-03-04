@@ -46,11 +46,11 @@ There are two obvious subgoals: book a hotel and buy airplane tickets. Also, Won
 
 ![step3](docs/example3.png)
 
-But wait! Before applying for a visa you need to collect all documents needed, including both booking and tickets. It means that first two subgoals are blocking the third one. Subgoal 4 may be started only after completion of subgoals 2 and 3. Let's reflect this dependency in our plan. Press `4` to select a subgoal...
+But wait! Before applying for a visa you need to collect all documents needed, including both booking and tickets. It means that first two subgoals are blocking the third one. Subgoal 4 may be started only after completion of subgoals 2 and 3. Let's reflect this dependency in our plan. Press `4` to select a subgoal, on just click on it.
 
 ![step4](docs/example4.png)
 
-...then press `Space` so this selection will be remembered, and next press `2` and `l`.
+Then press `Space` so this selection will be remembered. Select subgoal `2` and then press `l`.
 
 ![step5](docs/example5.png)
 
@@ -64,15 +64,15 @@ Now we have one big goal with 3 smaller subgoals. And only 2 of these subgoals a
 
 As you may see, enumeration of goals has been changed. This is done in order to simplify work with a large amount of goals. Even when your goaltree has tens of subgoals, there are only few of them on the top usually. With using enumeration only for the visible goals we make goal selection easier.
 
-Now you don't need to think about visa. Being focused well on a single goal, you find good tickets and buy them. Now it's time to _close_ current subgoal. Just press `c` for that.
+Now you don't need to think about visa. Being focused well on a single goal, you find good tickets and buy them. Now it's time to _close_ current subgoal. Just click on the goal's checkbox or press `c` key.
 
 ![step8](docs/example8.png)
 
-Wow, it disappears! And you may become even more focused because now you see the only one goal. Don't forget to _select_ it with `2` and _close_ with `c` when it will be ready.
+Wow, it disappears! And you may become even more focused because now you see the only one goal. Don't forget to _select_ it with `2` and _close_ with clicking on checkbox (or hitting `c`) when it will be ready.
 
 ![step9](docs/example9.png)
 
-Something interesting happens. Your current goal has been replaced with the new one. It means that nothing stops you from applying for a visa right now. Neat! Press `v` to change _view_ again and look what happens behind the scenes.
+Something interesting happens. Your current goal has been replaced with a new one. It means that nothing stops you from applying for a visa right now. Neat! Press `v` to change _view_ again and look what happens behind the scenes.
 
 ![step10](docs/example10.png)
 
@@ -107,21 +107,12 @@ This simple feature may help a lot when you want to use SiebenApp for different 
 
 For more examples, please visit `docs/examples` folder.
 
-## Development version
-
-By default, all goals are drawn using [GraphViz](http://www.graphviz.org/), and SiebenApp just shows resulting image. Native application interface is currently in development. To see it, add `-d` option when launching `sieben`. Currently, it looks like this:
-
-![develop_mode](docs/develop_mode.png)
-
-In this GUI mode, all hotkeys work the same way as in 'classic' mode. In addition, you could use mouse to select goals and mark them closed (or reopen closed goals in "full" view).
-
 ## Alpha version warning
 
 Please take into consideration that here you see the very early Alpha release of the app. It means that a lot of compromises have taken place during its development. Among them there are following ones:
 
 1. **No packaging/installation yet** ([#1](https://github.com/ahitrin/SiebenApp/issues/1)). In order to run app, clone or download the code, and then use `make` to check/install dependencies and `make run` or `./sieben` to run.
-2. **Really stupid UI**. There are no buttons, icons and something like that. The only thing we have is a set of hotkeys. Buttons are planned to be added after major interface change ([#5](https://github.com/ahitrin/SiebenApp/issues/5)).
-3. **No actual security** ([#5](https://github.com/ahitrin/SiebenApp/issues/5)). To draw goals graph, SiebenApp calls external program `dot` which is supposed to be a part of GraphViz package. It's theoretically possible that the called `dot` program may do any unexpected action instead, even something malicious.
+2. **Really simple UI**. There is a lack of buttons, icons and something like that. Most of actions are available by hotkeys only.
 
 All these points are planned to be fixed while moving from Alpha to Beta version.
 
