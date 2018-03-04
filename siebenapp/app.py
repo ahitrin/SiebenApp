@@ -93,8 +93,7 @@ class SiebenApp(QMainWindow):
 
     def __init__(self, db, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.refresh.connect(self.save_to_database)
-        self.refresh.connect(self.native_render)
+        self.refresh.connect(self.save_and_render)
         self.quit_app.connect(QApplication.instance().quit)
         self.db = db
         self.goals = load(db)
@@ -112,12 +111,6 @@ class SiebenApp(QMainWindow):
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.refresh.emit()
 
-    def save_to_database(self):
-        if not self.goals.events and not self.force_refresh:
-            return
-        self.force_refresh = False
-        save(self.goals, self.db)
-
     def close_goal(self, goal_id):
         def inner():
             self.goals.select(goal_id)
@@ -125,7 +118,11 @@ class SiebenApp(QMainWindow):
             self.refresh.emit()
         return inner
 
-    def native_render(self):
+    def save_and_render(self):
+        if not self.goals.events and not self.force_refresh:
+            return
+        self.force_refresh = False
+        save(self.goals, self.db)
         for child in self.scrollAreaWidgetContents.children():
             if isinstance(child, GoalWidget):
                 child.deleteLater()
