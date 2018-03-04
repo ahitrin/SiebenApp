@@ -3,48 +3,143 @@
 import sys
 from argparse import ArgumentParser
 from os.path import dirname, join, realpath
-from subprocess import run
 
 from PyQt5.QtCore import pyqtSignal, Qt, QRect
-from PyQt5.QtGui import QImage, QPixmap, QPainter
+from PyQt5.QtGui import QPainter
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout
 from PyQt5.uic import loadUi
 
 from siebenapp.render import Renderer
-from siebenapp.system import save, load, dot_export, DEFAULT_DB, split_long
+from siebenapp.system import save, load, DEFAULT_DB, split_long
 from siebenapp.ui.goalwidget import Ui_GoalBody
+
+
+class GoalWidget(QWidget, Ui_GoalBody):
+    clicked = pyqtSignal()
+
+    def __init__(self):
+        super().__init__()
+        self._click_in_progress = False
+        self.setupUi(self)
+        self.is_real = True
+        self.widget_id = None
+
+    def setup_data(self, number, attributes):
+        self.widget_id = number
+        self.label_goal_name.setText(split_long(attributes['name']))
+        self.check_open.setVisible(attributes['switchable'])
+        self.is_real = isinstance(number, int)
+        selection = attributes['select']
+        if selection == 'select':
+            self.setStyleSheet('background-color:#808080;')
+        elif selection == 'prev':
+            self.setStyleSheet('background-color:#C0C0C0;')
+        if self.is_real:
+            frame_color = 'red' if attributes['open'] else 'green'
+            border = 2 if attributes['switchable'] else 1
+            self.frame.setStyleSheet('.QFrame{ border: %dpx solid %s }' % (border, frame_color))
+            self.label_number.setText(str(number))
+        else:
+            self.setStyleSheet('color: #EEEEEE; border: #EEEEEE')
+
+    def mousePressEvent(self, event):                           # pylint: disable=unused-argument
+        self._click_in_progress = True
+
+    def mouseReleaseEvent(self, event):                         # pylint: disable=unused-argument
+        if self._click_in_progress:
+            self.clicked.emit()
+        self._click_in_progress = False
+
+    def top_point(self):
+        rect = self.geometry()
+        return (rect.topLeft() + rect.topRight()) / 2
+
+    def bottom_point(self):
+        rect = self.geometry()
+        return (rect.bottomLeft() + rect.bottomRight()) / 2
+
+
+class CentralWidget(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setGeometry(QRect(0, 0, 576, 273))
+        self.setObjectName('scrollAreaWidgetContents')
+        layout = QGridLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(layout)
+        self.dependencies = dict()
+
+    def setDependencies(self, new_dependencies):
+        self.dependencies = new_dependencies
+
+    def paintEvent(self, event):                                    # pylint: disable=unused-argument
+        painter = QPainter(self)
+        painter.setPen(Qt.black)
+
+        widgets = {w.widget_id: (w.top_point(), w.bottom_point(), w.is_real)
+                   for w in self.children() if isinstance(w, GoalWidget)}
+        for widget_id, points in widgets.items():
+            line_start = points[0]
+            for parent_widget in self.dependencies[widget_id]:
+                line_end = widgets[parent_widget][1]
+                painter.drawLine(line_start, line_end)
+            if not points[2]:
+                painter.drawLine(points[0], points[1])
 
 
 class SiebenApp(QMainWindow):
     refresh = pyqtSignal()
     quit_app = pyqtSignal()
 
-    def __init__(self, db):
-        super().__init__()
-        self.refresh.connect(self.reload_image)
+    def __init__(self, db, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.refresh.connect(self.save_to_database)
+        self.refresh.connect(self.native_render)
         self.quit_app.connect(QApplication.instance().quit)
         self.db = db
         self.goals = load(db)
-        self.use_dot = True
         self.force_refresh = True
 
     def setup(self):
         self.action_Hotkeys.triggered.connect(self.hotkeys.show)
         self.action_About.triggered.connect(self.about.show)
+        # Re-creation of scrollAreaWidgetContents looks like dirty hack,
+        # but at the current moment I haven't found a better solution.
+        # Widget creation in __init__ does not work: lines disappear.
+        # Also we have to disable pylint warning in order to make build green.
+        self.scrollAreaWidgetContents = CentralWidget()         # pylint: disable=attribute-defined-outside-init
+        # End of 'looks like dirty hack'
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.refresh.emit()
 
-    def reload_image(self):
+    def save_to_database(self):
         if not self.goals.events and not self.force_refresh:
             return
         self.force_refresh = False
         save(self.goals, self.db)
-        if self.use_dot:
-            with open('work.dot', 'w') as f:
-                f.write(dot_export(self.goals))
-            run(['dot', '-Tpng', '-o', 'work.png', 'work.dot'])
-            img = QImage('work.png')
-            self.label.setPixmap(QPixmap.fromImage(img))
-            self.label.resize(img.size().width(), img.size().height())
+
+    def close_goal(self, goal_id):
+        def inner():
+            self.goals.select(goal_id)
+            self.goals.toggle_close()
+            self.refresh.emit()
+        return inner
+
+    def native_render(self):
+        for child in self.scrollAreaWidgetContents.children():
+            if isinstance(child, GoalWidget):
+                child.deleteLater()
+        graph = Renderer(self.goals).build()
+        if 'setDependencies' in dir(self.scrollAreaWidgetContents):
+            self.scrollAreaWidgetContents.setDependencies({g: graph[g]['edge'] for g in graph})
+        for goal_id, attributes in graph.items():
+            widget = GoalWidget()
+            self.scrollAreaWidgetContents.layout().addWidget(widget, attributes['row'], attributes['col'])
+            widget.setup_data(goal_id, attributes)
+            if isinstance(goal_id, int):
+                widget.clicked.connect(self.select_number(goal_id))
+                widget.check_open.clicked.connect(self.close_goal(goal_id))
+        self.scrollAreaWidgetContents.update()
 
     def keyPressEvent(self, event):
         key_handlers = {
@@ -142,133 +237,14 @@ class SiebenApp(QMainWindow):
         self.action_Hotkeys.trigger()
 
 
-class GoalWidget(QWidget, Ui_GoalBody):
-    clicked = pyqtSignal()
-
-    def __init__(self):
-        super().__init__()
-        self._click_in_progress = False
-        self.setupUi(self)
-        self.is_real = True
-        self.widget_id = None
-
-    def setup_data(self, number, attributes):
-        self.widget_id = number
-        self.label_goal_name.setText(split_long(attributes['name']))
-        self.check_open.setVisible(attributes['switchable'])
-        self.is_real = isinstance(number, int)
-        selection = attributes['select']
-        if selection == 'select':
-            self.setStyleSheet('background-color:#808080;')
-        elif selection == 'prev':
-            self.setStyleSheet('background-color:#C0C0C0;')
-        if self.is_real:
-            frame_color = 'red' if attributes['open'] else 'green'
-            border = 2 if attributes['switchable'] else 1
-            self.frame.setStyleSheet('.QFrame{ border: %dpx solid %s }' % (border, frame_color))
-            self.label_number.setText(str(number))
-        else:
-            self.setStyleSheet('color: #EEEEEE; border: #EEEEEE')
-
-    def mousePressEvent(self, event):                           # pylint: disable=unused-argument
-        self._click_in_progress = True
-
-    def mouseReleaseEvent(self, event):                         # pylint: disable=unused-argument
-        if self._click_in_progress:
-            self.clicked.emit()
-        self._click_in_progress = False
-
-    def top_point(self):
-        rect = self.geometry()
-        return (rect.topLeft() + rect.topRight()) / 2
-
-    def bottom_point(self):
-        rect = self.geometry()
-        return (rect.bottomLeft() + rect.bottomRight()) / 2
-
-
-class CentralWidget(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.setGeometry(QRect(0, 0, 576, 273))
-        self.setObjectName('scrollAreaWidgetContents')
-        layout = QGridLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
-        self.setLayout(layout)
-        self.dependencies = dict()
-
-    def setDependencies(self, new_dependencies):
-        self.dependencies = new_dependencies
-
-    def paintEvent(self, event):                                    # pylint: disable=unused-argument
-        painter = QPainter(self)
-        painter.setPen(Qt.black)
-
-        widgets = {w.widget_id: (w.top_point(), w.bottom_point(), w.is_real)
-                   for w in self.children() if isinstance(w, GoalWidget)}
-        for widget_id, points in widgets.items():
-            line_start = points[0]
-            for parent_widget in self.dependencies[widget_id]:
-                line_end = widgets[parent_widget][1]
-                painter.drawLine(line_start, line_end)
-            if not points[2]:
-                painter.drawLine(points[0], points[1])
-
-
-class SiebenAppDevelopment(SiebenApp):
-    def __init__(self, db):
-        super(SiebenAppDevelopment, self).__init__(db)
-        self.refresh.connect(self.native_render)
-
-    def setup(self):
-        super().setup()
-        # Re-creation of scrollAreaWidgetContents looks like dirty hack,
-        # but at the current moment I haven't found a better solution.
-        # Widget creation in __init__ does not work: lines disappear.
-        # Also we have to disable pylint warning in order to make build green.
-        self.scrollAreaWidgetContents = CentralWidget()         # pylint: disable=attribute-defined-outside-init
-        # End of 'looks like dirty hack'
-        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
-        self.refresh.emit()
-
-    def close_goal(self, goal_id):
-        def inner():
-            self.goals.select(goal_id)
-            self.goals.toggle_close()
-            self.refresh.emit()
-        return inner
-
-    def native_render(self):
-        for child in self.scrollAreaWidgetContents.children():
-            if isinstance(child, GoalWidget):
-                child.deleteLater()
-        graph = Renderer(self.goals).build()
-        if 'setDependencies' in dir(self.scrollAreaWidgetContents):
-            self.scrollAreaWidgetContents.setDependencies({g: graph[g]['edge'] for g in graph})
-        for goal_id, attributes in graph.items():
-            widget = GoalWidget()
-            self.scrollAreaWidgetContents.layout().addWidget(widget, attributes['row'], attributes['col'])
-            widget.setup_data(goal_id, attributes)
-            if isinstance(goal_id, int):
-                widget.clicked.connect(self.select_number(goal_id))
-                widget.check_open.clicked.connect(self.close_goal(goal_id))
-        self.scrollAreaWidgetContents.update()
-
-
 def main(root_script):
     parser = ArgumentParser()
-    parser.add_argument('--devel', '-d', action='store_true', default=False,
-                        help='Run in developer mode (affects GUI behavior)')
     parser.add_argument('db', nargs='?', default=DEFAULT_DB,
                         help='Path to the database file (sieben.db by default)')
     args = parser.parse_args()
     app = QApplication(sys.argv)
     root = dirname(realpath(root_script))
-    if args.devel:
-        w = loadUi(join(root, 'ui', 'main.ui'), SiebenAppDevelopment(args.db))
-    else:
-        w = loadUi(join(root, 'ui', 'main.ui'), SiebenApp(args.db))
-    w.use_dot = not args.devel
+    w = loadUi(join(root, 'ui', 'main.ui'), SiebenApp(args.db))
     w.about = loadUi(join(root, 'ui', 'about.ui'))
     w.hotkeys = loadUi(join(root, 'ui', 'hotkeys.ui'))
     w.setup()
