@@ -23,7 +23,7 @@ def clos_(goal_id, name, edges=None, select=None):
     return _build_goal_prototype(goal_id, name, False, edges, select)
 
 
-def build_goaltree(*goal_prototypes):
+def build_goaltree(*goal_prototypes, message_fn=None):
     goals = [(g.id, g.name, g.open) for g in goal_prototypes]
     edges = [(g.id, e) for g in goal_prototypes for e in g.edges]
     selection = {g.id for g in goal_prototypes if g.select == selected}
@@ -34,4 +34,4 @@ def build_goaltree(*goal_prototypes):
     return Goals.build(goals, edges, {
         'selection': selection_id,
         'previous_selection': prev_selection.pop() if prev_selection else selection_id
-    })
+    }, message_fn)

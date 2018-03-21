@@ -96,7 +96,7 @@ class SiebenApp(QMainWindow):
         self.refresh.connect(self.save_and_render)
         self.quit_app.connect(QApplication.instance().quit)
         self.db = db
-        self.goals = load(db)
+        self.goals = load(db, self.show_user_message)
         self.force_refresh = True
 
     def setup(self):
@@ -122,6 +122,7 @@ class SiebenApp(QMainWindow):
         if not self.goals.events and not self.force_refresh:
             return
         self.force_refresh = False
+        self.statusBar().clearMessage()
         save(self.goals, self.db)
         for child in self.scrollAreaWidgetContents.children():
             if isinstance(child, GoalWidget):
@@ -232,6 +233,9 @@ class SiebenApp(QMainWindow):
 
     def show_keys_help(self):
         self.action_Hotkeys.trigger()
+
+    def show_user_message(self, message):
+        self.statusBar().showMessage(message, 10000)
 
 
 def main(root_script):

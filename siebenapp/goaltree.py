@@ -3,7 +3,7 @@ import collections
 
 
 class Goals:
-    def __init__(self, name):
+    def __init__(self, name, message_fn=None):
         self.goals = {}
         self.edges = {}
         self.closed = set()
@@ -12,19 +12,29 @@ class Goals:
             'previous_selection': 1,
         }
         self.events = collections.deque()
-        self.add(name)
+        self.message_fn = message_fn
+        self._add_no_link(name)
+
+    def _msg(self, message):
+        if self.message_fn:
+            self.message_fn(message)
 
     def add(self, name, add_to=0):
         if add_to == 0:
             add_to = self.settings['selection']
         if add_to in self.closed:
+            self._msg("A new subgoal cannot be added to the closed one")
             return False
+        next_id = self._add_no_link(name)
+        self.toggle_link(add_to, next_id)
+        return True
+
+    def _add_no_link(self, name):
         next_id = max(list(self.goals.keys()) + [0]) + 1
         self.goals[next_id] = name
         self.edges[next_id] = list()
         self.events.append(('add', next_id, name, True))
-        self.toggle_link(add_to, next_id)
-        return True
+        return next_id
 
     def select(self, goal_id):
         if goal_id in self.goals and self.goals[goal_id] is not None:
@@ -63,6 +73,7 @@ class Goals:
 
     def insert(self, name):
         if self.settings['selection'] == self.settings['previous_selection']:
+            self._msg("A new goal can be inserted only between two different goals")
             return
         if self.add(name, self.settings['previous_selection']):
             key = len(self.goals)
@@ -87,12 +98,16 @@ class Goals:
             if self._may_be_reopened():
                 self.closed.remove(self.settings['selection'])
                 self.events.append(('toggle_close', True, self.settings['selection']))
+            else:
+                self._msg("This goal can't be reopened because other subgoals block it")
         else:
             if self._may_be_closed():
                 self.closed.add(self.settings['selection'])
                 self.events.append(('toggle_close', False, self.settings['selection']))
                 self.select(1)
                 self.hold_select()
+            else:
+                self._msg("This goal can't be closed because it have open subgoals")
 
     def _may_be_closed(self):
         return all(g in self.closed for g in self.edges[self.settings['selection']])
@@ -105,6 +120,7 @@ class Goals:
         if goal_id == 0:
             goal_id = self.settings['selection']
         if goal_id == 1:
+            self._msg("Root goal can't be deleted")
             return
         self._delete(goal_id)
         self.select(1)
@@ -123,34 +139,42 @@ class Goals:
         self.events.append(('delete', goal_id))
 
     def toggle_link(self, lower=0, upper=0):
-        if lower == 0:
-            lower = self.settings['previous_selection']
-        if upper == 0:
-            upper = self.settings['selection']
+        lower = self.settings['previous_selection'] if lower == 0 else lower
+        upper = self.settings['selection'] if upper == 0 else upper
         if lower == upper:
+            self._msg("Goal can't be linked to itself")
             return
         if upper in self.edges[lower]:
-            # remove existing link unless it's the last one
-            edges_to_upper = sum(1 for g in self.goals
-                                 if g in self.edges and upper in self.edges[g])
-            if edges_to_upper > 1:
-                self.edges[lower].remove(upper)
-                self.events.append(('unlink', lower, upper))
+            self._remove_existing_link(lower, upper)
         else:
-            # create a new link unless it breaks validity
-            if lower in self.closed and upper not in self.closed:
-                return
-            front, visited, total = {upper}, set(), set()
-            while front:
-                g = front.pop()
-                visited.add(g)
-                for e in self.edges[g]:
-                    total.add(e)
-                    if e not in visited:
-                        front.add(e)
-            if lower not in total:
-                self.edges[lower].append(upper)
-                self.events.append(('link', lower, upper))
+            self._create_new_link(lower, upper)
+
+    def _remove_existing_link(self, lower, upper):
+        edges_to_upper = sum(1 for g in self.goals
+                             if g in self.edges and upper in self.edges[g])
+        if edges_to_upper > 1:
+            self.edges[lower].remove(upper)
+            self.events.append(('unlink', lower, upper))
+        else:
+            self._msg("Can't remove the last link")
+
+    def _create_new_link(self, lower, upper):
+        if lower in self.closed and upper not in self.closed:
+            self._msg("An open goal can't block already closed one")
+            return
+        front, visited, total = {upper}, set(), set()
+        while front:
+            g = front.pop()
+            visited.add(g)
+            for e in self.edges[g]:
+                total.add(e)
+                if e not in visited:
+                    front.add(e)
+        if lower not in total:
+            self.edges[lower].append(upper)
+            self.events.append(('link', lower, upper))
+        else:
+            self._msg("Circular dependencies between goals are not allowed")
 
     def verify(self):
         assert all(g in self.closed for p in self.closed for g in self.edges.get(p, [])), \
@@ -174,8 +198,8 @@ class Goals:
         return True
 
     @staticmethod
-    def build(goals, edges, settings):
-        result = Goals('')
+    def build(goals, edges, settings, message_fn=None):
+        result = Goals('', message_fn)
         result.events.clear()  # remove initial goal
         goals_dict = dict((g[0], g[1]) for g in goals)
         result.goals = dict((i, goals_dict.get(i))

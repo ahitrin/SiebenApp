@@ -7,7 +7,14 @@ from siebenapp.tests.dsl import build_goaltree, open_, selected, previous, clos_
 
 class GoalsTest(TestCase):
     def setUp(self):
-        self.goals = Goals('Root')
+        self.messages = []
+        self.goals = Goals('Root', self._register_message)
+
+    def _register_message(self, msg):
+        self.messages.append(msg)
+
+    def build(self, *goal_prototypes):
+        return build_goaltree(*goal_prototypes, message_fn=self._register_message)
 
     def test_there_is_one_goal_at_start(self):
         assert self.goals.all(keys='name,switchable') == {
@@ -61,7 +68,7 @@ class GoalsTest(TestCase):
         }
 
     def test_insert_goal_between_independent_goals(self):
-        self.goals = build_goaltree(
+        self.goals = self.build(
             open_(1, 'Root', [2, 3]),
             open_(2, 'A', select=previous),
             open_(3, 'B', select=selected)
@@ -82,7 +89,7 @@ class GoalsTest(TestCase):
                 1: {'name': 'Root', 'open': False, 'switchable': True}}
 
     def test_reopen_goal(self):
-        self.goals = build_goaltree(
+        self.goals = self.build(
             open_(1, 'Root', [2]),
             clos_(2, 'A', select=selected)
         )
@@ -93,7 +100,7 @@ class GoalsTest(TestCase):
             2: {'open': True, 'switchable': True}}
 
     def test_close_goal_again(self):
-        self.goals = build_goaltree(
+        self.goals = self.build(
             open_(1, 'Root', [2], selected),
             open_(2, 'A', [3]),
             clos_(3, 'Ab'),
@@ -118,7 +125,7 @@ class GoalsTest(TestCase):
             3: {'open': False, 'switchable': False}}
 
     def test_closed_leaf_goal_could_not_be_reopened(self):
-        self.goals = build_goaltree(
+        self.goals = self.build(
             open_(1, 'Root', [2], selected),
             clos_(2, 'A', [3]),
             clos_(3, 'B')
@@ -136,7 +143,7 @@ class GoalsTest(TestCase):
             3: {'open': False, 'switchable': False}}
 
     def test_goal_in_the_middle_could_not_be_closed(self):
-        self.goals = build_goaltree(
+        self.goals = self.build(
             open_(1, 'Root', [2, 3]),
             open_(2, 'A', [4]),
             open_(3, 'B', [4], selected),
@@ -147,7 +154,7 @@ class GoalsTest(TestCase):
                                                4: {'open': True}}
 
     def test_delete_single_goal(self):
-        self.goals = build_goaltree(
+        self.goals = self.build(
             open_(1, 'Root', [2]),
             open_(2, 'A', select=selected)
         )
@@ -157,7 +164,7 @@ class GoalsTest(TestCase):
         }
 
     def test_enumeration_should_not_be_changed_after_delete(self):
-        self.goals = build_goaltree(
+        self.goals = self.build(
             open_(1, 'Root', [2, 3]),
             open_(2, 'A', select=selected),
             open_(3, 'B')
@@ -168,7 +175,7 @@ class GoalsTest(TestCase):
             3: {'name': 'B', 'switchable': True}}
 
     def test_remove_goal_chain(self):
-        self.goals = build_goaltree(
+        self.goals = self.build(
             open_(1, 'Root', [2]),
             open_(2, 'A', [3], selected),
             open_(3, 'B')
@@ -177,7 +184,7 @@ class GoalsTest(TestCase):
         assert self.goals.all() == {1: {'name': 'Root'}}
 
     def test_add_link_between_goals(self):
-        self.goals = build_goaltree(
+        self.goals = self.build(
             open_(1, 'Root', [2, 3]),
             open_(2, 'A', select=previous),
             open_(3, 'B', select=selected)
@@ -188,7 +195,7 @@ class GoalsTest(TestCase):
         }
 
     def test_view_edges(self):
-        self.goals = build_goaltree(
+        self.goals = self.build(
             open_(1, 'Root', [2, 3]),
             open_(2, 'A', [4]),
             open_(3, 'B', [4], previous),
@@ -205,7 +212,7 @@ class GoalsTest(TestCase):
         assert self.goals.all(keys='edge') == {1: {'edge': []}}
 
     def test_no_loops_allowed(self):
-        self.goals = build_goaltree(
+        self.goals = self.build(
             open_(1, 'Root', [2], selected),
             open_(2, 'step', [3]),
             open_(3, 'next', [4]),
@@ -216,7 +223,7 @@ class GoalsTest(TestCase):
             1: {'edge': [2]}, 2: {'edge': [3]}, 3: {'edge': [4]}, 4: {'edge': []}}
 
     def test_remove_link_between_goals(self):
-        self.goals = build_goaltree(
+        self.goals = self.build(
             open_(1, 'Root', [2, 3]),
             open_(2, 'A', [3], previous),
             open_(3, 'B', select=selected)
@@ -229,7 +236,7 @@ class GoalsTest(TestCase):
         }
 
     def test_remove_goal_in_the_middle(self):
-        self.goals = build_goaltree(
+        self.goals = self.build(
             open_(1, 'Root', [2, 3]),
             open_(2, 'A', [4]),
             open_(3, 'B', [4]),
@@ -269,7 +276,7 @@ class GoalsTest(TestCase):
         }
 
     def test_move_selection_to_the_root_after_closing(self):
-        self.goals = build_goaltree(
+        self.goals = self.build(
             open_(1, 'Root', [2, 3]),
             open_(2, 'A', select=selected),
             open_(3, 'B')
@@ -286,7 +293,7 @@ class GoalsTest(TestCase):
             1: {'select': 'select'}}
 
     def test_do_not_select_deleted_goals(self):
-        self.goals = build_goaltree(
+        self.goals = self.build(
             open_(1, 'Root', [2]),
             open_(2, 'broken', select=selected)
         )
@@ -296,7 +303,7 @@ class GoalsTest(TestCase):
             1: {'select': 'select'}}
 
     def test_selection_should_be_instant(self):
-        self.goals = build_goaltree(
+        self.goals = self.build(
             open_(1, 'Root', [2, 3, 4, 5, 6, 7, 8, 9, 10, 11], selected),
             open_(2, 'A'), open_(3, 'B'), open_(4, 'C'), open_(5, 'D'),
             open_(6, 'E'), open_(7, 'F'), open_(8, 'G'), open_(9, 'H'),
@@ -366,3 +373,136 @@ class GoalsTest(TestCase):
         assert self.goals.events[-1] == ('link', 2, 3)
         self.goals.toggle_link()
         assert self.goals.events[-1] == ('unlink', 2, 3)
+
+    def test_no_messages_at_start(self):
+        assert self.messages == []
+
+    def test_no_message_on_good_add(self):
+        self.goals = self.build(
+            open_(1, 'Root', select=selected)
+        )
+        self.goals.add('Success')
+        assert self.messages == []
+
+    def test_message_on_wrong_add(self):
+        self.goals = self.build(
+            clos_(1, 'Root', select=selected)
+        )
+        self.goals.add('Failed')
+        assert len(self.messages) == 1
+
+    def test_no_message_on_good_insert(self):
+        self.goals = self.build(
+            open_(1, 'Root', [2], select=previous),
+            open_(2, 'Top', select=selected)
+        )
+        self.goals.insert('Success')
+        assert self.messages == []
+
+    def test_message_on_insert_without_two_goals(self):
+        self.goals = self.build(
+            open_(1, 'Root', select=selected)
+        )
+        self.goals.insert('Failed')
+        assert len(self.messages) == 1
+
+    def test_message_on_circular_insert(self):
+        self.goals = self.build(
+            open_(1, 'Root', [2], selected),
+            open_(2, 'Top', [], previous)
+        )
+        self.goals.insert('Failed')
+        assert len(self.messages) == 1
+
+    def test_no_message_on_valid_closing(self):
+        self.goals = self.build(
+            open_(1, 'Root', [2]),
+            open_(2, 'Top', [], selected)
+        )
+        self.goals.toggle_close()
+        assert self.messages == []
+
+    def test_message_on_closing_blocked_goal(self):
+        self.goals = self.build(
+            open_(1, 'Root', [2], selected),
+            open_(2, 'Top')
+        )
+        self.goals.toggle_close()
+        assert len(self.messages) == 1
+
+    def test_no_message_on_valid_reopening(self):
+        self.goals = self.build(
+            clos_(1, 'Root', [2], selected),
+            clos_(2, 'Top')
+        )
+        self.goals.toggle_close()
+        assert self.messages == []
+
+    def test_message_on_reopening_blocked_goal(self):
+        self.goals = self.build(
+            clos_(1, 'Root', [2]),
+            clos_(2, 'Top', [], selected)
+        )
+        self.goals.toggle_close()
+        assert len(self.messages) == 1
+
+    def test_no_message_on_delete_non_root_goal(self):
+        self.goals = self.build(
+            clos_(1, 'Root', [2]),
+            clos_(2, 'Top', [], selected)
+        )
+        self.goals.delete()
+        assert self.messages == []
+
+    def test_message_on_delete_root_goal(self):
+        self.goals = self.build(
+            clos_(1, 'Root', [2], selected),
+            clos_(2, 'Top')
+        )
+        self.goals.delete()
+        assert len(self.messages) == 1
+
+    def test_no_message_on_allowed_link(self):
+        self.goals = self.build(
+            open_(1, 'Root', [2], previous),
+            open_(2, 'Middle', [3]),
+            open_(3, 'Top', [], selected)
+        )
+        self.goals.toggle_link()
+        assert self.messages == []
+
+    def test_message_on_link_to_self(self):
+        self.goals = self.build(
+            open_(1, 'Root', [2]),
+            open_(2, 'Middle', [3]),
+            open_(3, 'Top', [], selected)
+        )
+        self.goals.toggle_link()
+        assert len(self.messages) == 1
+
+    def test_no_message_when_remove_not_last_link(self):
+        self.goals = self.build(
+            open_(1, 'Root', [2, 3], previous),
+            open_(2, 'Middle', [3]),
+            open_(3, 'Top', [], selected)
+        )
+        self.goals.toggle_link()
+        assert self.messages == []
+
+    def test_message_when_remove_last_link(self):
+        self.goals = self.build(
+            open_(1, 'Root', [2]),
+            open_(2, 'Middle', [3], previous),
+            open_(3, 'Top', [], selected)
+        )
+        self.goals.toggle_link()
+        assert len(self.messages) == 1
+
+    def test_message_when_closed_goal_is_blocked_by_open_one(self):
+        self.goals = self.build(
+            open_(1, 'Root', [2, 3]),
+            clos_(2, 'Middle', [], previous),
+            open_(3, 'Top', [], selected)
+        )
+        self.goals.toggle_link()
+        assert len(self.messages) == 1

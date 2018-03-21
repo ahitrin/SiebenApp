@@ -110,7 +110,7 @@ def save_updates(goals, connection):
     connection.commit()
 
 
-def load(filename=DEFAULT_DB):
+def load(filename=DEFAULT_DB, message_fn=None):
     if path.isfile(filename):
         connection = sqlite3.connect(filename)
         run_migrations(connection)
@@ -119,9 +119,9 @@ def load(filename=DEFAULT_DB):
         edges = [row for row in cur.execute('select * from edges')]
         settings = [row for row in cur.execute('select * from settings')]
         cur.close()
-        goals = Goals.build(goals, edges, settings)
+        goals = Goals.build(goals, edges, settings, message_fn)
     else:
-        goals = Goals('Rename me')
+        goals = Goals('Rename me', message_fn)
     return Enumeration(Zoom(goals))
 
 
