@@ -109,6 +109,7 @@ class SiebenApp(QMainWindow):
         self.scrollAreaWidgetContents = CentralWidget()         # pylint: disable=attribute-defined-outside-init
         # End of 'looks like dirty hack'
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+        self.setWindowTitle('%s - SiebenApp' % self.db)
         self.refresh.emit()
 
     def close_goal(self, goal_id):
