@@ -1,3 +1,30 @@
+Alpha version 0.4
+-----
+
+New features:
+
+ * Use native rendering instead of Graphviz #5
+ * Allow to cancel edit #8
+ * Show error messages #11
+ * Hotkeys help window #12
+ * Show DB name in window title
+ * Set path to DB file in app args
+ * Use current goal name as default value when rename goals
+
+Bug fixes:
+
+ * Escape special symbols in goal names #9
+ * Do not use fixed Python version in scripts
+
+Other improvements:
+
+ * Setup pylint code style check
+ * Introduce DSL for simper goal tree creation in test
+
+Compatibility breaks:
+
+ * Drop Graphviz drawing engine #5
+
 Alpha version 0.3
 -----
 
