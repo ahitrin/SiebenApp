@@ -72,6 +72,13 @@ The next planned version having these features should be suitable for beta testi
 If you're interested and want to try it please let me know!
 Any kind of feedback is much appreciated.
 
+---
+
+Comments are disabled for this blog, but you may leave your comments on the tweet below.
+
+<blockquote class="twitter-tweet" data-lang="ru"><p lang="en" dir="ltr">SiebenApp 0.4 is here <a href="https://t.co/IrhkTquMVc">https://t.co/IrhkTquMVc</a> Actually, it&#39;s here since 2018-03-22, but it took me ~20 days to publish a blog :)</p>&mdash; Andrey Hitrin (@ahitrin) <a href="https://twitter.com/ahitrin/status/984012656448286720?ref_src=twsrc%5Etfw">11 апреля 2018 г.</a></blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
 [graphviz]: http://www.graphviz.org
 [issue5]: https://github.com/ahitrin/SiebenApp/issues/5
 [issue8]: https://github.com/ahitrin/SiebenApp/issues/8
