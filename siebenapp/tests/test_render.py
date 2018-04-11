@@ -10,7 +10,7 @@ def get_in(data, column):
 
 
 def test_render_simplest_goal_tree():
-    goals = build_goaltree(open_(1, 'Alone', [], selected))
+    goals = build_goaltree(open_(1, 'Alone', [], select=selected))
     result = Renderer(goals).build()
     assert result == {
         1: {
@@ -27,7 +27,7 @@ def test_render_simplest_goal_tree():
 
 def test_render_4_subgoals_in_a_row():
     goals = build_goaltree(
-        open_(1, 'Root', [2, 3, 4, 5], selected),
+        open_(1, 'Root', [2, 3, 4, 5], select=selected),
         open_(2, 'A'),
         open_(3, 'B'),
         open_(4, 'C'),
@@ -42,7 +42,7 @@ def test_render_4_subgoals_in_a_row():
 
 def test_render_add_fake_vertex():
     goals = build_goaltree(
-        open_(1, 'Root', [2, 3], selected),
+        open_(1, 'Root', [2, 3], select=selected),
         open_(2, 'A', [3]),
         open_(3, 'B')
     )
@@ -56,7 +56,7 @@ def test_render_add_fake_vertex():
 
 def test_render_add_several_fake_vertex():
     goals = build_goaltree(
-        open_(1, 'Root', [2, 5], selected),
+        open_(1, 'Root', [2, 5], select=selected),
         open_(2, 'A', [3]),
         open_(3, 'B', [4]),
         open_(4, 'C', [5]),
@@ -74,7 +74,7 @@ def test_render_add_several_fake_vertex():
 
 def test_render_5_subgoals_in_several_rows():
     goals = build_goaltree(
-        open_(1, 'Root', [2, 3, 4, 5, 6], selected),
+        open_(1, 'Root', [2, 3, 4, 5, 6], select=selected),
         open_(2, 'A'),
         open_(3, 'B'),
         open_(4, 'C'),
@@ -91,7 +91,7 @@ def test_render_5_subgoals_in_several_rows():
 
 def test_split_long_edges_using_fake_goals():
     goals = build_goaltree(
-        open_(1, 'Root', [2, 5], selected),
+        open_(1, 'Root', [2, 5], select=selected),
         open_(2, 'A', [3]),
         open_(3, 'B', [4]),
         open_(4, 'C', [5]),
@@ -109,7 +109,7 @@ def test_split_long_edges_using_fake_goals():
 
 def test_balance_upper_level():
     goals = build_goaltree(
-        open_(1, 'Root', [2, 3, 4], selected),
+        open_(1, 'Root', [2, 3, 4], select=selected),
         open_(2, 'A', [5]),
         open_(3, 'B', [5]),
         open_(4, 'C', [5]),
@@ -122,7 +122,7 @@ def test_balance_upper_level():
 
 def test_render_in_top_view():
     goals = build_goaltree(
-        open_(1, 'Root', [2, 3, 4, 5, 6], selected),
+        open_(1, 'Root', [2, 3, 4, 5, 6], select=selected),
         open_(2, 'A'),
         open_(3, 'B'),
         open_(4, 'C'),

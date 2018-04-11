@@ -101,7 +101,7 @@ class GoalsTest(TestCase):
 
     def test_close_goal_again(self):
         self.goals = self.build(
-            open_(1, 'Root', [2], selected),
+            open_(1, 'Root', [2], select=selected),
             open_(2, 'A', [3]),
             clos_(3, 'Ab'),
         )
@@ -126,7 +126,7 @@ class GoalsTest(TestCase):
 
     def test_closed_leaf_goal_could_not_be_reopened(self):
         self.goals = self.build(
-            open_(1, 'Root', [2], selected),
+            open_(1, 'Root', [2], select=selected),
             clos_(2, 'A', [3]),
             clos_(3, 'B')
         )
@@ -146,7 +146,7 @@ class GoalsTest(TestCase):
         self.goals = self.build(
             open_(1, 'Root', [2, 3]),
             open_(2, 'A', [4]),
-            open_(3, 'B', [4], selected),
+            open_(3, 'B', [4], select=selected),
             open_(4, 'C')
         )
         self.goals.toggle_close()
@@ -177,7 +177,7 @@ class GoalsTest(TestCase):
     def test_remove_goal_chain(self):
         self.goals = self.build(
             open_(1, 'Root', [2]),
-            open_(2, 'A', [3], selected),
+            open_(2, 'A', [3], select=selected),
             open_(3, 'B')
         )
         self.goals.delete()
@@ -198,7 +198,7 @@ class GoalsTest(TestCase):
         self.goals = self.build(
             open_(1, 'Root', [2, 3]),
             open_(2, 'A', [4]),
-            open_(3, 'B', [4], previous),
+            open_(3, 'B', [4], select=previous),
             open_(4, 'C', select=selected)
         )
         assert self.goals.q(keys='edge,switchable') == {
@@ -213,7 +213,7 @@ class GoalsTest(TestCase):
 
     def test_no_loops_allowed(self):
         self.goals = self.build(
-            open_(1, 'Root', [2], selected),
+            open_(1, 'Root', [2], select=selected),
             open_(2, 'step', [3]),
             open_(3, 'next', [4]),
             open_(4, 'more', select=previous)
@@ -225,7 +225,7 @@ class GoalsTest(TestCase):
     def test_remove_link_between_goals(self):
         self.goals = self.build(
             open_(1, 'Root', [2, 3]),
-            open_(2, 'A', [3], previous),
+            open_(2, 'A', [3], select=previous),
             open_(3, 'B', select=selected)
         )
         self.goals.toggle_link()
@@ -304,7 +304,7 @@ class GoalsTest(TestCase):
 
     def test_selection_should_be_instant(self):
         self.goals = self.build(
-            open_(1, 'Root', [2, 3, 4, 5, 6, 7, 8, 9, 10, 11], selected),
+            open_(1, 'Root', [2, 3, 4, 5, 6, 7, 8, 9, 10, 11], select=selected),
             open_(2, 'A'), open_(3, 'B'), open_(4, 'C'), open_(5, 'D'),
             open_(6, 'E'), open_(7, 'F'), open_(8, 'G'), open_(9, 'H'),
             open_(10, 'I'), open_(11, 'J'),
@@ -408,8 +408,8 @@ class GoalsTest(TestCase):
 
     def test_message_on_circular_insert(self):
         self.goals = self.build(
-            open_(1, 'Root', [2], selected),
-            open_(2, 'Top', [], previous)
+            open_(1, 'Root', [2], select=selected),
+            open_(2, 'Top', [], select=previous)
         )
         self.goals.insert('Failed')
         assert len(self.messages) == 1
@@ -417,14 +417,14 @@ class GoalsTest(TestCase):
     def test_no_message_on_valid_closing(self):
         self.goals = self.build(
             open_(1, 'Root', [2]),
-            open_(2, 'Top', [], selected)
+            open_(2, 'Top', [], select=selected)
         )
         self.goals.toggle_close()
         assert self.messages == []
 
     def test_message_on_closing_blocked_goal(self):
         self.goals = self.build(
-            open_(1, 'Root', [2], selected),
+            open_(1, 'Root', [2], select=selected),
             open_(2, 'Top')
         )
         self.goals.toggle_close()
@@ -432,7 +432,7 @@ class GoalsTest(TestCase):
 
     def test_no_message_on_valid_reopening(self):
         self.goals = self.build(
-            clos_(1, 'Root', [2], selected),
+            clos_(1, 'Root', [2], select=selected),
             clos_(2, 'Top')
         )
         self.goals.toggle_close()
@@ -441,7 +441,7 @@ class GoalsTest(TestCase):
     def test_message_on_reopening_blocked_goal(self):
         self.goals = self.build(
             clos_(1, 'Root', [2]),
-            clos_(2, 'Top', [], selected)
+            clos_(2, 'Top', [], select=selected)
         )
         self.goals.toggle_close()
         assert len(self.messages) == 1
@@ -449,14 +449,14 @@ class GoalsTest(TestCase):
     def test_no_message_on_delete_non_root_goal(self):
         self.goals = self.build(
             clos_(1, 'Root', [2]),
-            clos_(2, 'Top', [], selected)
+            clos_(2, 'Top', [], select=selected)
         )
         self.goals.delete()
         assert self.messages == []
 
     def test_message_on_delete_root_goal(self):
         self.goals = self.build(
-            clos_(1, 'Root', [2], selected),
+            clos_(1, 'Root', [2], select=selected),
             clos_(2, 'Top')
         )
         self.goals.delete()
@@ -464,9 +464,9 @@ class GoalsTest(TestCase):
 
     def test_no_message_on_allowed_link(self):
         self.goals = self.build(
-            open_(1, 'Root', [2], previous),
+            open_(1, 'Root', [2], select=previous),
             open_(2, 'Middle', [3]),
-            open_(3, 'Top', [], selected)
+            open_(3, 'Top', [], select=selected)
         )
         self.goals.toggle_link()
         assert self.messages == []
@@ -475,16 +475,16 @@ class GoalsTest(TestCase):
         self.goals = self.build(
             open_(1, 'Root', [2]),
             open_(2, 'Middle', [3]),
-            open_(3, 'Top', [], selected)
+            open_(3, 'Top', [], select=selected)
         )
         self.goals.toggle_link()
         assert len(self.messages) == 1
 
     def test_no_message_when_remove_not_last_link(self):
         self.goals = self.build(
-            open_(1, 'Root', [2, 3], previous),
+            open_(1, 'Root', [2, 3], select=previous),
             open_(2, 'Middle', [3]),
-            open_(3, 'Top', [], selected)
+            open_(3, 'Top', [], select=selected)
         )
         self.goals.toggle_link()
         assert self.messages == []
@@ -492,8 +492,8 @@ class GoalsTest(TestCase):
     def test_message_when_remove_last_link(self):
         self.goals = self.build(
             open_(1, 'Root', [2]),
-            open_(2, 'Middle', [3], previous),
-            open_(3, 'Top', [], selected)
+            open_(2, 'Middle', [3], select=previous),
+            open_(3, 'Top', [], select=selected)
         )
         self.goals.toggle_link()
         assert len(self.messages) == 1
@@ -501,8 +501,8 @@ class GoalsTest(TestCase):
     def test_message_when_closed_goal_is_blocked_by_open_one(self):
         self.goals = self.build(
             open_(1, 'Root', [2, 3]),
-            clos_(2, 'Middle', [], previous),
-            open_(3, 'Top', [], selected)
+            clos_(2, 'Middle', [], select=previous),
+            open_(3, 'Top', [], select=selected)
         )
         self.goals.toggle_link()
         assert len(self.messages) == 1

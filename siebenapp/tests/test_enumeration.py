@@ -85,7 +85,7 @@ def test_use_mapping_in_selection():
 
 
 def test_select_goal_by_full_id():
-    prototype = [open_(1, 'a', [2, 3, 4, 5, 6, 7, 8, 9, 10, 11], selected)] + \
+    prototype = [open_(1, 'a', [2, 3, 4, 5, 6, 7, 8, 9, 10, 11], select=selected)] + \
         [open_(i+2, c) for i, c in enumerate('bcdefghijk')]
     e = Enumeration(build_goaltree(*prototype))
     assert e.q(keys='name,select') == {
@@ -118,7 +118,7 @@ def test_select_goal_by_full_id():
 
 
 def test_select_goal_by_full_id_with_non_empty_cache():
-    prototype = [open_(1, 'a', [2, 3, 4, 5, 6, 7, 8, 9, 10, 11], selected)] + \
+    prototype = [open_(1, 'a', [2, 3, 4, 5, 6, 7, 8, 9, 10, 11], select=selected)] + \
                 [open_(i+2, c) for i, c in enumerate('bcdefghijk')]
     e = Enumeration(build_goaltree(*prototype))
     assert e.q(keys='name,select') == {
@@ -153,7 +153,7 @@ def test_select_goal_by_full_id_with_non_empty_cache():
 
 def test_mapping_for_top():
     e = Enumeration(build_goaltree(
-        open_(1, 'a', [2, 20], selected),
+        open_(1, 'a', [2, 20], select=selected),
         open_(2, 'b'),
         open_(20, 'x')
     ))
@@ -177,7 +177,7 @@ def test_toggle_switch_view():
 
 def test_goaltree_selection_may_be_changed_in_top_view():
     e = Enumeration(build_goaltree(
-        open_(1, 'Root', [2, 3], selected),
+        open_(1, 'Root', [2, 3], select=selected),
         open_(2, 'Top 1'),
         open_(3, 'Top 2')
     ))
@@ -197,7 +197,7 @@ def test_goaltree_selection_may_be_changed_in_top_view():
 
 def test_goaltree_previous_selection_may_be_changed_in_top_view():
     e = Enumeration(build_goaltree(
-        open_(1, 'Root', [2, 3], previous),
+        open_(1, 'Root', [2, 3], select=previous),
         open_(2, 'Top 1', select=selected),
         open_(3, 'Top 2')
     ))
@@ -224,7 +224,7 @@ def test_goaltree_previous_selection_may_be_changed_in_top_view():
 
 def test_selection_cache_should_be_reset_after_view_switch():
     # 1 -> 2 -> 3 -> .. -> 10 -> 11
-    prototype = [open_(i, str(i), [i+1], (selected if i == 1 else None))
+    prototype = [open_(i, str(i), [i+1], select=(selected if i == 1 else None))
                  for i in range(1, 11)] + [open_(11, '11')]
     g = build_goaltree(*prototype)
     g.add('Also top', 1)
@@ -243,7 +243,7 @@ def test_selection_cache_should_be_reset_after_view_switch():
 
 
 def test_selection_cache_should_avoid_overflow():
-    prototype = [open_(1, 'Root', [2, 3, 4, 5, 6, 7, 8, 9, 10, 11], selected)] + \
+    prototype = [open_(1, 'Root', [2, 3, 4, 5, 6, 7, 8, 9, 10, 11], select=selected)] + \
         [open_(i, str(i)) for i in range(2, 12)]
     e = Enumeration(build_goaltree(*prototype))
     assert e.q(keys='select')[11] == {'select': 'select'}
