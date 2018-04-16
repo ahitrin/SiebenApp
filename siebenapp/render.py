@@ -9,7 +9,7 @@ class Renderer:
     WIDTH_LIMIT = 4
 
     def __init__(self, goals):
-        self.graph = goals.all(keys='name,edge,open,select,switchable')
+        self.graph = goals.q(keys='name,edge,open,select,switchable')
         self.edges = {key: values['edge'] for key, values in self.graph.items()}
         self.layers = defaultdict(list)
         self.positions = {}

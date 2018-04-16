@@ -9,7 +9,7 @@ def test_simple_enumeration_is_not_changed():
         open_(2, 'b', [3], select=previous),
         open_(3, 'c', select=selected)
     ))
-    assert e.all(keys='name,edge') == {
+    assert e.q(keys='name,edge') == {
         1: {'name': 'a', 'edge': [2, 3]},
         2: {'name': 'b', 'edge': [3]},
         3: {'name': 'c', 'edge': []},
@@ -21,7 +21,7 @@ def test_apply_mapping_for_the_10th_element():
                  for i, c in enumerate('abcdefghi')] + [open_(10, 'j')]
     goals = build_goaltree(*prototype)
     e = Enumeration(goals)
-    assert e.all(keys='name,edge') == {
+    assert e.q(keys='name,edge') == {
         1: {'name': 'a', 'edge': [2]},
         2: {'name': 'b', 'edge': [3]},
         3: {'name': 'c', 'edge': [4]},
@@ -35,7 +35,7 @@ def test_apply_mapping_for_the_10th_element():
     }
     # simulate goal addition
     goals.add('k')
-    assert e.all(keys='name,edge') == {
+    assert e.q(keys='name,edge') == {
         11: {'name': 'a', 'edge': [12, 21]},
         12: {'name': 'b', 'edge': [13]},
         13: {'name': 'c', 'edge': [14]},
@@ -54,7 +54,7 @@ def test_use_mapping_in_selection():
     prototype = [open_(i+1, c, [i+2]) for i, c in enumerate('abcdefghi')] + [open_(10, 'j', select=selected)]
     e = Enumeration(build_goaltree(*prototype))
     e.select(0)
-    assert e.all(keys='name,select') == {
+    assert e.q(keys='name,select') == {
         1: {'name': 'a', 'select': None},
         2: {'name': 'b', 'select': None},
         3: {'name': 'c', 'select': None},
@@ -69,7 +69,7 @@ def test_use_mapping_in_selection():
     e.add('k')
     e.select(1)
     e.select(6)
-    assert e.all(keys='name,select') == {
+    assert e.q(keys='name,select') == {
         11: {'name': 'a', 'select': None},
         12: {'name': 'b', 'select': None},
         13: {'name': 'c', 'select': None},
@@ -88,7 +88,7 @@ def test_select_goal_by_full_id():
     prototype = [open_(1, 'a', [2, 3, 4, 5, 6, 7, 8, 9, 10, 11], selected)] + \
         [open_(i+2, c) for i, c in enumerate('bcdefghijk')]
     e = Enumeration(build_goaltree(*prototype))
-    assert e.all(keys='name,select') == {
+    assert e.q(keys='name,select') == {
         11: {'name': 'a', 'select': 'select'},
         12: {'name': 'b', 'select': None},
         13: {'name': 'c', 'select': None},
@@ -102,7 +102,7 @@ def test_select_goal_by_full_id():
         21: {'name': 'k', 'select': None},
     }
     e.select(13)
-    assert e.all(keys='name,select') == {
+    assert e.q(keys='name,select') == {
         11: {'name': 'a', 'select': 'prev'},
         12: {'name': 'b', 'select': None},
         13: {'name': 'c', 'select': 'select'},
@@ -121,7 +121,7 @@ def test_select_goal_by_full_id_with_non_empty_cache():
     prototype = [open_(1, 'a', [2, 3, 4, 5, 6, 7, 8, 9, 10, 11], selected)] + \
                 [open_(i+2, c) for i, c in enumerate('bcdefghijk')]
     e = Enumeration(build_goaltree(*prototype))
-    assert e.all(keys='name,select') == {
+    assert e.q(keys='name,select') == {
         11: {'name': 'a', 'select': 'select'},
         12: {'name': 'b', 'select': None},
         13: {'name': 'c', 'select': None},
@@ -136,7 +136,7 @@ def test_select_goal_by_full_id_with_non_empty_cache():
     }
     e.select(2)
     e.select(13)
-    assert e.all(keys='name,select') == {
+    assert e.q(keys='name,select') == {
         11: {'name': 'a', 'select': 'prev'},
         12: {'name': 'b', 'select': None},
         13: {'name': 'c', 'select': 'select'},
@@ -157,7 +157,7 @@ def test_mapping_for_top():
         open_(2, 'b'),
         open_(20, 'x')
     ))
-    assert e.all(keys='name,switchable,select') == {
+    assert e.q(keys='name,switchable,select') == {
         1: {'name': 'a', 'switchable': False, 'select': 'select'},
         2: {'name': 'b', 'switchable': True, 'select': None},
         3: {'name': 'x', 'switchable': True, 'select': None},
@@ -181,7 +181,7 @@ def test_goaltree_selection_may_be_changed_in_top_view():
         open_(2, 'Top 1'),
         open_(3, 'Top 2')
     ))
-    assert e.all(keys='name,switchable,select') == {
+    assert e.q(keys='name,switchable,select') == {
         1: {'name': 'Root', 'switchable': False, 'select': 'select'},
         2: {'name': 'Top 1', 'switchable': True, 'select': None},
         3: {'name': 'Top 2', 'switchable': True, 'select': None},
@@ -189,7 +189,7 @@ def test_goaltree_selection_may_be_changed_in_top_view():
     e.next_view()
     assert e.events[-2] == ('select', 2)
     assert e.events[-1] == ('hold_select', 2)
-    assert e.all(keys='name,switchable,select') == {
+    assert e.q(keys='name,switchable,select') == {
         1: {'name': 'Top 1', 'switchable': True, 'select': 'select'},
         2: {'name': 'Top 2', 'switchable': True, 'select': None}
     }
@@ -201,21 +201,21 @@ def test_goaltree_previous_selection_may_be_changed_in_top_view():
         open_(2, 'Top 1', select=selected),
         open_(3, 'Top 2')
     ))
-    assert e.all(keys='name,switchable,select') == {
+    assert e.q(keys='name,switchable,select') == {
         1: {'name': 'Root', 'switchable': False, 'select': 'prev'},
         2: {'name': 'Top 1', 'switchable': True, 'select': 'select'},
         3: {'name': 'Top 2', 'switchable': True, 'select': None},
     }
     e.next_view()
     assert e.events[-1] == ('hold_select', 2)
-    assert e.all(keys='name,switchable,select') == {
+    assert e.q(keys='name,switchable,select') == {
         1: {'name': 'Top 1', 'switchable': True, 'select': 'select'},
         2: {'name': 'Top 2', 'switchable': True, 'select': None}
     }
     e.insert('Illegal goal')
     # New goal must not be inserted because previous selection is reset after the view switching
     e.next_view()
-    assert e.all(keys='name,switchable,select') == {
+    assert e.q(keys='name,switchable,select') == {
         1: {'name': 'Root', 'switchable': False, 'select': None},
         2: {'name': 'Top 1', 'switchable': True, 'select': 'select'},
         3: {'name': 'Top 2', 'switchable': True, 'select': None},
@@ -231,12 +231,12 @@ def test_selection_cache_should_be_reset_after_view_switch():
     e = Enumeration(g)
     e.select(1)
     e.next_view()
-    assert e.all('name,select') == {
+    assert e.q('name,select') == {
         1: {'name': '11', 'select': 'select'},
         2: {'name': 'Also top', 'select': None},
     }
     e.select(2)
-    assert e.all('name,select') == {
+    assert e.q('name,select') == {
         1: {'name': '11', 'select': 'prev'},
         2: {'name': 'Also top', 'select': 'select'},
     }
@@ -246,22 +246,22 @@ def test_selection_cache_should_avoid_overflow():
     prototype = [open_(1, 'Root', [2, 3, 4, 5, 6, 7, 8, 9, 10, 11], selected)] + \
         [open_(i, str(i)) for i in range(2, 12)]
     e = Enumeration(build_goaltree(*prototype))
-    assert e.all(keys='select')[11] == {'select': 'select'}
+    assert e.q(keys='select')[11] == {'select': 'select'}
     e.select(5)
-    assert e.all(keys='select')[11] == {'select': 'select'}
+    assert e.q(keys='select')[11] == {'select': 'select'}
     e.select(1)
-    assert e.all(keys='select')[11] == {'select': 'select'}
-    assert e.all(keys='select')[14] == {'select': None}
+    assert e.q(keys='select')[11] == {'select': 'select'}
+    assert e.q(keys='select')[14] == {'select': None}
     e.select(4)
-    assert e.all(keys='select')[11] == {'select': 'prev'}
-    assert e.all(keys='select')[14] == {'select': 'select'}
+    assert e.q(keys='select')[11] == {'select': 'prev'}
+    assert e.q(keys='select')[14] == {'select': 'select'}
 
 
 def test_top_view_may_be_empty():
     e = Enumeration(Goals('closed'))
     e.toggle_close()
     e.next_view()
-    assert e.all() == {}
+    assert e.q() == {}
 
 
 def test_simple_top_enumeration_workflow():
@@ -271,7 +271,7 @@ def test_simple_top_enumeration_workflow():
     e.select(2)
     e.next_view()
     e.select(2)
-    assert e.all() == {
+    assert e.q() == {
         1: {'name': '1'},
         2: {'name': '2'}
     }
@@ -280,7 +280,7 @@ def test_simple_top_enumeration_workflow():
 def test_open_view_may_be_empty():
     e = Enumeration(Goals('closed'))
     e.toggle_close()
-    assert e.all() == {}
+    assert e.q() == {}
 
 
 def test_simple_open_enumeration_workflow():
@@ -288,21 +288,21 @@ def test_simple_open_enumeration_workflow():
     e.add('1')
     e.add('2')
     e.select(2)
-    assert e.all(keys='name,select,open,edge') == {
+    assert e.q(keys='name,select,open,edge') == {
         1: {'name': 'Root', 'select': 'prev', 'open': True, 'edge': [2, 3]},
         2: {'name': '1', 'select': 'select', 'open': True, 'edge': []},
         3: {'name': '2', 'select': None, 'open': True, 'edge': []},
     }
     e.toggle_close()
-    assert e.all(keys='name,select,open,edge') == {
+    assert e.q(keys='name,select,open,edge') == {
         1: {'name': 'Root', 'select': 'select', 'open': True, 'edge': [2]},
         2: {'name': '2', 'select': None, 'open': True, 'edge': []}
     }
 
 
 class PseudoZoomedGoals(Goals):
-    def all(self, keys='name'):
-        goals = super(PseudoZoomedGoals, self).all(keys)
+    def q(self, keys='name'):
+        goals = super(PseudoZoomedGoals, self).q(keys)
         goals[-1] = goals.pop(1)
         return goals
 
@@ -313,13 +313,13 @@ def test_do_not_enumerate_goals_with_negative_id():
     g.select(2)
     g.hold_select()
     g.add('Top')
-    assert g.all('name,select,edge') == {
+    assert g.q('name,select,edge') == {
         -1: {'name': 'Root', 'select': None, 'edge': [2]},
         2: {'name': 'Zoomed', 'select': 'select', 'edge': [3]},
         3: {'name': 'Top', 'select': None, 'edge': []},
     }
     e = Enumeration(g)
-    assert e.all('name,select,edge') == {
+    assert e.q('name,select,edge') == {
         -1: {'name': 'Root', 'select': None, 'edge': [1]},
         1: {'name': 'Zoomed', 'select': 'select', 'edge': [2]},
         2: {'name': 'Top', 'select': None, 'edge': []},

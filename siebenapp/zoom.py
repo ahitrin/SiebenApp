@@ -1,5 +1,5 @@
 class Zoom:
-    override = ['_build_visible_goals', 'all', 'delete', 'export', 'goaltree',
+    override = ['_build_visible_goals', 'q', 'delete', 'export', 'goaltree',
                 'toggle_close', 'toggle_zoom']
 
     def __init__(self, goaltree):
@@ -20,8 +20,8 @@ class Zoom:
         if self.settings['previous_selection'] not in visible_goals:
             self.goaltree.hold_select()
 
-    def all(self, keys='name'):
-        origin_goals = self.goaltree.all(keys)
+    def q(self, keys='name'):
+        origin_goals = self.goaltree.q(keys)
         if self.settings['zoom'] == 1:
             return origin_goals
         visible_goals = self._build_visible_goals()
@@ -49,7 +49,7 @@ class Zoom:
             self.goaltree.hold_select()
 
     def _build_visible_goals(self):
-        edges = self.goaltree.all('edge')
+        edges = self.goaltree.q('edge')
         visible_goals = {self.settings['zoom']}
         goals_to_visit = set(edges[self.settings['zoom']]['edge'])
         while goals_to_visit:

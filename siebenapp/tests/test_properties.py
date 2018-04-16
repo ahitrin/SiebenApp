@@ -42,7 +42,7 @@ def build_from(actions, choice_fn, show_notes=True):
         for name in actions:
             int_val = 0
             if name == 'select':
-                int_val = choice_fn(list(g.all().keys()))
+                int_val = choice_fn(list(g.q().keys()))
             USER_ACTIONS[name](g, int_val)
     finally:
         if show_notes:
@@ -77,13 +77,13 @@ def test_bad_examples_found_by_hypothesis(actions, ints):
 @given(user_actions(), choices())
 def test_there_is_always_at_least_one_goal(actions, ch):
     g = build_from(actions, ch)
-    assert g.all()
+    assert g.q()
 
 
 @given(user_actions(), choices())
 def test_there_is_always_one_selected_goal(actions, ch):
     g = build_from(actions, ch)
-    assert len([1 for k, v in g.all(keys='select').items() if v['select'] == 'select']) == 1
+    assert len([1 for k, v in g.q(keys='select').items() if v['select'] == 'select']) == 1
 
 
 @given(user_actions(min_size=15, skip=['rename']),
@@ -91,9 +91,9 @@ def test_there_is_always_one_selected_goal(actions, ch):
        choices(), choices())
 def test_any_goal_may_be_selected(all_actions, non_select_actions, ch, choice):
     g = build_from(all_actions + non_select_actions, ch)
-    rnd_goal = choice(list(g.all().keys()))
+    rnd_goal = choice(list(g.q().keys()))
     g.select(rnd_goal)
-    assert g.all(keys='select')[rnd_goal]['select'] == 'select'
+    assert g.q(keys='select')[rnd_goal]['select'] == 'select'
 
 
 @given(user_actions(average_size=100, skip=['rename']), choices(), choices())
@@ -102,10 +102,10 @@ def test_any_goal_may_be_selected_through_enumeration(actions, ch, choice):
     e = Enumeration(g)
     e.next_view()
     e.next_view()
-    rnd_goal = choice(list(e.all().keys()))
+    rnd_goal = choice(list(e.q().keys()))
     for i in str(rnd_goal):
         e.select(int(i))
-    assert e.all(keys='select')[rnd_goal]['select'] == 'select'
+    assert e.q(keys='select')[rnd_goal]['select'] == 'select'
 
 
 @given(user_actions(average_size=100), choices())
@@ -134,7 +134,7 @@ def test_full_export_and_streaming_export_must_be_the_same(actions, ch):
         save_updates(g, conn)
         assert not g.events
         ng = build_goals(conn)
-        assert g.all('name,open,edge,select') == ng.all('name,open,edge,select')
+        assert g.q('name,open,edge,select') == ng.q('name,open,edge,select')
 
 
 @given(text())
@@ -146,7 +146,7 @@ def test_all_goal_names_must_be_saved_correctly(name):
         run_migrations(conn)
         save_updates(g, conn)
         ng = build_goals(conn)
-        assert g.all('name,open,edge,select') == ng.all('name,open,edge,select')
+        assert g.q('name,open,edge,select') == ng.q('name,open,edge,select')
 
 
 def test_all_keys_in_enumeration_must_be_of_the_same_length():
@@ -154,6 +154,6 @@ def test_all_keys_in_enumeration_must_be_of_the_same_length():
     for i in range(2999):
         g.add(str(i))
     e = Enumeration(g)
-    mapping = e.all()
-    assert len(mapping) == len(g.all())
+    mapping = e.q()
+    assert len(mapping) == len(g.q())
     assert set(len(str(k)) for k in mapping) == {4}

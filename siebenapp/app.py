@@ -207,7 +207,7 @@ class SiebenApp(QMainWindow):
             pass
 
     def _current_goal_label(self):
-        data = self.goals.all(keys='name,select').values()
+        data = self.goals.q(keys='name,select').values()
         return [x['name'] for x in data if x['select'] == 'select'].pop()
 
     def with_refresh(self, fn):

@@ -45,7 +45,8 @@ class Goals:
         self.settings['previous_selection'] = self.settings['selection']
         self.events.append(('hold_select', self.settings['selection']))
 
-    def all(self, keys='name'):
+    def q(self, keys='name'):
+        """Run search query against goaltree state"""
         def sel(x):
             if x == self.settings['selection']:
                 return 'select'

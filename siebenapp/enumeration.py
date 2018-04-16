@@ -2,7 +2,7 @@ import math
 
 
 class Enumeration:
-    overriden = ['_goal_filter', '_id_mapping', '_update_mapping', 'all',
+    overriden = ['_goal_filter', '_id_mapping', '_update_mapping', 'q',
                  'goaltree', 'next_view', 'select', 'selection_cache', 'view',
                  'views']
 
@@ -16,7 +16,7 @@ class Enumeration:
 
     def _update_mapping(self):
         if self.view == 'top':
-            goals = {k for k, v in self.goaltree.all(keys='open,switchable').items()
+            goals = {k for k, v in self.goaltree.q(keys='open,switchable').items()
                      if v['open'] and v['switchable']}
             if goals and self.settings['selection'] not in goals:
                 self.goaltree.select(min(goals))
@@ -24,12 +24,12 @@ class Enumeration:
                 self.goaltree.hold_select()
             self._goal_filter = goals
         elif self.view == 'open':
-            self._goal_filter = {k for k, v in self.goaltree.all(keys='open').items() if v['open']}
+            self._goal_filter = {k for k, v in self.goaltree.q(keys='open').items() if v['open']}
         else:
-            self._goal_filter = {g for g in self.goaltree.all()}
+            self._goal_filter = {g for g in self.goaltree.q()}
 
     def _id_mapping(self, *args, **kwargs):
-        goals = self.goaltree.all(*args, **kwargs)
+        goals = self.goaltree.q(*args, **kwargs)
         goals = {k:v for k, v in goals.items() if k in self._goal_filter}
         if self.view == 'top':
             for attrs in goals.values():
@@ -58,7 +58,7 @@ class Enumeration:
 
         return goals, mapping_fn
 
-    def all(self, *args, **kwargs):
+    def q(self, *args, **kwargs):
         self._update_mapping()
         result = dict()
         goals, mapping = self._id_mapping(*args, **kwargs)
