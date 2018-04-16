@@ -59,6 +59,10 @@ MIGRATIONS = [
     [
         'alter table selection rename to settings',
     ],
+    # 4
+    [
+        'alter table edges add column reltype integer not null default 1'
+    ],
 ]
 
 
@@ -74,7 +78,7 @@ def save(goals, filename=DEFAULT_DB):
         goals_export, edges_export, select_export = Goals.export(goals)
         cur = connection.cursor()
         cur.executemany('insert into goals values (?,?,?)', goals_export)
-        cur.executemany('insert into edges values (?,?)', edges_export)
+        cur.executemany('insert into edges values (?,?,1)', edges_export)
         cur.executemany('insert into settings values (?,?)', select_export)
         goals.events.clear()
         connection.commit()
@@ -86,7 +90,7 @@ def save_updates(goals, connection):
         'add': ['insert into goals values (?,?,?)'],
         'toggle_close': ['update goals set open=? where goal_id=?'],
         'rename': ['update goals set name=? where goal_id=?'],
-        'link': ['insert into edges values (?,?)'],
+        'link': ['insert into edges values (?,?,1)'],
         'unlink': ['delete from edges where parent=? and child=?'],
         'select': ['delete from settings where name="selection"',
                    'insert into settings values ("selection", ?)'],
@@ -116,7 +120,7 @@ def load(filename=DEFAULT_DB, message_fn=None):
         run_migrations(connection)
         cur = connection.cursor()
         goals = [row for row in cur.execute('select * from goals')]
-        edges = [row for row in cur.execute('select * from edges')]
+        edges = [row for row in cur.execute('select parent, child from edges')]
         settings = [row for row in cur.execute('select * from settings')]
         cur.close()
         goals = Goals.build(goals, edges, settings, message_fn)
