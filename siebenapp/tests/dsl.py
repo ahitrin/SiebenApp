@@ -8,7 +8,7 @@ allowed_selects = {selected, previous, None}
 GoalPrototype = namedtuple('GoalPrototype', 'id name open children blockers select')
 
 
-def _build_goal_prototype(goal_id, name, is_open, children, blockers, select):
+def _build_goal_prototype(goal_id, name, is_open, children, blockers, select):  # pylint: disable=too-many-arguments
     children = [] if children is None else children
     blockers = [] if blockers is None else blockers
     assert isinstance(children, list)
