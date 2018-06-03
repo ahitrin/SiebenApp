@@ -4,15 +4,16 @@ class Zoom:
 
     def __init__(self, goaltree):
         self.goaltree = goaltree
-        self.zoom_root = 1
+        self.zoom_root = [1]
 
     def toggle_zoom(self):
         selection = self.settings['selection']
-        if selection == self.zoom_root:
-            self.zoom_root = 1
-            self.events.append(('zoom', 1))
+        if selection == self.zoom_root[-1] and len(self.zoom_root) > 1:
+            # unzoom
+            last_zoom = self.zoom_root.pop(-1)
+            self.events.append(('zoom', last_zoom))
             return
-        self.zoom_root = selection
+        self.zoom_root.append(selection)
         self.events.append(('zoom', selection))
         visible_goals = self._build_visible_goals()
         if self.settings['previous_selection'] not in visible_goals:
@@ -48,8 +49,9 @@ class Zoom:
 
     def _build_visible_goals(self):
         edges = self.goaltree.q('edge')
-        visible_goals = {self.zoom_root}
-        goals_to_visit = set(edges[self.zoom_root]['edge'])
+        current_zoom_root = self.zoom_root[-1]
+        visible_goals = {current_zoom_root}
+        goals_to_visit = set(edges[current_zoom_root]['edge'])
         while goals_to_visit:
             next_child = goals_to_visit.pop()
             visible_goals.add(next_child)
@@ -66,7 +68,7 @@ class Zoom:
     @staticmethod
     def build(goals, data):
         result = Zoom(goals)
-        result.zoom_root = data[0][1] if data else 1
+        result.zoom_root = [x[1] for x in data] if data else [1]
         return result
 
     @staticmethod
