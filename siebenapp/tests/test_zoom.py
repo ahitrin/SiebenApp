@@ -81,6 +81,23 @@ def test_double_zoom_means_unzoom():
     }
 
 
+def test_stacked_zoom():
+    goals = Zoom(build_goaltree(
+        open_(1, 'Root', [2]),
+        open_(2, 'Skip me', [3]),
+        open_(3, 'Intermediate zoom', [4], select=selected),
+        open_(4, 'Next zoom', [5]),
+        open_(5, 'Top')
+    ))
+    goals.toggle_zoom()
+    goals.select(4)
+    goals.toggle_zoom()
+    assert set(goals.q().keys()) == {-1, 4, 5}
+    goals.toggle_zoom()
+    # Zoom on goal 3 still exists
+    assert set(goals.q().keys()) == {-1, 3, 4, 5}
+
+
 def test_selection_should_not_be_changed_if_selected_goal_is_visible():
     goals = Zoom(build_goaltree(
         open_(1, 'Root', [2]),
