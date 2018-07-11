@@ -37,7 +37,7 @@ def test_last_known_migration():
             run_migrations(conn)
             cur.execute('select version from migrations')
             version = cur.fetchone()[0]
-            assert version == 4
+            assert version == 5
 
 
 def setup_sample_db(conn):

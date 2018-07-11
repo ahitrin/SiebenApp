@@ -63,6 +63,17 @@ MIGRATIONS = [
     [
         'alter table edges add column reltype integer not null default 1'
     ],
+    # 5
+    [
+        '''create table zoom (
+            level integer primary key,
+            goal integer,
+            foreign key(goal) references goals(goal_id)
+        )''',
+        '''insert into zoom (level, goal) select 1, goal from settings
+           where name = 'zoom' ''',
+        "delete from settings where name = 'zoom'",
+    ],
 ]
 
 
@@ -76,10 +87,12 @@ def save(goals, filename=DEFAULT_DB):
         connection = sqlite3.connect(filename)
         run_migrations(connection)
         goals_export, edges_export, select_export = Goals.export(goals)
+        zoom_export = Zoom.export(goals)
         cur = connection.cursor()
         cur.executemany('insert into goals values (?,?,?)', goals_export)
         cur.executemany('insert into edges values (?,?,1)', edges_export)
         cur.executemany('insert into settings values (?,?)', select_export)
+        cur.executemany('insert into zoom values (?, ?)', zoom_export)
         goals.events.clear()
         connection.commit()
         connection.close()
@@ -99,8 +112,8 @@ def save_updates(goals, connection):
         'delete': ['delete from goals where goal_id=?',
                    'delete from edges where child=?',
                    'delete from edges where parent=?'],
-        'zoom': ['delete from settings where name="zoom"',
-                 'insert into settings values ("zoom", ?)'],
+        'zoom': ['delete from zoom',
+                 'insert into zoom values (1, ?)'],
     }
     cur = connection.cursor()
     while goals.events:
@@ -122,11 +135,14 @@ def load(filename=DEFAULT_DB, message_fn=None):
         goals = [row for row in cur.execute('select * from goals')]
         edges = [row for row in cur.execute('select parent, child from edges')]
         settings = [row for row in cur.execute('select * from settings')]
+        zoom_data = [row for row in cur.execute('select * from zoom')]
         cur.close()
         goals = Goals.build(goals, edges, settings, message_fn)
+        zoom = Zoom.build(goals, zoom_data)
     else:
         goals = Goals('Rename me', message_fn)
-    return Enumeration(Zoom(goals))
+        zoom = Zoom(goals)
+    return Enumeration(zoom)
 
 
 def run_migrations(conn, migrations=None):
