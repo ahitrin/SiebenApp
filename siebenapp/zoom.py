@@ -13,38 +13,39 @@ class Zoom:
             last_zoom = self.zoom_root.pop(-1)
             self.events.append(('zoom', last_zoom))
             return
-        self.zoom_root.append(selection)
-        self.events.append(('zoom', selection))
-        visible_goals = self._build_visible_goals()
-        if self.settings['previous_selection'] not in visible_goals:
-            self.goaltree.hold_select()
+        if selection not in self.zoom_root:
+            self.zoom_root.append(selection)
+            self.events.append(('zoom', selection))
+            visible_goals = self._build_visible_goals()
+            if self.settings['previous_selection'] not in visible_goals:
+                self.goaltree.hold_select()
 
     def q(self, keys='name'):
         origin_goals = self.goaltree.q(keys)
-        if self.zoom_root == 1:
+        if self.zoom_root == [1]:
             return origin_goals
         visible_goals = self._build_visible_goals()
         zoomed_goals = {k: v for k, v in origin_goals.items()
                         if k in visible_goals}
         zoomed_goals[-1] = origin_goals[1]
         if 'edge' in keys:
-            zoomed_goals[-1]['edge'] = [self.zoom_root]
+            zoomed_goals[-1]['edge'] = [self.zoom_root[-1]]
         return zoomed_goals
 
     def toggle_close(self):
-        if self.settings['selection'] == self.zoom_root:
+        if self.settings['selection'] == self.zoom_root[-1]:
             self.toggle_zoom()
         self.goaltree.toggle_close()
         if self.settings['selection'] not in self._build_visible_goals():
-            self.goaltree.select(self.zoom_root)
+            self.goaltree.select(self.zoom_root[-1])
             self.goaltree.hold_select()
 
     def delete(self, goal_id=0):
-        if self.settings['selection'] == self.zoom_root:
+        if self.settings['selection'] == self.zoom_root[-1]:
             self.toggle_zoom()
         self.goaltree.delete(goal_id)
-        if self.settings['selection'] != self.zoom_root:
-            self.goaltree.select(self.zoom_root)
+        if self.settings['selection'] != self.zoom_root[-1]:
+            self.goaltree.select(self.zoom_root[-1])
             self.goaltree.hold_select()
 
     def _build_visible_goals(self):
