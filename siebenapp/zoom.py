@@ -74,4 +74,4 @@ class Zoom:
 
     @staticmethod
     def export(goals):
-        return [(1, getattr(goals, 'zoom_root', 1))]
+        return [(idx+1, goal) for idx, goal in enumerate(goals.zoom_root)]

@@ -70,7 +70,8 @@ MIGRATIONS = [
             goal integer,
             foreign key(goal) references goals(goal_id)
         )''',
-        'insert into zoom (level, goal) values (1, 1)',
+        '''insert into zoom (level, goal) select 1, 1 from settings
+           where name = 'zoom' ''',
         '''insert into zoom (level, goal) select 2, goal from settings
            where name = 'zoom' and goal <> 1''',
         "delete from settings where name = 'zoom'",

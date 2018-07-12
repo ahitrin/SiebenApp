@@ -82,7 +82,7 @@ def test_load_from_missing_file():
 
 def test_save_into_sqlite3_database():
     file_name = NamedTemporaryFile().name
-    goals = Goals('Sample')
+    goals = Zoom(Goals('Sample'))
     save(goals, file_name)
     with sqlite3.connect(file_name) as conn:
         with closing(conn.cursor()) as cur:
@@ -92,7 +92,7 @@ def test_save_into_sqlite3_database():
 
 def test_migration_must_run_on_load_from_existing_db():
     file_name = NamedTemporaryFile().name
-    goals = Goals('Just a simple goal tree')
+    goals = Zoom(Goals('Just a simple goal tree'))
     save(goals, file_name)
     MIGRATIONS.append([
         'create table dummy (answer integer)',
@@ -135,7 +135,7 @@ def test_save_and_load():
 
 def test_multiple_saves_works_fine():
     file_name = NamedTemporaryFile().name
-    goals = Goals('Root')
+    goals = Zoom(Goals('Root'))
     save(goals, file_name)
     goals.add('Next')
     save(goals, file_name)
