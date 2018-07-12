@@ -217,14 +217,18 @@ def test_goal_deletion_must_not_cause_root_selection():
 
 
 def test_zoom_events():
-    goals = Zoom(Goals('Root'))
-    goals.add('Intermediate')
-    goals.add('Zoom here', 2)
+    goals = Zoom(build_goaltree(
+        open_(1, 'Root', [2]),
+        open_(2, 'First zoom', [3], select=selected),
+        open_(3, 'Intermediate', [4]),
+        open_(4, 'Second zoom', [5]),
+        open_(5, 'Top')
+    ))
     goals.toggle_zoom()
-    assert all(e[0] != 'select' for e in goals.events)
-    goals.select(3)
+    assert goals.events[-1] == ('zoom', 2, 2)
+    goals.select(4)
     goals.hold_select()
     goals.toggle_zoom()
-    assert goals.events[-1] == ('zoom', 3)
+    assert goals.events[-1] == ('zoom', 3, 4)
     goals.toggle_zoom()
-    assert goals.events[-1] == ('zoom', 1)
+    assert goals.events[-1] == ('unzoom', 4)

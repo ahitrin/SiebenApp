@@ -11,11 +11,11 @@ class Zoom:
         if selection == self.zoom_root[-1] and len(self.zoom_root) > 1:
             # unzoom
             last_zoom = self.zoom_root.pop(-1)
-            self.events.append(('zoom', last_zoom))
+            self.events.append(('unzoom', last_zoom))
             return
         if selection not in self.zoom_root:
             self.zoom_root.append(selection)
-            self.events.append(('zoom', selection))
+            self.events.append(('zoom', len(self.zoom_root), selection))
             visible_goals = self._build_visible_goals()
             if self.settings['previous_selection'] not in visible_goals:
                 self.goaltree.hold_select()

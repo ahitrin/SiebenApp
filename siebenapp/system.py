@@ -112,8 +112,8 @@ def save_updates(goals, connection):
         'delete': ['delete from goals where goal_id=?',
                    'delete from edges where child=?',
                    'delete from edges where parent=?'],
-        'zoom': ['delete from zoom',
-                 'insert into zoom values (1, ?)'],
+        'zoom': ['insert into zoom values (?, ?)'],
+        'unzoom': ['delete from zoom where goal=?'],
     }
     cur = connection.cursor()
     while goals.events:
