@@ -6,6 +6,7 @@ class Goals:
     def __init__(self, name, message_fn=None):
         self.goals = {}
         self.edges = {}
+        self.back_edges = {}
         self.closed = set()
         self.settings = {
             'selection': 1,
@@ -33,6 +34,7 @@ class Goals:
         next_id = max(list(self.goals.keys()) + [0]) + 1
         self.goals[next_id] = name
         self.edges[next_id] = list()
+        self.back_edges[next_id] = list()
         self.events.append(('add', next_id, name, True))
         return next_id
 
@@ -56,12 +58,11 @@ class Goals:
         keys = keys.split(',')
         result = dict()
         for key, name in ((k, n) for k, n in self.goals.items() if n is not None):
-            back_references = [x for x, es in self.edges.items() if key in es]
             switchable = (
                 (key not in self.closed and
                  all(x in self.closed for x in self.edges[key])) or
-                (key in self.closed and (not back_references or
-                                         any(x for x in back_references if x not in self.closed))))
+                (key in self.closed and (not self.back_edges[key] or
+                                         any(x for x in self.back_edges[key] if x not in self.closed))))
             value = {
                 'edge': sorted(self.edges[key]),
                 'name': name,
@@ -114,7 +115,7 @@ class Goals:
         return all(g in self.closed for g in self.edges[self.settings['selection']])
 
     def _may_be_reopened(self):
-        parent_goals = [g for g, v in self.edges.items() if self.settings['selection'] in v]
+        parent_goals = self.back_edges[self.settings['selection']]
         return all(g not in self.closed for g in parent_goals)
 
     def delete(self, goal_id=0):
@@ -131,11 +132,15 @@ class Goals:
         self.goals[goal_id] = None
         self.closed.add(goal_id)
         next_to_remove = self.edges.pop(goal_id, {})
-        for key, values in self.edges.items():
-            self.edges[key] = [v for v in values if v != goal_id]
+        self.back_edges.pop(goal_id, {})
+        for key in self.edges:
+            if goal_id in self.edges[key]:
+                self.edges[key].remove(goal_id)
+        for key in self.back_edges:
+            if goal_id in self.back_edges[key]:
+                self.back_edges[key].remove(goal_id)
         for next_goal in next_to_remove:
-            other_edges = set(e for es in self.edges.values() for e in es)
-            if next_goal not in other_edges:
+            if not self.back_edges.get(next_goal, []):
                 self._delete(next_goal)
         self.events.append(('delete', goal_id))
 
@@ -151,10 +156,10 @@ class Goals:
             self._create_new_link(lower, upper)
 
     def _remove_existing_link(self, lower, upper):
-        edges_to_upper = sum(1 for g in self.goals
-                             if g in self.edges and upper in self.edges[g])
+        edges_to_upper = len(self.back_edges[upper])
         if edges_to_upper > 1:
             self.edges[lower].remove(upper)
+            self.back_edges[upper].remove(lower)
             self.events.append(('unlink', lower, upper))
         else:
             self._msg("Can't remove the last link")
@@ -173,6 +178,7 @@ class Goals:
                     front.add(e)
         if lower not in total:
             self.edges[lower].append(upper)
+            self.back_edges[upper].append(lower)
             self.events.append(('link', lower, upper))
         else:
             self._msg("Circular dependencies between goals are not allowed")
@@ -208,10 +214,14 @@ class Goals:
         result.closed = set(g[0] for g in goals if not g[2]).union(
             set(k for k, v in result.goals.items() if v is None))
         d = collections.defaultdict(list)
+        bd = collections.defaultdict(list)
         for parent, child in edges:
             d[parent].append(child)
+            bd[child].append(parent)
         result.edges = dict(d)
+        result.back_edges = dict(bd)
         result.edges.update(dict((g, []) for g in result.goals if g not in d))
+        result.back_edges.update(dict((g, []) for g in result.goals if g not in bd))
         result.settings.update(settings)
         result.verify()
         return result
