@@ -1,4 +1,7 @@
 import math
+from typing import List, Dict, Tuple, Any, Callable
+
+from siebenapp.goaltree import Goals
 
 
 class Enumeration:
@@ -9,12 +12,14 @@ class Enumeration:
     views = {'open': 'top', 'top': 'full', 'full': 'open'}
 
     def __init__(self, goaltree):
+        # type: (Goals) -> None
         self.goaltree = goaltree
-        self.selection_cache = []
-        self.view = 'open'
+        self.selection_cache = []   # type: List[int]
+        self.view = 'open'  # type: str
         self._update_mapping()
 
     def _update_mapping(self):
+        # type: () -> None
         if self.view == 'top':
             goals = {k for k, v in self.goaltree.q(keys='open,switchable').items()
                      if v['open'] and v['switchable']}
@@ -29,8 +34,9 @@ class Enumeration:
             self._goal_filter = {g for g in self.goaltree.q()}
 
     def _id_mapping(self, *args, **kwargs):
+        # type: (List, Dict) -> Tuple[Dict[str, Any], Callable[[int], int]]
         goals = self.goaltree.q(*args, **kwargs)
-        goals = {k:v for k, v in goals.items() if k in self._goal_filter}
+        goals = {k: v for k, v in goals.items() if k in self._goal_filter}
         if self.view == 'top':
             for attrs in goals.values():
                 if 'edge' in attrs:
@@ -44,6 +50,7 @@ class Enumeration:
         length = len(m)
 
         def mapping_fn(goal_id):
+            # type: (int) -> int
             if goal_id < 0:
                 return goal_id
             goal_id = m[goal_id]
@@ -59,8 +66,9 @@ class Enumeration:
         return goals, mapping_fn
 
     def q(self, *args, **kwargs):
+        # type: (List, Dict) -> Dict[str, Any]
         self._update_mapping()
-        result = dict()
+        result = dict() # type: Dict[str, Any]
         goals, mapping = self._id_mapping(*args, **kwargs)
         for old_id, val in goals.items():
             new_id = mapping(old_id)
@@ -70,6 +78,7 @@ class Enumeration:
         return result
 
     def select(self, goal_id):
+        # type: (int) -> None
         self._update_mapping()
         goals, mapping = self._id_mapping()
         if goal_id >= 10:
@@ -78,7 +87,7 @@ class Enumeration:
             goal_id = 10 * self.selection_cache.pop() + goal_id
             if goal_id > max(mapping(k) for k in goals.keys()):
                 goal_id %= int(pow(10, int(math.log(goal_id, 10))))
-        possible_selections = [g for g in goals if mapping(g) == goal_id]
+        possible_selections = [g for g in goals if mapping(g) == goal_id]   # type: List[int]
         if len(possible_selections) == 1:
             self.goaltree.select(possible_selections[0])
             self.selection_cache = []
@@ -86,6 +95,7 @@ class Enumeration:
             self.selection_cache.append(goal_id)
 
     def next_view(self):
+        # type: () -> None
         self.view = self.views[self.view]
         self._update_mapping()
         self.selection_cache.clear()
