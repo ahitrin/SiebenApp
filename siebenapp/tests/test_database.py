@@ -68,7 +68,7 @@ def test_restore_goals_from_db():
     expected_goals.toggle_close()
     expected_goals.select(2)
     assert expected_goals.q(keys='name,edge,open,select') == \
-           actual_goals.q(keys='name,edge,open,select')
+        actual_goals.q(keys='name,edge,open,select')
     assert not actual_goals.events
 
 
@@ -77,7 +77,7 @@ def test_load_from_missing_file():
     expected_goals = Goals('Rename me')
     new_goals = load(file_name)
     assert new_goals.q(keys='open,name,edge,select') == \
-           expected_goals.q(keys='open,name,edge,select')
+        expected_goals.q(keys='open,name,edge,select')
 
 
 def test_save_into_sqlite3_database():
@@ -130,7 +130,7 @@ def test_save_and_load():
     new_goals.next_view()
     new_goals.next_view()
     assert goals.q(keys='open,name,edge,select,switchable') == \
-           new_goals.q(keys='open,name,edge,select,switchable')
+        new_goals.q(keys='open,name,edge,select,switchable')
 
 
 def test_multiple_saves_works_fine():

@@ -82,7 +82,7 @@ MIGRATIONS = [
 
 
 def save(goals, filename=DEFAULT_DB):
-    # type: (Union[Goals, Zoom], str) -> None
+    # type: (Union[Goals, Enumeration, Zoom], str) -> None
     if path.isfile(filename):
         connection = sqlite3.connect(filename)
         run_migrations(connection)

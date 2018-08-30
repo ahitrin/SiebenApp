@@ -15,7 +15,7 @@ class Enumeration:
     def __init__(self, goaltree):
         # type: (Union[Goals, Zoom]) -> None
         self.goaltree = goaltree
-        self.selection_cache = []   # type: List[int]
+        self.selection_cache = []  # type: List[int]
         self.view = 'open'  # type: str
         self._update_mapping()
 
@@ -88,7 +88,7 @@ class Enumeration:
             goal_id = 10 * self.selection_cache.pop() + goal_id
             if goal_id > max(mapping(k) for k in goals.keys()):
                 goal_id %= int(pow(10, int(math.log(goal_id, 10))))
-        possible_selections = [g for g in goals if mapping(g) == goal_id]   # type: List[int]
+        possible_selections = [g for g in goals if mapping(g) == goal_id]  # type: List[int]
         if len(possible_selections) == 1:
             self.goaltree.select(possible_selections[0])
             self.selection_cache = []
