@@ -2,6 +2,8 @@
 import sqlite3
 from html import escape
 from os import path
+from typing import Union, Callable, List, Dict
+
 from siebenapp.goaltree import Goals
 from siebenapp.enumeration import Enumeration
 from siebenapp.zoom import Zoom
@@ -80,6 +82,7 @@ MIGRATIONS = [
 
 
 def save(goals, filename=DEFAULT_DB):
+    # type: (Union[Goals, Zoom], str) -> None
     if path.isfile(filename):
         connection = sqlite3.connect(filename)
         run_migrations(connection)
@@ -101,6 +104,7 @@ def save(goals, filename=DEFAULT_DB):
 
 
 def save_updates(goals, connection):
+    # type: (Union[Goals, Zoom], sqlite3.Connection) -> None
     actions = {
         'add': ['insert into goals values (?,?,?)'],
         'toggle_close': ['update goals set open=? where goal_id=?'],
@@ -130,6 +134,7 @@ def save_updates(goals, connection):
 
 
 def load(filename=DEFAULT_DB, message_fn=None):
+    # type: (str, Callable[[str], None]) -> Enumeration
     if path.isfile(filename):
         connection = sqlite3.connect(filename)
         run_migrations(connection)
@@ -148,6 +153,7 @@ def load(filename=DEFAULT_DB, message_fn=None):
 
 
 def run_migrations(conn, migrations=None):
+    # type: (sqlite3.Connection, List[List[str]]) -> None
     if migrations is None:
         migrations = MIGRATIONS
     cur = conn.cursor()
@@ -164,6 +170,7 @@ def run_migrations(conn, migrations=None):
 
 
 def split_long(line):
+    # type: (str) -> str
     margin = 20
     parts = []
     space_position = line.find(' ', margin)
@@ -176,6 +183,7 @@ def split_long(line):
 
 
 def _format_name(num, goal):
+    # type: (int, Dict[str, str]) -> str
     goal_name = escape(goal['name'])
     label = '"%d: %s"' % (num, goal_name) if num >= 0 else '"%s"' % goal_name
     return split_long(label)
