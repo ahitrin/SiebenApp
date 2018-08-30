@@ -1,12 +1,19 @@
+from typing import Dict, Any, Set, List, Tuple
+
+from siebenapp.goaltree import Goals
+
+
 class Zoom:
     override = ['_build_visible_goals', 'q', 'delete', 'export', 'goaltree',
                 'toggle_close', 'toggle_zoom', 'zoom_root']
 
     def __init__(self, goaltree):
+        # type: (Goals) -> None
         self.goaltree = goaltree
         self.zoom_root = [1]
 
     def toggle_zoom(self):
+        # type: () -> None
         selection = self.settings['selection']
         if selection == self.zoom_root[-1] and len(self.zoom_root) > 1:
             # unzoom
@@ -21,6 +28,7 @@ class Zoom:
                 self.goaltree.hold_select()
 
     def q(self, keys='name'):
+        # type: (str) -> Dict[str, Any]
         origin_goals = self.goaltree.q(keys)
         if self.zoom_root == [1]:
             return origin_goals
@@ -33,6 +41,7 @@ class Zoom:
         return zoomed_goals
 
     def toggle_close(self):
+        # type: () -> None
         if self.settings['selection'] == self.zoom_root[-1]:
             self.toggle_zoom()
         self.goaltree.toggle_close()
@@ -41,6 +50,7 @@ class Zoom:
             self.goaltree.hold_select()
 
     def delete(self, goal_id=0):
+        # type: (int) -> None
         if self.settings['selection'] == self.zoom_root[-1]:
             self.toggle_zoom()
         self.goaltree.delete(goal_id)
@@ -49,6 +59,7 @@ class Zoom:
             self.goaltree.hold_select()
 
     def _build_visible_goals(self):
+        # type: () -> Set[int]
         edges = self.goaltree.q('edge')
         current_zoom_root = self.zoom_root[-1]
         visible_goals = {current_zoom_root}
@@ -68,10 +79,12 @@ class Zoom:
 
     @staticmethod
     def build(goals, data):
+        # type: (Goals, List[Tuple[int, int]]) -> Zoom
         result = Zoom(goals)
         result.zoom_root = [x[1] for x in data] if data else [1]
         return result
 
     @staticmethod
     def export(goals):
+        # type: (Zoom) -> List[Tuple[int, int]]
         return [(idx+1, goal) for idx, goal in enumerate(goals.zoom_root)]

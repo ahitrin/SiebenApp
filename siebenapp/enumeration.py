@@ -1,7 +1,8 @@
 import math
-from typing import List, Dict, Tuple, Any, Callable
+from typing import List, Dict, Tuple, Any, Callable, Union
 
 from siebenapp.goaltree import Goals
+from siebenapp.zoom import Zoom
 
 
 class Enumeration:
@@ -12,7 +13,7 @@ class Enumeration:
     views = {'open': 'top', 'top': 'full', 'full': 'open'}
 
     def __init__(self, goaltree):
-        # type: (Goals) -> None
+        # type: (Union[Goals, Zoom]) -> None
         self.goaltree = goaltree
         self.selection_cache = []   # type: List[int]
         self.view = 'open'  # type: str
