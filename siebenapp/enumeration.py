@@ -34,9 +34,9 @@ class Enumeration:
         else:
             self._goal_filter = {g for g in self.goaltree.q()}
 
-    def _id_mapping(self, *args, **kwargs):
-        # type: (List, Dict) -> Tuple[Dict[str, Any], Callable[[int], int]]
-        goals = self.goaltree.q(*args, **kwargs)
+    def _id_mapping(self, keys='name'):
+        # type: (str) -> Tuple[Dict[str, Any], Callable[[int], int]]
+        goals = self.goaltree.q(keys)
         goals = {k: v for k, v in goals.items() if k in self._goal_filter}
         if self.view == 'top':
             for attrs in goals.values():
@@ -66,11 +66,11 @@ class Enumeration:
 
         return goals, mapping_fn
 
-    def q(self, *args, **kwargs):
-        # type: (List, Dict) -> Dict[str, Any]
+    def q(self, keys='name'):
+        # type: (str) -> Dict[str, Any]
         self._update_mapping()
-        result = dict() # type: Dict[str, Any]
-        goals, mapping = self._id_mapping(*args, **kwargs)
+        result = dict()  # type: Dict[str, Any]
+        goals, mapping = self._id_mapping(keys)
         for old_id, val in goals.items():
             new_id = mapping(old_id)
             result[new_id] = dict((k, v) for k, v in val.items() if k != 'edge')
