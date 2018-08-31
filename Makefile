@@ -1,6 +1,6 @@
 ENV:=.env
 
-.PHONY: check venv test install lint run clean distclean
+.PHONY: check venv test install lint mypy run clean distclean
 
 all: check venv test
 
@@ -22,6 +22,9 @@ install:
 
 lint:
 	PATH=$(ENV)/bin:${PATH} pylint siebenapp
+
+mypy:
+	PATH=$(ENV)/bin:${PATH} mypy -p siebenapp
 
 run:
 	PATH=$(ENV)/bin:${PATH} ./sieben
