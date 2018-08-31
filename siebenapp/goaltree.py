@@ -10,10 +10,10 @@ class Goals:
         self.edges = {}  # type: Dict[int, List[int]]
         self.back_edges = {}  # type: Dict[int, List[int]]
         self.closed = set()  # type: Set[int]
-        self.settings = {  # type: Dict[str, int]
+        self.settings = {
             'selection': 1,
             'previous_selection': 1,
-        }
+        }                   # type: Dict[str, int]
         self.events = collections.deque()  # type: collections.deque
         self.message_fn = message_fn
         self._add_no_link(name)
