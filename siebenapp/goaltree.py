@@ -3,9 +3,13 @@ import collections
 from typing import Callable, Dict, Optional, List, Set, Any, Tuple
 
 
+GoalsData = List[Tuple[int, Optional[str], bool]]
+EdgesData = List[Tuple[int, int]]
+OptionsData = List[Tuple[str, int]]
+
+
 class Goals:
-    def __init__(self, name, message_fn=None):
-        # type: (str, Callable[[str], None]) -> None
+    def __init__(self, name: str, message_fn: Callable[[str], None] = None) -> None:
         self.goals = {}  # type: Dict[int, Optional[str]]
         self.edges = {}  # type: Dict[int, List[int]]
         self.back_edges = {}  # type: Dict[int, List[int]]
@@ -13,18 +17,16 @@ class Goals:
         self.settings = {
             'selection': 1,
             'previous_selection': 1,
-        }                   # type: Dict[str, int]
+        }  # type: Dict[str, int]
         self.events = collections.deque()  # type: collections.deque
         self.message_fn = message_fn
         self._add_no_link(name)
 
-    def _msg(self, message):
-        # type: (str) -> None
+    def _msg(self, message: str) -> None:
         if self.message_fn:
             self.message_fn(message)
 
-    def add(self, name, add_to=0):
-        # type: (str, int) -> bool
+    def add(self, name: str, add_to: int = 0) -> bool:
         if add_to == 0:
             add_to = self.settings['selection']
         if add_to in self.closed:
@@ -34,8 +36,7 @@ class Goals:
         self.toggle_link(add_to, next_id)
         return True
 
-    def _add_no_link(self, name):
-        # type: (str) -> int
+    def _add_no_link(self, name: str) -> int:
         next_id = max(list(self.goals.keys()) + [0]) + 1
         self.goals[next_id] = name
         self.edges[next_id] = list()
@@ -43,19 +44,16 @@ class Goals:
         self.events.append(('add', next_id, name, True))
         return next_id
 
-    def select(self, goal_id):
-        # type: (int) -> None
+    def select(self, goal_id: int) -> None:
         if goal_id in self.goals and self.goals[goal_id] is not None:
             self.settings['selection'] = goal_id
             self.events.append(('select', goal_id))
 
-    def hold_select(self):
-        # type: () -> None
+    def hold_select(self) -> None:
         self.settings['previous_selection'] = self.settings['selection']
         self.events.append(('hold_select', self.settings['selection']))
 
-    def q(self, keys='name'):
-        # type: (str) -> Dict[str, Any]
+    def q(self, keys: str = 'name') -> Dict[int, Any]:
         """Run search query against goaltree state"""
 
         def sel(x):
@@ -66,8 +64,8 @@ class Goals:
                 return 'prev'
             return None
 
-        keys = keys.split(',')
-        result = dict()  # type: Dict[str, Any]
+        keys_list = keys.split(',')
+        result = dict()  # type: Dict[int, Any]
         for key, name in ((k, n) for k, n in self.goals.items() if n is not None):
             switchable = (
                     (key not in self.closed and
@@ -81,11 +79,10 @@ class Goals:
                 'select': sel(key),
                 'switchable': switchable,
             }
-            result[key] = {k: v for k, v in value.items() if k in keys}
+            result[key] = {k: v for k, v in value.items() if k in keys_list}
         return result
 
-    def insert(self, name):
-        # type: (str) -> None
+    def insert(self, name: str) -> None:
         if self.settings['selection'] == self.settings['previous_selection']:
             self._msg("A new goal can be inserted only between two different goals")
             return
@@ -95,22 +92,19 @@ class Goals:
             if self.settings['selection'] in self.edges[self.settings['previous_selection']]:
                 self.toggle_link(self.settings['previous_selection'], self.settings['selection'])
 
-    def rename(self, new_name, goal_id=0):
-        # type: (str, int) -> None
+    def rename(self, new_name: str, goal_id: int = 0) -> None:
         if goal_id == 0:
             goal_id = self.settings['selection']
         self.goals[goal_id] = new_name
         self.events.append(('rename', new_name, goal_id))
 
-    def swap_goals(self):
-        # type: () -> None
+    def swap_goals(self) -> None:
         first, second = self.settings['selection'], self.settings['previous_selection']
         first_name, second_name = self.goals[first], self.goals[second]
         self.rename(first_name, second)
         self.rename(second_name, first)
 
-    def toggle_close(self):
-        # type: () -> None
+    def toggle_close(self) -> None:
         if self.settings['selection'] in self.closed:
             if self._may_be_reopened():
                 self.closed.remove(self.settings['selection'])
@@ -126,17 +120,14 @@ class Goals:
             else:
                 self._msg("This goal can't be closed because it have open subgoals")
 
-    def _may_be_closed(self):
-        # type: () -> bool
+    def _may_be_closed(self) -> bool:
         return all(g in self.closed for g in self.edges[self.settings['selection']])
 
-    def _may_be_reopened(self):
-        # type: () -> bool
+    def _may_be_reopened(self) -> bool:
         parent_goals = self.back_edges[self.settings['selection']]
         return all(g not in self.closed for g in parent_goals)
 
-    def delete(self, goal_id=0):
-        # type: (int) -> None
+    def delete(self, goal_id: int = 0) -> None:
         if goal_id == 0:
             goal_id = self.settings['selection']
         if goal_id == 1:
@@ -146,8 +137,7 @@ class Goals:
         self.select(1)
         self.hold_select()
 
-    def _delete(self, goal_id):
-        # type: (int) -> None
+    def _delete(self, goal_id: int) -> None:
         self.goals[goal_id] = None
         self.closed.add(goal_id)
         next_to_remove = self.edges.pop(goal_id, {})
@@ -163,8 +153,7 @@ class Goals:
                 self._delete(next_goal)
         self.events.append(('delete', goal_id))
 
-    def toggle_link(self, lower=0, upper=0):
-        # type: (int, int) -> None
+    def toggle_link(self, lower: int = 0, upper: int = 0) -> None:
         lower = self.settings['previous_selection'] if lower == 0 else lower
         upper = self.settings['selection'] if upper == 0 else upper
         if lower == upper:
@@ -175,8 +164,7 @@ class Goals:
         else:
             self._create_new_link(lower, upper)
 
-    def _remove_existing_link(self, lower, upper):
-        # type: (int, int) -> None
+    def _remove_existing_link(self, lower: int, upper: int) -> None:
         edges_to_upper = len(self.back_edges[upper])
         if edges_to_upper > 1:
             self.edges[lower].remove(upper)
@@ -185,8 +173,7 @@ class Goals:
         else:
             self._msg("Can't remove the last link")
 
-    def _create_new_link(self, lower, upper):
-        # type: (int, int) -> None
+    def _create_new_link(self, lower: int, upper: int) -> None:
         if lower in self.closed and upper not in self.closed:
             self._msg("An open goal can't block already closed one")
             return
@@ -205,12 +192,12 @@ class Goals:
         else:
             self._msg("Circular dependencies between goals are not allowed")
 
-    def verify(self):
-        # type: () -> bool
+    def verify(self) -> bool:
         assert all(g in self.closed for p in self.closed for g in self.edges.get(p, [])), \
             'Open goals could not be blocked by closed ones'
 
-        queue, visited = [1], set()
+        queue = [1]  # type: List[int]
+        visited = set()  # type: Set[int]
         while queue:
             goal = queue.pop()
             queue.extend(g for g in self.edges[goal]
@@ -229,7 +216,7 @@ class Goals:
 
     @staticmethod
     def build(goals, edges, settings, message_fn=None):
-        # type: (List[Tuple[int, str]], List[Tuple[int, int]], List[Tuple[str, int]], Callable[[str], None]) -> Goals
+        # type: (GoalsData, EdgesData, OptionsData, Callable[[str], None]) -> Goals
         result = Goals('', message_fn)
         result.events.clear()  # remove initial goal
         goals_dict = dict((g[0], g[1]) for g in goals)
@@ -237,8 +224,8 @@ class Goals:
                             for i in range(1, max(goals_dict.keys()) + 1))
         result.closed = set(g[0] for g in goals if not g[2]).union(
             set(k for k, v in result.goals.items() if v is None))
-        d = collections.defaultdict(list)
-        bd = collections.defaultdict(list)
+        d = collections.defaultdict(list)  # type: Dict[int, List[int]]
+        bd = collections.defaultdict(list)  # type: Dict[int, List[int]]
         for parent, child in edges:
             d[parent].append(child)
             bd[child].append(parent)
@@ -252,7 +239,7 @@ class Goals:
 
     @staticmethod
     def export(goals):
-        # type: (Goals) -> Tuple[List[Tuple[int, str, bool]], List[Tuple[int, int]], List[Tuple[str, int]]]
+        # type: (Goals) -> Tuple[GoalsData, EdgesData, OptionsData]
         nodes = [(g_id, g_name, g_id not in goals.closed)
                  for g_id, g_name in goals.goals.items()]
         edges = [(parent, child) for parent in goals.edges

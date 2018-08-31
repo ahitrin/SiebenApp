@@ -67,9 +67,9 @@ class Enumeration:
         return goals, mapping_fn
 
     def q(self, keys='name'):
-        # type: (str) -> Dict[str, Any]
+        # type: (str) -> Dict[int, Any]
         self._update_mapping()
-        result = dict()  # type: Dict[str, Any]
+        result = dict()  # type: Dict[int, Any]
         goals, mapping = self._id_mapping(keys)
         for old_id, val in goals.items():
             new_id = mapping(old_id)

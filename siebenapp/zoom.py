@@ -28,7 +28,7 @@ class Zoom:
                 self.goaltree.hold_select()
 
     def q(self, keys='name'):
-        # type: (str) -> Dict[str, Any]
+        # type: (str) -> Dict[int, Any]
         origin_goals = self.goaltree.q(keys)
         if self.zoom_root == [1]:
             return origin_goals
