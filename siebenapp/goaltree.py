@@ -26,6 +26,9 @@ class Goals:
         if self.message_fn:
             self.message_fn(message)
 
+    def _has_link(self, lower: int, upper: int) -> bool:
+        return upper in self.edges[lower]
+
     def add(self, name: str, add_to: int = 0) -> bool:
         if add_to == 0:
             add_to = self.settings['selection']
@@ -89,7 +92,7 @@ class Goals:
         if self.add(name, self.settings['previous_selection']):
             key = len(self.goals)
             self.toggle_link(key, self.settings['selection'])
-            if self.settings['selection'] in self.edges[self.settings['previous_selection']]:
+            if self._has_link(self.settings['previous_selection'], self.settings['selection']):
                 self.toggle_link(self.settings['previous_selection'], self.settings['selection'])
 
     def rename(self, new_name: str, goal_id: int = 0) -> None:
@@ -143,7 +146,7 @@ class Goals:
         next_to_remove = self.edges.pop(goal_id, [])    # type: List[int]
         self.back_edges.pop(goal_id, {})
         for key in self.edges:
-            if goal_id in self.edges[key]:
+            if self._has_link(key, goal_id):
                 self.edges[key].remove(goal_id)
         for key in self.back_edges:
             if goal_id in self.back_edges[key]:
@@ -159,7 +162,7 @@ class Goals:
         if lower == upper:
             self._msg("Goal can't be linked to itself")
             return
-        if upper in self.edges[lower]:
+        if self._has_link(lower, upper):
             self._remove_existing_link(lower, upper)
         else:
             self._create_new_link(lower, upper)
