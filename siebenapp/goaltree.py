@@ -3,6 +3,20 @@ import collections
 from typing import Callable, Dict, Optional, List, Set, Any, Tuple
 
 
+class Edge(collections.namedtuple('Edge', 'target type')):
+    TYPE_STRONG = 1
+    TYPE_SOFT = 2
+    __slots__ = ()
+
+    @classmethod
+    def strong(cls, target):
+        return Edge(target, Edge.TYPE_STRONG)
+
+    @classmethod
+    def soft(cls, target):
+        return Edge(target, Edge.TYPE_SOFT)
+
+
 GoalsData = List[Tuple[int, Optional[str], bool]]
 EdgesData = List[Tuple[int, int]]
 OptionsData = List[Tuple[str, int]]
