@@ -25,7 +25,7 @@ OptionsData = List[Tuple[str, int]]
 class Goals:
     def __init__(self, name: str, message_fn: Callable[[str], None] = None) -> None:
         self.goals = {}  # type: Dict[int, Optional[str]]
-        self.edges = {}  # type: Dict[int, List[int]]
+        self.edges = {}  # type: Dict[int, List[Edge]]
         self.back_edges = {}  # type: Dict[int, List[int]]
         self.closed = set()  # type: Set[int]
         self.settings = {
@@ -41,7 +41,7 @@ class Goals:
             self.message_fn(message)
 
     def _has_link(self, lower: int, upper: int) -> bool:
-        return upper in self.edges[lower]
+        return upper in set(x.target for x in self.edges[lower])
 
     def add(self, name: str, add_to: int = 0) -> bool:
         if add_to == 0:
@@ -86,11 +86,11 @@ class Goals:
         for key, name in ((k, n) for k, n in self.goals.items() if n is not None):
             switchable = (
                     (key not in self.closed and
-                     all(x in self.closed for x in self.edges[key])) or
+                     all(x.target in self.closed for x in self.edges[key])) or
                     (key in self.closed and (not self.back_edges[key] or
-                                             any(x for x in self.back_edges[key] if x not in self.closed))))
+                                             any(y for y in self.back_edges[key] if y not in self.closed))))
             value = {
-                'edge': sorted(self.edges[key]),
+                'edge': sorted([x.target for x in self.edges[key]]),
                 'name': name,
                 'open': key not in self.closed,
                 'select': sel(key),
@@ -138,7 +138,7 @@ class Goals:
                 self._msg("This goal can't be closed because it have open subgoals")
 
     def _may_be_closed(self) -> bool:
-        return all(g in self.closed for g in self.edges[self.settings['selection']])
+        return all(g.target in self.closed for g in self.edges[self.settings['selection']])
 
     def _may_be_reopened(self) -> bool:
         parent_goals = self.back_edges[self.settings['selection']]
@@ -157,17 +157,16 @@ class Goals:
     def _delete(self, goal_id: int) -> None:
         self.goals[goal_id] = None
         self.closed.add(goal_id)
-        next_to_remove = self.edges.pop(goal_id, [])    # type: List[int]
+        next_to_remove = self.edges.pop(goal_id, [])    # type: List[Edge]
         self.back_edges.pop(goal_id, {})
-        for key in self.edges:
-            if self._has_link(key, goal_id):
-                self.edges[key].remove(goal_id)
+        for key, values in self.edges.items():
+            self.edges[key] = [x for x in values if x.target != goal_id]
         for key in self.back_edges:
             if goal_id in self.back_edges[key]:
                 self.back_edges[key].remove(goal_id)
         for next_goal in next_to_remove:
-            if not self.back_edges.get(next_goal, []):
-                self._delete(next_goal)
+            if not self.back_edges.get(next_goal.target, []):
+                self._delete(next_goal.target)
         self.events.append(('delete', goal_id))
 
     def toggle_link(self, lower: int = 0, upper: int = 0) -> None:
@@ -184,7 +183,7 @@ class Goals:
     def _remove_existing_link(self, lower: int, upper: int) -> None:
         edges_to_upper = len(self.back_edges[upper])
         if edges_to_upper > 1:
-            self.edges[lower].remove(upper)
+            self.edges[lower] = [x for x in self.edges[lower] if x.target != upper]
             self.back_edges[upper].remove(lower)
             self.events.append(('unlink', lower, upper))
         else:
@@ -194,31 +193,33 @@ class Goals:
         if lower in self.closed and upper not in self.closed:
             self._msg("An open goal can't block already closed one")
             return
-        front, visited, total = {upper}, set(), set()
+        front = {upper}     # type: Set[int]
+        visited = set()     # type: Set[int]
+        total = set()       # type: Set[int]
         while front:
             g = front.pop()
             visited.add(g)
             for e in self.edges[g]:
-                total.add(e)
+                total.add(e.target)
                 if e not in visited:
-                    front.add(e)
+                    front.add(e.target)
         if lower not in total:
-            self.edges[lower].append(upper)
+            self.edges[lower].append(Edge.strong(upper))
             self.back_edges[upper].append(lower)
             self.events.append(('link', lower, upper))
         else:
             self._msg("Circular dependencies between goals are not allowed")
 
     def verify(self) -> bool:
-        assert all(g in self.closed for p in self.closed for g in self.edges.get(p, [])), \
+        assert all(g.target in self.closed for p in self.closed for g in self.edges.get(p, [])), \
             'Open goals could not be blocked by closed ones'
 
         queue = [1]  # type: List[int]
         visited = set()  # type: Set[int]
         while queue:
             goal = queue.pop()
-            queue.extend(g for g in self.edges[goal]
-                         if g not in visited and self.goals[g] is not None)
+            queue.extend(g.target for g in self.edges[goal]
+                         if g.target not in visited and self.goals[g.target] is not None)
             visited.add(goal)
         assert visited == set(x for x in self.goals if self.goals[x] is not None), \
             'All subgoals must be accessible from the root goal'
@@ -241,10 +242,10 @@ class Goals:
                             for i in range(1, max(goals_dict.keys()) + 1))
         result.closed = set(g[0] for g in goals if not g[2]).union(
             set(k for k, v in result.goals.items() if v is None))
-        d = collections.defaultdict(list)  # type: Dict[int, List[int]]
+        d = collections.defaultdict(list)  # type: Dict[int, List[Edge]]
         bd = collections.defaultdict(list)  # type: Dict[int, List[int]]
         for parent, child in edges:
-            d[parent].append(child)
+            d[parent].append(Edge.strong(child))
             bd[child].append(parent)
         result.edges = dict(d)
         result.back_edges = dict(bd)
@@ -259,7 +260,7 @@ class Goals:
         # type: (Goals) -> Tuple[GoalsData, EdgesData, OptionsData]
         nodes = [(g_id, g_name, g_id not in goals.closed)
                  for g_id, g_name in goals.goals.items()]
-        edges = [(parent, child) for parent in goals.edges
+        edges = [(parent, child.target) for parent in goals.edges
                  for child in goals.edges[parent]]
         settings = list(goals.settings.items())
         return nodes, edges, settings
