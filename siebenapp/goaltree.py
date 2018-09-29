@@ -140,7 +140,7 @@ class Goals:
     def _delete(self, goal_id: int) -> None:
         self.goals[goal_id] = None
         self.closed.add(goal_id)
-        next_to_remove = self.edges.pop(goal_id, {})
+        next_to_remove = self.edges.pop(goal_id, [])    # type: List[int]
         self.back_edges.pop(goal_id, {})
         for key in self.edges:
             if goal_id in self.edges[key]:
