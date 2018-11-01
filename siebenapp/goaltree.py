@@ -9,6 +9,10 @@ class Edge(collections.namedtuple('Edge', 'target type')):
     __slots__ = ()
 
     @classmethod
+    def build(cls, target, link_type):
+        return Edge(target, link_type)
+
+    @classmethod
     def soft(cls, target):
         return Edge(target, Edge.TYPE_SOFT)
 
@@ -18,7 +22,7 @@ class Edge(collections.namedtuple('Edge', 'target type')):
 
 
 GoalsData = List[Tuple[int, Optional[str], bool]]
-EdgesData = List[Tuple[int, int]]
+EdgesData = List[Tuple[int, int, int]]
 OptionsData = List[Tuple[str, int]]
 
 
@@ -244,8 +248,8 @@ class Goals:
             set(k for k, v in result.goals.items() if v is None))
         d = collections.defaultdict(list)  # type: Dict[int, List[Edge]]
         bd = collections.defaultdict(list)  # type: Dict[int, List[int]]
-        for parent, child in edges:
-            d[parent].append(Edge.soft(child))
+        for parent, child, link_type in edges:
+            d[parent].append(Edge.build(child, link_type))
             bd[child].append(parent)
         result.edges = dict(d)
         result.back_edges = dict(bd)
@@ -260,7 +264,7 @@ class Goals:
         # type: (Goals) -> Tuple[GoalsData, EdgesData, OptionsData]
         nodes = [(g_id, g_name, g_id not in goals.closed)
                  for g_id, g_name in goals.goals.items()]
-        edges = [(parent, child.target) for parent in goals.edges
+        edges = [(parent, child.target, child.type) for parent in goals.edges
                  for child in goals.edges[parent]]
         settings = list(goals.settings.items())
         return nodes, edges, settings

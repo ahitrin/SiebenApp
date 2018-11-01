@@ -117,7 +117,7 @@ def test_no_modify_action_sequence_could_break_goaltree_correctness(actions, ch)
 def build_goals(conn):
     with closing(conn.cursor()) as cur:
         goals = [row for row in cur.execute('select * from goals')]
-        edges = [row for row in cur.execute('select parent, child from edges')]
+        edges = [row for row in cur.execute('select parent, child, reltype from edges')]
         selection = [row for row in cur.execute('select * from settings')]
         note(goals)
         note(edges)

@@ -95,7 +95,7 @@ def save(goals, filename=DEFAULT_DB):
         zoom_export = Zoom.export(goals)
         cur = connection.cursor()
         cur.executemany('insert into goals values (?,?,?)', goals_export)
-        cur.executemany('insert into edges values (?,?,1)', edges_export)
+        cur.executemany('insert into edges values (?,?,?)', edges_export)
         cur.executemany('insert into settings values (?,?)', select_export)
         cur.executemany('insert into zoom values (?, ?)', zoom_export)
         goals.events.clear()
@@ -140,7 +140,7 @@ def load(filename=DEFAULT_DB, message_fn=None):
         run_migrations(connection)
         cur = connection.cursor()
         goals = [row for row in cur.execute('select * from goals')]
-        edges = [row for row in cur.execute('select parent, child from edges')]
+        edges = [row for row in cur.execute('select parent, child, reltype from edges')]
         settings = [row for row in cur.execute('select * from settings')]
         zoom_data = [row for row in cur.execute('select * from zoom')]
         cur.close()
