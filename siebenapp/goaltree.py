@@ -204,7 +204,7 @@ class Goals:
                 if e not in visited:
                     front.add(e.target)
         if lower not in total:
-            self.edges[lower].append(Edge.strong(upper))
+            self.edges[lower].append(Edge.soft(upper))
             self.back_edges[upper].append(lower)
             self.events.append(('link', lower, upper))
         else:
@@ -245,7 +245,7 @@ class Goals:
         d = collections.defaultdict(list)  # type: Dict[int, List[Edge]]
         bd = collections.defaultdict(list)  # type: Dict[int, List[int]]
         for parent, child in edges:
-            d[parent].append(Edge.strong(child))
+            d[parent].append(Edge.soft(child))
             bd[child].append(parent)
         result.edges = dict(d)
         result.back_edges = dict(bd)
