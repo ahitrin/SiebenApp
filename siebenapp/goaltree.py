@@ -4,17 +4,17 @@ from typing import Callable, Dict, Optional, List, Set, Any, Tuple
 
 
 class Edge(collections.namedtuple('Edge', 'target type')):
-    TYPE_STRONG = 1
-    TYPE_SOFT = 2
+    TYPE_SOFT = 1
+    TYPE_STRONG = 2
     __slots__ = ()
-
-    @classmethod
-    def strong(cls, target):
-        return Edge(target, Edge.TYPE_STRONG)
 
     @classmethod
     def soft(cls, target):
         return Edge(target, Edge.TYPE_SOFT)
+
+    @classmethod
+    def strong(cls, target):
+        return Edge(target, Edge.TYPE_STRONG)
 
 
 GoalsData = List[Tuple[int, Optional[str], bool]]
