@@ -33,7 +33,7 @@ def build_goaltree(*goal_prototypes, message_fn=None):
     assert len(selection) == 1
     assert len(prev_selection) <= 1
     selection_id = selection.pop()
-    return Goals.build(goals, edges, {
-        'selection': selection_id,
-        'previous_selection': prev_selection.pop() if prev_selection else selection_id
-    }, message_fn)
+    return Goals.build(goals, edges, [
+        ('selection', selection_id),
+        ('previous_selection', prev_selection.pop() if prev_selection else selection_id),
+    ], message_fn)
