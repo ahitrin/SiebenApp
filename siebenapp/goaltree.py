@@ -208,9 +208,10 @@ class Goals:
                 if e not in visited:
                     front.add(e.target)
         if lower not in total:
-            self.edges[lower].append(Edge.soft(upper))
+            edge = Edge.soft(upper)
+            self.edges[lower].append(edge)
             self.back_edges[upper].append(lower)
-            self.events.append(('link', lower, upper))
+            self.events.append(('link', lower, upper, edge.type))
         else:
             self._msg("Circular dependencies between goals are not allowed")
 

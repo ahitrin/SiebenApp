@@ -1,7 +1,7 @@
 # coding: utf-8
 from unittest import TestCase
 
-from siebenapp.goaltree import Goals
+from siebenapp.goaltree import Goals, Edge
 from siebenapp.tests.dsl import build_goaltree, open_, selected, previous, clos_
 
 
@@ -324,7 +324,7 @@ class GoalsTest(TestCase):
         assert self.goals.events.pop() == ('add', 1, 'Root', True)
         self.goals.add('Next')
         assert self.goals.events[-2] == ('add', 2, 'Next', True)
-        assert self.goals.events[-1] == ('link', 1, 2)
+        assert self.goals.events[-1] == ('link', 1, 2, Edge.TYPE_SOFT)
 
     def test_select_events(self):
         self.goals.add('Next')
@@ -370,7 +370,7 @@ class GoalsTest(TestCase):
         self.goals.hold_select()
         self.goals.select(3)
         self.goals.toggle_link()
-        assert self.goals.events[-1] == ('link', 2, 3)
+        assert self.goals.events[-1] == ('link', 2, 3, Edge.TYPE_SOFT)
         self.goals.toggle_link()
         assert self.goals.events[-1] == ('unlink', 2, 3)
 
