@@ -139,12 +139,12 @@ def load(filename=DEFAULT_DB, message_fn=None):
         connection = sqlite3.connect(filename)
         run_migrations(connection)
         cur = connection.cursor()
-        goals = [row for row in cur.execute('select * from goals')]
+        names = [row for row in cur.execute('select * from goals')]
         edges = [row for row in cur.execute('select parent, child, reltype from edges')]
         settings = [row for row in cur.execute('select * from settings')]
         zoom_data = [row for row in cur.execute('select * from zoom')]
         cur.close()
-        goals = Goals.build(goals, edges, settings, message_fn)
+        goals = Goals.build(names, edges, settings, message_fn)
         zoom = Zoom.build(goals, zoom_data)
     else:
         goals = Goals('Rename me', message_fn)
