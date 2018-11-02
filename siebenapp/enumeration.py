@@ -1,11 +1,12 @@
 import math
 from typing import List, Dict, Tuple, Any, Callable, Union
 
+from domain import Graph
 from siebenapp.goaltree import Goals
 from siebenapp.zoom import Zoom
 
 
-class Enumeration:
+class Enumeration(Graph):
     overriden = ['_goal_filter', '_id_mapping', '_update_mapping', 'q',
                  'goaltree', 'next_view', 'select', 'selection_cache', 'view',
                  'views']

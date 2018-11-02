@@ -1,9 +1,10 @@
 from typing import Dict, Any, Set, List, Tuple
 
+from domain import Graph
 from siebenapp.goaltree import Goals
 
 
-class Zoom:
+class Zoom(Graph):
     override = ['_build_visible_goals', 'q', 'delete', 'export', 'goaltree',
                 'toggle_close', 'toggle_zoom', 'zoom_root']
 

@@ -2,6 +2,8 @@
 import collections
 from typing import Callable, Dict, Optional, List, Set, Any, Tuple
 
+from domain import Graph
+
 
 class Edge(collections.namedtuple('Edge', 'target type')):
     TYPE_SOFT = 1
@@ -26,7 +28,7 @@ EdgesData = List[Tuple[int, int, int]]
 OptionsData = List[Tuple[str, int]]
 
 
-class Goals:
+class Goals(Graph):
     def __init__(self, name: str, message_fn: Callable[[str], None] = None) -> None:
         self.goals = {}  # type: Dict[int, Optional[str]]
         self.edges = {}  # type: Dict[int, List[Edge]]
