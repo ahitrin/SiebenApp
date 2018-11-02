@@ -1,5 +1,7 @@
 from collections import defaultdict
 
+from siebenapp.domain import Graph
+
 
 def safe_average(l):
     return sum(l) / len(l) if l else 0
@@ -8,7 +10,7 @@ def safe_average(l):
 class Renderer:
     WIDTH_LIMIT = 4
 
-    def __init__(self, goals):
+    def __init__(self, goals: Graph):
         self.graph = goals.q(keys='name,edge,open,select,switchable')
         self.edges = {key: values['edge'] for key, values in self.graph.items()}
         self.layers = defaultdict(list)
