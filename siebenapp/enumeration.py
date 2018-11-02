@@ -36,7 +36,7 @@ class Enumeration(Graph):
             self._goal_filter = {g for g in self.goaltree.q()}
 
     def _id_mapping(self, keys='name'):
-        # type: (str) -> Tuple[Dict[str, Any], Callable[[int], int]]
+        # type: (str) -> Tuple[Dict[int, Any], Callable[[int], int]]
         goals = self.goaltree.q(keys)
         goals = {k: v for k, v in goals.items() if k in self._goal_filter}
         if self.view == 'top':
