@@ -26,7 +26,7 @@ def clos_(goal_id, name, children=None, blockers=None, select=None):
 
 def build_goaltree(*goal_prototypes, message_fn=None):
     goals = [(g.id, g.name, g.open) for g in goal_prototypes]
-    edges = [(g.id, e, Edge.TYPE_SOFT) for g in goal_prototypes for e in g.children] + \
+    edges = [(g.id, e, Edge.TYPE_STRONG) for g in goal_prototypes for e in g.children] + \
         [(g.id, e, Edge.TYPE_SOFT) for g in goal_prototypes for e in g.blockers]
     selection = {g.id for g in goal_prototypes if g.select == selected}
     prev_selection = {g.id for g in goal_prototypes if g.select == previous}
