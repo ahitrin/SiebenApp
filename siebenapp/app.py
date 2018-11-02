@@ -5,10 +5,11 @@ from argparse import ArgumentParser
 from os.path import dirname, join, realpath
 
 from PyQt5.QtCore import pyqtSignal, Qt, QRect
-from PyQt5.QtGui import QPainter
+from PyQt5.QtGui import QPainter, QPen
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout
 from PyQt5.uic import loadUi
 
+from siebenapp.goaltree import Edge
 from siebenapp.render import Renderer
 from siebenapp.system import save, load, DEFAULT_DB, split_long
 from siebenapp.ui.goalwidget import Ui_GoalBody
@@ -60,6 +61,11 @@ class GoalWidget(QWidget, Ui_GoalBody):
 
 
 class CentralWidget(QWidget):
+    EDGE_PENS = {
+        Edge.TYPE_SOFT: QPen(Qt.black, 1, Qt.DashLine),
+        Edge.TYPE_STRONG: QPen(Qt.black, 1, Qt.SolidLine),
+    }
+
     def __init__(self):
         super().__init__()
         self.setGeometry(QRect(0, 0, 576, 273))
@@ -74,7 +80,6 @@ class CentralWidget(QWidget):
 
     def paintEvent(self, event):                                    # pylint: disable=unused-argument
         painter = QPainter(self)
-        painter.setPen(Qt.black)
 
         widgets = {w.widget_id: (w.top_point(), w.bottom_point(), w.is_real)
                    for w in self.children() if isinstance(w, GoalWidget)}
@@ -82,6 +87,7 @@ class CentralWidget(QWidget):
             line_start = points[0]
             for edge in self.dependencies[widget_id]:
                 line_end = widgets[edge[0]][1]
+                painter.setPen(self.EDGE_PENS[edge[1]])
                 painter.drawLine(line_start, line_end)
             if not points[2]:
                 painter.drawLine(points[0], points[1])
