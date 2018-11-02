@@ -1,4 +1,5 @@
 from collections import defaultdict
+from typing import Dict, List
 
 from siebenapp.domain import Graph
 
@@ -10,11 +11,11 @@ def safe_average(l):
 class Renderer:
     WIDTH_LIMIT = 4
 
-    def __init__(self, goals: Graph):
+    def __init__(self, goals: Graph) -> None:
         self.graph = goals.q(keys='name,edge,open,select,switchable')
         self.edges = {key: [e[0] for e in values['edge']] for key, values in self.graph.items()}
-        self.layers = defaultdict(list)
-        self.positions = {}
+        self.layers = defaultdict(list)     # type: Dict[int, List[int]]
+        self.positions = {}                 # type: Dict[int, int]
 
     def build(self):
         self.split_by_layers()
