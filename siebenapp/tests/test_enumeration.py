@@ -1,5 +1,5 @@
 from siebenapp.enumeration import Enumeration
-from siebenapp.goaltree import Goals
+from siebenapp.goaltree import Goals, Edge
 from siebenapp.tests.dsl import build_goaltree, open_, previous, selected
 
 
@@ -10,8 +10,8 @@ def test_simple_enumeration_is_not_changed():
         open_(3, 'c', select=selected)
     ))
     assert e.q(keys='name,edge') == {
-        1: {'name': 'a', 'edge': [2, 3]},
-        2: {'name': 'b', 'edge': [3]},
+        1: {'name': 'a', 'edge': [(2, Edge.TYPE_STRONG), (3, Edge.TYPE_STRONG)]},
+        2: {'name': 'b', 'edge': [(3, Edge.TYPE_STRONG)]},
         3: {'name': 'c', 'edge': []},
     }
 
@@ -22,29 +22,29 @@ def test_apply_mapping_for_the_10th_element():
     goals = build_goaltree(*prototype)
     e = Enumeration(goals)
     assert e.q(keys='name,edge') == {
-        1: {'name': 'a', 'edge': [2]},
-        2: {'name': 'b', 'edge': [3]},
-        3: {'name': 'c', 'edge': [4]},
-        4: {'name': 'd', 'edge': [5]},
-        5: {'name': 'e', 'edge': [6]},
-        6: {'name': 'f', 'edge': [7]},
-        7: {'name': 'g', 'edge': [8]},
-        8: {'name': 'h', 'edge': [9]},
-        9: {'name': 'i', 'edge': [0]},
+        1: {'name': 'a', 'edge': [(2, Edge.TYPE_STRONG)]},
+        2: {'name': 'b', 'edge': [(3, Edge.TYPE_STRONG)]},
+        3: {'name': 'c', 'edge': [(4, Edge.TYPE_STRONG)]},
+        4: {'name': 'd', 'edge': [(5, Edge.TYPE_STRONG)]},
+        5: {'name': 'e', 'edge': [(6, Edge.TYPE_STRONG)]},
+        6: {'name': 'f', 'edge': [(7, Edge.TYPE_STRONG)]},
+        7: {'name': 'g', 'edge': [(8, Edge.TYPE_STRONG)]},
+        8: {'name': 'h', 'edge': [(9, Edge.TYPE_STRONG)]},
+        9: {'name': 'i', 'edge': [(0, Edge.TYPE_STRONG)]},
         0: {'name': 'j', 'edge': []},
     }
     # simulate goal addition
     goals.add('k')
     assert e.q(keys='name,edge') == {
-        11: {'name': 'a', 'edge': [12, 21]},
-        12: {'name': 'b', 'edge': [13]},
-        13: {'name': 'c', 'edge': [14]},
-        14: {'name': 'd', 'edge': [15]},
-        15: {'name': 'e', 'edge': [16]},
-        16: {'name': 'f', 'edge': [17]},
-        17: {'name': 'g', 'edge': [18]},
-        18: {'name': 'h', 'edge': [19]},
-        19: {'name': 'i', 'edge': [10]},
+        11: {'name': 'a', 'edge': [(12, Edge.TYPE_STRONG), (21, Edge.TYPE_SOFT)]},
+        12: {'name': 'b', 'edge': [(13, Edge.TYPE_STRONG)]},
+        13: {'name': 'c', 'edge': [(14, Edge.TYPE_STRONG)]},
+        14: {'name': 'd', 'edge': [(15, Edge.TYPE_STRONG)]},
+        15: {'name': 'e', 'edge': [(16, Edge.TYPE_STRONG)]},
+        16: {'name': 'f', 'edge': [(17, Edge.TYPE_STRONG)]},
+        17: {'name': 'g', 'edge': [(18, Edge.TYPE_STRONG)]},
+        18: {'name': 'h', 'edge': [(19, Edge.TYPE_STRONG)]},
+        19: {'name': 'i', 'edge': [(10, Edge.TYPE_STRONG)]},
         10: {'name': 'j', 'edge': []},
         21: {'name': 'k', 'edge': []},
     }
@@ -289,13 +289,13 @@ def test_simple_open_enumeration_workflow():
     e.add('2')
     e.select(2)
     assert e.q(keys='name,select,open,edge') == {
-        1: {'name': 'Root', 'select': 'prev', 'open': True, 'edge': [2, 3]},
+        1: {'name': 'Root', 'select': 'prev', 'open': True, 'edge': [(2, Edge.TYPE_SOFT), (3, Edge.TYPE_SOFT)]},
         2: {'name': '1', 'select': 'select', 'open': True, 'edge': []},
         3: {'name': '2', 'select': None, 'open': True, 'edge': []},
     }
     e.toggle_close()
     assert e.q(keys='name,select,open,edge') == {
-        1: {'name': 'Root', 'select': 'select', 'open': True, 'edge': [2]},
+        1: {'name': 'Root', 'select': 'select', 'open': True, 'edge': [(2, Edge.TYPE_SOFT)]},
         2: {'name': '2', 'select': None, 'open': True, 'edge': []}
     }
 
@@ -314,13 +314,13 @@ def test_do_not_enumerate_goals_with_negative_id():
     g.hold_select()
     g.add('Top')
     assert g.q('name,select,edge') == {
-        -1: {'name': 'Root', 'select': None, 'edge': [2]},
-        2: {'name': 'Zoomed', 'select': 'select', 'edge': [3]},
+        -1: {'name': 'Root', 'select': None, 'edge': [(2, Edge.TYPE_SOFT)]},
+        2: {'name': 'Zoomed', 'select': 'select', 'edge': [(3, Edge.TYPE_SOFT)]},
         3: {'name': 'Top', 'select': None, 'edge': []},
     }
     e = Enumeration(g)
     assert e.q('name,select,edge') == {
-        -1: {'name': 'Root', 'select': None, 'edge': [1]},
-        1: {'name': 'Zoomed', 'select': 'select', 'edge': [2]},
+        -1: {'name': 'Root', 'select': None, 'edge': [(1, Edge.TYPE_SOFT)]},
+        1: {'name': 'Zoomed', 'select': 'select', 'edge': [(2, Edge.TYPE_SOFT)]},
         2: {'name': 'Top', 'select': None, 'edge': []},
     }

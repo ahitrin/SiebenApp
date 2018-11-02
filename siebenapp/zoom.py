@@ -1,7 +1,7 @@
 from typing import Dict, Any, Set, List, Tuple
 
 from siebenapp.domain import Graph
-from siebenapp.goaltree import Goals
+from siebenapp.goaltree import Goals, Edge
 
 
 class Zoom(Graph):
@@ -37,7 +37,7 @@ class Zoom(Graph):
                         if k in visible_goals}
         zoomed_goals[-1] = origin_goals[1]
         if 'edge' in keys:
-            zoomed_goals[-1]['edge'] = [self.zoom_root[-1]]
+            zoomed_goals[-1]['edge'] = [(self.zoom_root[-1], Edge.TYPE_SOFT)]
         return zoomed_goals
 
     def toggle_close(self):
@@ -63,11 +63,11 @@ class Zoom(Graph):
         edges = self.goaltree.q('edge')
         current_zoom_root = self.zoom_root[-1]
         visible_goals = {current_zoom_root}
-        goals_to_visit = set(edges[current_zoom_root]['edge'])
+        goals_to_visit = set(e[0] for e in edges[current_zoom_root]['edge'])
         while goals_to_visit:
             next_child = goals_to_visit.pop()
             visible_goals.add(next_child)
-            goals_to_visit.update(edges[next_child]['edge'])
+            goals_to_visit.update(e[0] for e in edges[next_child]['edge'])
         return visible_goals
 
     def __getattribute__(self, item):

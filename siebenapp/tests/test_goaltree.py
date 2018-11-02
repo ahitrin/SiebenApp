@@ -62,9 +62,9 @@ class GoalsTest(TestCase):
         self.goals.select(2)
         self.goals.insert('A')
         assert self.goals.q(keys='name,edge,switchable') == {
-                1: {'name': 'Root', 'edge': [3], 'switchable': False},
+                1: {'name': 'Root', 'edge': [(3, Edge.TYPE_SOFT)], 'switchable': False},
                 2: {'name': 'B', 'edge': [], 'switchable': True},
-                3: {'name': 'A', 'edge': [2], 'switchable': False},
+                3: {'name': 'A', 'edge': [(2, Edge.TYPE_SOFT)], 'switchable': False},
         }
 
     def test_insert_goal_between_independent_goals(self):
@@ -75,10 +75,10 @@ class GoalsTest(TestCase):
         )
         self.goals.insert('Wow')
         assert self.goals.q(keys='name,edge,switchable') == {
-                1: {'name': 'Root', 'edge': [2, 3], 'switchable': False},
-                2: {'name': 'A', 'edge': [4], 'switchable': False},
+                1: {'name': 'Root', 'edge': [(2, Edge.TYPE_STRONG), (3, Edge.TYPE_STRONG)], 'switchable': False},
+                2: {'name': 'A', 'edge': [(4, Edge.TYPE_SOFT)], 'switchable': False},
                 3: {'name': 'B', 'edge': [], 'switchable': True},
-                4: {'name': 'Wow', 'edge': [3], 'switchable': False},
+                4: {'name': 'Wow', 'edge': [(3, Edge.TYPE_SOFT)], 'switchable': False},
         }
 
     def test_close_single_goal(self):
@@ -202,9 +202,9 @@ class GoalsTest(TestCase):
             open_(4, 'C', select=selected)
         )
         assert self.goals.q(keys='edge,switchable') == {
-            1: {'edge': [2, 3], 'switchable': False},
-            2: {'edge': [4], 'switchable': False},
-            3: {'edge': [4], 'switchable': False},
+            1: {'edge': [(2, Edge.TYPE_STRONG), (3, Edge.TYPE_STRONG)], 'switchable': False},
+            2: {'edge': [(4, Edge.TYPE_STRONG)], 'switchable': False},
+            3: {'edge': [(4, Edge.TYPE_STRONG)], 'switchable': False},
             4: {'edge': [], 'switchable': True}}
 
     def test_no_link_to_self_is_allowed(self):
@@ -220,7 +220,10 @@ class GoalsTest(TestCase):
         )
         self.goals.toggle_link()
         assert self.goals.q(keys='edge') == {
-            1: {'edge': [2]}, 2: {'edge': [3]}, 3: {'edge': [4]}, 4: {'edge': []}}
+            1: {'edge': [(2, Edge.TYPE_STRONG)]},
+            2: {'edge': [(3, Edge.TYPE_STRONG)]},
+            3: {'edge': [(4, Edge.TYPE_STRONG)]},
+            4: {'edge': []}}
 
     def test_remove_link_between_goals(self):
         self.goals = self.build(
@@ -230,7 +233,7 @@ class GoalsTest(TestCase):
         )
         self.goals.toggle_link()
         assert self.goals.q(keys='edge,switchable') == {
-            1: {'edge': [2, 3], 'switchable': False},
+            1: {'edge': [(2, Edge.TYPE_STRONG), (3, Edge.TYPE_STRONG)], 'switchable': False},
             2: {'edge': [], 'switchable': True},
             3: {'edge': [], 'switchable': True}
         }
@@ -243,15 +246,15 @@ class GoalsTest(TestCase):
             open_(4, 'C', select=selected)
         )
         assert self.goals.q(keys='name,edge') == {
-                1: {'name': 'Root', 'edge': [2, 3]},
-                2: {'name': 'A', 'edge': [4]},
-                3: {'name': 'B', 'edge': [4]},
+                1: {'name': 'Root', 'edge': [(2, Edge.TYPE_STRONG), (3, Edge.TYPE_STRONG)]},
+                2: {'name': 'A', 'edge': [(4, Edge.TYPE_STRONG)]},
+                3: {'name': 'B', 'edge': [(4, Edge.TYPE_STRONG)]},
                 4: {'name': 'C', 'edge': []}}
         self.goals.select(3)
         self.goals.delete()
         assert self.goals.q(keys='name,edge,switchable') == {
-                1: {'name': 'Root', 'edge': [2], 'switchable': False},
-                2: {'name': 'A', 'edge': [4], 'switchable': False},
+                1: {'name': 'Root', 'edge': [(2, Edge.TYPE_STRONG)], 'switchable': False},
+                2: {'name': 'A', 'edge': [(4, Edge.TYPE_STRONG)], 'switchable': False},
                 4: {'name': 'C', 'edge': [], 'switchable': True}}
 
     def test_root_goal_is_selected_by_default(self):
@@ -270,8 +273,8 @@ class GoalsTest(TestCase):
         }
         self.goals.add('B')
         assert self.goals.q(keys='name,select,edge') == {
-            1: {'name': 'Root', 'select': 'prev', 'edge': [2]},
-            2: {'name': 'A', 'select': 'select', 'edge': [3]},
+            1: {'name': 'Root', 'select': 'prev', 'edge': [(2, Edge.TYPE_SOFT)]},
+            2: {'name': 'A', 'select': 'select', 'edge': [(3, Edge.TYPE_SOFT)]},
             3: {'name': 'B', 'select': None, 'edge': []},
         }
 

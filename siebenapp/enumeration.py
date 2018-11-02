@@ -46,7 +46,7 @@ class Enumeration(Graph):
         elif self.view == 'open':
             for attrs in goals.values():
                 if 'edge' in attrs:
-                    attrs['edge'] = [e for e in attrs['edge'] if e in self._goal_filter]
+                    attrs['edge'] = [e for e in attrs['edge'] if e[0] in self._goal_filter]
 
         m = {g: i + 1 for i, g in enumerate(sorted(g for g in goals if g > 0))}
         length = len(m)
@@ -75,7 +75,7 @@ class Enumeration(Graph):
             new_id = mapping(old_id)
             result[new_id] = dict((k, v) for k, v in val.items() if k != 'edge')
             if 'edge' in val:
-                result[new_id]['edge'] = [mapping(goal_id) for goal_id in val['edge']]
+                result[new_id]['edge'] = [(mapping(edge[0]), edge[1]) for edge in val['edge']]
         return result
 
     def select(self, goal_id):

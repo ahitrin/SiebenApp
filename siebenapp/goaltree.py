@@ -94,7 +94,7 @@ class Goals(Graph):
                     (key in self.closed and (not self.back_edges[key] or
                                              any(y for y in self.back_edges[key] if y not in self.closed))))
             value = {
-                'edge': sorted([x.target for x in self.edges[key]]),
+                'edge': sorted([(x.target, x.type) for x in self.edges[key]]),
                 'name': name,
                 'open': key not in self.closed,
                 'select': sel(key),
