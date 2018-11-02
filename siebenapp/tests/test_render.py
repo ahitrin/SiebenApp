@@ -1,6 +1,7 @@
 import pytest
 
 from siebenapp.enumeration import Enumeration
+from siebenapp.goaltree import Edge
 from siebenapp.render import Renderer, place
 from siebenapp.tests.dsl import build_goaltree, open_, selected
 
@@ -100,10 +101,10 @@ def test_split_long_edges_using_fake_goals():
     result = Renderer(goals).build()
     assert get_in(result, 'edge') == {
         5: [],
-        4: [5], '1_1': [5],
-        3: [4], '1_2': ['1_1'],
-        2: [3], '1_3': ['1_2'],
-        1: [2, '1_3'],
+        4: [(5, Edge.TYPE_STRONG)], '1_1': [(5, Edge.TYPE_SOFT)],
+        3: [(4, Edge.TYPE_STRONG)], '1_2': [('1_1', Edge.TYPE_SOFT)],
+        2: [(3, Edge.TYPE_STRONG)], '1_3': [('1_2', Edge.TYPE_SOFT)],
+        1: [(2, Edge.TYPE_STRONG), ('1_3', Edge.TYPE_SOFT)],
     }
 
 

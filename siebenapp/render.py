@@ -1,7 +1,8 @@
 from collections import defaultdict
-from typing import Dict, List
+from typing import Dict, List, Tuple, Union
 
 from siebenapp.domain import Graph
+from siebenapp.goaltree import Edge
 
 
 def safe_average(l):
@@ -16,6 +17,11 @@ class Renderer:
         self.edges = {key: [e[0] for e in values['edge']] for key, values in self.graph.items()}
         self.layers = defaultdict(list)     # type: Dict[int, List[int]]
         self.positions = {}                 # type: Dict[int, int]
+        self.edge_types = {                 # type: Dict[Tuple[Union[str, int], Union[str, int]], int]
+            (parent, child): edge_type
+            for parent in self.graph
+            for child, edge_type in self.graph[parent]['edge']
+        }
 
     def build(self):
         self.split_by_layers()
@@ -46,6 +52,9 @@ class Renderer:
                 for g in self.edges[new_goal_name]:
                     self.edges[original_id].remove(g)
                 self.edges[original_id].append(new_goal_name)
+                self.edge_types[original_id, new_goal_name] = Edge.TYPE_SOFT
+                self.edge_types.update({(new_goal_name, g): Edge.TYPE_SOFT
+                                        for g in self.edges[new_goal_name]})
                 new_layer.append(new_goal_name)
                 sorted_goals.add(new_goal_name)
             self.layers[current_layer] = new_layer
@@ -104,7 +113,7 @@ class Renderer:
                 self.graph[goal_id].update({
                     'row': row,
                     'col': col,
-                    'edge': self.edges[goal_id],
+                    'edge': [(child, self.edge_types[goal_id, child]) for child in self.edges[goal_id]],
                 })
 
 

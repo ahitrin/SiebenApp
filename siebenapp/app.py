@@ -80,8 +80,8 @@ class CentralWidget(QWidget):
                    for w in self.children() if isinstance(w, GoalWidget)}
         for widget_id, points in widgets.items():
             line_start = points[0]
-            for parent_widget in self.dependencies[widget_id]:
-                line_end = widgets[parent_widget][1]
+            for edge in self.dependencies[widget_id]:
+                line_end = widgets[edge[0]][1]
                 painter.drawLine(line_start, line_end)
             if not points[2]:
                 painter.drawLine(points[0], points[1])
