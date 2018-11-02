@@ -2,7 +2,7 @@
 import collections
 from typing import Callable, Dict, Optional, List, Set, Any, Tuple
 
-from domain import Graph
+from siebenapp.domain import Graph
 
 
 class Edge(collections.namedtuple('Edge', 'target type')):
@@ -77,8 +77,6 @@ class Goals(Graph):
         self.events.append(('hold_select', self.settings['selection']))
 
     def q(self, keys: str = 'name') -> Dict[int, Any]:
-        """Run search query against goaltree state"""
-
         def sel(x):
             # type: (int) -> Optional[str]
             if x == self.settings['selection']:

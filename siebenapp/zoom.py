@@ -1,6 +1,6 @@
 from typing import Dict, Any, Set, List, Tuple
 
-from domain import Graph
+from siebenapp.domain import Graph
 from siebenapp.goaltree import Goals
 
 
@@ -28,8 +28,7 @@ class Zoom(Graph):
             if self.settings['previous_selection'] not in visible_goals:
                 self.goaltree.hold_select()
 
-    def q(self, keys='name'):
-        # type: (str) -> Dict[int, Any]
+    def q(self, keys: str = 'name') -> Dict[int, Any]:
         origin_goals = self.goaltree.q(keys)
         if self.zoom_root == [1]:
             return origin_goals

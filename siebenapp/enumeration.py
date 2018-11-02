@@ -1,7 +1,7 @@
 import math
 from typing import List, Dict, Tuple, Any, Callable, Union
 
-from domain import Graph
+from siebenapp.domain import Graph
 from siebenapp.goaltree import Goals
 from siebenapp.zoom import Zoom
 
@@ -67,8 +67,7 @@ class Enumeration(Graph):
 
         return goals, mapping_fn
 
-    def q(self, keys='name'):
-        # type: (str) -> Dict[int, Any]
+    def q(self, keys: str = 'name') -> Dict[int, Any]:
         self._update_mapping()
         result = dict()  # type: Dict[int, Any]
         goals, mapping = self._id_mapping(keys)
