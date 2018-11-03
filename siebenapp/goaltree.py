@@ -104,19 +104,21 @@ class Goals(Graph):
         return result
 
     def insert(self, name: str) -> None:
-        if self.settings['selection'] == self.settings['previous_selection']:
+        lower = self.settings['previous_selection']
+        upper = self.settings['selection']
+        if lower == upper:
             self._msg("A new goal can be inserted only between two different goals")
             return
         edge_type = Edge.TYPE_SOFT
-        for edge in self.edges[self.settings['previous_selection']]:
-            if edge.target == self.settings['selection']:
+        for edge in self.edges[lower]:
+            if edge.target == upper:
                 edge_type = edge.type
                 break
-        if self.add(name, self.settings['previous_selection'], edge_type):
+        if self.add(name, lower, edge_type):
             key = len(self.goals)
-            self.toggle_link(key, self.settings['selection'], edge_type)
-            if self._has_link(self.settings['previous_selection'], self.settings['selection']):
-                self.toggle_link(self.settings['previous_selection'], self.settings['selection'], edge_type)
+            self.toggle_link(key, upper, edge_type)
+            if self._has_link(lower, upper):
+                self.toggle_link(lower, upper, edge_type)
 
     def rename(self, new_name: str, goal_id: int = 0) -> None:
         if goal_id == 0:
