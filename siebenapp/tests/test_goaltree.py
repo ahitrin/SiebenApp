@@ -60,11 +60,15 @@ class GoalsTest(TestCase):
         self.goals.add('B')
         self.goals.hold_select()
         self.goals.select(2)
+        assert self.goals.q(keys='name,edge,switchable') == {
+            1: {'name': 'Root', 'edge': [(2, Edge.TYPE_STRONG)], 'switchable': False},
+            2: {'name': 'B', 'edge': [], 'switchable': True},
+        }
         self.goals.insert('A')
         assert self.goals.q(keys='name,edge,switchable') == {
                 1: {'name': 'Root', 'edge': [(3, Edge.TYPE_STRONG)], 'switchable': False},
                 2: {'name': 'B', 'edge': [], 'switchable': True},
-                3: {'name': 'A', 'edge': [(2, Edge.TYPE_SOFT)], 'switchable': False},
+                3: {'name': 'A', 'edge': [(2, Edge.TYPE_STRONG)], 'switchable': False},
         }
 
     def test_insert_goal_between_independent_goals(self):
@@ -76,7 +80,7 @@ class GoalsTest(TestCase):
         self.goals.insert('Wow')
         assert self.goals.q(keys='name,edge,switchable') == {
                 1: {'name': 'Root', 'edge': [(2, Edge.TYPE_STRONG), (3, Edge.TYPE_STRONG)], 'switchable': False},
-                2: {'name': 'A', 'edge': [(4, Edge.TYPE_STRONG)], 'switchable': False},
+                2: {'name': 'A', 'edge': [(4, Edge.TYPE_SOFT)], 'switchable': False},
                 3: {'name': 'B', 'edge': [], 'switchable': True},
                 4: {'name': 'Wow', 'edge': [(3, Edge.TYPE_SOFT)], 'switchable': False},
         }

@@ -49,14 +49,14 @@ class Goals(Graph):
     def _has_link(self, lower: int, upper: int) -> bool:
         return upper in set(x.target for x in self.edges[lower])
 
-    def add(self, name: str, add_to: int = 0) -> bool:
+    def add(self, name: str, add_to: int = 0, edge_type: int = Edge.TYPE_STRONG) -> bool:
         if add_to == 0:
             add_to = self.settings['selection']
         if add_to in self.closed:
             self._msg("A new subgoal cannot be added to the closed one")
             return False
         next_id = self._add_no_link(name)
-        self.toggle_link(add_to, next_id, Edge.TYPE_STRONG)
+        self.toggle_link(add_to, next_id, edge_type)
         return True
 
     def _add_no_link(self, name: str) -> int:
@@ -107,11 +107,16 @@ class Goals(Graph):
         if self.settings['selection'] == self.settings['previous_selection']:
             self._msg("A new goal can be inserted only between two different goals")
             return
-        if self.add(name, self.settings['previous_selection']):
+        edge_type = Edge.TYPE_SOFT
+        for edge in self.edges[self.settings['previous_selection']]:
+            if edge.target == self.settings['selection']:
+                edge_type = edge.type
+                break
+        if self.add(name, self.settings['previous_selection'], edge_type):
             key = len(self.goals)
-            self.toggle_link(key, self.settings['selection'])
+            self.toggle_link(key, self.settings['selection'], edge_type)
             if self._has_link(self.settings['previous_selection'], self.settings['selection']):
-                self.toggle_link(self.settings['previous_selection'], self.settings['selection'])
+                self.toggle_link(self.settings['previous_selection'], self.settings['selection'], edge_type)
 
     def rename(self, new_name: str, goal_id: int = 0) -> None:
         if goal_id == 0:
