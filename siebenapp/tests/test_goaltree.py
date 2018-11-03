@@ -189,9 +189,16 @@ class GoalsTest(TestCase):
             open_(2, 'A', select=previous),
             open_(3, 'B', select=selected)
         )
+        assert self.goals.q(keys='switchable,edge') == {
+            1: {'switchable': False, 'edge': [(2, Edge.TYPE_STRONG), (3, Edge.TYPE_STRONG)]},
+            2: {'switchable': True, 'edge': []},
+            3: {'switchable': True, 'edge': []},
+        }
         self.goals.toggle_link()
-        assert self.goals.q(keys='switchable') == {
-            1: {'switchable': False}, 2: {'switchable': False}, 3: {'switchable': True}
+        assert self.goals.q(keys='switchable,edge') == {
+            1: {'switchable': False, 'edge': [(2, Edge.TYPE_STRONG), (3, Edge.TYPE_STRONG)]},
+            2: {'switchable': False, 'edge': [(3, Edge.TYPE_SOFT)]},
+            3: {'switchable': True, 'edge': []},
         }
 
     def test_view_edges(self):
