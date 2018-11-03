@@ -27,6 +27,13 @@ class GoalsTest(TestCase):
             1: {'name': 'Root', 'switchable': False},
             2: {'name': 'A', 'switchable': True}}
 
+    def test_added_goal_has_strong_link_with_parent(self):
+        self.goals.add('New')
+        assert self.goals.q(keys='name,edge') == {
+            1: {'name': 'Root', 'edge': [(2, Edge.TYPE_STRONG)]},
+            2: {'name': 'New', 'edge': []},
+        }
+
     def test_two_new_goals_move_to_top(self):
         self.goals.add('A')
         self.goals.add('B')
@@ -55,7 +62,7 @@ class GoalsTest(TestCase):
         self.goals.select(2)
         self.goals.insert('A')
         assert self.goals.q(keys='name,edge,switchable') == {
-                1: {'name': 'Root', 'edge': [(3, Edge.TYPE_SOFT)], 'switchable': False},
+                1: {'name': 'Root', 'edge': [(3, Edge.TYPE_STRONG)], 'switchable': False},
                 2: {'name': 'B', 'edge': [], 'switchable': True},
                 3: {'name': 'A', 'edge': [(2, Edge.TYPE_SOFT)], 'switchable': False},
         }
@@ -69,7 +76,7 @@ class GoalsTest(TestCase):
         self.goals.insert('Wow')
         assert self.goals.q(keys='name,edge,switchable') == {
                 1: {'name': 'Root', 'edge': [(2, Edge.TYPE_STRONG), (3, Edge.TYPE_STRONG)], 'switchable': False},
-                2: {'name': 'A', 'edge': [(4, Edge.TYPE_SOFT)], 'switchable': False},
+                2: {'name': 'A', 'edge': [(4, Edge.TYPE_STRONG)], 'switchable': False},
                 3: {'name': 'B', 'edge': [], 'switchable': True},
                 4: {'name': 'Wow', 'edge': [(3, Edge.TYPE_SOFT)], 'switchable': False},
         }
@@ -266,8 +273,8 @@ class GoalsTest(TestCase):
         }
         self.goals.add('B')
         assert self.goals.q(keys='name,select,edge') == {
-            1: {'name': 'Root', 'select': 'prev', 'edge': [(2, Edge.TYPE_SOFT)]},
-            2: {'name': 'A', 'select': 'select', 'edge': [(3, Edge.TYPE_SOFT)]},
+            1: {'name': 'Root', 'select': 'prev', 'edge': [(2, Edge.TYPE_STRONG)]},
+            2: {'name': 'A', 'select': 'select', 'edge': [(3, Edge.TYPE_STRONG)]},
             3: {'name': 'B', 'select': None, 'edge': []},
         }
 
@@ -320,7 +327,7 @@ class GoalsTest(TestCase):
         assert self.goals.events.pop() == ('add', 1, 'Root', True)
         self.goals.add('Next')
         assert self.goals.events[-2] == ('add', 2, 'Next', True)
-        assert self.goals.events[-1] == ('link', 1, 2, Edge.TYPE_SOFT)
+        assert self.goals.events[-1] == ('link', 1, 2, Edge.TYPE_STRONG)
 
     def test_select_events(self):
         self.goals.add('Next')

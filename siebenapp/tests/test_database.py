@@ -44,8 +44,8 @@ def setup_sample_db(conn):
     with closing(conn.cursor()) as cur:
         sample_goals = [(1, 'Root', True), (2, 'A', True), (3, 'B', False)]
         cur.executemany('insert into goals values (?,?,?)', sample_goals)
-        sample_edges = [(1, 2), (1, 3), (2, 3)]
-        cur.executemany('insert into edges values (?,?,1)', sample_edges)
+        sample_edges = [(1, 2, 2), (1, 3, 2), (2, 3, 1)]
+        cur.executemany('insert into edges values (?,?,?)', sample_edges)
         sample_selects = [('selection', 2), ('previous_selection', 1)]
         cur.executemany('insert into settings values (?,?)', sample_selects)
         conn.commit()

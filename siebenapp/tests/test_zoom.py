@@ -57,7 +57,7 @@ def test_do_not_hide_subgoals():
     assert goals.q(keys='name,edge') == {
         -1: {'name': 'Root', 'edge': [(2, Edge.TYPE_SOFT)]},
         2: {'name': 'Zoomed', 'edge': [(3, Edge.TYPE_STRONG)]},
-        3: {'name': 'Visible', 'edge': [(4, Edge.TYPE_SOFT)]},
+        3: {'name': 'Visible', 'edge': [(4, Edge.TYPE_STRONG)]},
         4: {'name': 'More children', 'edge': []},
     }
 

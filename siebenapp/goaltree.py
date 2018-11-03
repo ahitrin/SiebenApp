@@ -56,7 +56,7 @@ class Goals(Graph):
             self._msg("A new subgoal cannot be added to the closed one")
             return False
         next_id = self._add_no_link(name)
-        self.toggle_link(add_to, next_id)
+        self.toggle_link(add_to, next_id, Edge.TYPE_STRONG)
         return True
 
     def _add_no_link(self, name: str) -> int:
@@ -167,7 +167,7 @@ class Goals(Graph):
                 self._delete(next_goal.target)
         self.events.append(('delete', goal_id))
 
-    def toggle_link(self, lower: int = 0, upper: int = 0) -> None:
+    def toggle_link(self, lower: int = 0, upper: int = 0, edge_type: int = Edge.TYPE_SOFT) -> None:
         lower = self.settings['previous_selection'] if lower == 0 else lower
         upper = self.settings['selection'] if upper == 0 else upper
         if lower == upper:
@@ -176,7 +176,7 @@ class Goals(Graph):
         if self._has_link(lower, upper):
             self._remove_existing_link(lower, upper)
         else:
-            self._create_new_link(lower, upper)
+            self._create_new_link(lower, upper, edge_type)
 
     def _remove_existing_link(self, lower: int, upper: int) -> None:
         edges_to_upper = len(self.back_edges[upper])
@@ -187,7 +187,7 @@ class Goals(Graph):
         else:
             self._msg("Can't remove the last link")
 
-    def _create_new_link(self, lower: int, upper: int) -> None:
+    def _create_new_link(self, lower: int, upper: int, edge_type: int) -> None:
         if lower in self.closed and upper not in self.closed:
             self._msg("An open goal can't block already closed one")
             return
@@ -202,7 +202,7 @@ class Goals(Graph):
                 if e not in visited:
                     front.add(e.target)
         if lower not in total:
-            edge = Edge.soft(upper)
+            edge = Edge.build(upper, edge_type)
             self.edges[lower].append(edge)
             self.back_edges[upper].append(lower)
             self.events.append(('link', lower, upper, edge.type))

@@ -36,7 +36,7 @@ def test_apply_mapping_for_the_10th_element():
     # simulate goal addition
     goals.add('k')
     assert e.q(keys='name,edge') == {
-        11: {'name': 'a', 'edge': [(12, Edge.TYPE_STRONG), (21, Edge.TYPE_SOFT)]},
+        11: {'name': 'a', 'edge': [(12, Edge.TYPE_STRONG), (21, Edge.TYPE_STRONG)]},
         12: {'name': 'b', 'edge': [(13, Edge.TYPE_STRONG)]},
         13: {'name': 'c', 'edge': [(14, Edge.TYPE_STRONG)]},
         14: {'name': 'd', 'edge': [(15, Edge.TYPE_STRONG)]},
@@ -289,13 +289,13 @@ def test_simple_open_enumeration_workflow():
     e.add('2')
     e.select(2)
     assert e.q(keys='name,select,open,edge') == {
-        1: {'name': 'Root', 'select': 'prev', 'open': True, 'edge': [(2, Edge.TYPE_SOFT), (3, Edge.TYPE_SOFT)]},
+        1: {'name': 'Root', 'select': 'prev', 'open': True, 'edge': [(2, Edge.TYPE_STRONG), (3, Edge.TYPE_STRONG)]},
         2: {'name': '1', 'select': 'select', 'open': True, 'edge': []},
         3: {'name': '2', 'select': None, 'open': True, 'edge': []},
     }
     e.toggle_close()
     assert e.q(keys='name,select,open,edge') == {
-        1: {'name': 'Root', 'select': 'select', 'open': True, 'edge': [(2, Edge.TYPE_SOFT)]},
+        1: {'name': 'Root', 'select': 'select', 'open': True, 'edge': [(2, Edge.TYPE_STRONG)]},
         2: {'name': '2', 'select': None, 'open': True, 'edge': []}
     }
 
@@ -314,13 +314,13 @@ def test_do_not_enumerate_goals_with_negative_id():
     g.hold_select()
     g.add('Top')
     assert g.q('name,select,edge') == {
-        -1: {'name': 'Root', 'select': None, 'edge': [(2, Edge.TYPE_SOFT)]},
-        2: {'name': 'Zoomed', 'select': 'select', 'edge': [(3, Edge.TYPE_SOFT)]},
+        -1: {'name': 'Root', 'select': None, 'edge': [(2, Edge.TYPE_STRONG)]},
+        2: {'name': 'Zoomed', 'select': 'select', 'edge': [(3, Edge.TYPE_STRONG)]},
         3: {'name': 'Top', 'select': None, 'edge': []},
     }
     e = Enumeration(g)
     assert e.q('name,select,edge') == {
-        -1: {'name': 'Root', 'select': None, 'edge': [(1, Edge.TYPE_SOFT)]},
-        1: {'name': 'Zoomed', 'select': 'select', 'edge': [(2, Edge.TYPE_SOFT)]},
+        -1: {'name': 'Root', 'select': None, 'edge': [(1, Edge.TYPE_STRONG)]},
+        1: {'name': 'Zoomed', 'select': 'select', 'edge': [(2, Edge.TYPE_STRONG)]},
         2: {'name': 'Top', 'select': None, 'edge': []},
     }
