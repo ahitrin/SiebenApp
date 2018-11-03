@@ -119,12 +119,6 @@ class Goals(Graph):
         self.goals[goal_id] = new_name
         self.events.append(('rename', new_name, goal_id))
 
-    def swap_goals(self) -> None:
-        first, second = self.settings['selection'], self.settings['previous_selection']
-        first_name, second_name = self.goals[first], self.goals[second]
-        self.rename(first_name, second)
-        self.rename(second_name, first)
-
     def toggle_close(self) -> None:
         if self.settings['selection'] in self.closed:
             if self._may_be_reopened():

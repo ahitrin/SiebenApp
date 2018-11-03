@@ -49,13 +49,6 @@ class GoalsTest(TestCase):
         self.goals.rename('A')
         assert self.goals.q() == {1: {'name': 'Root'}, 2: {'name': 'A'}}
 
-    def test_swap_goals(self):
-        self.goals.add('Wroom')
-        self.goals.hold_select()
-        self.goals.select(2)
-        self.goals.swap_goals()
-        assert self.goals.q() == {1: {'name': 'Wroom'}, 2: {'name': 'Root'}}
-
     def test_insert_goal_in_the_middle(self):
         self.goals.add('B')
         self.goals.hold_select()
@@ -349,14 +342,6 @@ class GoalsTest(TestCase):
     def test_rename_event(self):
         self.goals.rename('New')
         assert self.goals.events[-1] == ('rename', 'New', 1)
-
-    def test_swap_event(self):
-        self.goals.add('Next')
-        self.goals.hold_select()
-        self.goals.select(2)
-        self.goals.swap_goals()
-        assert self.goals.events[-2] == ('rename', 'Next', 1)
-        assert self.goals.events[-1] == ('rename', 'Root', 2)
 
     def test_delete_events(self):
         self.goals.add('Sheep')
