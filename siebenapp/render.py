@@ -17,11 +17,11 @@ class Renderer:
         self.edges = {key: [e[0] for e in values['edge']] for key, values in self.graph.items()}
         self.layers = defaultdict(list)     # type: Dict[int, List[int]]
         self.positions = {}                 # type: Dict[int, int]
-        self.edge_types = {                 # type: Dict[Tuple[Union[str, int], Union[str, int]], int]
+        self.edge_types = {
             (parent, child): edge_type
             for parent in self.graph
             for child, edge_type in self.graph[parent]['edge']
-        }
+        }                                   # type: Dict[Tuple[Union[str, int], Union[str, int]], int]
 
     def build(self):
         self.split_by_layers()
