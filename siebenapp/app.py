@@ -162,6 +162,7 @@ class SiebenApp(QMainWindow):
             Qt.Key_C: self.with_refresh(self.goals.toggle_close),
             Qt.Key_D: self.with_refresh(self.goals.delete),
             Qt.Key_I: self.start_edit('Insert new goal', self.goals.insert),
+            Qt.Key_K: self.with_refresh(self.goals.toggle_link, edge_type=Edge.TYPE_STRONG),
             Qt.Key_L: self.with_refresh(self.goals.toggle_link),
             Qt.Key_Q: self.quit_app.emit,
             Qt.Key_R: self.start_edit('Rename goal', self.goals.rename, self._current_goal_label),
@@ -215,9 +216,9 @@ class SiebenApp(QMainWindow):
         data = self.goals.q(keys='name,select').values()
         return [x['name'] for x in data if x['select'] == 'select'].pop()
 
-    def with_refresh(self, fn):
+    def with_refresh(self, fn, *args, **kwargs):
         def inner():
-            fn()
+            fn(*args, **kwargs)
             self.refresh.emit()
         return inner
 
