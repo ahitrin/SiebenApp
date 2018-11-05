@@ -181,16 +181,23 @@ class Goals(Graph):
             self._msg("Goal can't be linked to itself")
             return
         if self._has_link(lower, upper):
-            self._remove_existing_link(lower, upper)
+            current_edge_type = None
+            for edge in self.edges[lower]:
+                if edge.target == upper:
+                    current_edge_type = edge.type
+                    break
+            if current_edge_type != edge_type:
+                self._create_new_link(lower, upper, edge_type)
+            self._remove_existing_link(lower, upper, current_edge_type)
         else:
             self._create_new_link(lower, upper, edge_type)
 
-    def _remove_existing_link(self, lower: int, upper: int) -> None:
+    def _remove_existing_link(self, lower: int, upper: int, edge_type=None) -> None:
         edges_to_upper = len(self.back_edges[upper])
         if edges_to_upper > 1:
-            self.edges[lower] = [x for x in self.edges[lower] if x.target != upper]
+            self.edges[lower].remove(Edge.build(upper, edge_type))
             self.back_edges[upper].remove(lower)
-            self.events.append(('unlink', lower, upper))
+            self.events.append(('unlink', lower, upper, edge_type))
         else:
             self._msg("Can't remove the last link")
 

@@ -110,7 +110,7 @@ def save_updates(goals, connection):
         'toggle_close': ['update goals set open=? where goal_id=?'],
         'rename': ['update goals set name=? where goal_id=?'],
         'link': ['insert into edges values (?,?,?)'],
-        'unlink': ['delete from edges where parent=? and child=?'],
+        'unlink': ['delete from edges where parent=? and child=? and reltype=?'],
         'select': ['delete from settings where name="selection"',
                    'insert into settings values ("selection", ?)'],
         'hold_select': ['delete from settings where name="previous_selection"',

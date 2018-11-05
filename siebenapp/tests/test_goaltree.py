@@ -242,11 +242,31 @@ class GoalsTest(TestCase):
             open_(2, 'A', [3], select=previous),
             open_(3, 'B', select=selected)
         )
-        self.goals.toggle_link()
+        self.goals.toggle_link(edge_type=Edge.TYPE_STRONG)
         assert self.goals.q(keys='edge,switchable') == {
             1: {'edge': [(2, Edge.TYPE_STRONG), (3, Edge.TYPE_STRONG)], 'switchable': False},
             2: {'edge': [], 'switchable': True},
             3: {'edge': [], 'switchable': True}
+        }
+
+    def test_change_link_type(self):
+        self.goals = self.build(
+            open_(1, 'Root', [2], select=previous),
+            open_(2, 'Top', [], select=selected)
+        )
+        assert self.goals.q(keys='name,edge') == {
+            1: {'name': 'Root', 'edge': [(2, Edge.TYPE_STRONG)]},
+            2: {'name': 'Top', 'edge': []}
+        }
+        self.goals.toggle_link()
+        assert self.goals.q(keys='name,edge') == {
+            1: {'name': 'Root', 'edge': [(2, Edge.TYPE_SOFT)]},
+            2: {'name': 'Top', 'edge': []}
+        }
+        self.goals.toggle_link(edge_type=Edge.TYPE_STRONG)
+        assert self.goals.q(keys='name,edge') == {
+            1: {'name': 'Root', 'edge': [(2, Edge.TYPE_STRONG)]},
+            2: {'name': 'Top', 'edge': []}
         }
 
     def test_remove_goal_in_the_middle(self):
@@ -378,7 +398,17 @@ class GoalsTest(TestCase):
         self.goals.toggle_link()
         assert self.goals.events[-1] == ('link', 2, 3, Edge.TYPE_SOFT)
         self.goals.toggle_link()
-        assert self.goals.events[-1] == ('unlink', 2, 3)
+        assert self.goals.events[-1] == ('unlink', 2, 3, Edge.TYPE_SOFT)
+
+    def test_change_link_type_events(self):
+        self.goals = self.build(
+            open_(1, 'Root', [2, 3]),
+            open_(2, 'Lower', blockers=[3], select=previous),
+            open_(3, 'Upper', [], select=selected),
+        )
+        self.goals.toggle_link(edge_type=Edge.TYPE_STRONG)
+        assert self.goals.events[-2] == ('link', 2, 3, Edge.TYPE_STRONG)
+        assert self.goals.events[-1] == ('unlink', 2, 3, Edge.TYPE_SOFT)
 
     def test_no_messages_at_start(self):
         assert self.messages == []
@@ -501,7 +531,7 @@ class GoalsTest(TestCase):
             open_(2, 'Middle', [3], select=previous),
             open_(3, 'Top', [], select=selected)
         )
-        self.goals.toggle_link()
+        self.goals.toggle_link(edge_type=Edge.TYPE_STRONG)
         assert len(self.messages) == 1
 
     def test_message_when_closed_goal_is_blocked_by_open_one(self):
