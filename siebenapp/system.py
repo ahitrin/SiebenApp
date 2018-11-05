@@ -81,8 +81,10 @@ MIGRATIONS = [
 ]
 
 
-def save(goals, filename=DEFAULT_DB):
-    # type: (Union[Goals, Enumeration, Zoom], str) -> None
+AnyGraph = Union[Goals, Enumeration, Zoom]
+
+
+def save(goals: AnyGraph, filename: str = DEFAULT_DB) -> None:
     if path.isfile(filename):
         connection = sqlite3.connect(filename)
         run_migrations(connection)
@@ -103,8 +105,7 @@ def save(goals, filename=DEFAULT_DB):
         connection.close()
 
 
-def save_updates(goals, connection):
-    # type: (Union[Goals, Zoom], sqlite3.Connection) -> None
+def save_updates(goals: AnyGraph, connection: sqlite3.Connection) -> None:
     actions = {
         'add': ['insert into goals values (?,?,?)'],
         'toggle_close': ['update goals set open=? where goal_id=?'],
@@ -133,8 +134,7 @@ def save_updates(goals, connection):
     connection.commit()
 
 
-def load(filename=DEFAULT_DB, message_fn=None):
-    # type: (str, Callable[[str], None]) -> Enumeration
+def load(filename: str = DEFAULT_DB, message_fn: Callable[[str], None] = None) -> Enumeration:
     if path.isfile(filename):
         connection = sqlite3.connect(filename)
         run_migrations(connection)
@@ -152,8 +152,7 @@ def load(filename=DEFAULT_DB, message_fn=None):
     return Enumeration(zoom)
 
 
-def run_migrations(conn, migrations=None):
-    # type: (sqlite3.Connection, List[List[str]]) -> None
+def run_migrations(conn: sqlite3.Connection, migrations: List[List[str]] = None) -> None:
     if migrations is None:
         migrations = MIGRATIONS
     cur = conn.cursor()
@@ -169,8 +168,7 @@ def run_migrations(conn, migrations=None):
         conn.commit()
 
 
-def split_long(line):
-    # type: (str) -> str
+def split_long(line: str) -> str:
     margin = 20
     parts = []
     space_position = line.find(' ', margin)
@@ -182,8 +180,7 @@ def split_long(line):
     return '\n'.join(parts)
 
 
-def _format_name(num, goal):
-    # type: (int, Dict[str, str]) -> str
+def _format_name(num: int, goal: Dict[str, str]) -> str:
     goal_name = escape(goal['name'])
     label = '"%d: %s"' % (num, goal_name) if num >= 0 else '"%s"' % goal_name
     return split_long(label)
