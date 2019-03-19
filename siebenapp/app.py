@@ -119,7 +119,7 @@ class SiebenApp(QMainWindow):
         self.refresh.emit()
 
     def _update_title(self):
-        self.setWindowTitle('%s - SiebenApp' % self.db)
+        self.setWindowTitle('{} - SiebenApp'.format(self.db))
 
     def close_goal(self, goal_id):
         def inner():
