@@ -234,6 +234,7 @@ class SiebenApp(QMainWindow):
     def toggle_view(self):
         self.force_refresh = True
         self.goals.next_view()
+        self._update_title()
         self.refresh.emit()
 
     def toggle_zoom(self):
