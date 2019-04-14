@@ -90,7 +90,7 @@ class Goals(Graph):
 
     def _switchable(self, key: int) -> bool:
         if key in self.closed:
-            has_open_parents = len(set(self.back_edges[key]).difference(self.closed)) > 0
+            has_open_parents = any(y for y in self.back_edges[key] if y not in self.closed)
             has_no_parents = not self.back_edges[key]
             return has_open_parents or has_no_parents
         else:
