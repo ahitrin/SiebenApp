@@ -90,8 +90,9 @@ class Goals(Graph):
 
     def _switchable(self, key: int) -> bool:
         if key in self.closed:
-            has_open_parents = any(y for y in self.back_edges[key] if y not in self.closed)
-            has_no_parents = not self.back_edges[key]
+            has_open_parents = any(y for y in self.typed_back_edges[key]
+                                   if y.source not in self.closed)
+            has_no_parents = not self.typed_back_edges[key]
             return has_open_parents or has_no_parents
         else:
             return all(x.target in self.closed for x in self.edges[key])
@@ -139,8 +140,8 @@ class Goals(Graph):
         return all(g.target in self.closed for g in self.edges[self.settings['selection']])
 
     def _may_be_reopened(self) -> bool:
-        parent_goals = self.back_edges[self.settings['selection']]
-        return all(g not in self.closed for g in parent_goals)
+        parent_edges = self.typed_back_edges[self.settings['selection']]
+        return all(g.source not in self.closed for g in parent_edges)
 
     def delete(self, goal_id: int = 0) -> None:
         if goal_id == 0:
@@ -166,7 +167,7 @@ class Goals(Graph):
         for key, values in self.typed_back_edges.items():
             self.typed_back_edges[key] = [x for x in values if x.source != goal_id]
         for next_goal in next_to_remove:
-            if not self.back_edges.get(next_goal.target, []):
+            if not self.typed_back_edges.get(next_goal.target, []):
                 self._delete(next_goal.target)
         self.events.append(('delete', goal_id))
 
@@ -189,7 +190,7 @@ class Goals(Graph):
             self._create_new_link(lower, upper, edge_type)
 
     def _remove_existing_link(self, lower: int, upper: int, edge_type=None) -> None:
-        edges_to_upper = len(self.back_edges[upper])
+        edges_to_upper = len(self.typed_back_edges[upper])
         if edges_to_upper > 1:
             edge = Edge(lower, upper, edge_type)
             self.edges[lower].remove(edge)
