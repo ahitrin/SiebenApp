@@ -20,7 +20,7 @@ class Goals(Graph):
     def __init__(self, name: str, message_fn: Callable[[str], None] = None) -> None:
         self.goals = {}  # type: Dict[int, Optional[str]]
         self.edges = {}  # type: Dict[int, List[Edge]]
-        self.typed_back_edges = {}  # type: Dict[int, List[Edge]]
+        self.back_edges = {}  # type: Dict[int, List[Edge]]
         self.closed = set()  # type: Set[int]
         self.settings = {
             'selection': 1,
@@ -51,7 +51,7 @@ class Goals(Graph):
         next_id = max(list(self.goals.keys()) + [0]) + 1
         self.goals[next_id] = name
         self.edges[next_id] = list()
-        self.typed_back_edges[next_id] = list()
+        self.back_edges[next_id] = list()
         self.events.append(('add', next_id, name, True))
         return next_id
 
@@ -88,9 +88,9 @@ class Goals(Graph):
 
     def _switchable(self, key: int) -> bool:
         if key in self.closed:
-            has_open_parents = any(y for y in self.typed_back_edges[key]
+            has_open_parents = any(y for y in self.back_edges[key]
                                    if y.source not in self.closed)
-            has_no_parents = not self.typed_back_edges[key]
+            has_no_parents = not self.back_edges[key]
             return has_open_parents or has_no_parents
         else:
             return all(x.target in self.closed for x in self.edges[key])
@@ -138,7 +138,7 @@ class Goals(Graph):
         return all(g.target in self.closed for g in self.edges[self.settings['selection']])
 
     def _may_be_reopened(self) -> bool:
-        parent_edges = self.typed_back_edges[self.settings['selection']]
+        parent_edges = self.back_edges[self.settings['selection']]
         return all(g.source not in self.closed for g in parent_edges)
 
     def delete(self, goal_id: int = 0) -> None:
@@ -155,13 +155,13 @@ class Goals(Graph):
         self.goals[goal_id] = None
         self.closed.add(goal_id)
         next_to_remove = self.edges.pop(goal_id, [])  # type: List[Edge]
-        self.typed_back_edges.pop(goal_id, {})
+        self.back_edges.pop(goal_id, {})
         for key, values in self.edges.items():
             self.edges[key] = [x for x in values if x.target != goal_id]
-        for key, values in self.typed_back_edges.items():
-            self.typed_back_edges[key] = [x for x in values if x.source != goal_id]
+        for key, values in self.back_edges.items():
+            self.back_edges[key] = [x for x in values if x.source != goal_id]
         for next_goal in next_to_remove:
-            if not self.typed_back_edges.get(next_goal.target, []):
+            if not self.back_edges.get(next_goal.target, []):
                 self._delete(next_goal.target)
         self.events.append(('delete', goal_id))
 
@@ -184,11 +184,11 @@ class Goals(Graph):
             self._create_new_link(lower, upper, edge_type)
 
     def _remove_existing_link(self, lower: int, upper: int, edge_type=None) -> None:
-        edges_to_upper = len(self.typed_back_edges[upper])
+        edges_to_upper = len(self.back_edges[upper])
         if edges_to_upper > 1:
             edge = Edge(lower, upper, edge_type)
             self.edges[lower].remove(edge)
-            self.typed_back_edges[upper].remove(edge)
+            self.back_edges[upper].remove(edge)
             self.events.append(('unlink', lower, upper, edge_type))
         else:
             self._msg("Can't remove the last link")
@@ -210,7 +210,7 @@ class Goals(Graph):
         if lower not in total:
             edge = Edge(lower, upper, edge_type)
             self.edges[lower].append(edge)
-            self.typed_back_edges[upper].append(edge)
+            self.back_edges[upper].append(edge)
             self.events.append(('link', lower, upper, edge.type))
         else:
             self._msg("Circular dependencies between goals are not allowed")
@@ -256,9 +256,9 @@ class Goals(Graph):
             bd[child].append(parent)
             tbd[child].append(edge)
         result.edges = dict(d)
-        result.typed_back_edges = dict(tbd)
+        result.back_edges = dict(tbd)
         result.edges.update(dict((g, []) for g in result.goals if g not in d))
-        result.typed_back_edges.update(dict((g, []) for g in result.goals if g not in bd))
+        result.back_edges.update(dict((g, []) for g in result.goals if g not in bd))
         result.settings.update(settings)
         result.verify()
         return result
