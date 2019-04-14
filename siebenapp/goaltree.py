@@ -163,7 +163,7 @@ class Goals(Graph):
     def _delete(self, goal_id: int) -> None:
         self.goals[goal_id] = None
         self.closed.add(goal_id)
-        next_to_remove = self.edges.pop(goal_id, [])    # type: List[Edge]
+        next_to_remove = self.edges.pop(goal_id, [])  # type: List[Edge]
         self.back_edges.pop(goal_id, {})
         for key, values in self.edges.items():
             self.edges[key] = [x for x in values if x.target != goal_id]
@@ -206,9 +206,9 @@ class Goals(Graph):
         if lower in self.closed and upper not in self.closed:
             self._msg("An open goal can't block already closed one")
             return
-        front = {upper}     # type: Set[int]
-        visited = set()     # type: Set[int]
-        total = set()       # type: Set[int]
+        front = {upper}  # type: Set[int]
+        visited = set()  # type: Set[int]
+        total = set()  # type: Set[int]
         while front:
             g = front.pop()
             visited.add(g)
