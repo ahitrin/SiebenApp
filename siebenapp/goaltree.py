@@ -5,22 +5,22 @@ from typing import Callable, Dict, Optional, List, Set, Any, Tuple
 from siebenapp.domain import Graph
 
 
-class Edge(collections.namedtuple('Edge', 'target type')):
+class Edge(collections.namedtuple('Edge', 'source target type')):
     TYPE_SOFT = 1
     TYPE_STRONG = 2
     __slots__ = ()
 
     @classmethod
-    def build(cls, target, link_type):
-        return Edge(target, link_type)
+    def build(cls, source, target, link_type):
+        return Edge(source, target, link_type)
 
     @classmethod
-    def soft(cls, target):
-        return Edge(target, Edge.TYPE_SOFT)
+    def soft(cls, source, target):
+        return Edge(source, target, Edge.TYPE_SOFT)
 
     @classmethod
-    def strong(cls, target):
-        return Edge(target, Edge.TYPE_STRONG)
+    def strong(cls, source, target):
+        return Edge(source, target, Edge.TYPE_STRONG)
 
 
 GoalsData = List[Tuple[int, Optional[str], bool]]
@@ -198,7 +198,7 @@ class Goals(Graph):
     def _remove_existing_link(self, lower: int, upper: int, edge_type=None) -> None:
         edges_to_upper = len(self.back_edges[upper])
         if edges_to_upper > 1:
-            self.edges[lower].remove(Edge.build(upper, edge_type))
+            self.edges[lower].remove(Edge.build(lower, upper, edge_type))
             self.back_edges[upper].remove(lower)
             self.events.append(('unlink', lower, upper, edge_type))
         else:
@@ -219,7 +219,7 @@ class Goals(Graph):
                 if e not in visited:
                     front.add(e.target)
         if lower not in total:
-            edge = Edge.build(upper, edge_type)
+            edge = Edge.build(lower, upper, edge_type)
             self.edges[lower].append(edge)
             self.back_edges[upper].append(lower)
             self.events.append(('link', lower, upper, edge.type))
@@ -261,7 +261,7 @@ class Goals(Graph):
         d = collections.defaultdict(list)  # type: Dict[int, List[Edge]]
         bd = collections.defaultdict(list)  # type: Dict[int, List[int]]
         for parent, child, link_type in edges:
-            d[parent].append(Edge.build(child, link_type))
+            d[parent].append(Edge.build(parent, child, link_type))
             bd[child].append(parent)
         result.edges = dict(d)
         result.back_edges = dict(bd)
