@@ -88,20 +88,21 @@ class Goals(Graph):
         keys_list = keys.split(',')
         result = dict()  # type: Dict[int, Any]
         for key, name in ((k, n) for k, n in self.goals.items() if n is not None):
-            switchable = (
-                    (key not in self.closed and
-                     all(x.target in self.closed for x in self.edges[key])) or
-                    (key in self.closed and (not self.back_edges[key] or
-                                             any(y for y in self.back_edges[key] if y not in self.closed))))
             value = {
                 'edge': sorted([(x.target, x.type) for x in self.edges[key]]),
                 'name': name,
                 'open': key not in self.closed,
                 'select': sel(key),
-                'switchable': switchable,
+                'switchable': self._switchable(key),
             }
             result[key] = {k: v for k, v in value.items() if k in keys_list}
         return result
+
+    def _switchable(self, key: int) -> bool:
+        return (key not in self.closed and
+                all(x.target in self.closed for x in self.edges[key])) or \
+               (key in self.closed and (not self.back_edges[key] or
+                                        any(y for y in self.back_edges[key] if y not in self.closed)))
 
     def insert(self, name: str) -> None:
         lower = self.settings['previous_selection']
