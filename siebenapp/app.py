@@ -90,6 +90,8 @@ class CentralWidget(QWidget):
                 painter.setPen(self.EDGE_PENS[edge[1]])
                 painter.drawLine(line_start, line_end)
             if not points[2]:
+                style = max([e[1] for e in self.dependencies[widget_id]])
+                painter.setPen(self.EDGE_PENS[style])
                 painter.drawLine(points[0], points[1])
 
 

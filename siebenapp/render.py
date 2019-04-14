@@ -49,12 +49,13 @@ class Renderer:
                 new_goal_name = '%d_%d' % (original_id, current_layer)
                 self.edges[new_goal_name] = [g for g in self.edges[original_id]
                                              if g in sorted_goals and g not in new_layer]
+                new_edge_type = Edge.TYPE_SOFT
                 for g in self.edges[new_goal_name]:
                     self.edges[original_id].remove(g)
+                    self.edge_types[new_goal_name, g] = self.edge_types[original_id, g]
+                    new_edge_type = max(new_edge_type, self.edge_types[original_id, g])
                 self.edges[original_id].append(new_goal_name)
-                self.edge_types[original_id, new_goal_name] = Edge.TYPE_SOFT
-                self.edge_types.update({(new_goal_name, g): Edge.TYPE_SOFT
-                                        for g in self.edges[new_goal_name]})
+                self.edge_types[original_id, new_goal_name] = new_edge_type
                 new_layer.append(new_goal_name)
                 sorted_goals.add(new_goal_name)
             self.layers[current_layer] = new_layer
