@@ -248,15 +248,13 @@ class Goals(Graph):
         result.closed = set(g[0] for g in goals if not g[2]).union(
             set(k for k, v in result.goals.items() if v is None))
         d = collections.defaultdict(list)  # type: Dict[int, List[Edge]]
-        bd = collections.defaultdict(list)  # type: Dict[int, List[int]]
-        tbd = collections.defaultdict(list)  # type: Dict[int, List[int]]
+        bd = collections.defaultdict(list)  # type: Dict[int, List[Edge]]
         for parent, child, link_type in edges:
             edge = Edge(parent, child, link_type)
             d[parent].append(edge)
-            bd[child].append(parent)
-            tbd[child].append(edge)
+            bd[child].append(edge)
         result.edges = dict(d)
-        result.back_edges = dict(tbd)
+        result.back_edges = dict(bd)
         result.edges.update(dict((g, []) for g in result.goals if g not in d))
         result.back_edges.update(dict((g, []) for g in result.goals if g not in bd))
         result.settings.update(settings)
