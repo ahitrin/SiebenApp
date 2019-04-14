@@ -92,8 +92,7 @@ class Goals(Graph):
                                    if y.source not in self.closed)
             has_no_parents = not self.back_edges[key]
             return has_open_parents or has_no_parents
-        else:
-            return all(x.target in self.closed for x in self.edges[key])
+        return all(x.target in self.closed for x in self.edges[key])
 
     def insert(self, name: str) -> None:
         lower = self.settings['previous_selection']
