@@ -99,10 +99,11 @@ class Goals(Graph):
         return result
 
     def _switchable(self, key: int) -> bool:
-        return (key not in self.closed and
-                all(x.target in self.closed for x in self.edges[key])) or \
-               (key in self.closed and (not self.back_edges[key] or
-                                        any(y for y in self.back_edges[key] if y not in self.closed)))
+        if key in self.closed:
+            return not self.back_edges[key] or \
+                   any(y for y in self.back_edges[key] if y not in self.closed)
+        else:
+            return all(x.target in self.closed for x in self.edges[key])
 
     def insert(self, name: str) -> None:
         lower = self.settings['previous_selection']
