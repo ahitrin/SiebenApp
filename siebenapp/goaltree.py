@@ -21,6 +21,7 @@ class Goals(Graph):
         self.goals = {}  # type: Dict[int, Optional[str]]
         self.edges = {}  # type: Dict[int, List[Edge]]
         self.back_edges = {}  # type: Dict[int, List[int]]
+        self.typed_back_edges = {}  # type: Dict[int, List[Edge]]
         self.closed = set()  # type: Set[int]
         self.settings = {
             'selection': 1,
@@ -52,6 +53,7 @@ class Goals(Graph):
         self.goals[next_id] = name
         self.edges[next_id] = list()
         self.back_edges[next_id] = list()
+        self.typed_back_edges[next_id] = list()
         self.events.append(('add', next_id, name, True))
         return next_id
 
@@ -155,11 +157,14 @@ class Goals(Graph):
         self.closed.add(goal_id)
         next_to_remove = self.edges.pop(goal_id, [])  # type: List[Edge]
         self.back_edges.pop(goal_id, {})
+        self.typed_back_edges.pop(goal_id, {})
         for key, values in self.edges.items():
             self.edges[key] = [x for x in values if x.target != goal_id]
         for key in self.back_edges:
             if goal_id in self.back_edges[key]:
                 self.back_edges[key].remove(goal_id)
+        for key, values in self.typed_back_edges.items():
+            self.typed_back_edges[key] = [x for x in values if x.source != goal_id]
         for next_goal in next_to_remove:
             if not self.back_edges.get(next_goal.target, []):
                 self._delete(next_goal.target)
@@ -186,8 +191,10 @@ class Goals(Graph):
     def _remove_existing_link(self, lower: int, upper: int, edge_type=None) -> None:
         edges_to_upper = len(self.back_edges[upper])
         if edges_to_upper > 1:
-            self.edges[lower].remove(Edge(lower, upper, edge_type))
+            edge = Edge(lower, upper, edge_type)
+            self.edges[lower].remove(edge)
             self.back_edges[upper].remove(lower)
+            self.typed_back_edges[upper].remove(edge)
             self.events.append(('unlink', lower, upper, edge_type))
         else:
             self._msg("Can't remove the last link")
@@ -210,6 +217,7 @@ class Goals(Graph):
             edge = Edge(lower, upper, edge_type)
             self.edges[lower].append(edge)
             self.back_edges[upper].append(lower)
+            self.typed_back_edges[upper].append(edge)
             self.events.append(('link', lower, upper, edge.type))
         else:
             self._msg("Circular dependencies between goals are not allowed")
@@ -248,13 +256,18 @@ class Goals(Graph):
             set(k for k, v in result.goals.items() if v is None))
         d = collections.defaultdict(list)  # type: Dict[int, List[Edge]]
         bd = collections.defaultdict(list)  # type: Dict[int, List[int]]
+        tbd = collections.defaultdict(list)  # type: Dict[int, List[int]]
         for parent, child, link_type in edges:
-            d[parent].append(Edge(parent, child, link_type))
+            edge = Edge(parent, child, link_type)
+            d[parent].append(edge)
             bd[child].append(parent)
+            tbd[child].append(edge)
         result.edges = dict(d)
         result.back_edges = dict(bd)
+        result.typed_back_edges = dict(tbd)
         result.edges.update(dict((g, []) for g in result.goals if g not in d))
         result.back_edges.update(dict((g, []) for g in result.goals if g not in bd))
+        result.typed_back_edges.update(dict((g, []) for g in result.goals if g not in bd))
         result.settings.update(settings)
         result.verify()
         return result
