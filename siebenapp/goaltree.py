@@ -20,7 +20,6 @@ class Goals(Graph):
     def __init__(self, name: str, message_fn: Callable[[str], None] = None) -> None:
         self.goals = {}  # type: Dict[int, Optional[str]]
         self.edges = {}  # type: Dict[int, List[Edge]]
-        self.back_edges = {}  # type: Dict[int, List[int]]
         self.typed_back_edges = {}  # type: Dict[int, List[Edge]]
         self.closed = set()  # type: Set[int]
         self.settings = {
@@ -52,7 +51,6 @@ class Goals(Graph):
         next_id = max(list(self.goals.keys()) + [0]) + 1
         self.goals[next_id] = name
         self.edges[next_id] = list()
-        self.back_edges[next_id] = list()
         self.typed_back_edges[next_id] = list()
         self.events.append(('add', next_id, name, True))
         return next_id
@@ -157,13 +155,9 @@ class Goals(Graph):
         self.goals[goal_id] = None
         self.closed.add(goal_id)
         next_to_remove = self.edges.pop(goal_id, [])  # type: List[Edge]
-        self.back_edges.pop(goal_id, {})
         self.typed_back_edges.pop(goal_id, {})
         for key, values in self.edges.items():
             self.edges[key] = [x for x in values if x.target != goal_id]
-        for key in self.back_edges:
-            if goal_id in self.back_edges[key]:
-                self.back_edges[key].remove(goal_id)
         for key, values in self.typed_back_edges.items():
             self.typed_back_edges[key] = [x for x in values if x.source != goal_id]
         for next_goal in next_to_remove:
@@ -194,7 +188,6 @@ class Goals(Graph):
         if edges_to_upper > 1:
             edge = Edge(lower, upper, edge_type)
             self.edges[lower].remove(edge)
-            self.back_edges[upper].remove(lower)
             self.typed_back_edges[upper].remove(edge)
             self.events.append(('unlink', lower, upper, edge_type))
         else:
@@ -217,7 +210,6 @@ class Goals(Graph):
         if lower not in total:
             edge = Edge(lower, upper, edge_type)
             self.edges[lower].append(edge)
-            self.back_edges[upper].append(lower)
             self.typed_back_edges[upper].append(edge)
             self.events.append(('link', lower, upper, edge.type))
         else:
@@ -264,10 +256,8 @@ class Goals(Graph):
             bd[child].append(parent)
             tbd[child].append(edge)
         result.edges = dict(d)
-        result.back_edges = dict(bd)
         result.typed_back_edges = dict(tbd)
         result.edges.update(dict((g, []) for g in result.goals if g not in d))
-        result.back_edges.update(dict((g, []) for g in result.goals if g not in bd))
         result.typed_back_edges.update(dict((g, []) for g in result.goals if g not in bd))
         result.settings.update(settings)
         result.verify()
