@@ -36,4 +36,4 @@ def build_goaltree(*goal_prototypes, message_fn=None):
     return Goals.build(goals, edges, [
         ('selection', selection_id),
         ('previous_selection', prev_selection.pop() if prev_selection else selection_id),
-    ], message_fn)
+    ], message_fn, True)

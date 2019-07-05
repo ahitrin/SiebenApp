@@ -44,7 +44,7 @@ def test_render_4_subgoals_in_a_row():
 def test_render_add_fake_vertex():
     goals = build_goaltree(
         open_(1, 'Root', [2, 3], select=selected),
-        open_(2, 'A', [3]),
+        open_(2, 'A', blockers=[3]),
         open_(3, 'B')
     )
     result = Renderer(goals).build()
@@ -60,7 +60,7 @@ def test_render_add_several_fake_vertex():
         open_(1, 'Root', [2, 5], select=selected),
         open_(2, 'A', [3]),
         open_(3, 'B', [4]),
-        open_(4, 'C', [5]),
+        open_(4, 'C', blockers=[5]),
         open_(5, 'top')
     )
     result = Renderer(goals).build()
@@ -92,7 +92,7 @@ def test_render_5_subgoals_in_several_rows():
 
 def test_split_long_edges_using_fake_goals():
     goals = build_goaltree(
-        open_(1, 'Root', [2, 5], select=selected),
+        open_(1, 'Root', [2], blockers=[5], select=selected),
         open_(2, 'A', [3]),
         open_(3, 'B', [4]),
         open_(4, 'C', [5]),
@@ -101,10 +101,10 @@ def test_split_long_edges_using_fake_goals():
     result = Renderer(goals).build()
     assert get_in(result, 'edge') == {
         5: [],
-        4: [(5, Edge.TYPE_STRONG)], '1_1': [(5, Edge.TYPE_STRONG)],
-        3: [(4, Edge.TYPE_STRONG)], '1_2': [('1_1', Edge.TYPE_STRONG)],
-        2: [(3, Edge.TYPE_STRONG)], '1_3': [('1_2', Edge.TYPE_STRONG)],
-        1: [(2, Edge.TYPE_STRONG), ('1_3', Edge.TYPE_STRONG)],
+        4: [(5, Edge.TYPE_STRONG)], '1_1': [(5, Edge.TYPE_SOFT)],
+        3: [(4, Edge.TYPE_STRONG)], '1_2': [('1_1', Edge.TYPE_SOFT)],
+        2: [(3, Edge.TYPE_STRONG)], '1_3': [('1_2', Edge.TYPE_SOFT)],
+        1: [(2, Edge.TYPE_STRONG), ('1_3', Edge.TYPE_SOFT)],
     }
 
 
@@ -125,8 +125,8 @@ def test_use_different_long_edge_types():
 def test_balance_upper_level():
     goals = build_goaltree(
         open_(1, 'Root', [2, 3, 4], select=selected),
-        open_(2, 'A', [5]),
-        open_(3, 'B', [5]),
+        open_(2, 'A', blockers=[5]),
+        open_(3, 'B', blockers=[5]),
         open_(4, 'C', [5]),
         open_(5, 'Top')
     )

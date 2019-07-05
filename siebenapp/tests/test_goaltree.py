@@ -149,7 +149,7 @@ class GoalsTest(TestCase):
     def test_goal_in_the_middle_could_not_be_closed(self):
         self.goals = self.build(
             open_(1, 'Root', [2, 3]),
-            open_(2, 'A', [4]),
+            open_(2, 'A', blockers=[4]),
             open_(3, 'B', [4], select=selected),
             open_(4, 'C')
         )
@@ -209,13 +209,13 @@ class GoalsTest(TestCase):
         self.goals = self.build(
             open_(1, 'Root', [2, 3]),
             open_(2, 'A', [4]),
-            open_(3, 'B', [4], select=previous),
+            open_(3, 'B', blockers=[4], select=previous),
             open_(4, 'C', select=selected)
         )
         assert self.goals.q(keys='edge,switchable') == {
             1: {'edge': [(2, Edge.TYPE_STRONG), (3, Edge.TYPE_STRONG)], 'switchable': False},
             2: {'edge': [(4, Edge.TYPE_STRONG)], 'switchable': False},
-            3: {'edge': [(4, Edge.TYPE_STRONG)], 'switchable': False},
+            3: {'edge': [(4, Edge.TYPE_SOFT)], 'switchable': False},
             4: {'edge': [], 'switchable': True}}
 
     def test_no_link_to_self_is_allowed(self):
@@ -239,10 +239,10 @@ class GoalsTest(TestCase):
     def test_remove_link_between_goals(self):
         self.goals = self.build(
             open_(1, 'Root', [2, 3]),
-            open_(2, 'A', [3], select=previous),
+            open_(2, 'A', blockers=[3], select=previous),
             open_(3, 'B', select=selected)
         )
-        self.goals.toggle_link(edge_type=Edge.TYPE_STRONG)
+        self.goals.toggle_link(edge_type=Edge.TYPE_SOFT)
         assert self.goals.q(keys='edge,switchable') == {
             1: {'edge': [(2, Edge.TYPE_STRONG), (3, Edge.TYPE_STRONG)], 'switchable': False},
             2: {'edge': [], 'switchable': True},
@@ -269,17 +269,17 @@ class GoalsTest(TestCase):
             2: {'name': 'Top', 'edge': []}
         }
 
-    def test_remove_goal_in_the_middle(self):
+    def test_remove_blocked_goal_without_children(self):
         self.goals = self.build(
             open_(1, 'Root', [2, 3]),
             open_(2, 'A', [4]),
-            open_(3, 'B', [4]),
+            open_(3, 'B', blockers=[4]),
             open_(4, 'C', select=selected)
         )
         assert self.goals.q(keys='name,edge') == {
                 1: {'name': 'Root', 'edge': [(2, Edge.TYPE_STRONG), (3, Edge.TYPE_STRONG)]},
                 2: {'name': 'A', 'edge': [(4, Edge.TYPE_STRONG)]},
-                3: {'name': 'B', 'edge': [(4, Edge.TYPE_STRONG)]},
+                3: {'name': 'B', 'edge': [(4, Edge.TYPE_SOFT)]},
                 4: {'name': 'C', 'edge': []}}
         self.goals.select(3)
         self.goals.delete()
@@ -519,7 +519,7 @@ class GoalsTest(TestCase):
     def test_no_message_when_remove_not_last_link(self):
         self.goals = self.build(
             open_(1, 'Root', [2, 3], select=previous),
-            open_(2, 'Middle', [3]),
+            open_(2, 'Middle', blockers=[3]),
             open_(3, 'Top', [], select=selected)
         )
         self.goals.toggle_link()

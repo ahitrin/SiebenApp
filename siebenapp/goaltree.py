@@ -214,7 +214,7 @@ class Goals(Graph):
         else:
             self._msg("Circular dependencies between goals are not allowed")
 
-    def verify(self) -> bool:
+    def verify(self, check_parents: bool = False) -> bool:
         assert all(g.target in self.closed for p in self.closed for g in self.edges.get(p, [])), \
             'Open goals could not be blocked by closed ones'
 
@@ -234,11 +234,18 @@ class Goals(Graph):
 
         assert all(k in self.settings for k in {'selection', 'previous_selection'})
 
+        if check_parents:
+            parent_count = {goal_id: len([e for e in items if e.type == Edge.TYPE_STRONG])
+                            for goal_id, items in self.back_edges.items()}
+            multiple_parents = {goal_id: parent_count
+                                for goal_id, count in parent_count.items() if count > 1}
+            assert not multiple_parents, 'Each goal must have at most 1 parent'
+
         return True
 
     @staticmethod
-    def build(goals, edges, settings, message_fn=None):
-        # type: (GoalsData, EdgesData, OptionsData, Callable[[str], None]) -> Goals
+    def build(goals, edges, settings, message_fn=None, check_parents=False):
+        # type: (GoalsData, EdgesData, OptionsData, Callable[[str], None], bool) -> Goals
         result = Goals('', message_fn)
         result.events.clear()  # remove initial goal
         goals_dict = dict((g[0], g[1]) for g in goals)
@@ -257,7 +264,7 @@ class Goals(Graph):
         result.edges.update(dict((g, []) for g in result.goals if g not in d))
         result.back_edges.update(dict((g, []) for g in result.goals if g not in bd))
         result.settings.update(settings)
-        result.verify()
+        result.verify(check_parents)
         return result
 
     @staticmethod

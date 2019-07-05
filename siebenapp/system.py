@@ -134,7 +134,7 @@ def save_updates(goals: AnyGraph, connection: sqlite3.Connection) -> None:
     connection.commit()
 
 
-def load(filename: str = DEFAULT_DB, message_fn: Callable[[str], None] = None) -> Enumeration:
+def load(filename: str = DEFAULT_DB, message_fn: Callable[[str], None] = None, check_parent: bool = False) -> Enumeration:
     if path.isfile(filename):
         connection = sqlite3.connect(filename)
         run_migrations(connection)
@@ -144,7 +144,7 @@ def load(filename: str = DEFAULT_DB, message_fn: Callable[[str], None] = None) -
         settings = [row for row in cur.execute('select * from settings')]
         zoom_data = [row for row in cur.execute('select * from zoom')]
         cur.close()
-        goals = Goals.build(names, edges, settings, message_fn)
+        goals = Goals.build(names, edges, settings, message_fn, check_parent)
         zoom = Zoom.build(goals, zoom_data)
     else:
         goals = Goals('Rename me', message_fn)

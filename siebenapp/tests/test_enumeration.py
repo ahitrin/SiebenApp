@@ -6,12 +6,12 @@ from siebenapp.tests.dsl import build_goaltree, open_, previous, selected
 def test_simple_enumeration_is_not_changed():
     e = Enumeration(build_goaltree(
         open_(1, 'a', [2, 3]),
-        open_(2, 'b', [3], select=previous),
+        open_(2, 'b', blockers=[3], select=previous),
         open_(3, 'c', select=selected)
     ))
     assert e.q(keys='name,edge') == {
         1: {'name': 'a', 'edge': [(2, Edge.TYPE_STRONG), (3, Edge.TYPE_STRONG)]},
-        2: {'name': 'b', 'edge': [(3, Edge.TYPE_STRONG)]},
+        2: {'name': 'b', 'edge': [(3, Edge.TYPE_SOFT)]},
         3: {'name': 'c', 'edge': []},
     }
 
