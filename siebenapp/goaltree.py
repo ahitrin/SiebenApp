@@ -19,7 +19,7 @@ OptionsData = List[Tuple[str, int]]
 class Goals(Graph):
     def __init__(self, name: str, message_fn: Callable[[str], None] = None) -> None:
         self.goals = {}  # type: Dict[int, Optional[str]]
-        self.edges = {}  # type: Dict[int, List[Edge]]
+        self.forw_edges = {}  # type: Dict[int, List[Edge]]
         self.back_edges = {}  # type: Dict[int, List[Edge]]
         self.closed = set()  # type: Set[int]
         self.settings = {
@@ -35,7 +35,7 @@ class Goals(Graph):
             self.message_fn(message)
 
     def _has_link(self, lower: int, upper: int) -> bool:
-        return upper in set(x.target for x in self.edges[lower])
+        return upper in set(x.target for x in self.forw_edges[lower])
 
     def add(self, name: str, add_to: int = 0, edge_type: int = Edge.PARENT) -> bool:
         if add_to == 0:
@@ -50,7 +50,7 @@ class Goals(Graph):
     def _add_no_link(self, name: str) -> int:
         next_id = max(list(self.goals.keys()) + [0]) + 1
         self.goals[next_id] = name
-        self.edges[next_id] = list()
+        self.forw_edges[next_id] = list()
         self.back_edges[next_id] = list()
         self.events.append(('add', next_id, name, True))
         return next_id
@@ -77,7 +77,7 @@ class Goals(Graph):
         result = dict()  # type: Dict[int, Any]
         for key, name in ((k, n) for k, n in self.goals.items() if n is not None):
             value = {
-                'edge': sorted([(x.target, x.type) for x in self.edges[key]]),
+                'edge': sorted([(x.target, x.type) for x in self.forw_edges[key]]),
                 'name': name,
                 'open': key not in self.closed,
                 'select': sel(key),
@@ -92,7 +92,7 @@ class Goals(Graph):
                                    if y.source not in self.closed)
             has_no_parents = not self.back_edges[key]
             return has_open_parents or has_no_parents
-        return all(x.target in self.closed for x in self.edges[key])
+        return all(x.target in self.closed for x in self.forw_edges[key])
 
     def insert(self, name: str) -> None:
         lower = self.settings['previous_selection']
@@ -101,7 +101,7 @@ class Goals(Graph):
             self._msg("A new goal can be inserted only between two different goals")
             return
         edge_type = Edge.BLOCKER
-        for edge in self.edges[lower]:
+        for edge in self.forw_edges[lower]:
             if edge.target == upper:
                 edge_type = edge.type
                 break
@@ -134,7 +134,7 @@ class Goals(Graph):
                 self._msg("This goal can't be closed because it have open subgoals")
 
     def _may_be_closed(self) -> bool:
-        return all(g.target in self.closed for g in self.edges[self.settings['selection']])
+        return all(g.target in self.closed for g in self.forw_edges[self.settings['selection']])
 
     def _may_be_reopened(self) -> bool:
         parent_edges = self.back_edges[self.settings['selection']]
@@ -153,10 +153,10 @@ class Goals(Graph):
     def _delete(self, goal_id: int) -> None:
         self.goals[goal_id] = None
         self.closed.add(goal_id)
-        next_to_remove = self.edges.pop(goal_id, [])  # type: List[Edge]
+        next_to_remove = self.forw_edges.pop(goal_id, [])  # type: List[Edge]
         self.back_edges.pop(goal_id, {})
-        for key, values in self.edges.items():
-            self.edges[key] = [x for x in values if x.target != goal_id]
+        for key, values in self.forw_edges.items():
+            self.forw_edges[key] = [x for x in values if x.target != goal_id]
         for key, values in self.back_edges.items():
             self.back_edges[key] = [x for x in values if x.source != goal_id]
         for next_goal in next_to_remove:
@@ -172,7 +172,7 @@ class Goals(Graph):
             return
         if self._has_link(lower, upper):
             current_edge_type = None
-            for edge in self.edges[lower]:
+            for edge in self.forw_edges[lower]:
                 if edge.target == upper:
                     current_edge_type = edge.type
                     break
@@ -186,7 +186,7 @@ class Goals(Graph):
         edges_to_upper = len(self.back_edges[upper])
         if edges_to_upper > 1:
             edge = Edge(lower, upper, edge_type)
-            self.edges[lower].remove(edge)
+            self.forw_edges[lower].remove(edge)
             self.back_edges[upper].remove(edge)
             self.events.append(('unlink', lower, upper, edge_type))
         else:
@@ -202,34 +202,34 @@ class Goals(Graph):
         while front:
             g = front.pop()
             visited.add(g)
-            for e in self.edges[g]:
+            for e in self.forw_edges[g]:
                 total.add(e.target)
                 if e not in visited:
                     front.add(e.target)
         if lower not in total:
             edge = Edge(lower, upper, edge_type)
-            self.edges[lower].append(edge)
+            self.forw_edges[lower].append(edge)
             self.back_edges[upper].append(edge)
             self.events.append(('link', lower, upper, edge.type))
         else:
             self._msg("Circular dependencies between goals are not allowed")
 
     def verify(self, check_parents: bool = False) -> bool:
-        assert all(g.target in self.closed for p in self.closed for g in self.edges.get(p, [])), \
+        assert all(g.target in self.closed for p in self.closed for g in self.forw_edges.get(p, [])), \
             'Open goals could not be blocked by closed ones'
 
         queue = [1]  # type: List[int]
         visited = set()  # type: Set[int]
         while queue:
             goal = queue.pop()
-            queue.extend(g.target for g in self.edges[goal]
+            queue.extend(g.target for g in self.forw_edges[goal]
                          if g.target not in visited and self.goals[g.target] is not None)
             visited.add(goal)
         assert visited == set(x for x in self.goals if self.goals[x] is not None), \
             'All subgoals must be accessible from the root goal'
 
         deleted_nodes = [g for g, v in self.goals.items() if v is None]
-        assert all(not self.edges.get(n) for n in deleted_nodes), \
+        assert all(not self.forw_edges.get(n) for n in deleted_nodes), \
             'Deleted goals must have no dependencies'
 
         assert all(k in self.settings for k in {'selection', 'previous_selection'})
@@ -259,9 +259,9 @@ class Goals(Graph):
             edge = Edge(parent, child, link_type)
             d[parent].append(edge)
             bd[child].append(edge)
-        result.edges = dict(d)
+        result.forw_edges = dict(d)
         result.back_edges = dict(bd)
-        result.edges.update(dict((g, []) for g in result.goals if g not in d))
+        result.forw_edges.update(dict((g, []) for g in result.goals if g not in d))
         result.back_edges.update(dict((g, []) for g in result.goals if g not in bd))
         result.settings.update(settings)
         result.verify(check_parents)
@@ -272,7 +272,7 @@ class Goals(Graph):
         # type: (Goals) -> Tuple[GoalsData, EdgesData, OptionsData]
         nodes = [(g_id, g_name, g_id not in goals.closed)
                  for g_id, g_name in goals.goals.items()]
-        edges = [(parent, child.target, child.type) for parent in goals.edges
-                 for child in goals.edges[parent]]
+        edges = [(parent, child.target, child.type) for parent in goals.forw_edges
+                 for child in goals.forw_edges[parent]]
         settings = list(goals.settings.items())
         return nodes, edges, settings
