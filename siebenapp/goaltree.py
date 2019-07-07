@@ -69,7 +69,7 @@ class Goals(Graph):
             # type: (int) -> Optional[str]
             if x == self.settings['selection']:
                 return 'select'
-            elif x == self.settings['previous_selection']:
+            if x == self.settings['previous_selection']:
                 return 'prev'
             return None
 
