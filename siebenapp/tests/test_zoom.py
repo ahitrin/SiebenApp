@@ -22,7 +22,7 @@ def test_skip_intermediate_goal_during_zoom():
     ))
     goals.toggle_zoom()
     assert goals.q(keys='name,edge') == {
-        -1: {'name': 'Root', 'edge': [(3, Edge.TYPE_SOFT)]},
+        -1: {'name': 'Root', 'edge': [(3, Edge.BLOCKER)]},
         3: {'name': 'Zoomed', 'edge': []},
     }
 
@@ -36,7 +36,7 @@ def test_hide_neighbour_goals_during_zoom():
     ))
     goals.toggle_zoom()
     assert goals.q(keys='name,edge') == {
-        -1: {'name': 'Root', 'edge': [(2, Edge.TYPE_SOFT)]},
+        -1: {'name': 'Root', 'edge': [(2, Edge.BLOCKER)]},
         2: {'name': 'Zoomed', 'edge': []},
     }
 
@@ -49,15 +49,15 @@ def test_do_not_hide_subgoals():
     ))
     goals.toggle_zoom()
     assert goals.q(keys='name,edge') == {
-        -1: {'name': 'Root', 'edge': [(2, Edge.TYPE_SOFT)]},
-        2: {'name': 'Zoomed', 'edge': [(3, Edge.TYPE_STRONG)]},
+        -1: {'name': 'Root', 'edge': [(2, Edge.BLOCKER)]},
+        2: {'name': 'Zoomed', 'edge': [(3, Edge.PARENT)]},
         3: {'name': 'Visible', 'edge': []},
     }
     goals.add('More children', 3)
     assert goals.q(keys='name,edge') == {
-        -1: {'name': 'Root', 'edge': [(2, Edge.TYPE_SOFT)]},
-        2: {'name': 'Zoomed', 'edge': [(3, Edge.TYPE_STRONG)]},
-        3: {'name': 'Visible', 'edge': [(4, Edge.TYPE_STRONG)]},
+        -1: {'name': 'Root', 'edge': [(2, Edge.BLOCKER)]},
+        2: {'name': 'Zoomed', 'edge': [(3, Edge.PARENT)]},
+        3: {'name': 'Visible', 'edge': [(4, Edge.PARENT)]},
         4: {'name': 'More children', 'edge': []},
     }
 
@@ -75,7 +75,7 @@ def test_double_zoom_means_unzoom():
     }
     goals.toggle_zoom()
     assert goals.q('name,edge') == {
-        1: {'name': 'Root', 'edge': [(2, Edge.TYPE_STRONG), (3, Edge.TYPE_STRONG)]},
+        1: {'name': 'Root', 'edge': [(2, Edge.PARENT), (3, Edge.PARENT)]},
         2: {'name': 'Zoomed', 'edge': []},
         3: {'name': 'Hidden', 'edge': []},
     }

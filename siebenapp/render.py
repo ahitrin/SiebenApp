@@ -49,7 +49,7 @@ class Renderer:
                 new_goal_name = '%d_%d' % (original_id, current_layer)
                 self.edges[new_goal_name] = [g for g in self.edges[original_id]
                                              if g in sorted_goals and g not in new_layer]
-                new_edge_type = Edge.TYPE_SOFT
+                new_edge_type = Edge.BLOCKER
                 for g in self.edges[new_goal_name]:
                     self.edges[original_id].remove(g)
                     self.edge_types[new_goal_name, g] = self.edge_types[original_id, g]

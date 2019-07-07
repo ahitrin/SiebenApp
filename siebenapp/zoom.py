@@ -37,7 +37,7 @@ class Zoom(Graph):
                         if k in visible_goals}
         zoomed_goals[-1] = origin_goals[1]
         if 'edge' in keys:
-            zoomed_goals[-1]['edge'] = [(self.zoom_root[-1], Edge.TYPE_SOFT)]
+            zoomed_goals[-1]['edge'] = [(self.zoom_root[-1], Edge.BLOCKER)]
         return zoomed_goals
 
     def toggle_close(self):

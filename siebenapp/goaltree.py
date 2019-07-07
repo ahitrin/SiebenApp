@@ -6,8 +6,8 @@ from siebenapp.domain import Graph
 
 
 class Edge(collections.namedtuple('Edge', 'source target type')):
-    TYPE_SOFT = 1
-    TYPE_STRONG = 2
+    BLOCKER = 1
+    PARENT = 2
     __slots__ = ()
 
 
@@ -37,7 +37,7 @@ class Goals(Graph):
     def _has_link(self, lower: int, upper: int) -> bool:
         return upper in set(x.target for x in self.edges[lower])
 
-    def add(self, name: str, add_to: int = 0, edge_type: int = Edge.TYPE_STRONG) -> bool:
+    def add(self, name: str, add_to: int = 0, edge_type: int = Edge.PARENT) -> bool:
         if add_to == 0:
             add_to = self.settings['selection']
         if add_to in self.closed:
@@ -100,7 +100,7 @@ class Goals(Graph):
         if lower == upper:
             self._msg("A new goal can be inserted only between two different goals")
             return
-        edge_type = Edge.TYPE_SOFT
+        edge_type = Edge.BLOCKER
         for edge in self.edges[lower]:
             if edge.target == upper:
                 edge_type = edge.type
@@ -164,7 +164,7 @@ class Goals(Graph):
                 self._delete(next_goal.target)
         self.events.append(('delete', goal_id))
 
-    def toggle_link(self, lower: int = 0, upper: int = 0, edge_type: int = Edge.TYPE_SOFT) -> None:
+    def toggle_link(self, lower: int = 0, upper: int = 0, edge_type: int = Edge.BLOCKER) -> None:
         lower = self.settings['previous_selection'] if lower == 0 else lower
         upper = self.settings['selection'] if upper == 0 else upper
         if lower == upper:
@@ -235,7 +235,7 @@ class Goals(Graph):
         assert all(k in self.settings for k in {'selection', 'previous_selection'})
 
         if check_parents:
-            parent_count = {goal_id: len([e for e in items if e.type == Edge.TYPE_STRONG])
+            parent_count = {goal_id: len([e for e in items if e.type == Edge.PARENT])
                             for goal_id, items in self.back_edges.items()}
             multiple_parents = {goal_id: parent_count
                                 for goal_id, count in parent_count.items() if count > 1}

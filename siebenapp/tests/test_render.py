@@ -101,10 +101,10 @@ def test_split_long_edges_using_fake_goals():
     result = Renderer(goals).build()
     assert get_in(result, 'edge') == {
         5: [],
-        4: [(5, Edge.TYPE_STRONG)], '1_1': [(5, Edge.TYPE_SOFT)],
-        3: [(4, Edge.TYPE_STRONG)], '1_2': [('1_1', Edge.TYPE_SOFT)],
-        2: [(3, Edge.TYPE_STRONG)], '1_3': [('1_2', Edge.TYPE_SOFT)],
-        1: [(2, Edge.TYPE_STRONG), ('1_3', Edge.TYPE_SOFT)],
+        4: [(5, Edge.PARENT)], '1_1': [(5, Edge.BLOCKER)],
+        3: [(4, Edge.PARENT)], '1_2': [('1_1', Edge.BLOCKER)],
+        2: [(3, Edge.PARENT)], '1_3': [('1_2', Edge.BLOCKER)],
+        1: [(2, Edge.PARENT), ('1_3', Edge.BLOCKER)],
     }
 
 
@@ -117,8 +117,8 @@ def test_use_different_long_edge_types():
     result = Renderer(goals).build()
     assert get_in(result, 'edge') == {
         3: [],
-        2: [(3, Edge.TYPE_STRONG)], '1_1': [(3, Edge.TYPE_SOFT)],
-        1: [(2, Edge.TYPE_STRONG), ('1_1', Edge.TYPE_SOFT)],
+        2: [(3, Edge.PARENT)], '1_1': [(3, Edge.BLOCKER)],
+        1: [(2, Edge.PARENT), ('1_1', Edge.BLOCKER)],
     }
 
 

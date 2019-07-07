@@ -62,8 +62,8 @@ class GoalWidget(QWidget, Ui_GoalBody):
 
 class CentralWidget(QWidget):
     EDGE_PENS = {
-        Edge.TYPE_SOFT: QPen(Qt.black, 1, Qt.DashLine),
-        Edge.TYPE_STRONG: QPen(Qt.black, 1, Qt.SolidLine),
+        Edge.BLOCKER: QPen(Qt.black, 1, Qt.DashLine),
+        Edge.PARENT: QPen(Qt.black, 1, Qt.SolidLine),
     }
 
     def __init__(self):
@@ -167,7 +167,7 @@ class SiebenApp(QMainWindow):
             Qt.Key_C: self.with_refresh(self.goals.toggle_close),
             Qt.Key_D: self.with_refresh(self.goals.delete),
             Qt.Key_I: self.start_edit('Insert new goal', self.goals.insert),
-            Qt.Key_K: self.with_refresh(self.goals.toggle_link, edge_type=Edge.TYPE_STRONG),
+            Qt.Key_K: self.with_refresh(self.goals.toggle_link, edge_type=Edge.PARENT),
             Qt.Key_L: self.with_refresh(self.goals.toggle_link),
             Qt.Key_Q: self.quit_app.emit,
             Qt.Key_R: self.start_edit('Rename goal', self.goals.rename, self._current_goal_label),
