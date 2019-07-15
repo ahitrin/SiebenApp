@@ -46,6 +46,9 @@ class Goals(Graph):
     def _forward_edges(self, goal: int) -> List[Edge]:
         return [Edge(goal, k[1], v) for k, v in self.edges.items() if k[0] == goal]
 
+    def _back_edges(self, goal: int) -> List[Edge]:
+        return [Edge(k[0], goal, v) for k, v in self.edges.items() if k[1] == goal]
+
     def add(self, name: str, add_to: int = 0, edge_type: int = Edge.PARENT) -> bool:
         if add_to == 0:
             add_to = self.settings['selection']
@@ -96,9 +99,9 @@ class Goals(Graph):
 
     def _switchable(self, key: int) -> bool:
         if key in self.closed:
-            has_open_parents = any(y for y in self.back_edges[key]
-                                   if y.source not in self.closed)
-            has_no_parents = not self.back_edges[key]
+            has_open_parents = any(True for k, v in self.edges.items()
+                                   if k[0] not in self.closed and k[1] == key)
+            has_no_parents = not self._back_edges(key)
             return has_open_parents or has_no_parents
         return all(x.target in self.closed for x in self._forward_edges(key))
 
@@ -142,8 +145,8 @@ class Goals(Graph):
         return all(g.target in self.closed for g in self._forward_edges(self.settings['selection']))
 
     def _may_be_reopened(self) -> bool:
-        parent_edges = self.back_edges[self.settings['selection']]
-        return all(g.source not in self.closed for g in parent_edges)
+        return all(k[0] not in self.closed for k, v in self.edges.items()
+                   if k[1] == self.settings['selection'])
 
     def delete(self, goal_id: int = 0) -> None:
         if goal_id == 0:
@@ -166,7 +169,7 @@ class Goals(Graph):
         self.edges = {k: v for k, v in self.edges.items()
                       if goal_id not in k}
         for next_goal in next_to_remove:
-            if not self.back_edges.get(next_goal.target, []):
+            if not self._back_edges(next_goal.target):
                 self._delete(next_goal.target)
         self.events.append(('delete', goal_id))
         self._assert_edges_are_same()
@@ -190,8 +193,8 @@ class Goals(Graph):
 
     def _remove_existing_link(self, lower: int, upper: int, edge_type: int = None,
                               replace_only: bool = False) -> None:
-        edges_to_upper = len(self.back_edges[upper])
-        if edges_to_upper > 1:
+        edges_to_upper = self._back_edges(upper)
+        if len(edges_to_upper) > 1 or replace_only:
             edge = Edge(lower, upper, edge_type)
             self.back_edges[upper].remove(edge)
             if not replace_only:
@@ -245,11 +248,10 @@ class Goals(Graph):
         assert all(k in self.settings for k in {'selection', 'previous_selection'})
 
         if check_parents:
-            parent_count = {goal_id: len([e for e in items if e.type == Edge.PARENT])
-                            for goal_id, items in self.back_edges.items()}
-            multiple_parents = {goal_id: parent_count
-                                for goal_id, count in parent_count.items() if count > 1}
-            assert not multiple_parents, 'Each goal must have at most 1 parent'
+            parent_edges = [k for k, v in self.edges.items() if v == Edge.PARENT]
+            edges_with_parent = set(child for parent, child in parent_edges)
+            assert len(parent_edges) == len(edges_with_parent), \
+                'Each goal must have at most 1 parent'
 
         return True
 
