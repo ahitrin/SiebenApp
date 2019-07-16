@@ -180,7 +180,6 @@ class Goals(Graph):
                               replace_only: bool = False) -> None:
         edges_to_upper = self._back_edges(upper)
         if len(edges_to_upper) > 1 or replace_only:
-            edge = Edge(lower, upper, edge_type)
             if not replace_only:
                 self.edges.pop((lower, upper))
             self.events.append(('unlink', lower, upper, edge_type))
