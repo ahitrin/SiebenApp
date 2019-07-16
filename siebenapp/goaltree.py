@@ -29,9 +29,6 @@ class Goals(Graph):
         self.message_fn = message_fn
         self._add_no_link(name)
 
-    def _assert_edges_are_same(self):
-        pass
-
     def _msg(self, message: str) -> None:
         if self.message_fn:
             self.message_fn(message)
@@ -112,7 +109,6 @@ class Goals(Graph):
             self.toggle_link(key, upper, edge_type)
             if self._has_link(lower, upper):
                 self.toggle_link(lower, upper, edge_type)
-        self._assert_edges_are_same()
 
     def rename(self, new_name: str, goal_id: int = 0) -> None:
         if goal_id == 0:
@@ -157,14 +153,12 @@ class Goals(Graph):
         self.goals[goal_id] = None
         self.closed.add(goal_id)
         next_to_remove = self._forward_edges(goal_id)
-        self.edges = {k: v for k, v in self.edges.items() if k[0] != goal_id}
         self.edges = {k: v for k, v in self.edges.items()
                       if goal_id not in k}
         for next_goal in next_to_remove:
             if not self._back_edges(next_goal.target):
                 self._delete(next_goal.target)
         self.events.append(('delete', goal_id))
-        self._assert_edges_are_same()
 
     def toggle_link(self, lower: int = 0, upper: int = 0, edge_type: int = Edge.BLOCKER) -> None:
         lower = self.settings['previous_selection'] if lower == 0 else lower
@@ -181,7 +175,6 @@ class Goals(Graph):
             self._remove_existing_link(lower, upper, current_edge_type, replace_only)
         else:
             self._create_new_link(lower, upper, edge_type)
-        self._assert_edges_are_same()
 
     def _remove_existing_link(self, lower: int, upper: int, edge_type: int = None,
                               replace_only: bool = False) -> None:
@@ -193,7 +186,6 @@ class Goals(Graph):
             self.events.append(('unlink', lower, upper, edge_type))
         else:
             self._msg("Can't remove the last link")
-        self._assert_edges_are_same()
 
     def _create_new_link(self, lower: int, upper: int, edge_type: int) -> None:
         if lower in self.closed and upper not in self.closed:
@@ -215,7 +207,6 @@ class Goals(Graph):
             self.events.append(('link', lower, upper, edge.type))
         else:
             self._msg("Circular dependencies between goals are not allowed")
-        self._assert_edges_are_same()
 
     def verify(self, check_parents: bool = False) -> bool:
         assert all(g.target in self.closed for p in self.closed for g in self._forward_edges(p)), \
