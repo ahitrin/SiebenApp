@@ -190,6 +190,14 @@ class Goals(Graph):
         if lower in self.closed and upper not in self.closed:
             self._msg("An open goal can't block already closed one")
             return
+        if self._has_circular_dependency(lower, upper):
+            self._msg("Circular dependencies between goals are not allowed")
+            return
+        edge = Edge(lower, upper, edge_type)
+        self.edges[lower, upper] = edge_type
+        self.events.append(('link', lower, upper, edge.type))
+
+    def _has_circular_dependency(self, lower: int, upper: int) -> bool:
         front = {upper}  # type: Set[int]
         visited = set()  # type: Set[int]
         total = set()  # type: Set[int]
@@ -200,12 +208,7 @@ class Goals(Graph):
                 total.add(e.target)
                 if e not in visited:
                     front.add(e.target)
-        if lower not in total:
-            edge = Edge(lower, upper, edge_type)
-            self.edges[lower, upper] = edge_type
-            self.events.append(('link', lower, upper, edge.type))
-        else:
-            self._msg("Circular dependencies between goals are not allowed")
+        return lower in total
 
     def verify(self, check_parents: bool = False) -> bool:
         assert all(g.target in self.closed for p in self.closed for g in self._forward_edges(p)), \
