@@ -236,6 +236,21 @@ class GoalsTest(TestCase):
             3: {'edge': [(4, Edge.PARENT)]},
             4: {'edge': []}}
 
+    def test_new_parent_link_replaces_old_one(self):
+        self.goals = self.build(
+            open_(1, 'Root', [2, 3]),
+            open_(2, 'Old parent', [4]),
+            open_(3, 'New parent', select=previous),
+            open_(4, 'Child', select=selected)
+        )
+        self.goals.toggle_link(edge_type=Edge.PARENT)
+        assert self.goals.q(keys='edge') == {
+            1: {'edge': [(2, Edge.PARENT), (3, Edge.PARENT)]},
+            2: {'edge': [(4, Edge.BLOCKER)]},
+            3: {'edge': [(4, Edge.PARENT)]},
+            4: {'edge': []}
+        }
+
     def test_remove_link_between_goals(self):
         self.goals = self.build(
             open_(1, 'Root', [2, 3]),

@@ -193,9 +193,8 @@ class Goals(Graph):
         if self._has_circular_dependency(lower, upper):
             self._msg("Circular dependencies between goals are not allowed")
             return
-        edge = Edge(lower, upper, edge_type)
         self.edges[lower, upper] = edge_type
-        self.events.append(('link', lower, upper, edge.type))
+        self.events.append(('link', lower, upper, edge_type))
 
     def _has_circular_dependency(self, lower: int, upper: int) -> bool:
         front = {upper}  # type: Set[int]
