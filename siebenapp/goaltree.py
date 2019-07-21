@@ -168,20 +168,22 @@ class Goals(Graph):
             return
         if self._has_link(lower, upper):
             current_edge_type = self.edges[(lower, upper)]
-            replace_only = False
             if current_edge_type != edge_type:
-                replace_only = True
-                self._create_new_link(lower, upper, edge_type)
-            self._remove_existing_link(lower, upper, current_edge_type, replace_only)
+                self._replace_link(lower, upper, edge_type)
+            else:
+                self._remove_existing_link(lower, upper, current_edge_type)
         else:
             self._create_new_link(lower, upper, edge_type)
 
-    def _remove_existing_link(self, lower: int, upper: int, edge_type: int = None,
-                              replace_only: bool = False) -> None:
+    def _replace_link(self, lower: int, upper: int, edge_type: int) -> None:
+        old_edge_type = self.edges[(lower, upper)]
+        self._create_new_link(lower, upper, edge_type)
+        self.events.append(('unlink', lower, upper, old_edge_type))
+
+    def _remove_existing_link(self, lower: int, upper: int, edge_type: int = None) -> None:
         edges_to_upper = self._back_edges(upper)
-        if len(edges_to_upper) > 1 or replace_only:
-            if not replace_only:
-                self.edges.pop((lower, upper))
+        if len(edges_to_upper) > 1:
+            self.edges.pop((lower, upper))
             self.events.append(('unlink', lower, upper, edge_type))
         else:
             self._msg("Can't remove the last link")
