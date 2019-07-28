@@ -108,7 +108,7 @@ class Goals(Graph):
             key = len(self.goals)
             self.toggle_link(key, upper, edge_type)
             if self._has_link(lower, upper):
-                self.toggle_link(lower, upper, edge_type)
+                self.toggle_link(lower, upper)
 
     def rename(self, new_name: str, goal_id: int = 0) -> None:
         if goal_id == 0:
@@ -170,6 +170,7 @@ class Goals(Graph):
             current_edge_type = self.edges[(lower, upper)]
             if current_edge_type != edge_type:
                 self._replace_link(lower, upper, edge_type)
+                self._transform_old_parents_into_blocked(lower, upper)
             else:
                 self._remove_existing_link(lower, upper, current_edge_type)
         else:
@@ -177,7 +178,8 @@ class Goals(Graph):
 
     def _replace_link(self, lower: int, upper: int, edge_type: int) -> None:
         old_edge_type = self.edges[(lower, upper)]
-        self._create_new_link(lower, upper, edge_type)
+        self.edges[(lower, upper)] = edge_type
+        self.events.append(('link', lower, upper, edge_type))
         self.events.append(('unlink', lower, upper, old_edge_type))
 
     def _remove_existing_link(self, lower: int, upper: int, edge_type: int = None) -> None:
@@ -195,8 +197,16 @@ class Goals(Graph):
         if self._has_circular_dependency(lower, upper):
             self._msg("Circular dependencies between goals are not allowed")
             return
+        if edge_type == Edge.PARENT:
+            self._transform_old_parents_into_blocked(lower, upper)
         self.edges[lower, upper] = edge_type
         self.events.append(('link', lower, upper, edge_type))
+
+    def _transform_old_parents_into_blocked(self, lower, upper):
+        old_parents = [e.source for e in self._back_edges(upper)
+                       if e.type == Edge.PARENT and e.source != lower]
+        for p in old_parents:
+            self._replace_link(p, upper, Edge.BLOCKER)
 
     def _has_circular_dependency(self, lower: int, upper: int) -> bool:
         front = {upper}  # type: Set[int]

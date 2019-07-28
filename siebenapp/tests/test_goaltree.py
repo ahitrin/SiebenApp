@@ -251,6 +251,19 @@ class GoalsTest(TestCase):
             4: {'edge': []}
         }
 
+    def test_new_parent_link_replaces_old_one_when_changed_from_blocker(self):
+        self.goals = self.build(
+            open_(1, 'Root', [2, 3]),
+            open_(2, 'A', select=selected),
+            open_(3, 'B', blockers=[2], select=previous)
+        )
+        self.goals.toggle_link(edge_type=Edge.PARENT)
+        assert self.goals.q('name,edge') == {
+            1: {'name': 'Root', 'edge': [(2, Edge.BLOCKER), (3, Edge.PARENT)]},
+            2: {'name': 'A', 'edge': []},
+            3: {'name': 'B', 'edge': [(2, Edge.PARENT)]},
+        }
+
     def test_remove_link_between_goals(self):
         self.goals = self.build(
             open_(1, 'Root', [2, 3]),
@@ -422,8 +435,10 @@ class GoalsTest(TestCase):
             open_(3, 'Upper', [], select=selected),
         )
         self.goals.toggle_link(edge_type=Edge.PARENT)
-        assert self.goals.events[-2] == ('link', 2, 3, Edge.PARENT)
-        assert self.goals.events[-1] == ('unlink', 2, 3, Edge.BLOCKER)
+        assert self.goals.events[-4] == ('link', 2, 3, Edge.PARENT)
+        assert self.goals.events[-3] == ('unlink', 2, 3, Edge.BLOCKER)
+        assert self.goals.events[-2] == ('link', 1, 3, Edge.BLOCKER)
+        assert self.goals.events[-1] == ('unlink', 1, 3, Edge.PARENT)
 
     def test_no_messages_at_start(self):
         assert self.messages == []
