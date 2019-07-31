@@ -37,6 +37,9 @@ class Zoom(Graph):
                         if k in visible_goals}
         zoomed_goals[-1] = origin_goals[1]
         if 'edge' in keys:
+            for goal in zoomed_goals:
+                zoomed_goals[goal]['edge'] = [g for g in zoomed_goals[goal]['edge']
+                                              if g[0] in visible_goals]
             zoomed_goals[-1]['edge'] = [(self.zoom_root[-1], Edge.BLOCKER)]
         return zoomed_goals
 
@@ -63,11 +66,12 @@ class Zoom(Graph):
         edges = self.goaltree.q('edge')
         current_zoom_root = self.zoom_root[-1]
         visible_goals = {current_zoom_root}
-        goals_to_visit = set(e[0] for e in edges[current_zoom_root]['edge'])
-        while goals_to_visit:
-            next_child = goals_to_visit.pop()
-            visible_goals.add(next_child)
-            goals_to_visit.update(e[0] for e in edges[next_child]['edge'])
+        edges_to_visit = set(edges[current_zoom_root]['edge'])
+        while edges_to_visit:
+            next_edge = edges_to_visit.pop()
+            visible_goals.add(next_edge[0])
+            if next_edge[1] == Edge.PARENT:
+                edges_to_visit.update(edges[next_edge[0]]['edge'])
         return visible_goals
 
     def __getattribute__(self, item):

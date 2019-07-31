@@ -62,6 +62,21 @@ def test_do_not_hide_subgoals():
     }
 
 
+def test_hide_subgoals_of_blockers():
+    goals = Zoom(build_goaltree(
+        open_(1, 'Root', [2, 3]),
+        open_(2, 'Zoomed', blockers=[3], select=selected),
+        open_(3, 'Blocker', [4]),
+        open_(4, 'Should be hidden')
+    ))
+    goals.toggle_zoom()
+    assert goals.q(keys='name,edge,switchable') == {
+        -1: {'name': 'Root', 'edge': [(2, Edge.BLOCKER)], 'switchable': False},
+        2: {'name': 'Zoomed', 'edge': [(3, Edge.BLOCKER)], 'switchable': False},
+        3: {'name': 'Blocker', 'edge': [], 'switchable': False},
+    }
+
+
 def test_double_zoom_means_unzoom():
     goals = Zoom(build_goaltree(
         open_(1, 'Root', [2, 3]),
