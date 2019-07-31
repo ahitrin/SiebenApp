@@ -78,6 +78,22 @@ MIGRATIONS = [
            where name = 'zoom' and goal <> 1''',
         "delete from settings where name = 'zoom'",
     ],
+    # 6
+    [
+        '''create table new_edges (
+            parent integer not null,
+            child integer not null,
+            reltype integer not null default 1,
+            primary key(parent, child),
+            foreign key(parent) references goals(goal_id),
+            foreign key(child) references goals(goal_id)
+        )''',
+        'insert into new_edges select parent, child, 1 from edges',
+        '''insert or replace into new_edges
+        select min(parent), child, 2 from edges where reltype=2 group by child''',
+        'delete from edges',
+        'insert into edges select * from new_edges',
+    ]
 ]
 
 
