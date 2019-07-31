@@ -81,14 +81,15 @@ Here we see that two closed goals still exists in a graph, but now they are mark
 Now just play around freely using following buttons:
 
  * `1`..`0` (according to the keyboard layout) for _selecting_ goals (when you have more than 10 goals, each selection needs 2 key presses);
- * `a` for _adding_ new subgoals;
+ * `a` for _adding_ new subgoals (with _child link_ between current goal and subgoal);
  * `d` for _removing_ them (please note that removing is **undoable**, and may remove all subgoals of the current one);
  * `c` for _closing_ current goal, and also for re-open closed one;
  * `r` for _renaming_;
  * `Space` for _holding_ (remembering) current selection;
- * `l` for creating new _link_ between remembered and current selections (current selection becomes subgoal of the remembered one), and also for removing existing links;
+ * `l` for creating new _blocking link_ between remembered and current selections (current selection becomes subgoal of the remembered one), and also for removing existing links;
+ * `k` for creating new _child link_ between remembered and current selections - please note that each goal could have at most 1 parent, and an old _child link_ will be replaced with _blocking link_;
  * `i` for _inserting_ new goal between remembered and current selections;
-* `Esc` to cancel changes you're currently doing when _add_, _insert_, or _rename_ a goal.
+* `Esc` to cancel changes you're currently doing when _add_, _insert_, or _rename_ a goal;
  * `z` for _zooming_ to the given goal or _unzooming_ back to all goals;
  * `v` for circular switching current _view_: only open goals → only "top" goals → all goals → ...;
  * `q` for quitting when you are impressed enough.
