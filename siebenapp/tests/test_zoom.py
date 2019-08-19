@@ -127,7 +127,7 @@ def test_selection_should_not_be_changed_if_selected_goal_is_visible():
     }
 
 
-def test_selection_should_be_changed_if_selected_goal_is_invisible():
+def test_selection_should_be_changed_if_selected_goal_is_sibling_to_zoom_root():
     goals = Zoom(build_goaltree(
         open_(1, 'Root', [2, 3]),
         open_(2, 'Previous selected', select=previous),
@@ -135,6 +135,26 @@ def test_selection_should_be_changed_if_selected_goal_is_invisible():
     ))
     goals.toggle_zoom()
     assert goals.events[-1] == ('hold_select', 3)
+    assert goals.q('name,select') == {
+        -1: {'name': 'Root', 'select': None},
+        3: {'name': 'Zoomed', 'select': 'select'},
+    }
+
+
+def test_selection_should_be_changed_if_selected_goal_is_not_a_child_of_zoom_root():
+    goals = Zoom(build_goaltree(
+        open_(1, 'Root', [2, 4]),
+        open_(2, 'Blocker', [3]),
+        open_(3, 'Previous selected', select=previous),
+        open_(4, 'Zoomed', blockers=[2], select=selected)
+    ))
+    goals.toggle_zoom()
+    assert goals.events[-1] == ('hold_select', 4)
+    assert goals.q('name,select') == {
+        -1: {'name': 'Root', 'select': None},
+        2: {'name': 'Blocker', 'select': None},
+        4: {'name': 'Zoomed', 'select': 'select'},
+    }
 
 
 def test_closing_zoom_root_should_cause_unzoom():
