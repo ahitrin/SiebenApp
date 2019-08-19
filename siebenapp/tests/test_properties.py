@@ -3,8 +3,7 @@ import os
 import sqlite3
 from contextlib import closing
 
-import pytest
-from hypothesis import given, note, settings
+from hypothesis import given, note, settings, example
 from hypothesis.strategies import lists, sampled_from, composite, choices, text
 
 from siebenapp.enumeration import Enumeration
@@ -39,12 +38,17 @@ def user_actions(draw, skip=None, **lists_kwargs):
 
 
 def build_from(actions, choice_fn, show_notes=True):
+    def _select_one_from(keys):
+        if isinstance(choice_fn, list):
+            return choice_fn.pop(0)
+        return choice_fn(keys)
+
     g = Goals('Root')
     try:
         for name in actions:
             int_val = 0
             if name == 'select':
-                int_val = choice_fn(list(g.q().keys()))
+                int_val = _select_one_from(list(g.q().keys()))
             USER_ACTIONS[name](g, int_val)
     finally:
         if show_notes:
@@ -52,27 +56,17 @@ def build_from(actions, choice_fn, show_notes=True):
     return g
 
 
-@pytest.mark.parametrize('actions,ints', [
-    (['add', 'add', 'select', 'toggle_close', 'select', 'hold_select', 'select', 'toggle_link'],
-     [2, 2, 3]),
-    (['add', 'select', 'add', 'add', 'select', 'hold_select', 'select', 'insert', 'select', 'delete'],
-     [2, 4, 3, 2]),
-    (['add', 'select', 'insert', 'toggle_link', 'toggle_close', 'select', 'toggle_close', 'select', 'toggle_close'],
-     [2, 3, 2]),
-    (['add', 'select', 'hold_select', 'add', 'select', 'insert', 'toggle_link', 'select', 'delete'],
-     [2, 3, 2]),
-])
-def test_bad_examples_found_by_hypothesis(actions, ints):
-    def repeat_choices(l):
-        def inner(gs):
-            assert l, 'There are no more selects expected'
-            next_result = l.pop(0)
-            assert next_result in gs, 'Goal with id %d should be selected, but existing goals are %s' % (
-                next_result, gs
-            )
-            return next_result
-        return inner
-    g = build_from(actions, repeat_choices(ints), show_notes=False)
+@given(user_actions(), choices())
+@example(actions=['add', 'add', 'select', 'toggle_close', 'select', 'hold_select', 'select', 'toggle_link'],
+         ch=[2, 2, 3])
+@example(actions=['add', 'select', 'add', 'add', 'select', 'hold_select', 'select', 'insert', 'select', 'delete'],
+         ch=[2, 4, 3, 2])
+@example(actions=['add', 'select', 'insert', 'toggle_link', 'toggle_close', 'select', 'toggle_close', 'select', 'toggle_close'],
+         ch=[2, 3, 2])
+@example(actions=['add', 'select', 'hold_select', 'add', 'select', 'insert', 'toggle_link', 'select', 'delete'],
+         ch=[2, 3, 2])
+def test_goaltree_must_be_valid_after_build(actions, ch):
+    g = build_from(actions, ch, show_notes=False)
     assert g.verify()
 
 
