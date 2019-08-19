@@ -8,7 +8,7 @@ from hypothesis import given, note, settings
 from hypothesis.strategies import lists, sampled_from, composite, choices, text
 
 from siebenapp.enumeration import Enumeration
-from siebenapp.goaltree import Goals
+from siebenapp.goaltree import Goals, Edge
 from siebenapp.system import run_migrations, save_updates
 
 
@@ -26,6 +26,7 @@ USER_ACTIONS = {
     'select': lambda g, x: g.select(x),
     'toggle_close': lambda g, x: g.toggle_close(),
     'toggle_link': lambda g, x: g.toggle_link(),
+    'toggle_child': lambda g, x: g.toggle_link(edge_type=Edge.PARENT),
 }
 
 
