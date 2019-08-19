@@ -97,7 +97,7 @@ def test_any_goal_may_be_selected(all_actions, non_select_actions, ch, choice):
     assert g.q(keys='select')[rnd_goal]['select'] == 'select'
 
 
-@given(user_actions(average_size=100, skip=['rename']), choices(), choices())
+@given(user_actions(skip=['rename']), choices(), choices())
 def test_any_goal_may_be_selected_through_enumeration(actions, ch, choice):
     g = build_from(actions, ch)
     e = Enumeration(g)
@@ -109,7 +109,7 @@ def test_any_goal_may_be_selected_through_enumeration(actions, ch, choice):
     assert e.q(keys='select')[rnd_goal]['select'] == 'select'
 
 
-@given(user_actions(average_size=100), choices())
+@given(user_actions(), choices())
 def test_no_modify_action_sequence_could_break_goaltree_correctness(actions, ch):
     g = build_from(actions, ch)
     assert g.verify()
