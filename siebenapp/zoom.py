@@ -4,17 +4,18 @@ from siebenapp.domain import Graph
 from siebenapp.goaltree import Goals, Edge
 
 
+ZoomData = List[Tuple[int, int]]
+
+
 class Zoom(Graph):
     override = ['_build_visible_goals', 'q', 'delete', 'export', 'goaltree',
                 'toggle_close', 'toggle_zoom', 'zoom_root']
 
-    def __init__(self, goaltree):
-        # type: (Goals) -> None
+    def __init__(self, goaltree: Goals) -> None:
         self.goaltree = goaltree
         self.zoom_root = [1]
 
-    def toggle_zoom(self):
-        # type: () -> None
+    def toggle_zoom(self) -> None:
         selection = self.settings['selection']
         if selection == self.zoom_root[-1] and len(self.zoom_root) > 1:
             # unzoom
@@ -43,8 +44,7 @@ class Zoom(Graph):
             zoomed_goals[-1]['edge'] = [(self.zoom_root[-1], Edge.BLOCKER)]
         return zoomed_goals
 
-    def toggle_close(self):
-        # type: () -> None
+    def toggle_close(self) -> None:
         if self.settings['selection'] == self.zoom_root[-1]:
             self.toggle_zoom()
         self.goaltree.toggle_close()
@@ -52,8 +52,7 @@ class Zoom(Graph):
             self.goaltree.select(self.zoom_root[-1])
             self.goaltree.hold_select()
 
-    def delete(self, goal_id=0):
-        # type: (int) -> None
+    def delete(self, goal_id: int = 0) -> None:
         if self.settings['selection'] == self.zoom_root[-1]:
             self.toggle_zoom()
         self.goaltree.delete(goal_id)
@@ -61,8 +60,7 @@ class Zoom(Graph):
             self.goaltree.select(self.zoom_root[-1])
             self.goaltree.hold_select()
 
-    def _build_visible_goals(self):
-        # type: () -> Set[int]
+    def _build_visible_goals(self) -> Set[int]:
         edges = self.goaltree.q('edge')
         current_zoom_root = self.zoom_root[-1]
         visible_goals = {current_zoom_root}
@@ -83,12 +81,12 @@ class Zoom(Graph):
 
     @staticmethod
     def build(goals, data):
-        # type: (Goals, List[Tuple[int, int]]) -> Zoom
+        # type: (Goals, ZoomData) -> Zoom
         result = Zoom(goals)
         result.zoom_root = [x[1] for x in data] if data else [1]
         return result
 
     @staticmethod
     def export(goals):
-        # type: (Zoom) -> List[Tuple[int, int]]
+        # type: (Zoom) -> ZoomData
         return [(idx+1, goal) for idx, goal in enumerate(goals.zoom_root)]
