@@ -33,7 +33,8 @@ USER_ACTIONS = {
 def user_actions(draw, skip=None, **lists_kwargs):
     if skip is None:
         skip = []
-    return draw(lists(sampled_from(k for k in USER_ACTIONS if k not in skip), **lists_kwargs))
+    possible_actions = sorted(k for k in USER_ACTIONS if k not in skip)
+    return draw(lists(sampled_from(possible_actions), **lists_kwargs))
 
 
 def build_from(actions, choice_fn, show_notes=True):
