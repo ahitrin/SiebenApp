@@ -1,4 +1,4 @@
-hypothesis==3.88.3
+hypothesis==4.32.0
 mypy==0.720
 mypy-extensions==0.4.1
 pylint==2.3.1
