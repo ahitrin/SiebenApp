@@ -3,14 +3,13 @@ import os
 import sqlite3
 from contextlib import closing
 
-import pytest
-from hypothesis import given, note, settings
-from hypothesis.strategies import lists, sampled_from, composite, choices, text
+from hypothesis import given, note, settings, example
+from hypothesis._strategies import data, integers
+from hypothesis.strategies import lists, sampled_from, composite, text
 
 from siebenapp.enumeration import Enumeration
-from siebenapp.goaltree import Goals
+from siebenapp.goaltree import Goals, Edge
 from siebenapp.system import run_migrations, save_updates
-
 
 settings.register_profile('ci', settings(max_examples=2000))
 settings.register_profile('dev', settings(max_examples=200))
@@ -26,6 +25,7 @@ USER_ACTIONS = {
     'select': lambda g, x: g.select(x),
     'toggle_close': lambda g, x: g.toggle_close(),
     'toggle_link': lambda g, x: g.toggle_link(),
+    'toggle_child': lambda g, x: g.toggle_link(edge_type=Edge.PARENT),
 }
 
 
@@ -33,16 +33,22 @@ USER_ACTIONS = {
 def user_actions(draw, skip=None, **lists_kwargs):
     if skip is None:
         skip = []
-    return draw(lists(sampled_from(k for k in USER_ACTIONS if k not in skip), **lists_kwargs))
+    possible_actions = sorted(k for k in USER_ACTIONS if k not in skip)
+    return draw(lists(sampled_from(possible_actions), **lists_kwargs))
 
 
-def build_from(actions, choice_fn, show_notes=True):
+def build_from(actions, selections, show_notes=True):
+    def _select_one_from(keys):
+        if isinstance(selections, list):
+            return selections.pop(0)
+        return selections.draw(integers(min_value=1, max_value=max(keys)))
+
     g = Goals('Root')
     try:
         for name in actions:
             int_val = 0
             if name == 'select':
-                int_val = choice_fn(list(g.q().keys()))
+                int_val = _select_one_from(g.q().keys())
             USER_ACTIONS[name](g, int_val)
     finally:
         if show_notes:
@@ -50,67 +56,62 @@ def build_from(actions, choice_fn, show_notes=True):
     return g
 
 
-@pytest.mark.parametrize('actions,ints', [
-    (['add', 'add', 'select', 'toggle_close', 'select', 'hold_select', 'select', 'toggle_link'],
-     [2, 2, 3]),
-    (['add', 'select', 'add', 'add', 'select', 'hold_select', 'select', 'insert', 'select', 'delete'],
-     [2, 4, 3, 2]),
-    (['add', 'select', 'insert', 'toggle_link', 'toggle_close', 'select', 'toggle_close', 'select', 'toggle_close'],
-     [2, 3, 2]),
-    (['add', 'select', 'hold_select', 'add', 'select', 'insert', 'toggle_link', 'select', 'delete'],
-     [2, 3, 2]),
-])
-def test_bad_examples_found_by_hypothesis(actions, ints):
-    def repeat_choices(l):
-        def inner(gs):
-            assert l, 'There are no more selects expected'
-            next_result = l.pop(0)
-            assert next_result in gs, 'Goal with id %d should be selected, but existing goals are %s' % (
-                next_result, gs
-            )
-            return next_result
-        return inner
-    g = build_from(actions, repeat_choices(ints), show_notes=False)
+@given(user_actions(), data())
+@example(actions=['add', 'add', 'select', 'toggle_close', 'select', 'hold_select', 'select', 'toggle_link'],
+         selections=[2, 2, 3])
+@example(actions=['add', 'select', 'add', 'add', 'select', 'hold_select', 'select', 'insert', 'select', 'delete'],
+         selections=[2, 4, 3, 2])
+@example(actions=['add', 'select', 'insert', 'toggle_link', 'toggle_close', 'select', 'toggle_close', 'select', 'toggle_close'],
+         selections=[2, 3, 2])
+@example(actions=['add', 'select', 'hold_select', 'add', 'select', 'insert', 'toggle_link', 'select', 'delete'],
+         selections=[2, 3, 2])
+def test_goaltree_must_be_valid_after_build(actions, selections):
+    g = build_from(actions, selections, show_notes=False)
     assert g.verify()
 
 
-@given(user_actions(), choices())
-def test_there_is_always_at_least_one_goal(actions, ch):
-    g = build_from(actions, ch)
+@given(user_actions(), data())
+def test_there_is_always_at_least_one_goal(actions, selections):
+    g = build_from(actions, selections)
     assert g.q()
 
 
-@given(user_actions(), choices())
-def test_there_is_always_one_selected_goal(actions, ch):
-    g = build_from(actions, ch)
+@given(user_actions(), data())
+def test_there_is_always_one_selected_goal(actions, selections):
+    g = build_from(actions, selections)
     assert len([1 for k, v in g.q(keys='select').items() if v['select'] == 'select']) == 1
 
 
 @given(user_actions(min_size=15, skip=['rename']),
        user_actions(min_size=1, skip=['select']),
-       choices(), choices())
-def test_any_goal_may_be_selected(all_actions, non_select_actions, ch, choice):
-    g = build_from(all_actions + non_select_actions, ch)
-    rnd_goal = choice(list(g.q().keys()))
-    g.select(rnd_goal)
-    assert g.q(keys='select')[rnd_goal]['select'] == 'select'
+       data())
+def test_any_goal_may_be_selected(all_actions, non_select_actions, selections):
+    g = build_from(all_actions + non_select_actions, selections)
+    unselectable = []
+    for goal_id in g.q():
+        g.select(goal_id)
+        if g.q(keys='select')[goal_id]['select'] != 'select':
+            unselectable.append(goal_id)
+    assert unselectable == []
 
 
-@given(user_actions(average_size=100, skip=['rename']), choices(), choices())
-def test_any_goal_may_be_selected_through_enumeration(actions, ch, choice):
-    g = build_from(actions, ch)
+@given(user_actions(skip=['rename']), data())
+def test_any_goal_may_be_selected_through_enumeration(actions, selections):
+    g = build_from(actions, selections)
     e = Enumeration(g)
     e.next_view()
     e.next_view()
-    rnd_goal = choice(list(e.q().keys()))
-    for i in str(rnd_goal):
-        e.select(int(i))
-    assert e.q(keys='select')[rnd_goal]['select'] == 'select'
+    unselectable = []
+    for goal_id in e.q():
+        e.select(goal_id)
+        if e.q(keys='select')[goal_id]['select'] != 'select':
+            unselectable.append(goal_id)
+    assert unselectable == []
 
 
-@given(user_actions(average_size=100), choices())
-def test_no_modify_action_sequence_could_break_goaltree_correctness(actions, ch):
-    g = build_from(actions, ch)
+@given(user_actions(), data())
+def test_no_modify_action_sequence_could_break_goaltree_correctness(actions, selections):
+    g = build_from(actions, selections)
     assert g.verify()
 
 
@@ -119,18 +120,18 @@ def build_goals(conn):
         goals = [row for row in cur.execute('select * from goals')]
         edges = [row for row in cur.execute('select parent, child, reltype from edges')]
         selection = [row for row in cur.execute('select * from settings')]
-        note(goals)
-        note(edges)
-        note(selection)
+        note(str(goals))
+        note(str(edges))
+        note(str(selection))
         return Goals.build(goals, edges, selection)
 
 
-@given(user_actions(), choices())
-def test_full_export_and_streaming_export_must_be_the_same(actions, ch):
-    g = build_from(actions, ch)
+@given(user_actions(), data())
+def test_full_export_and_streaming_export_must_be_the_same(actions, selections):
+    g = build_from(actions, selections)
     with closing(sqlite3.connect(':memory:')) as conn:
         run_migrations(conn)
-        note(g.events)
+        note(str(g.events))
         save_updates(g, conn)
         assert not g.events
         ng = build_goals(conn)
@@ -142,7 +143,7 @@ def test_all_goal_names_must_be_saved_correctly(name):
     g = Goals('renamed')
     g.rename(name)
     with closing(sqlite3.connect(':memory:')) as conn:
-        note(g.events)
+        note(str(g.events))
         run_migrations(conn)
         save_updates(g, conn)
         ng = build_goals(conn)

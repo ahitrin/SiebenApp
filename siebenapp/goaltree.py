@@ -221,7 +221,7 @@ class Goals(Graph):
                     front.add(e.target)
         return lower in total
 
-    def verify(self, check_parents: bool = False) -> bool:
+    def verify(self) -> bool:
         assert all(g.target in self.closed for p in self.closed for g in self._forward_edges(p)), \
             'Open goals could not be blocked by closed ones'
 
@@ -241,17 +241,16 @@ class Goals(Graph):
 
         assert all(k in self.settings for k in {'selection', 'previous_selection'})
 
-        if check_parents:
-            parent_edges = [k for k, v in self.edges.items() if v == Edge.PARENT]
-            edges_with_parent = set(child for parent, child in parent_edges)
-            assert len(parent_edges) == len(edges_with_parent), \
-                'Each goal must have at most 1 parent'
+        parent_edges = [k for k, v in self.edges.items() if v == Edge.PARENT]
+        edges_with_parent = set(child for parent, child in parent_edges)
+        assert len(parent_edges) == len(edges_with_parent), \
+            'Each goal must have at most 1 parent'
 
         return True
 
     @staticmethod
-    def build(goals, edges, settings, message_fn=None, check_parents=False):
-        # type: (GoalsData, EdgesData, OptionsData, Callable[[str], None], bool) -> Goals
+    def build(goals, edges, settings, message_fn=None):
+        # type: (GoalsData, EdgesData, OptionsData, Callable[[str], None]) -> Goals
         result = Goals('', message_fn)
         result.events.clear()  # remove initial goal
         goals_dict = dict((g[0], g[1]) for g in goals)
@@ -267,7 +266,7 @@ class Goals(Graph):
             bd[child].append(edge)
             result.edges[parent, child] = link_type
         result.settings.update(settings)
-        result.verify(check_parents)
+        result.verify()
         return result
 
     @staticmethod
