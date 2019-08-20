@@ -5,7 +5,7 @@ from contextlib import closing
 
 from hypothesis import given, note, settings, example
 from hypothesis._strategies import data, integers
-from hypothesis.strategies import lists, sampled_from, composite, choices, text
+from hypothesis.strategies import lists, sampled_from, composite, text
 
 from siebenapp.enumeration import Enumeration
 from siebenapp.goaltree import Goals, Edge
@@ -84,24 +84,29 @@ def test_there_is_always_one_selected_goal(actions, selections):
 
 @given(user_actions(min_size=15, skip=['rename']),
        user_actions(min_size=1, skip=['select']),
-       data(), choices())
-def test_any_goal_may_be_selected(all_actions, non_select_actions, selections, choice):
+       data())
+def test_any_goal_may_be_selected(all_actions, non_select_actions, selections):
     g = build_from(all_actions + non_select_actions, selections)
-    rnd_goal = choice(list(g.q().keys()))
-    g.select(rnd_goal)
-    assert g.q(keys='select')[rnd_goal]['select'] == 'select'
+    unselectable = []
+    for goal_id in g.q():
+        g.select(goal_id)
+        if g.q(keys='select')[goal_id]['select'] != 'select':
+            unselectable.append(goal_id)
+    assert unselectable == []
 
 
-@given(user_actions(skip=['rename']), data(), choices())
-def test_any_goal_may_be_selected_through_enumeration(actions, selections, choice):
+@given(user_actions(skip=['rename']), data())
+def test_any_goal_may_be_selected_through_enumeration(actions, selections):
     g = build_from(actions, selections)
     e = Enumeration(g)
     e.next_view()
     e.next_view()
-    rnd_goal = choice(list(e.q().keys()))
-    for i in str(rnd_goal):
-        e.select(int(i))
-    assert e.q(keys='select')[rnd_goal]['select'] == 'select'
+    unselectable = []
+    for goal_id in e.q():
+        e.select(goal_id)
+        if e.q(keys='select')[goal_id]['select'] != 'select':
+            unselectable.append(goal_id)
+    assert unselectable == []
 
 
 @given(user_actions(), data())
