@@ -1,10 +1,17 @@
 import os
+import sqlite3
+from contextlib import closing
 
+import pytest
 from hypothesis import settings, assume
 from hypothesis._strategies import data, integers, booleans
 from hypothesis.stateful import RuleBasedStateMachine, rule
 
 from siebenapp.goaltree import Goals, Edge
+from siebenapp.system import run_migrations, save_updates
+from siebenapp.tests.test_properties import build_goals
+
+pytestmark = pytest.mark.xfail(reason='double call to save() generates invalid DB record due to emptied events list')
 
 settings.register_profile('ci', settings(max_examples=2000))
 settings.register_profile('dev', settings(max_examples=200))
@@ -60,6 +67,15 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     @rule()
     def goaltree_is_always_valid(self):
         assert self.goaltree.verify()
+
+    @rule()
+    def test_full_export_and_streaming_export_must_be_the_same(self):
+        with closing(sqlite3.connect(':memory:')) as conn:
+            run_migrations(conn)
+            save_updates(self.goaltree, conn)
+            assert not self.goaltree.events
+            ng = build_goals(conn)
+            assert self.goaltree.q('name,open,edge,select,switchable') == ng.q('name,open,edge,select,switchable')
 
 
 TestGoalTreeRandomWalk = GoaltreeRandomWalk.TestCase
