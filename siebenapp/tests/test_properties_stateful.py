@@ -1,17 +1,13 @@
 import os
 import sqlite3
-from contextlib import closing
 
-import pytest
 from hypothesis import settings, assume
 from hypothesis._strategies import data, integers, booleans
-from hypothesis.stateful import RuleBasedStateMachine, rule
+from hypothesis.stateful import RuleBasedStateMachine, rule, initialize
 
 from siebenapp.goaltree import Goals, Edge
 from siebenapp.system import run_migrations, save_updates
 from siebenapp.tests.test_properties import build_goals
-
-pytestmark = pytest.mark.xfail(reason='double call to save() generates invalid DB record due to emptied events list')
 
 settings.register_profile('ci', settings(max_examples=2000))
 settings.register_profile('dev', settings(max_examples=200))
@@ -22,6 +18,14 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     def __init__(self):
         super(GoaltreeRandomWalk, self).__init__()
         self.goaltree = Goals('Root')
+        self.database = sqlite3.connect(':memory:')
+
+    @initialize()
+    def open_db_connection(self):
+        run_migrations(self.database)
+
+    def teardown(self):
+        self.database.close()
 
     #
     # Modifiers
@@ -70,12 +74,10 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 
     @rule()
     def test_full_export_and_streaming_export_must_be_the_same(self):
-        with closing(sqlite3.connect(':memory:')) as conn:
-            run_migrations(conn)
-            save_updates(self.goaltree, conn)
-            assert not self.goaltree.events
-            ng = build_goals(conn)
-            assert self.goaltree.q('name,open,edge,select,switchable') == ng.q('name,open,edge,select,switchable')
+        save_updates(self.goaltree, self.database)
+        assert not self.goaltree.events
+        ng = build_goals(self.database)
+        assert self.goaltree.q('name,open,edge,select,switchable') == ng.q('name,open,edge,select,switchable')
 
 
 TestGoalTreeRandomWalk = GoaltreeRandomWalk.TestCase
