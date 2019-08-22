@@ -6,7 +6,6 @@ from typing import Union, Callable, List, Dict
 
 from siebenapp.goaltree import Goals
 from siebenapp.enumeration import Enumeration
-from siebenapp.stats import log_stats
 from siebenapp.zoom import Zoom
 
 DEFAULT_DB = 'sieben.db'
@@ -162,7 +161,6 @@ def load(filename: str = DEFAULT_DB, message_fn: Callable[[str], None] = None) -
         zoom_data = [row for row in cur.execute('select * from zoom')]
         cur.close()
         goals = Goals.build(names, edges, settings, message_fn)
-        log_stats(goals)
         zoom = Zoom.build(goals, zoom_data)
     else:
         goals = Goals('Rename me', message_fn)
