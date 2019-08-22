@@ -9,6 +9,7 @@ from hypothesis.strategies import lists, sampled_from, composite, text
 
 from siebenapp.enumeration import Enumeration
 from siebenapp.goaltree import Goals, Edge
+from siebenapp.stats import log_stats
 from siebenapp.system import run_migrations, save_updates
 
 settings.register_profile('ci', settings(max_examples=2000))
@@ -123,7 +124,9 @@ def build_goals(conn):
         note(str(goals))
         note(str(edges))
         note(str(selection))
-        return Goals.build(goals, edges, selection)
+        g = Goals.build(goals, edges, selection)
+        log_stats(g)
+        return g
 
 
 @given(user_actions(), data())

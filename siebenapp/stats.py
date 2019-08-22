@@ -25,3 +25,9 @@ def complexity(goals: Goals) -> Dict[str, int]:
         'edges': len(goals.edges),
         'paths': sum(paths_count.values()),
     }
+
+
+def log_stats(goals: Goals) -> None:
+    s = complexity(goals)
+    with open('stats.csv', 'a') as f:
+        f.write('{},{},{}\n'.format(s['goals'], s['edges'], s['paths']))
