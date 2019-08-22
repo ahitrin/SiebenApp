@@ -4,7 +4,7 @@ from collections import Counter
 
 from hypothesis import settings, assume
 from hypothesis._strategies import data, integers, booleans
-from hypothesis.stateful import RuleBasedStateMachine, rule, initialize
+from hypothesis.stateful import RuleBasedStateMachine, rule, initialize, invariant, precondition
 
 from siebenapp.goaltree import Goals, Edge
 from siebenapp.system import run_migrations, save_updates
@@ -16,6 +16,8 @@ settings.load_profile(os.getenv('HYPOTHESIS_PROFILE', 'dev'))
 
 
 class GoaltreeRandomWalk(RuleBasedStateMachine):
+    db_is_ready = False
+
     def __init__(self):
         super(GoaltreeRandomWalk, self).__init__()
         self.goaltree = Goals('Root')
@@ -24,6 +26,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     @initialize()
     def open_db_connection(self):
         run_migrations(self.database)
+        self.db_is_ready = True
 
     def teardown(self):
         self.database.close()
@@ -69,18 +72,19 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     # Verifiers
     #
 
-    @rule()
+    @invariant()
     def goaltree_is_always_valid(self):
         assert self.goaltree.verify()
 
-    @rule()
+    @invariant()
     def there_is_always_one_selected_goal_and_at_most_one_previous(self):
         selects = self.goaltree.q('select').values()
         counter = Counter(s['select'] for s in selects)
         assert counter['select'] == 1
         assert counter['prev'] <= 1
 
-    @rule()
+    @invariant()
+    @precondition(lambda self: self.db_is_ready)
     def test_full_export_and_streaming_export_must_be_the_same(self):
         save_updates(self.goaltree, self.database)
         assert not self.goaltree.events
