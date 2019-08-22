@@ -1,5 +1,6 @@
 import os
 import sqlite3
+from collections import Counter
 
 from hypothesis import settings, assume
 from hypothesis._strategies import data, integers, booleans
@@ -71,6 +72,13 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     @rule()
     def goaltree_is_always_valid(self):
         assert self.goaltree.verify()
+
+    @rule()
+    def there_is_always_one_selected_goal_and_at_most_one_previous(self):
+        selects = self.goaltree.q('select').values()
+        counter = Counter(s['select'] for s in selects)
+        assert counter['select'] == 1
+        assert counter['prev'] <= 1
 
     @rule()
     def test_full_export_and_streaming_export_must_be_the_same(self):
