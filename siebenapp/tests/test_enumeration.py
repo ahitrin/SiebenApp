@@ -324,3 +324,13 @@ def test_do_not_enumerate_goals_with_negative_id():
         1: {'name': 'Zoomed', 'select': 'select', 'edge': [(2, Edge.PARENT)]},
         2: {'name': 'Top', 'select': None, 'edge': []},
     }
+
+
+def test_all_keys_in_enumeration_must_be_of_the_same_length():
+    g = Goals('Root')
+    for i in range(2999):
+        g.add(str(i))
+    e = Enumeration(g)
+    mapping = e.q()
+    assert len(mapping) == len(g.q())
+    assert set(len(str(k)) for k in mapping) == {4}

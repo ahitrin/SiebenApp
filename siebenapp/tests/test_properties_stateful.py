@@ -1,14 +1,14 @@
 import os
 import sqlite3
 from collections import Counter
+from contextlib import closing
 
-from hypothesis import settings, assume
-from hypothesis._strategies import data, integers, booleans
+from hypothesis import settings, assume, note
+from hypothesis._strategies import data, integers, booleans, text
 from hypothesis.stateful import RuleBasedStateMachine, rule, initialize, invariant, precondition
 
 from siebenapp.goaltree import Goals, Edge
 from siebenapp.system import run_migrations, save_updates
-from siebenapp.tests.test_properties import build_goals
 
 settings.register_profile('ci', settings(max_examples=2000))
 settings.register_profile('dev', settings(max_examples=200))
@@ -71,9 +71,17 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         edge_type = Edge.PARENT if b else Edge.BLOCKER
         self.goaltree.toggle_link(edge_type=edge_type)
 
+    @rule(t=text())
+    def rename(self, t):
+        self.goaltree.rename(t)
+
     #
     # Verifiers
     #
+
+    @invariant()
+    def there_is_always_at_least_one_goal(self):
+        assert self.goaltree.q()
 
     @invariant()
     def goaltree_is_always_valid(self):
@@ -96,3 +104,14 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 
 
 TestGoalTreeRandomWalk = GoaltreeRandomWalk.TestCase
+
+
+def build_goals(conn):
+    with closing(conn.cursor()) as cur:
+        goals = [row for row in cur.execute('select * from goals')]
+        edges = [row for row in cur.execute('select parent, child, reltype from edges')]
+        selection = [row for row in cur.execute('select * from settings')]
+        note(str(goals))
+        note(str(edges))
+        note(str(selection))
+        return Goals.build(goals, edges, selection)
