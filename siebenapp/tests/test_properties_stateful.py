@@ -47,7 +47,10 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     @rule(d=data())
     def select_random_goal(self, d):
         random_goal = d.draw(integers(min_value=1, max_value=max(self.goaltree.q().keys())))
+        assume(random_goal in self.goaltree.q())
         self.goaltree.select(random_goal)
+        # Any valid goal must be selectable
+        assert self.goaltree.q('select')[random_goal]['select'] == 'select'
 
     @rule()
     def hold_selection(self):
