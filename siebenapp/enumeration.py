@@ -33,7 +33,7 @@ class Enumeration(Graph):
         elif self.view == 'open':
             self._goal_filter = {k for k, v in self.goaltree.q(keys='open').items() if v['open']}
         else:
-            self._goal_filter = {g for g in self.goaltree.q()}
+            self._goal_filter = dict(self.goaltree.q())
 
     def _id_mapping(self, keys='name'):
         # type: (str) -> Tuple[Dict[int, Any], Callable[[int], int]]

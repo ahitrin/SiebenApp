@@ -273,7 +273,11 @@ class Goals(Graph):
     def export(goals):
         # type: (Goals) -> Tuple[GoalsData, EdgesData, OptionsData]
         nodes = [(g_id, g_name, g_id not in goals.closed)
-                 for g_id, g_name in goals.goals.items()]
+                 for g_id, g_name in goals.goals.items()]   # pylint: disable=unnecessary-comprehension
+        # NB: I have no idea for now how to satisfy pylint without breaking
+        # existing behavior. Actually, a generator for tuples (k, v, f(k))
+        # cannot be reduced to "list, dict or set constructor" in obvious way.
+        # Is it a bug in pylint?
         edges = [(k[0], k[1], v) for k, v in goals.edges.items()]
         settings = list(goals.settings.items())
         return nodes, edges, settings
