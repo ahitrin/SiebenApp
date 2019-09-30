@@ -108,9 +108,9 @@ TestGoalTreeRandomWalk = GoaltreeRandomWalk.TestCase
 
 def build_goals(conn):
     with closing(conn.cursor()) as cur:
-        goals = [row for row in cur.execute('select * from goals')]
-        edges = [row for row in cur.execute('select parent, child, reltype from edges')]
-        selection = [row for row in cur.execute('select * from settings')]
+        goals = list(cur.execute('select * from goals'))
+        edges = list(cur.execute('select parent, child, reltype from edges'))
+        selection = list(cur.execute('select * from settings'))
         note(str(goals))
         note(str(edges))
         note(str(selection))

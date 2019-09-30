@@ -155,10 +155,10 @@ def load(filename: str = DEFAULT_DB, message_fn: Callable[[str], None] = None) -
         connection = sqlite3.connect(filename)
         run_migrations(connection)
         cur = connection.cursor()
-        names = [row for row in cur.execute('select * from goals')]
-        edges = [row for row in cur.execute('select parent, child, reltype from edges')]
-        settings = [row for row in cur.execute('select * from settings')]
-        zoom_data = [row for row in cur.execute('select * from zoom')]
+        names = list(cur.execute('select * from goals'))
+        edges = list(cur.execute('select parent, child, reltype from edges'))
+        settings = list(cur.execute('select * from settings'))
+        zoom_data = list(cur.execute('select * from zoom'))
         cur.close()
         goals = Goals.build(names, edges, settings, message_fn)
         zoom = Zoom.build(goals, zoom_data)
@@ -177,7 +177,7 @@ def run_migrations(conn: sqlite3.Connection, migrations: List[List[str]] = None)
         current_version = cur.fetchone()[0]
     except sqlite3.OperationalError:
         current_version = -1
-    for num, migration in [(n, m) for n, m in enumerate(migrations)][current_version + 1:]:
+    for num, migration in list(enumerate(migrations))[current_version + 1:]:
         for query in migration:
             cur.execute(query)
         cur.execute('update migrations set version=?', (num,))

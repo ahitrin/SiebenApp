@@ -272,8 +272,8 @@ class Goals(Graph):
     @staticmethod
     def export(goals):
         # type: (Goals) -> Tuple[GoalsData, EdgesData, OptionsData]
-        nodes = [(g_id, g_name, g_id not in goals.closed)
-                 for g_id, g_name in goals.goals.items()]
+        nodes = list((g_id, g_name, g_id not in goals.closed)
+                     for g_id, g_name in goals.goals.items())
         edges = [(k[0], k[1], v) for k, v in goals.edges.items()]
         settings = list(goals.settings.items())
         return nodes, edges, settings
