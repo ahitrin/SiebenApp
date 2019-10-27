@@ -9,7 +9,7 @@ ZoomData = List[Tuple[int, int]]
 
 class Zoom(Graph):
     override = ['_build_visible_goals', 'q', 'delete', 'export', 'goaltree',
-                'toggle_close', 'toggle_zoom', 'zoom_root']
+                'toggle_close', 'toggle_zoom', 'zoom_root', 'verify']
 
     def __init__(self, goaltree: Goals) -> None:
         self.goaltree = goaltree
@@ -59,6 +59,17 @@ class Zoom(Graph):
         if self.settings['selection'] != self.zoom_root[-1]:
             self.goaltree.select(self.zoom_root[-1])
             self.goaltree.hold_select()
+
+    def verify(self) -> bool:
+        ok = self.goaltree.verify()
+        if len(self.zoom_root) == 1:
+            return ok
+        visible_goals = self._build_visible_goals()
+        assert self.goaltree.settings['selection'] in visible_goals, \
+            'Selected goal must be within visible area'
+        assert self.goaltree.settings['previous_selection'] in visible_goals, \
+            'Prev-selected goal must be within visible area'
+        return ok
 
     def _build_visible_goals(self) -> Set[int]:
         edges = self.goaltree.q('edge')
