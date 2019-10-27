@@ -9,6 +9,7 @@ from hypothesis.stateful import RuleBasedStateMachine, rule, initialize, invaria
 
 from siebenapp.goaltree import Goals, Edge
 from siebenapp.system import run_migrations, save_updates
+from siebenapp.zoom import Zoom
 
 settings.register_profile('ci', settings(max_examples=2000))
 settings.register_profile('dev', settings(max_examples=200))
@@ -20,7 +21,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 
     def __init__(self):
         super(GoaltreeRandomWalk, self).__init__()
-        self.goaltree = Goals('Root')
+        self.goaltree = Zoom(Goals('Root'))
         self.database = sqlite3.connect(':memory:')
 
     @initialize()
@@ -75,6 +76,10 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     def rename(self, t):
         self.goaltree.rename(t)
 
+    @rule()
+    def zoom(self):
+        self.goaltree.toggle_zoom()
+
     #
     # Verifiers
     #
@@ -100,7 +105,9 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         save_updates(self.goaltree, self.database)
         assert not self.goaltree.events
         ng = build_goals(self.database)
-        assert self.goaltree.q('name,open,edge,select,switchable') == ng.q('name,open,edge,select,switchable')
+        q1 = self.goaltree.goaltree.q('name,open,edge,select,switchable')
+        q2 = ng.q('name,open,edge,select,switchable')
+        assert q1 == q2
 
 
 TestGoalTreeRandomWalk = GoaltreeRandomWalk.TestCase
