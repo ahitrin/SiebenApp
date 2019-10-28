@@ -71,9 +71,9 @@ class Zoom(Graph):
         if len(self.zoom_root) == 1:
             return ok
         visible_goals = self._build_visible_goals()
-        assert self.goaltree.settings['selection'] in visible_goals, \
+        assert self.settings['selection'] in visible_goals, \
             'Selected goal must be within visible area'
-        assert self.goaltree.settings['previous_selection'] in visible_goals, \
+        assert self.settings['previous_selection'] in visible_goals, \
             'Prev-selected goal must be within visible area'
         return ok
 
