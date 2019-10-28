@@ -118,5 +118,5 @@ def build_goals(conn):
         goals = list(cur.execute('select * from goals'))
         edges = list(cur.execute('select parent, child, reltype from edges'))
         selection = list(cur.execute('select * from settings'))
-        note('Goals: {}, Edges: {}, Selection: {}'.format(str(goals), str(edges), str(selection)))
+        note('Goals: {}, Edges: {}, Selection: {}'.format(goals, edges, selection))
         return Goals.build(goals, edges, selection)
