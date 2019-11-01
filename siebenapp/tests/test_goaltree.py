@@ -178,7 +178,7 @@ class GoalsTest(TestCase):
             1: {'name': 'Root', 'switchable': False},
             3: {'name': 'B', 'switchable': True}}
 
-    def test_remove_goal_chain(self):
+    def test_remove_goal_chain_with_children(self):
         self.goals = self.build(
             open_(1, 'Root', [2]),
             open_(2, 'A', [3], select=selected),
@@ -186,6 +186,17 @@ class GoalsTest(TestCase):
         )
         self.goals.delete()
         assert self.goals.q() == {1: {'name': 'Root'}}
+
+    def test_relink_goal_chain_with_blockers(self):
+        self.goals = self.build(
+            open_(1, 'Root', [2]),
+            open_(2, 'A', blockers=[3], select=selected),
+            open_(3, 'B')
+        )
+        self.goals.delete()
+        assert self.goals.q('name,edge') == {
+            1: {'name': 'Root', 'edge': [(3, Edge.BLOCKER)]},
+            3: {'name': 'B', 'edge': []}}
 
     def test_add_link_between_goals(self):
         self.goals = self.build(

@@ -150,11 +150,18 @@ class Goals(Graph):
         self.hold_select()
 
     def _delete(self, goal_id: int) -> None:
+        parents = {e for e in self._back_edges(goal_id) if e.type == Edge.PARENT}
+        parent = parents.pop().source if parents else 1
         self.goals[goal_id] = None
         self.closed.add(goal_id)
-        next_to_remove = self._forward_edges(goal_id)
+        forward_edges = self._forward_edges(goal_id)
+        next_to_remove = {e for e in forward_edges if e.type == Edge.PARENT}
+        blockers = {e for e in forward_edges if e.type == Edge.BLOCKER}
         self.edges = {k: v for k, v in self.edges.items()
                       if goal_id not in k}
+        for old_blocker in blockers:
+            if not self._back_edges(old_blocker.target):
+                self._create_new_link(parent, old_blocker.target, Edge.BLOCKER)
         for next_goal in next_to_remove:
             if not self._back_edges(next_goal.target):
                 self._delete(next_goal.target)
