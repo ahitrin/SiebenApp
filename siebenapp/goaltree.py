@@ -1,13 +1,17 @@
 # coding: utf-8
 import collections
+from enum import IntEnum
 from typing import Callable, Dict, Optional, List, Set, Any, Tuple
 
 from siebenapp.domain import Graph
 
 
-class Edge(collections.namedtuple('Edge', 'source target type')):
+class EdgeType(IntEnum):
     BLOCKER = 1
     PARENT = 2
+
+
+class Edge(collections.namedtuple('Edge', 'source target type')):
     __slots__ = ()
 
 
@@ -42,7 +46,7 @@ class Goals(Graph):
     def _back_edges(self, goal: int) -> List[Edge]:
         return [Edge(k[0], goal, v) for k, v in self.edges.items() if k[1] == goal]
 
-    def add(self, name: str, add_to: int = 0, edge_type: int = Edge.PARENT) -> bool:
+    def add(self, name: str, add_to: int = 0, edge_type: int = EdgeType.PARENT) -> bool:
         if add_to == 0:
             add_to = self.settings['selection']
         if add_to in self.closed:
@@ -102,7 +106,7 @@ class Goals(Graph):
         if lower == upper:
             self._msg("A new goal can be inserted only between two different goals")
             return
-        edge_type = self.edges.get((lower, upper), Edge.BLOCKER)
+        edge_type = self.edges.get((lower, upper), EdgeType.BLOCKER)
         if self.add(name, lower, edge_type):
             key = len(self.goals)
             self.toggle_link(key, upper, edge_type)
@@ -149,24 +153,24 @@ class Goals(Graph):
         self.hold_select()
 
     def _delete(self, goal_id: int) -> None:
-        parents = {e for e in self._back_edges(goal_id) if e.type == Edge.PARENT}
+        parents = {e for e in self._back_edges(goal_id) if e.type == EdgeType.PARENT}
         parent = parents.pop().source if parents else 1
         self.goals[goal_id] = None
         self.closed.add(goal_id)
         forward_edges = self._forward_edges(goal_id)
-        next_to_remove = {e for e in forward_edges if e.type == Edge.PARENT}
-        blockers = {e for e in forward_edges if e.type == Edge.BLOCKER}
+        next_to_remove = {e for e in forward_edges if e.type == EdgeType.PARENT}
+        blockers = {e for e in forward_edges if e.type == EdgeType.BLOCKER}
         self.edges = {k: v for k, v in self.edges.items()
                       if goal_id not in k}
         for old_blocker in blockers:
             if not self._back_edges(old_blocker.target):
-                self._create_new_link(parent, old_blocker.target, Edge.BLOCKER)
+                self._create_new_link(parent, old_blocker.target, EdgeType.BLOCKER)
         for next_goal in next_to_remove:
             if not self._back_edges(next_goal.target):
                 self._delete(next_goal.target)
         self.events.append(('delete', goal_id))
 
-    def toggle_link(self, lower: int = 0, upper: int = 0, edge_type: int = Edge.BLOCKER) -> None:
+    def toggle_link(self, lower: int = 0, upper: int = 0, edge_type: int = EdgeType.BLOCKER) -> None:
         lower = self.settings['previous_selection'] if lower == 0 else lower
         upper = self.settings['selection'] if upper == 0 else upper
         if lower == upper:
@@ -203,16 +207,16 @@ class Goals(Graph):
         if self._has_circular_dependency(lower, upper):
             self._msg("Circular dependencies between goals are not allowed")
             return
-        if edge_type == Edge.PARENT:
+        if edge_type == EdgeType.PARENT:
             self._transform_old_parents_into_blocked(lower, upper)
         self.edges[lower, upper] = edge_type
         self.events.append(('link', lower, upper, edge_type))
 
     def _transform_old_parents_into_blocked(self, lower, upper):
         old_parents = [e.source for e in self._back_edges(upper)
-                       if e.type == Edge.PARENT and e.source != lower]
+                       if e.type == EdgeType.PARENT and e.source != lower]
         for p in old_parents:
-            self._replace_link(p, upper, Edge.BLOCKER)
+            self._replace_link(p, upper, EdgeType.BLOCKER)
 
     def _has_circular_dependency(self, lower: int, upper: int) -> bool:
         front = {upper}  # type: Set[int]
@@ -247,7 +251,7 @@ class Goals(Graph):
 
         assert all(k in self.settings for k in {'selection', 'previous_selection'})
 
-        parent_edges = [k for k, v in self.edges.items() if v == Edge.PARENT]
+        parent_edges = [k for k, v in self.edges.items() if v == EdgeType.PARENT]
         edges_with_parent = set(child for parent, child in parent_edges)
         assert len(parent_edges) == len(edges_with_parent), \
             'Each goal must have at most 1 parent'

@@ -9,7 +9,7 @@ from PyQt5.QtGui import QPainter, QPen
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout
 from PyQt5.uic import loadUi
 
-from siebenapp.goaltree import Edge
+from siebenapp.goaltree import EdgeType
 from siebenapp.render import Renderer
 from siebenapp.system import save, load, DEFAULT_DB, split_long
 from siebenapp.ui.goalwidget import Ui_GoalBody
@@ -62,8 +62,8 @@ class GoalWidget(QWidget, Ui_GoalBody):
 
 class CentralWidget(QWidget):
     EDGE_PENS = {
-        Edge.BLOCKER: QPen(Qt.black, 1, Qt.DashLine),
-        Edge.PARENT: QPen(Qt.black, 1, Qt.SolidLine),
+        EdgeType.BLOCKER: QPen(Qt.black, 1, Qt.DashLine),
+        EdgeType.PARENT: QPen(Qt.black, 1, Qt.SolidLine),
     }
 
     def __init__(self):
@@ -167,7 +167,7 @@ class SiebenApp(QMainWindow):
             Qt.Key_C: self.with_refresh(self.goals.toggle_close),
             Qt.Key_D: self.with_refresh(self.goals.delete),
             Qt.Key_I: self.start_edit('Insert new goal', self.goals.insert),
-            Qt.Key_K: self.with_refresh(self.goals.toggle_link, edge_type=Edge.PARENT),
+            Qt.Key_K: self.with_refresh(self.goals.toggle_link, edge_type=EdgeType.PARENT),
             Qt.Key_L: self.with_refresh(self.goals.toggle_link),
             Qt.Key_Q: self.quit_app.emit,
             Qt.Key_R: self.start_edit('Rename goal', self.goals.rename, self._current_goal_label),

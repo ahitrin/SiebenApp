@@ -1,8 +1,7 @@
 from typing import Dict, Any, Set, List, Tuple
 
 from siebenapp.domain import Graph
-from siebenapp.goaltree import Goals, Edge
-
+from siebenapp.goaltree import Goals, EdgeType
 
 ZoomData = List[Tuple[int, int]]
 
@@ -41,7 +40,7 @@ class Zoom(Graph):
             for goal in zoomed_goals:
                 zoomed_goals[goal]['edge'] = [g for g in zoomed_goals[goal]['edge']
                                               if g[0] in visible_goals]
-            zoomed_goals[-1]['edge'] = [(self.zoom_root[-1], Edge.BLOCKER)]
+            zoomed_goals[-1]['edge'] = [(self.zoom_root[-1], EdgeType.BLOCKER)]
         return zoomed_goals
 
     def toggle_close(self) -> None:
@@ -85,7 +84,7 @@ class Zoom(Graph):
         while edges_to_visit:
             next_edge = edges_to_visit.pop()
             visible_goals.add(next_edge[0])
-            if next_edge[1] == Edge.PARENT:
+            if next_edge[1] == EdgeType.PARENT:
                 edges_to_visit.update(edges[next_edge[0]]['edge'])
         return visible_goals
 

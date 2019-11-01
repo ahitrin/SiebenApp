@@ -1,6 +1,6 @@
 from collections import namedtuple
 
-from siebenapp.goaltree import Goals, Edge
+from siebenapp.goaltree import Goals, EdgeType
 
 selected = 'select'
 previous = 'previous'
@@ -26,8 +26,8 @@ def clos_(goal_id, name, children=None, blockers=None, select=None):
 
 def build_goaltree(*goal_prototypes, message_fn=None):
     goals = [(g.id, g.name, g.open) for g in goal_prototypes]
-    edges = [(g.id, e, Edge.PARENT) for g in goal_prototypes for e in g.children] + \
-            [(g.id, e, Edge.BLOCKER) for g in goal_prototypes for e in g.blockers]
+    edges = [(g.id, e, EdgeType.PARENT) for g in goal_prototypes for e in g.children] + \
+            [(g.id, e, EdgeType.BLOCKER) for g in goal_prototypes for e in g.blockers]
     selection = {g.id for g in goal_prototypes if g.select == selected}
     prev_selection = {g.id for g in goal_prototypes if g.select == previous}
     assert len(selection) == 1

@@ -1,7 +1,7 @@
 # coding: utf-8
 from unittest import TestCase
 
-from siebenapp.goaltree import Goals, Edge
+from siebenapp.goaltree import Goals, EdgeType
 from siebenapp.tests.dsl import build_goaltree, open_, selected, previous, clos_
 
 
@@ -30,7 +30,7 @@ class GoalsTest(TestCase):
     def test_added_goal_has_strong_link_with_parent(self):
         self.goals.add('New')
         assert self.goals.q(keys='name,edge') == {
-            1: {'name': 'Root', 'edge': [(2, Edge.PARENT)]},
+            1: {'name': 'Root', 'edge': [(2, EdgeType.PARENT)]},
             2: {'name': 'New', 'edge': []},
         }
 
@@ -61,14 +61,14 @@ class GoalsTest(TestCase):
         self.goals.hold_select()
         self.goals.select(2)
         assert self.goals.q(keys='name,edge,switchable') == {
-            1: {'name': 'Root', 'edge': [(2, Edge.PARENT)], 'switchable': False},
+            1: {'name': 'Root', 'edge': [(2, EdgeType.PARENT)], 'switchable': False},
             2: {'name': 'B', 'edge': [], 'switchable': True},
         }
         self.goals.insert('A')
         assert self.goals.q(keys='name,edge,switchable') == {
-                1: {'name': 'Root', 'edge': [(3, Edge.PARENT)], 'switchable': False},
+                1: {'name': 'Root', 'edge': [(3, EdgeType.PARENT)], 'switchable': False},
                 2: {'name': 'B', 'edge': [], 'switchable': True},
-                3: {'name': 'A', 'edge': [(2, Edge.PARENT)], 'switchable': False},
+                3: {'name': 'A', 'edge': [(2, EdgeType.PARENT)], 'switchable': False},
         }
 
     def test_insert_goal_between_independent_goals(self):
@@ -79,10 +79,10 @@ class GoalsTest(TestCase):
         )
         self.goals.insert('Wow')
         assert self.goals.q(keys='name,edge,switchable') == {
-                1: {'name': 'Root', 'edge': [(2, Edge.PARENT), (3, Edge.PARENT)], 'switchable': False},
-                2: {'name': 'A', 'edge': [(4, Edge.BLOCKER)], 'switchable': False},
+                1: {'name': 'Root', 'edge': [(2, EdgeType.PARENT), (3, EdgeType.PARENT)], 'switchable': False},
+                2: {'name': 'A', 'edge': [(4, EdgeType.BLOCKER)], 'switchable': False},
                 3: {'name': 'B', 'edge': [], 'switchable': True},
-                4: {'name': 'Wow', 'edge': [(3, Edge.BLOCKER)], 'switchable': False},
+                4: {'name': 'Wow', 'edge': [(3, EdgeType.BLOCKER)], 'switchable': False},
         }
 
     def test_close_single_goal(self):
@@ -195,7 +195,7 @@ class GoalsTest(TestCase):
         )
         self.goals.delete()
         assert self.goals.q('name,edge') == {
-            1: {'name': 'Root', 'edge': [(3, Edge.BLOCKER)]},
+            1: {'name': 'Root', 'edge': [(3, EdgeType.BLOCKER)]},
             3: {'name': 'B', 'edge': []}}
 
     def test_add_link_between_goals(self):
@@ -205,14 +205,14 @@ class GoalsTest(TestCase):
             open_(3, 'B', select=selected)
         )
         assert self.goals.q(keys='switchable,edge') == {
-            1: {'switchable': False, 'edge': [(2, Edge.PARENT), (3, Edge.PARENT)]},
+            1: {'switchable': False, 'edge': [(2, EdgeType.PARENT), (3, EdgeType.PARENT)]},
             2: {'switchable': True, 'edge': []},
             3: {'switchable': True, 'edge': []},
         }
         self.goals.toggle_link()
         assert self.goals.q(keys='switchable,edge') == {
-            1: {'switchable': False, 'edge': [(2, Edge.PARENT), (3, Edge.PARENT)]},
-            2: {'switchable': False, 'edge': [(3, Edge.BLOCKER)]},
+            1: {'switchable': False, 'edge': [(2, EdgeType.PARENT), (3, EdgeType.PARENT)]},
+            2: {'switchable': False, 'edge': [(3, EdgeType.BLOCKER)]},
             3: {'switchable': True, 'edge': []},
         }
 
@@ -224,9 +224,9 @@ class GoalsTest(TestCase):
             open_(4, 'C', select=selected)
         )
         assert self.goals.q(keys='edge,switchable') == {
-            1: {'edge': [(2, Edge.PARENT), (3, Edge.PARENT)], 'switchable': False},
-            2: {'edge': [(4, Edge.PARENT)], 'switchable': False},
-            3: {'edge': [(4, Edge.BLOCKER)], 'switchable': False},
+            1: {'edge': [(2, EdgeType.PARENT), (3, EdgeType.PARENT)], 'switchable': False},
+            2: {'edge': [(4, EdgeType.PARENT)], 'switchable': False},
+            3: {'edge': [(4, EdgeType.BLOCKER)], 'switchable': False},
             4: {'edge': [], 'switchable': True}}
 
     def test_no_link_to_self_is_allowed(self):
@@ -242,9 +242,9 @@ class GoalsTest(TestCase):
         )
         self.goals.toggle_link()
         assert self.goals.q(keys='edge') == {
-            1: {'edge': [(2, Edge.PARENT)]},
-            2: {'edge': [(3, Edge.PARENT)]},
-            3: {'edge': [(4, Edge.PARENT)]},
+            1: {'edge': [(2, EdgeType.PARENT)]},
+            2: {'edge': [(3, EdgeType.PARENT)]},
+            3: {'edge': [(4, EdgeType.PARENT)]},
             4: {'edge': []}}
 
     def test_new_parent_link_replaces_old_one(self):
@@ -254,11 +254,11 @@ class GoalsTest(TestCase):
             open_(3, 'New parent', select=previous),
             open_(4, 'Child', select=selected)
         )
-        self.goals.toggle_link(edge_type=Edge.PARENT)
+        self.goals.toggle_link(edge_type=EdgeType.PARENT)
         assert self.goals.q(keys='edge') == {
-            1: {'edge': [(2, Edge.PARENT), (3, Edge.PARENT)]},
-            2: {'edge': [(4, Edge.BLOCKER)]},
-            3: {'edge': [(4, Edge.PARENT)]},
+            1: {'edge': [(2, EdgeType.PARENT), (3, EdgeType.PARENT)]},
+            2: {'edge': [(4, EdgeType.BLOCKER)]},
+            3: {'edge': [(4, EdgeType.PARENT)]},
             4: {'edge': []}
         }
 
@@ -268,11 +268,11 @@ class GoalsTest(TestCase):
             open_(2, 'A', select=selected),
             open_(3, 'B', blockers=[2], select=previous)
         )
-        self.goals.toggle_link(edge_type=Edge.PARENT)
+        self.goals.toggle_link(edge_type=EdgeType.PARENT)
         assert self.goals.q('name,edge') == {
-            1: {'name': 'Root', 'edge': [(2, Edge.BLOCKER), (3, Edge.PARENT)]},
+            1: {'name': 'Root', 'edge': [(2, EdgeType.BLOCKER), (3, EdgeType.PARENT)]},
             2: {'name': 'A', 'edge': []},
-            3: {'name': 'B', 'edge': [(2, Edge.PARENT)]},
+            3: {'name': 'B', 'edge': [(2, EdgeType.PARENT)]},
         }
 
     def test_remove_link_between_goals(self):
@@ -281,9 +281,9 @@ class GoalsTest(TestCase):
             open_(2, 'A', blockers=[3], select=previous),
             open_(3, 'B', select=selected)
         )
-        self.goals.toggle_link(edge_type=Edge.BLOCKER)
+        self.goals.toggle_link(edge_type=EdgeType.BLOCKER)
         assert self.goals.q(keys='edge,switchable') == {
-            1: {'edge': [(2, Edge.PARENT), (3, Edge.PARENT)], 'switchable': False},
+            1: {'edge': [(2, EdgeType.PARENT), (3, EdgeType.PARENT)], 'switchable': False},
             2: {'edge': [], 'switchable': True},
             3: {'edge': [], 'switchable': True}
         }
@@ -294,17 +294,17 @@ class GoalsTest(TestCase):
             open_(2, 'Top', [], select=selected)
         )
         assert self.goals.q(keys='name,edge') == {
-            1: {'name': 'Root', 'edge': [(2, Edge.PARENT)]},
+            1: {'name': 'Root', 'edge': [(2, EdgeType.PARENT)]},
             2: {'name': 'Top', 'edge': []}
         }
         self.goals.toggle_link()
         assert self.goals.q(keys='name,edge') == {
-            1: {'name': 'Root', 'edge': [(2, Edge.BLOCKER)]},
+            1: {'name': 'Root', 'edge': [(2, EdgeType.BLOCKER)]},
             2: {'name': 'Top', 'edge': []}
         }
-        self.goals.toggle_link(edge_type=Edge.PARENT)
+        self.goals.toggle_link(edge_type=EdgeType.PARENT)
         assert self.goals.q(keys='name,edge') == {
-            1: {'name': 'Root', 'edge': [(2, Edge.PARENT)]},
+            1: {'name': 'Root', 'edge': [(2, EdgeType.PARENT)]},
             2: {'name': 'Top', 'edge': []}
         }
 
@@ -316,15 +316,15 @@ class GoalsTest(TestCase):
             open_(4, 'C', select=selected)
         )
         assert self.goals.q(keys='name,edge') == {
-                1: {'name': 'Root', 'edge': [(2, Edge.PARENT), (3, Edge.PARENT)]},
-                2: {'name': 'A', 'edge': [(4, Edge.PARENT)]},
-                3: {'name': 'B', 'edge': [(4, Edge.BLOCKER)]},
+                1: {'name': 'Root', 'edge': [(2, EdgeType.PARENT), (3, EdgeType.PARENT)]},
+                2: {'name': 'A', 'edge': [(4, EdgeType.PARENT)]},
+                3: {'name': 'B', 'edge': [(4, EdgeType.BLOCKER)]},
                 4: {'name': 'C', 'edge': []}}
         self.goals.select(3)
         self.goals.delete()
         assert self.goals.q(keys='name,edge,switchable') == {
-                1: {'name': 'Root', 'edge': [(2, Edge.PARENT)], 'switchable': False},
-                2: {'name': 'A', 'edge': [(4, Edge.PARENT)], 'switchable': False},
+                1: {'name': 'Root', 'edge': [(2, EdgeType.PARENT)], 'switchable': False},
+                2: {'name': 'A', 'edge': [(4, EdgeType.PARENT)], 'switchable': False},
                 4: {'name': 'C', 'edge': [], 'switchable': True}}
 
     def test_root_goal_is_selected_by_default(self):
@@ -343,8 +343,8 @@ class GoalsTest(TestCase):
         }
         self.goals.add('B')
         assert self.goals.q(keys='name,select,edge') == {
-            1: {'name': 'Root', 'select': 'prev', 'edge': [(2, Edge.PARENT)]},
-            2: {'name': 'A', 'select': 'select', 'edge': [(3, Edge.PARENT)]},
+            1: {'name': 'Root', 'select': 'prev', 'edge': [(2, EdgeType.PARENT)]},
+            2: {'name': 'A', 'select': 'select', 'edge': [(3, EdgeType.PARENT)]},
             3: {'name': 'B', 'select': None, 'edge': []},
         }
 
@@ -397,7 +397,7 @@ class GoalsTest(TestCase):
         assert self.goals.events.pop() == ('add', 1, 'Root', True)
         self.goals.add('Next')
         assert self.goals.events[-2] == ('add', 2, 'Next', True)
-        assert self.goals.events[-1] == ('link', 1, 2, Edge.PARENT)
+        assert self.goals.events[-1] == ('link', 1, 2, EdgeType.PARENT)
 
     def test_select_events(self):
         self.goals.add('Next')
@@ -435,9 +435,9 @@ class GoalsTest(TestCase):
         self.goals.hold_select()
         self.goals.select(3)
         self.goals.toggle_link()
-        assert self.goals.events[-1] == ('link', 2, 3, Edge.BLOCKER)
+        assert self.goals.events[-1] == ('link', 2, 3, EdgeType.BLOCKER)
         self.goals.toggle_link()
-        assert self.goals.events[-1] == ('unlink', 2, 3, Edge.BLOCKER)
+        assert self.goals.events[-1] == ('unlink', 2, 3, EdgeType.BLOCKER)
 
     def test_change_link_type_events(self):
         self.goals = self.build(
@@ -445,11 +445,11 @@ class GoalsTest(TestCase):
             open_(2, 'Lower', blockers=[3], select=previous),
             open_(3, 'Upper', [], select=selected),
         )
-        self.goals.toggle_link(edge_type=Edge.PARENT)
-        assert self.goals.events[-4] == ('link', 2, 3, Edge.PARENT)
-        assert self.goals.events[-3] == ('unlink', 2, 3, Edge.BLOCKER)
-        assert self.goals.events[-2] == ('link', 1, 3, Edge.BLOCKER)
-        assert self.goals.events[-1] == ('unlink', 1, 3, Edge.PARENT)
+        self.goals.toggle_link(edge_type=EdgeType.PARENT)
+        assert self.goals.events[-4] == ('link', 2, 3, EdgeType.PARENT)
+        assert self.goals.events[-3] == ('unlink', 2, 3, EdgeType.BLOCKER)
+        assert self.goals.events[-2] == ('link', 1, 3, EdgeType.BLOCKER)
+        assert self.goals.events[-1] == ('unlink', 1, 3, EdgeType.PARENT)
 
     def test_no_messages_at_start(self):
         assert self.messages == []
@@ -572,7 +572,7 @@ class GoalsTest(TestCase):
             open_(2, 'Middle', [3], select=previous),
             open_(3, 'Top', [], select=selected)
         )
-        self.goals.toggle_link(edge_type=Edge.PARENT)
+        self.goals.toggle_link(edge_type=EdgeType.PARENT)
         assert len(self.messages) == 1
 
     def test_message_when_closed_goal_is_blocked_by_open_one(self):

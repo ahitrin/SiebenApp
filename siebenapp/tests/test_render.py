@@ -1,7 +1,7 @@
 import pytest
 
 from siebenapp.enumeration import Enumeration
-from siebenapp.goaltree import Edge
+from siebenapp.goaltree import EdgeType
 from siebenapp.render import Renderer, place
 from siebenapp.tests.dsl import build_goaltree, open_, selected
 
@@ -101,10 +101,10 @@ def test_split_long_edges_using_fake_goals():
     result = Renderer(goals).build()
     assert get_in(result, 'edge') == {
         5: [],
-        4: [(5, Edge.PARENT)], '1_1': [(5, Edge.BLOCKER)],
-        3: [(4, Edge.PARENT)], '1_2': [('1_1', Edge.BLOCKER)],
-        2: [(3, Edge.PARENT)], '1_3': [('1_2', Edge.BLOCKER)],
-        1: [(2, Edge.PARENT), ('1_3', Edge.BLOCKER)],
+        4: [(5, EdgeType.PARENT)], '1_1': [(5, EdgeType.BLOCKER)],
+        3: [(4, EdgeType.PARENT)], '1_2': [('1_1', EdgeType.BLOCKER)],
+        2: [(3, EdgeType.PARENT)], '1_3': [('1_2', EdgeType.BLOCKER)],
+        1: [(2, EdgeType.PARENT), ('1_3', EdgeType.BLOCKER)],
     }
 
 
@@ -117,8 +117,8 @@ def test_use_different_long_edge_types():
     result = Renderer(goals).build()
     assert get_in(result, 'edge') == {
         3: [],
-        2: [(3, Edge.PARENT)], '1_1': [(3, Edge.BLOCKER)],
-        1: [(2, Edge.PARENT), ('1_1', Edge.BLOCKER)],
+        2: [(3, EdgeType.PARENT)], '1_1': [(3, EdgeType.BLOCKER)],
+        1: [(2, EdgeType.PARENT), ('1_1', EdgeType.BLOCKER)],
     }
 
 

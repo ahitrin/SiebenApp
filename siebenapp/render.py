@@ -2,7 +2,7 @@ from collections import defaultdict
 from typing import Dict, List, Tuple, Union
 
 from siebenapp.domain import Graph
-from siebenapp.goaltree import Edge
+from siebenapp.goaltree import EdgeType
 
 
 def safe_average(l):
@@ -49,7 +49,7 @@ class Renderer:
                 new_goal_name = '%d_%d' % (original_id, current_layer)
                 self.edges[new_goal_name] = [g for g in self.edges[original_id]
                                              if g in sorted_goals and g not in new_layer]
-                new_edge_type = Edge.BLOCKER
+                new_edge_type = EdgeType.BLOCKER
                 for g in self.edges[new_goal_name]:
                     self.edges[original_id].remove(g)
                     self.edge_types[new_goal_name, g] = self.edge_types[original_id, g]

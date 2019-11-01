@@ -7,7 +7,7 @@ from hypothesis import settings, assume, note
 from hypothesis._strategies import data, integers, booleans, text
 from hypothesis.stateful import RuleBasedStateMachine, rule, initialize, invariant, precondition
 
-from siebenapp.goaltree import Goals, Edge
+from siebenapp.goaltree import Goals, EdgeType
 from siebenapp.system import run_migrations, save_updates
 from siebenapp.zoom import Zoom
 
@@ -38,7 +38,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 
     @rule(b=booleans())
     def add_goal(self, b):
-        edge_type = Edge.PARENT if b else Edge.BLOCKER
+        edge_type = EdgeType.PARENT if b else EdgeType.BLOCKER
         self.goaltree.add('a', edge_type=edge_type)
 
     @rule()
@@ -69,7 +69,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         selection = d.draw(integers(min_value=1, max_value=max(self.goaltree.q().keys())))
         prev_selection = d.draw(integers(min_value=1, max_value=max(self.goaltree.q().keys())))
         assume(selection != prev_selection)
-        edge_type = Edge.PARENT if b else Edge.BLOCKER
+        edge_type = EdgeType.PARENT if b else EdgeType.BLOCKER
         self.goaltree.toggle_link(edge_type=edge_type)
 
     @rule(t=text())
