@@ -68,8 +68,7 @@ class Goals(Graph):
         self.events.append(('hold_select', self.settings['selection']))
 
     def q(self, keys: str = 'name') -> Dict[int, Any]:
-        def sel(x):
-            # type: (int) -> Optional[str]
+        def sel(x: int) -> Optional[str]:
             if x == self.settings['selection']:
                 return 'select'
             if x == self.settings['previous_selection']:
