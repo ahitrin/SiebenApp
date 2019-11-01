@@ -1,11 +1,11 @@
 from collections import defaultdict
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Tuple, Union, Any, Set
 
 from siebenapp.domain import Graph
 from siebenapp.goaltree import EdgeType
 
 
-def safe_average(l):
+def safe_average(l: List[int]) -> int:
     return sum(l) / len(l) if l else 0
 
 
@@ -23,18 +23,20 @@ class Renderer:
             for child, edge_type in self.graph[parent]['edge']
         }                                   # type: Dict[Tuple[Union[str, int], Union[str, int]], int]
 
-    def build(self):
+    def build(self) -> Dict[int, Any]:
         self.split_by_layers()
         self.reorder()
         self.update_graph()
         return self.graph
 
-    def split_by_layers(self):
-        unsorted_goals, sorted_goals = dict(self.edges), set()
-        incoming_edges, outgoing_edges = set(), set()
+    def split_by_layers(self) -> None:
+        unsorted_goals = dict(self.edges)   # type: Dict[int, List[int]]
+        sorted_goals = set()                # type: Set[Union[int, str]]
+        incoming_edges = set()              # type: Set[int]
+        outgoing_edges = set()              # type: Set[int]
         current_layer = 0
         while unsorted_goals:
-            new_layer = []
+            new_layer = []                  # type: List[Union[int, str]]
             for goal, edges_len in self.candidates_for_new_layer(sorted_goals, unsorted_goals):
                 unsorted_goals.pop(goal)
                 sorted_goals.add(goal)
@@ -65,13 +67,15 @@ class Renderer:
         self.positions = {g: idx for layer in self.layers.values() for idx, g in enumerate(layer)}
 
     @staticmethod
-    def candidates_for_new_layer(sorted_goals, unsorted_goals):
+    def candidates_for_new_layer(sorted_goals: Set[Union[int, str]],
+                                 unsorted_goals: Dict[int, List[int]]
+                                 ) -> List[Tuple[int, int]]:
         candidates = [(goal, len(edges)) for goal, edges in unsorted_goals.items()
                       if all(v in sorted_goals for v in edges)]
         candidates.sort(key=lambda x: x[1], reverse=True)
         return candidates
 
-    def reorder(self):
+    def reorder(self) -> None:
         for curr_layer in sorted(self.layers.keys(), reverse=True)[:-1]:
             fixed_line = self.layers[curr_layer]
             random_line = self.layers[curr_layer - 1]
@@ -84,7 +88,7 @@ class Renderer:
             self.layers[curr_layer - 1] = random_line
 
     def count_deltas(self, fixed_line):
-        deltas = defaultdict(list)
+        deltas = defaultdict(list)      # type: Dict[int, List[int]]
         for goal in fixed_line:
             if goal is not None:
                 for e in self.edges[goal]:
