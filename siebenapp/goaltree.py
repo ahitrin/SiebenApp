@@ -23,7 +23,7 @@ OptionsData = List[Tuple[str, int]]
 class Goals(Graph):
     def __init__(self, name: str, message_fn: Callable[[str], None] = None) -> None:
         self.goals = {}  # type: Dict[int, Optional[str]]
-        self.edges = {}  # type: Dict[Tuple[int, int], int]
+        self.edges = {}  # type: Dict[Tuple[int, int], EdgeType]
         self.closed = set()  # type: Set[int]
         self.settings = {
             'selection': 1,
@@ -46,7 +46,7 @@ class Goals(Graph):
     def _back_edges(self, goal: int) -> List[Edge]:
         return [Edge(k[0], goal, v) for k, v in self.edges.items() if k[1] == goal]
 
-    def add(self, name: str, add_to: int = 0, edge_type: int = EdgeType.PARENT) -> bool:
+    def add(self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT) -> bool:
         if add_to == 0:
             add_to = self.settings['selection']
         if add_to in self.closed:
@@ -170,7 +170,7 @@ class Goals(Graph):
                 self._delete(next_goal.target)
         self.events.append(('delete', goal_id))
 
-    def toggle_link(self, lower: int = 0, upper: int = 0, edge_type: int = EdgeType.BLOCKER) -> None:
+    def toggle_link(self, lower: int = 0, upper: int = 0, edge_type: EdgeType = EdgeType.BLOCKER) -> None:
         lower = self.settings['previous_selection'] if lower == 0 else lower
         upper = self.settings['selection'] if upper == 0 else upper
         if lower == upper:
@@ -186,7 +186,7 @@ class Goals(Graph):
         else:
             self._create_new_link(lower, upper, edge_type)
 
-    def _replace_link(self, lower: int, upper: int, edge_type: int) -> None:
+    def _replace_link(self, lower: int, upper: int, edge_type: EdgeType) -> None:
         old_edge_type = self.edges[(lower, upper)]
         self.edges[(lower, upper)] = edge_type
         self.events.append(('link', lower, upper, edge_type))
@@ -200,7 +200,7 @@ class Goals(Graph):
         else:
             self._msg("Can't remove the last link")
 
-    def _create_new_link(self, lower: int, upper: int, edge_type: int) -> None:
+    def _create_new_link(self, lower: int, upper: int, edge_type: EdgeType) -> None:
         if lower in self.closed and upper not in self.closed:
             self._msg("An open goal can't block already closed one")
             return
@@ -268,13 +268,8 @@ class Goals(Graph):
                             for i in range(1, max(goals_dict.keys()) + 1))
         result.closed = set(g[0] for g in goals if not g[2]).union(
             set(k for k, v in result.goals.items() if v is None))
-        d = collections.defaultdict(list)  # type: Dict[int, List[Edge]]
-        bd = collections.defaultdict(list)  # type: Dict[int, List[Edge]]
         for parent, child, link_type in edges:
-            edge = Edge(parent, child, link_type)
-            d[parent].append(edge)
-            bd[child].append(edge)
-            result.edges[parent, child] = link_type
+            result.edges[parent, child] = EdgeType(link_type)
         result.settings.update(settings)
         result.verify()
         return result
