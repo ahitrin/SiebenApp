@@ -27,26 +27,28 @@ class GoalWidget(QWidget, Ui_GoalBody):
 
     def setup_data(self, number, attributes):
         self.widget_id = number
-        self.label_goal_name.setText(split_long(attributes['name']))
-        self.check_open.setVisible(attributes['switchable'])
+        self.label_goal_name.setText(split_long(attributes["name"]))
+        self.check_open.setVisible(attributes["switchable"])
         self.is_real = isinstance(number, int)
-        selection = attributes['select']
-        if selection == 'select':
-            self.setStyleSheet('background-color:#808080;')
-        elif selection == 'prev':
-            self.setStyleSheet('background-color:#C0C0C0;')
+        selection = attributes["select"]
+        if selection == "select":
+            self.setStyleSheet("background-color:#808080;")
+        elif selection == "prev":
+            self.setStyleSheet("background-color:#C0C0C0;")
         if self.is_real:
-            frame_color = 'red' if attributes['open'] else 'green'
-            border = 2 if attributes['switchable'] else 1
-            self.frame.setStyleSheet('.QFrame{ border: %dpx solid %s }' % (border, frame_color))
+            frame_color = "red" if attributes["open"] else "green"
+            border = 2 if attributes["switchable"] else 1
+            self.frame.setStyleSheet(
+                ".QFrame{ border: %dpx solid %s }" % (border, frame_color)
+            )
             self.label_number.setText(str(number))
         else:
-            self.setStyleSheet('color: #EEEEEE; border: #EEEEEE')
+            self.setStyleSheet("color: #EEEEEE; border: #EEEEEE")
 
-    def mousePressEvent(self, event):                           # pylint: disable=unused-argument
+    def mousePressEvent(self, event):  # pylint: disable=unused-argument
         self._click_in_progress = True
 
-    def mouseReleaseEvent(self, event):                         # pylint: disable=unused-argument
+    def mouseReleaseEvent(self, event):  # pylint: disable=unused-argument
         if self._click_in_progress:
             self.clicked.emit()
         self._click_in_progress = False
@@ -69,7 +71,7 @@ class CentralWidget(QWidget):
     def __init__(self):
         super().__init__()
         self.setGeometry(QRect(0, 0, 576, 273))
-        self.setObjectName('scrollAreaWidgetContents')
+        self.setObjectName("scrollAreaWidgetContents")
         layout = QGridLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
@@ -78,11 +80,14 @@ class CentralWidget(QWidget):
     def setDependencies(self, new_dependencies):
         self.dependencies = new_dependencies
 
-    def paintEvent(self, event):                                    # pylint: disable=unused-argument
+    def paintEvent(self, event):  # pylint: disable=unused-argument
         painter = QPainter(self)
 
-        widgets = {w.widget_id: (w.top_point(), w.bottom_point(), w.is_real)
-                   for w in self.children() if isinstance(w, GoalWidget)}
+        widgets = {
+            w.widget_id: (w.top_point(), w.bottom_point(), w.is_real)
+            for w in self.children()
+            if isinstance(w, GoalWidget)
+        }
         for widget_id, points in widgets.items():
             line_start = points[0]
             for edge in self.dependencies[widget_id]:
@@ -114,20 +119,25 @@ class SiebenApp(QMainWindow):
         # but at the current moment I haven't found a better solution.
         # Widget creation in __init__ does not work: lines disappear.
         # Also we have to disable pylint warning in order to make build green.
-        self.scrollAreaWidgetContents = CentralWidget()         # pylint: disable=attribute-defined-outside-init
+        self.scrollAreaWidgetContents = (
+            CentralWidget()
+        )  # pylint: disable=attribute-defined-outside-init
         # End of 'looks like dirty hack'
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self._update_title()
         self.refresh.emit()
 
     def _update_title(self):
-        self.setWindowTitle('{0} ({1} view) - SiebenApp'.format(self.db, self.goals.view))
+        self.setWindowTitle(
+            "{0} ({1} view) - SiebenApp".format(self.db, self.goals.view)
+        )
 
     def close_goal(self, goal_id):
         def inner():
             self.goals.select(goal_id)
             self.goals.toggle_close()
             self.refresh.emit()
+
         return inner
 
     def save_and_render(self):
@@ -140,11 +150,15 @@ class SiebenApp(QMainWindow):
             if isinstance(child, GoalWidget):
                 child.deleteLater()
         graph = Renderer(self.goals).build()
-        if 'setDependencies' in dir(self.scrollAreaWidgetContents):
-            self.scrollAreaWidgetContents.setDependencies({g: graph[g]['edge'] for g in graph})
+        if "setDependencies" in dir(self.scrollAreaWidgetContents):
+            self.scrollAreaWidgetContents.setDependencies(
+                {g: graph[g]["edge"] for g in graph}
+            )
         for goal_id, attributes in graph.items():
             widget = GoalWidget()
-            self.scrollAreaWidgetContents.layout().addWidget(widget, attributes['row'], attributes['col'])
+            self.scrollAreaWidgetContents.layout().addWidget(
+                widget, attributes["row"], attributes["col"]
+            )
             widget.setup_data(goal_id, attributes)
             if isinstance(goal_id, int):
                 widget.clicked.connect(self.select_number(goal_id))
@@ -163,14 +177,18 @@ class SiebenApp(QMainWindow):
             Qt.Key_8: self.select_number(8),
             Qt.Key_9: self.select_number(9),
             Qt.Key_0: self.select_number(0),
-            Qt.Key_A: self.start_edit('Add new goal', self.goals.add),
+            Qt.Key_A: self.start_edit("Add new goal", self.goals.add),
             Qt.Key_C: self.with_refresh(self.goals.toggle_close),
             Qt.Key_D: self.with_refresh(self.goals.delete),
-            Qt.Key_I: self.start_edit('Insert new goal', self.goals.insert),
-            Qt.Key_K: self.with_refresh(self.goals.toggle_link, edge_type=EdgeType.PARENT),
+            Qt.Key_I: self.start_edit("Insert new goal", self.goals.insert),
+            Qt.Key_K: self.with_refresh(
+                self.goals.toggle_link, edge_type=EdgeType.PARENT
+            ),
             Qt.Key_L: self.with_refresh(self.goals.toggle_link),
             Qt.Key_Q: self.quit_app.emit,
-            Qt.Key_R: self.start_edit('Rename goal', self.goals.rename, self._current_goal_label),
+            Qt.Key_R: self.start_edit(
+                "Rename goal", self.goals.rename, self._current_goal_label
+            ),
             Qt.Key_V: self.toggle_view,
             Qt.Key_Z: self.toggle_zoom,
             Qt.Key_Escape: self.cancel_edit,
@@ -192,24 +210,26 @@ class SiebenApp(QMainWindow):
             self.input.returnPressed.connect(self.finish_edit(fn))
             self.cancel.setEnabled(True)
             self.cancel.clicked.connect(self.cancel_edit)
+
         return inner
 
     def finish_edit(self, fn):
         def inner():
-            self.dockWidget.setWindowTitle('')
+            self.dockWidget.setWindowTitle("")
             self.input.returnPressed.disconnect()
             fn(self.input.text())
             self.input.setEnabled(False)
-            self.input.setText('')
+            self.input.setText("")
             self.cancel.setEnabled(False)
             self.cancel.clicked.disconnect()
             self.refresh.emit()
+
         return inner
 
     def cancel_edit(self):
-        self.dockWidget.setWindowTitle('')
+        self.dockWidget.setWindowTitle("")
         self.input.setEnabled(False)
-        self.input.setText('')
+        self.input.setText("")
         self.cancel.setEnabled(False)
         try:
             self.input.returnPressed.disconnect()
@@ -218,19 +238,21 @@ class SiebenApp(QMainWindow):
             pass
 
     def _current_goal_label(self):
-        data = self.goals.q(keys='name,select').values()
-        return [x['name'] for x in data if x['select'] == 'select'].pop()
+        data = self.goals.q(keys="name,select").values()
+        return [x["name"] for x in data if x["select"] == "select"].pop()
 
     def with_refresh(self, fn, *args, **kwargs):
         def inner():
             fn(*args, **kwargs)
             self.refresh.emit()
+
         return inner
 
     def select_number(self, num):
         def inner():
             self.goals.select(num)
             self.refresh.emit()
+
         return inner
 
     def toggle_view(self):
@@ -253,14 +275,18 @@ class SiebenApp(QMainWindow):
 
 def main(root_script):
     parser = ArgumentParser()
-    parser.add_argument('db', nargs='?', default=DEFAULT_DB,
-                        help='Path to the database file (sieben.db by default)')
+    parser.add_argument(
+        "db",
+        nargs="?",
+        default=DEFAULT_DB,
+        help="Path to the database file (sieben.db by default)",
+    )
     args = parser.parse_args()
     app = QApplication(sys.argv)
     root = dirname(realpath(root_script))
-    w = loadUi(join(root, 'ui', 'main.ui'), SiebenApp(args.db))
-    w.about = loadUi(join(root, 'ui', 'about.ui'))
-    w.hotkeys = loadUi(join(root, 'ui', 'hotkeys.ui'))
+    w = loadUi(join(root, "ui", "main.ui"), SiebenApp(args.db))
+    w.about = loadUi(join(root, "ui", "about.ui"))
+    w.hotkeys = loadUi(join(root, "ui", "hotkeys.ui"))
     w.setup()
     w.showMaximized()
     sys.exit(app.exec_())

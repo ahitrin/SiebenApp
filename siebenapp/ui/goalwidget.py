@@ -8,11 +8,14 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+
 class Ui_GoalBody(object):
     def setupUi(self, GoalBody):
         GoalBody.setObjectName("GoalBody")
         GoalBody.resize(228, 72)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(GoalBody.sizePolicy().hasHeightForWidth())
@@ -26,7 +29,9 @@ class Ui_GoalBody(object):
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout(self.frame)
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
         self.check_open = QtWidgets.QCheckBox(self.frame)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.check_open.sizePolicy().hasHeightForWidth())
@@ -35,7 +40,9 @@ class Ui_GoalBody(object):
         self.check_open.setObjectName("check_open")
         self.horizontalLayout_3.addWidget(self.check_open)
         self.label_number = QtWidgets.QLabel(self.frame)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_number.sizePolicy().hasHeightForWidth())
@@ -49,10 +56,15 @@ class Ui_GoalBody(object):
         self.label_number.setObjectName("label_number")
         self.horizontalLayout_3.addWidget(self.label_number)
         self.label_goal_name = QtWidgets.QLabel(self.frame)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.MinimumExpanding,
+            QtWidgets.QSizePolicy.MinimumExpanding,
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_goal_name.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.label_goal_name.sizePolicy().hasHeightForWidth()
+        )
         self.label_goal_name.setSizePolicy(sizePolicy)
         self.label_goal_name.setText("")
         self.label_goal_name.setObjectName("label_goal_name")
@@ -68,4 +80,3 @@ class Ui_GoalBody(object):
     def retranslateUi(self, GoalBody):
         _translate = QtCore.QCoreApplication.translate
         GoalBody.setWindowTitle(_translate("GoalBody", "Form"))
-
