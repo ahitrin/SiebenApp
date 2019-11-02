@@ -82,12 +82,12 @@ def test_render_add_several_fake_vertex():
 
 def test_render_5_subgoals_in_several_rows():
     goals = build_goaltree(
-        open_(1, "Root", [2, 3, 4, 5, 6], select=selected),
-        open_(2, "A"),
-        open_(3, "B"),
-        open_(4, "C"),
-        open_(5, "D"),
-        open_(6, "E"),
+        open_(1, "One", [2, 3, 4, 5, 6], select=selected),
+        open_(2, "Two"),
+        open_(3, "Three"),
+        open_(4, "Four"),
+        open_(5, "Five"),
+        open_(6, "Six"),
     )
     result = Renderer(goals).build()
     assert get_in(result, "row") == {
@@ -152,12 +152,12 @@ def test_balance_upper_level():
 
 def test_render_in_top_view():
     goals = build_goaltree(
-        open_(1, "Root", [2, 3, 4, 5, 6], select=selected),
-        open_(2, "A"),
-        open_(3, "B"),
-        open_(4, "D"),
-        open_(5, "E"),
-        open_(6, "F"),
+        open_(1, "Uno", [2, 3, 4, 5, 6], select=selected),
+        open_(2, "Dos"),
+        open_(3, "Tres"),
+        open_(4, "Quatro"),
+        open_(5, "Cinco"),
+        open_(6, "Sext"),
     )
     view = Enumeration(goals)
     view.next_view()

@@ -119,9 +119,9 @@ class SiebenApp(QMainWindow):
         # but at the current moment I haven't found a better solution.
         # Widget creation in __init__ does not work: lines disappear.
         # Also we have to disable pylint warning in order to make build green.
-        self.scrollAreaWidgetContents = (
+        self.scrollAreaWidgetContents = (  # pylint: disable=attribute-defined-outside-init
             CentralWidget()
-        )  # pylint: disable=attribute-defined-outside-init
+        )
         # End of 'looks like dirty hack'
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self._update_title()
