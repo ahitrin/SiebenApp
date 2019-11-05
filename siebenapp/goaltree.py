@@ -46,6 +46,10 @@ class Goals(Graph):
     def _back_edges(self, goal: int) -> List[Edge]:
         return [Edge(k[0], goal, v) for k, v in self.edges.items() if k[1] == goal]
 
+    def _parent(self, goal: int) -> int:
+        parents = {e for e in self._back_edges(goal) if e.type == EdgeType.PARENT}
+        return parents.pop().source if parents else 1
+
     def add(
         self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
     ) -> bool:
@@ -159,13 +163,13 @@ class Goals(Graph):
         if goal_id == 1:
             self._msg("Root goal can't be deleted")
             return
+        parent = self._parent(goal_id)
         self._delete(goal_id)
-        self.select(1)
+        self.select(parent)
         self.hold_select()
 
     def _delete(self, goal_id: int) -> None:
-        parents = {e for e in self._back_edges(goal_id) if e.type == EdgeType.PARENT}
-        parent = parents.pop().source if parents else 1
+        parent = self._parent(goal_id)
         self.goals[goal_id] = None
         self.closed.add(goal_id)
         forward_edges = self._forward_edges(goal_id)

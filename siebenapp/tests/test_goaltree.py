@@ -203,6 +203,18 @@ class GoalsTest(TestCase):
             3: {"name": "B", "edge": []},
         }
 
+    def test_select_parent_after_delete(self):
+        self.goals = self.build(
+            open_(1, "Root", [2], select=previous),
+            open_(2, "Parent", [3]),
+            open_(3, "Delete me", select=selected),
+        )
+        self.goals.delete()
+        assert self.goals.q("name,edge,select") == {
+            1: {"name": "Root", "edge": [(2, EdgeType.PARENT)], "select": None},
+            2: {"name": "Parent", "edge": [], "select": "select"},
+        }
+
     def test_add_link_between_goals(self):
         self.goals = self.build(
             open_(1, "Root", [2, 3]),
