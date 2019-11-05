@@ -1,7 +1,8 @@
 # coding: utf-8
 from unittest import TestCase
 
-from siebenapp.goaltree import Goals, EdgeType
+from siebenapp.goaltree import Goals
+from siebenapp.domain import EdgeType
 from siebenapp.tests.dsl import build_goaltree, open_, selected, previous, clos_
 
 

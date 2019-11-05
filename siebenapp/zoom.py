@@ -1,7 +1,7 @@
 from typing import Dict, Any, Set, List, Tuple
 
-from siebenapp.domain import Graph
-from siebenapp.goaltree import Goals, EdgeType
+from siebenapp.domain import Graph, EdgeType
+from siebenapp.goaltree import Goals
 
 ZoomData = List[Tuple[int, int]]
 

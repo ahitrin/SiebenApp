@@ -1,5 +1,6 @@
 from siebenapp.enumeration import Enumeration
-from siebenapp.goaltree import Goals, EdgeType
+from siebenapp.goaltree import Goals
+from siebenapp.domain import EdgeType
 from siebenapp.tests.dsl import build_goaltree, open_, previous, selected
 
 

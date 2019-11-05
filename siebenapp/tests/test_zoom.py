@@ -1,4 +1,5 @@
-from siebenapp.goaltree import Goals, EdgeType
+from siebenapp.goaltree import Goals
+from siebenapp.domain import EdgeType
 from siebenapp.tests.dsl import build_goaltree, open_, selected, previous
 from siebenapp.zoom import Zoom
 

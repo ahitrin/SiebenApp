@@ -1,8 +1,7 @@
 from collections import defaultdict
 from typing import Dict, List, Tuple, Union, Any, Set
 
-from siebenapp.domain import Graph
-from siebenapp.goaltree import EdgeType
+from siebenapp.domain import Graph, EdgeType
 
 
 def safe_average(l: List[int]) -> int:

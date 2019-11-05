@@ -1,6 +1,7 @@
 from collections import namedtuple
 
-from siebenapp.goaltree import Goals, EdgeType
+from siebenapp.goaltree import Goals
+from siebenapp.domain import EdgeType
 
 selected = "select"
 previous = "previous"

@@ -1,19 +1,8 @@
 # coding: utf-8
 import collections
-from enum import IntEnum
 from typing import Callable, Dict, Optional, List, Set, Any, Tuple
 
-from siebenapp.domain import Graph
-
-
-class EdgeType(IntEnum):
-    BLOCKER = 1
-    PARENT = 2
-
-
-class Edge(collections.namedtuple("Edge", "source target type")):
-    __slots__ = ()
-
+from siebenapp.domain import Graph, EdgeType, Edge
 
 GoalsData = List[Tuple[int, Optional[str], bool]]
 EdgesData = List[Tuple[int, int, int]]

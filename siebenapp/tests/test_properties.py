@@ -13,7 +13,8 @@ from hypothesis.stateful import (
     precondition,
 )
 
-from siebenapp.goaltree import Goals, EdgeType
+from siebenapp.goaltree import Goals
+from siebenapp.domain import EdgeType
 from siebenapp.system import run_migrations, save_updates
 from siebenapp.zoom import Zoom
 
