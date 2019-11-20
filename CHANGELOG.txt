@@ -1,3 +1,24 @@
+Alpha version 0.5
+-----
+
+New features:
+
+* Use two link categories: parent-child vs bloker-blocked #16
+* Use nested zoom levels #17
+
+Other improvements:
+
+* Add support for Python 3.7 & 3.8
+* Update all dependencies (thx to @dependabot)
+* More strict pylint checks
+* Add a lot of type annotations
+* Start to extract common interfaces (domain.py)
+
+Compatibility breaks:
+
+* Remove unused 'swap goals' feature
+* API change: use 'q' for query method, not 'all'
+
 Alpha version 0.4
 -----
 
