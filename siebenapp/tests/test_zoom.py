@@ -172,6 +172,24 @@ def test_selection_should_be_changed_if_selected_goal_is_not_a_child_of_zoom_roo
     }
 
 
+def test_unlink_for_goal_outside_of_zoomed_tree_should_cause_selection_change():
+    goals = Zoom(
+        build_goaltree(
+            open_(1, "Root", [2, 3]),
+            open_(2, "Out of zoom"),
+            open_(3, "Zoom root", blockers=[2], select=selected),
+        )
+    )
+    goals.toggle_zoom()
+    goals.hold_select()
+    goals.select(2)
+    goals.toggle_link()  # unlink 3 -> 2
+    assert goals.q("name,select") == {
+        -1: {"name": "Root", "select": None},
+        3: {"name": "Zoom root", "select": "select"},
+    }
+
+
 def test_closing_zoom_root_should_cause_unzoom():
     goals = Zoom(
         build_goaltree(

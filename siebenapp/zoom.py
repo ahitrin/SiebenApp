@@ -9,15 +9,16 @@ ZoomData = List[Tuple[int, int]]
 class Zoom(Graph):
     override = [
         "_build_visible_goals",
-        "q",
         "delete",
         "export",
         "goaltree",
-        "toggle_close",
-        "toggle_zoom",
         "insert",
-        "zoom_root",
+        "q",
+        "toggle_close",
+        "toggle_link",
+        "toggle_zoom",
         "verify",
+        "zoom_root",
     ]
 
     def __init__(self, goaltree: Goals) -> None:
@@ -63,6 +64,14 @@ class Zoom(Graph):
 
     def insert(self, name: str) -> None:
         self.goaltree.insert(name)
+        if self.settings["selection"] not in self._build_visible_goals():
+            self.goaltree.select(self.zoom_root[-1])
+            self.goaltree.hold_select()
+
+    def toggle_link(
+        self, lower: int = 0, upper: int = 0, edge_type: EdgeType = EdgeType.BLOCKER
+    ) -> None:
+        self.goaltree.toggle_link(lower, upper, edge_type)
         if self.settings["selection"] not in self._build_visible_goals():
             self.goaltree.select(self.zoom_root[-1])
             self.goaltree.hold_select()
