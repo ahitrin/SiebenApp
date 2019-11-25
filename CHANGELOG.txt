@@ -1,3 +1,14 @@
+Alpha version 0.5.1
+-----
+
+Bug fixes:
+
+* Fix #63: focus may be lost after unlink in zoomed mode
+
+Other improvements:
+
+* Update Hypothesis and Pytest dependencies
+
 Alpha version 0.5
 -----
 
