@@ -1,0 +1,88 @@
+---
+layout: post
+title:  "Version 0.4 is released!"
+date:   2018-04-11
+tags: news
+---
+
+![full view](/SiebenApp/images/2018-04-11-release/overview.jpg)
+
+Congratulations! A new version of SiebenApp is here.
+It took a lot of time and effort to bring important new functionality into it, but at last I've done with it.
+
+## What's new
+
+### Native renderind
+
+The most important and the most visible change in this version.
+We've completely stopped relying on [GraphViz][graphviz] to render goal tree, and [started to do it by SiebenApp itself][issue5].
+Reasons behind this descision are following:
+
+ * At last we have full control over rendering rules. For example, now we could limit width of goal tree (not perfect yet, but it could be improved).
+ * We have full control over rendered goals. They may contain UI controls! We can interact with them using mouse (at least, select and close/reopen). More mouse control should be added in further versions.
+ * We don't need to have GrahpViz installed on the machine in order to run SiebenApp successfully. Now we need Python 3 and PyQt 5 only. This significantly simplifies installation.
+
+An old rendering engine was **completely** removed from the app.
+I hope no one will miss it!
+
+Maybe GraphViz engine worked better in _some_ cases, but it was almost impossible to be tuned and interacted with.
+So, let's turn the page and start a new one.
+
+### UI/UX improvements
+
+There is also a pack of small but nice features that makes working process more smooth and pleasant.
+
+ * [Allow to cancel edit][issue8]. Now a button titled "Cancel" is available when you add a new goal, or rename existing one. It works exactly the way it should work. You may also hit `Esc` key to achieve the same effect.
+
+![cancel button](/SiebenApp/images/2018-04-11-release/cancel.jpg)
+
+ * [Show error messages][issue11]. A hint message is shown at the bottom of the window when you try to do something that is not allowed by goal tree rules. For example, when you try to make a cycle of goals. That's just pointless! But if you've did it by mistake, a message from the app could help you catch it.
+
+![error message example](/SiebenApp/images/2018-04-11-release/error_message.jpg)
+
+ * [Hotkeys help window][issue12]. A little window that contains full list of used keys. Now you don't need to check SiebenApp's GitHub page for this information. Just visit "Help" menu.
+ * Set path to DB file in app args. In future versions it should be possible to create data files via GUI, but for now you could do it with CLI. Simply type `sieben my.db` and work with given file.
+ * Show DB name in window title. This is very useful when you have several open files.
+
+![useful window title](/SiebenApp/images/2018-04-11-release/title.jpg)
+
+ * Use current goal name as default value when rename goals. Well, yes, in previous version you had to retype full goal name even when you needed to fix a single typo. But not now!
+
+![rename](/SiebenApp/images/2018-04-11-release/rename.jpg)
+
+## Bug fixes
+
+ * [Escape special symbols in goal names][issue9]. Application must handle any symbol in goal name without crashing, right?
+ * Do not use fixed Python version in scripts. Allow SiebenApp to run on Python 3.6 and 3.7.
+
+## The most significant code improvements
+
+ * Setup code style check using `pylint`. Style check runs at every commit on CI. When it finds style violation, the build fails. In order to fix build, a developer have to fix style violation. I hope this practice should help to keep code clean and consice.
+ * Introduce [DSL for simper goal tree creation in test][issue10]. This must improve readability of tests (and, consequently, their usefulness).
+
+## What's next?
+
+The main current priorities of SiebenApp are following:
+
+ * Improve UX when working with complex goal trees: support many _independent_ goals, find goals by name, improve zooming (maybe introduce nested zooming), maybe add goal/link cathegories, and so on. I don't promise to implement all of these features in the next version, but few of them (or some other UX feature) may have been done.
+ * Improve application look and feel. Very probably, I'll try to switch from native Qt elements to JS-like QML. I expect it should give more flexibility in rendering.
+ * Simplify installation process. Users must not have to install it from source code only.
+
+The next planned version having these features should be suitable for beta testing.
+If you're interested and want to try it please let me know!
+Any kind of feedback is much appreciated.
+
+---
+
+Comments are disabled for this blog, but you may leave your comments on the tweet below.
+
+<blockquote class="twitter-tweet" data-lang="ru"><p lang="en" dir="ltr">SiebenApp 0.4 is here <a href="https://t.co/IrhkTquMVc">https://t.co/IrhkTquMVc</a> Actually, it&#39;s here since 2018-03-22, but it took me ~20 days to publish a blog :)</p>&mdash; Andrey Hitrin (@ahitrin) <a href="https://twitter.com/ahitrin/status/984012656448286720?ref_src=twsrc%5Etfw">11 апреля 2018 г.</a></blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+[graphviz]: http://www.graphviz.org
+[issue5]: https://github.com/ahitrin/SiebenApp/issues/5
+[issue8]: https://github.com/ahitrin/SiebenApp/issues/8
+[issue9]: https://github.com/ahitrin/SiebenApp/issues/9
+[issue10]: https://github.com/ahitrin/SiebenApp/issues/10
+[issue11]: https://github.com/ahitrin/SiebenApp/issues/11
+[issue12]: https://github.com/ahitrin/SiebenApp/issues/12

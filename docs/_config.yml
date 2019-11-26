@@ -1,0 +1,6 @@
+title: SiebenApp development blog
+url: "https://ahitrin.github.io"
+baseurl: /SiebenApp
+
+markdown: kramdown
+theme: minima
