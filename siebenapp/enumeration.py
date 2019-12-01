@@ -22,15 +22,13 @@ class Enumeration(Graph):
 
     views = {"open": "top", "top": "full", "full": "open"}
 
-    def __init__(self, goaltree):
-        # type: (Union[Goals, Zoom]) -> None
+    def __init__(self, goaltree: Union[Goals, Zoom]) -> None:
         self.goaltree = goaltree
-        self.selection_cache = []  # type: List[int]
-        self.view = "open"  # type: str
+        self.selection_cache: List[int] = []
+        self.view: str = "open"
         self._update_mapping()
 
-    def _update_mapping(self):
-        # type: () -> None
+    def _update_mapping(self) -> None:
         if self.view == "top":
             goals = {
                 k
@@ -49,8 +47,9 @@ class Enumeration(Graph):
         else:
             self._goal_filter = dict(self.goaltree.q())
 
-    def _id_mapping(self, keys="name"):
-        # type: (str) -> Tuple[Dict[int, Any], Callable[[int], int]]
+    def _id_mapping(
+        self, keys: str = "name"
+    ) -> Tuple[Dict[int, Any], Callable[[int], int]]:
         goals = self.goaltree.q(keys)
         goals = {k: v for k, v in goals.items() if k in self._goal_filter}
         if self.view == "top":
@@ -67,8 +66,7 @@ class Enumeration(Graph):
         m = {g: i + 1 for i, g in enumerate(sorted(g for g in goals if g > 0))}
         length = len(m)
 
-        def mapping_fn(goal_id):
-            # type: (int) -> int
+        def mapping_fn(goal_id: int) -> int:
             if goal_id < 0:
                 return goal_id
             goal_id = m[goal_id]
@@ -85,7 +83,7 @@ class Enumeration(Graph):
 
     def q(self, keys: str = "name") -> Dict[int, Any]:
         self._update_mapping()
-        result = dict()  # type: Dict[int, Any]
+        result: Dict[int, Any] = dict()
         goals, mapping = self._id_mapping(keys)
         for old_id, val in goals.items():
             new_id = mapping(old_id)
@@ -96,8 +94,7 @@ class Enumeration(Graph):
                 ]
         return result
 
-    def select(self, goal_id):
-        # type: (int) -> None
+    def select(self, goal_id: int) -> None:
         self._update_mapping()
         goals, mapping = self._id_mapping()
         if goal_id >= 10:
@@ -106,17 +103,14 @@ class Enumeration(Graph):
             goal_id = 10 * self.selection_cache.pop() + goal_id
             if goal_id > max(mapping(k) for k in goals.keys()):
                 goal_id %= int(pow(10, int(math.log(goal_id, 10))))
-        possible_selections = [
-            g for g in goals if mapping(g) == goal_id
-        ]  # type: List[int]
+        possible_selections: List[int] = [g for g in goals if mapping(g) == goal_id]
         if len(possible_selections) == 1:
             self.goaltree.select(possible_selections[0])
             self.selection_cache = []
         else:
             self.selection_cache.append(goal_id)
 
-    def next_view(self):
-        # type: () -> None
+    def next_view(self) -> None:
         self.view = self.views[self.view]
         self._update_mapping()
         self.selection_cache.clear()
