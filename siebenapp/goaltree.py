@@ -11,14 +11,14 @@ OptionsData = List[Tuple[str, int]]
 
 class Goals(Graph):
     def __init__(self, name: str, message_fn: Callable[[str], None] = None) -> None:
-        self.goals = {}  # type: Dict[int, Optional[str]]
-        self.edges = {}  # type: Dict[Tuple[int, int], EdgeType]
-        self.closed = set()  # type: Set[int]
-        self.settings = {
+        self.goals: Dict[int, Optional[str]] = {}
+        self.edges: Dict[Tuple[int, int], EdgeType] = {}
+        self.closed: Set[int] = set()
+        self.settings: Dict[str, int] = {
             "selection": 1,
             "previous_selection": 1,
-        }  # type: Dict[str, int]
-        self.events = collections.deque()  # type: collections.deque
+        }
+        self.events: collections.deque = collections.deque()
         self.message_fn = message_fn
         self._add_no_link(name)
 
@@ -75,7 +75,7 @@ class Goals(Graph):
             return None
 
         keys_list = keys.split(",")
-        result = dict()  # type: Dict[int, Any]
+        result: Dict[int, Any] = dict()
         for key, name in ((k, n) for k, n in self.goals.items() if n is not None):
             value = {
                 "edge": sorted([(e.target, e.type) for e in self._forward_edges(key)]),
@@ -229,9 +229,9 @@ class Goals(Graph):
             self._replace_link(p, upper, EdgeType.BLOCKER)
 
     def _has_circular_dependency(self, lower: int, upper: int) -> bool:
-        front = {upper}  # type: Set[int]
-        visited = set()  # type: Set[int]
-        total = set()  # type: Set[int]
+        front: Set[int] = {upper}
+        visited: Set[int] = set()
+        total: Set[int] = set()
         while front:
             g = front.pop()
             visited.add(g)
@@ -246,8 +246,8 @@ class Goals(Graph):
             g.target in self.closed for p in self.closed for g in self._forward_edges(p)
         ), "Open goals could not be blocked by closed ones"
 
-        queue = [1]  # type: List[int]
-        visited = set()  # type: Set[int]
+        queue: List[int] = [1]
+        visited: Set[int] = set()
         while queue:
             goal = queue.pop()
             queue.extend(
