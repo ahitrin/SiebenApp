@@ -16,13 +16,13 @@ class Renderer:
         self.edges = {
             key: [e[0] for e in values["edge"]] for key, values in self.graph.items()
         }
-        self.layers = defaultdict(list)  # type: Dict[int, List[int]]
-        self.positions = {}  # type: Dict[int, int]
-        self.edge_types = {
+        self.layers: Dict[int, List[int]] = defaultdict(list)
+        self.positions: Dict[int, int] = {}
+        self.edge_types: Dict[Tuple[Union[str, int], Union[str, int]], int] = {
             (parent, child): edge_type
             for parent in self.graph
             for child, edge_type in self.graph[parent]["edge"]
-        }  # type: Dict[Tuple[Union[str, int], Union[str, int]], int]
+        }
 
     def build(self) -> Dict[int, Any]:
         self.split_by_layers()
@@ -31,13 +31,13 @@ class Renderer:
         return self.graph
 
     def split_by_layers(self) -> None:
-        unsorted_goals = dict(self.edges)  # type: Dict[int, List[int]]
-        sorted_goals = set()  # type: Set[Union[int, str]]
-        incoming_edges = set()  # type: Set[int]
-        outgoing_edges = set()  # type: Set[int]
+        unsorted_goals: Dict[int, List[int]] = dict(self.edges)
+        sorted_goals: Set[Union[int, str]] = set()
+        incoming_edges: Set[int] = set()
+        outgoing_edges: Set[int] = set()
         current_layer = 0
         while unsorted_goals:
-            new_layer = []  # type: List[Union[int, str]]
+            new_layer: List[Union[int, str]] = []
             for goal, edges_len in self.candidates_for_new_layer(
                 sorted_goals, unsorted_goals
             ):
@@ -101,7 +101,7 @@ class Renderer:
             self.layers[curr_layer - 1] = random_line
 
     def count_deltas(self, fixed_line):
-        deltas = defaultdict(list)  # type: Dict[int, List[int]]
+        deltas: Dict[int, List[int]] = defaultdict(list)
         for goal in fixed_line:
             if goal is not None:
                 for e in self.edges[goal]:
