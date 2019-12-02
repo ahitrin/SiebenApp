@@ -133,7 +133,8 @@ That's life!
 ---
 
 Comments are disabled for this blog, but you may leave your comments on the tweet below.
-
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Just officially released a new version of <a href="https://twitter.com/hashtag/SiebenApp?src=hash&amp;ref_src=twsrc%5Etfw">#SiebenApp</a>, my little pet <a href="https://twitter.com/hashtag/GTD?src=hash&amp;ref_src=twsrc%5Etfw">#GTD</a> project. It&#39;s useful for me - and, I hope, for someone else<a href="https://t.co/eYOfprrFuq">https://t.co/eYOfprrFuq</a></p>&mdash; Andrey Hitrin (@ahitrin) <a href="https://twitter.com/ahitrin/status/1201556402361245699?ref_src=twsrc%5Etfw">December 2, 2019</a></blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 [issue1]: https://github.com/ahitrin/SiebenApp/issues/1
 [issue16]: https://github.com/ahitrin/SiebenApp/issues/16
