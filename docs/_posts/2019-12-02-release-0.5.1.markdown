@@ -13,7 +13,7 @@ Current checkpoint contains 2 major features and a lot of small improvements.
 
 ## New Features
 
-### Nested zooming
+### [Nested zooming][issue17]
 
 When you have many subgoals in a single goaltree but need to concentrate only on one of them, zooming suites your needs well.
 But sometimes, as we know, subgoals grow big enough to be splitted too.
@@ -21,21 +21,21 @@ So, zooming also helps us here.
 
 Create several subgoals:
 
-@
+![no zoom](/SiebenApp/images/2019-12-02-release/zoom0.jpg)
 
-Zoom to one of them:
+Zoom to one of them (`2`, `z`):
 
-@
+![zoom level 1](/SiebenApp/images/2019-12-02-release/zoom1.jpg)
 
-Zoom to the subgoal:
+Zoom to the subgoal (`3`, `z`):
 
-@
+![zoom level 2](/SiebenApp/images/2019-12-02-release/zoom2.jpg)
 
-Unzoom back:
+Unzoom back (`z`):
 
-@
+![zoom level 1](/SiebenApp/images/2019-12-02-release/zoom1.jpg)
 
-### Different link types
+### [Different link types][issue16]
 
 Not all links between goals have similar meaning.
 Currently, I've recognized two major patterns:
@@ -49,18 +49,18 @@ Currently, I've recognized two major patterns:
    Or you want to make a salad first - and don't even think about an omelette before that.
 
 Different link types looks and behaves, well, differently.
-
-@
-
+A single goal may have only one _parent_, but it's allowed to have as many _blockers_ as needed.
 When it's possible, SiebenApp tries to hide subgoals of _blockers_.
 
-@
-
-A single goal may have only one _parent_, but it's allowed to have as many _blockers_ as needed.
-
-@
+![hide subgoals](/SiebenApp/images/2019-12-02-release/hide-subgoals.jpg)
 
 ## Bug fixes
+
+[The only registered bug][issue63] had appeared as a clash between two aforementioned features.
+As it also happens...
+
+That's why we have version 0.5.1 here.
+First I've issued 0.5, and only then I've noticed (and fixed) this misbehavior.
 
 ## Other interesting improvements
 
@@ -92,7 +92,7 @@ Instead, I've gifted with 2-3 PRs from the bot every Monday.
 And they can be easily reviewed with a cup of morning coffee.
 That's really cool feeling!
 
-# Plans for version 0.6
+## Plans for version 0.6
 
 As you may already notice, SiebenApp is my pet project.
 So, there are no strict plans to implement some given set of features to the given deadline.
@@ -101,26 +101,26 @@ Sometimes it moves pretty slow - just because it's good enough for me, or becaus
 
 Currently, I'm interested in the following:
 
- - Application packaging.
+ - [Application packaging][issue1].
    The patriarch of issues!
    It looked difficult to implement in the past, and I had a little motivation to do it (since the only platform I use is GNU/Linux).
    But now we have Github Actions with builders for all platforms, and PyInstaller project.
    Maybe I'd like to spend some time in learning how to work with them - learning on this goal.
    But maybe not.
- - Drop Python 3.5 support.
+ - [Drop Python 3.5 support][issue64].
    In contrast to the previous, this feature is the most possible to be implemented.
    Feature drop is fun!
    Of course, I feel some kind of nostalgy because 3.5 was the version I've started on.
    But a joy of having new language features is much stronger.
- - CLI mode. It's funny! Enough to say!
- - Save actions history.
+ - [CLI mode][issue65]. It's funny! Enough to say!
+ - [Save actions history][issue66].
    Sometimes I feel it would be nice to have some kind of recorded history.
    For example, it simplifies undoing or allows to recognize "what a crap this cat was made by walking on my keyboard".
- - Toggle views independently from each other.
+ - [Toggle views independently from each other][issue67].
    Circular toggle between view modes was one of the first features.
    It was made quick&dirty and now looks like a 5th wheel.
    I'll try to replace it with more "classical" approach: separate on/off toggle for each view aspect.
- - Extract common interface for Goal class.
+ - [Extract common interface for Goal class][issue68].
    This is a long running refactoring that was already started in 0.5.
    Now it simply gains a name and number.
 
@@ -133,3 +133,14 @@ That's life!
 ---
 
 Comments are disabled for this blog, but you may leave your comments on the tweet below.
+
+
+[issue1]: https://github.com/ahitrin/SiebenApp/issues/1
+[issue16]: https://github.com/ahitrin/SiebenApp/issues/16
+[issue17]: https://github.com/ahitrin/SiebenApp/issues/17
+[issue63]: https://github.com/ahitrin/SiebenApp/issues/63
+[issue64]: https://github.com/ahitrin/SiebenApp/issues/64
+[issue65]: https://github.com/ahitrin/SiebenApp/issues/65
+[issue66]: https://github.com/ahitrin/SiebenApp/issues/66
+[issue67]: https://github.com/ahitrin/SiebenApp/issues/67
+[issue68]: https://github.com/ahitrin/SiebenApp/issues/68
