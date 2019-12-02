@@ -39,7 +39,7 @@ class GoalWidget(QWidget, Ui_GoalBody):
             frame_color = "red" if attributes["open"] else "green"
             border = 2 if attributes["switchable"] else 1
             self.frame.setStyleSheet(
-                ".QFrame{ border: %dpx solid %s }" % (border, frame_color)
+                f".QFrame{{ border: {border}px solid {frame_color} }}"
             )
             self.label_number.setText(str(number))
         else:

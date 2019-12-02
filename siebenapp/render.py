@@ -52,7 +52,7 @@ class Renderer:
                     break
             incoming_edges = incoming_edges.difference(set(new_layer))
             for original_id in incoming_edges:
-                new_goal_name = "%d_%d" % (original_id, current_layer)
+                new_goal_name = f"{original_id}_{current_layer}"
                 self.edges[new_goal_name] = [
                     g
                     for g in self.edges[original_id]

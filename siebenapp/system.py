@@ -201,5 +201,5 @@ def split_long(line: str) -> str:
 
 def _format_name(num: int, goal: Dict[str, str]) -> str:
     goal_name = escape(goal["name"])
-    label = '"%d: %s"' % (num, goal_name) if num >= 0 else '"%s"' % goal_name
+    label = f'"{num}: {goal_name}"' if num >= 0 else f'"{goal_name}"'
     return split_long(label)
