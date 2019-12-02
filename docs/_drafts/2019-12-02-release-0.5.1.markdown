@@ -1,0 +1,135 @@
+---
+layout: post
+title:  "Version 0.5 is here (0.5.1 to be honest)!"
+date:   2019-12-02
+tags: news
+---
+
+Well, after several months of slow, spare-time development, a new version of SiebenApp is here!
+To say strictly, there's always a working, bugless and featurefull version of the application in the master branch (at least, I'm trying hard to keep it in such state).
+This means that "release" of SiebenApp in most cases may be treated as some kind of "intermediate checkpoint", nothing more.
+
+Current checkpoint contains 2 major features and a lot of small improvements.
+
+## New Features
+
+### Nested zooming
+
+When you have many subgoals in a single goaltree but need to concentrate only on one of them, zooming suites your needs well.
+But sometimes, as we know, subgoals grow big enough to be splitted too.
+So, zooming also helps us here.
+
+Create several subgoals:
+
+@
+
+Zoom to one of them:
+
+@
+
+Zoom to the subgoal:
+
+@
+
+Unzoom back:
+
+@
+
+### Different link types
+
+Not all links between goals have similar meaning.
+Currently, I've recognized two major patterns:
+
+1. Goal B is _a subgoal_ of goal A.
+   This means that it's a logical part of the goal A.
+   For example, to make an omelette you need to break eggs.
+2. Goal B is _blocking_ goal A.
+   This means that it's not actually a part of the goal A, but it prevents its from starting (or _planned_ to be executed before it).
+   For example, to make an omelette you need to come home first.
+   Or you want to make a salad first - and don't even think about an omelette before that.
+
+Different link types looks and behaves, well, differently.
+
+@
+
+When it's possible, SiebenApp tries to hide subgoals of _blockers_.
+
+@
+
+A single goal may have only one _parent_, but it's allowed to have as many _blockers_ as needed.
+
+@
+
+## Bug fixes
+
+## Other interesting improvements
+
+### Manage dependencies with a little help from bots
+
+Welcome our new contributor, friendly and tireless dependabot!
+Every week it comes with dependency updates PRs and helps me to keep my project in fresh and shiny state.
+
+There's no secret that manual tracking for libraries updates is usually boring like death.
+I had absolutely no urge to check them for years.
+And when I've tried to update Hypothesis, - surprise! - something evil happened.
+And I've found my application struck in the middle of the old, unsupported  versions swamp.
+
+But then a bot had come for the rescue.
+It looks for libraries updates and sends a PR for each update.
+This helps me find following insights:
+
+- Some of my dependencies are not actually needed to be set explicitly.
+  I've used them once to fix compatibility issues with another libraries.
+  But now these issues are fixed. So I don't need my old cruthes anymore
+- Some of my dependencies can be updated without any trouble!
+  So there is no reason to ignore an update
+- Finally,  some of my dependency updates were incompatible wth my code.
+  This was enough solid reason to clean up some old stuff.
+  After I've made it, next updates have become easy too.
+
+Now, I'm still have no urge to check my project's dependency updates manually.
+Instead, I've gifted with 2-3 PRs from the bot every Monday.
+And they can be easily reviewed with a cup of morning coffee.
+That's really cool feeling!
+
+# Plans for version 0.6
+
+As you may already notice, SiebenApp is my pet project.
+So, there are no strict plans to implement some given set of features to the given deadline.
+It's being developed in my spare time (not much I have), and only in direction I like.
+Sometimes it moves pretty slow - just because it's good enough for me, or because I don't see any interesting challenge to solve.
+
+Currently, I'm interested in the following:
+
+ - Application packaging.
+   The patriarch of issues!
+   It looked difficult to implement in the past, and I had a little motivation to do it (since the only platform I use is GNU/Linux).
+   But now we have Github Actions with builders for all platforms, and PyInstaller project.
+   Maybe I'd like to spend some time in learning how to work with them - learning on this goal.
+   But maybe not.
+ - Drop Python 3.5 support.
+   In contrast to the previous, this feature is the most possible to be implemented.
+   Feature drop is fun!
+   Of course, I feel some kind of nostalgy because 3.5 was the version I've started on.
+   But a joy of having new language features is much stronger.
+ - CLI mode. It's funny! Enough to say!
+ - Save actions history.
+   Sometimes I feel it would be nice to have some kind of recorded history.
+   For example, it simplifies undoing or allows to recognize "what a crap this cat was made by walking on my keyboard".
+ - Toggle views independently from each other.
+   Circular toggle between view modes was one of the first features.
+   It was made quick&dirty and now looks like a 5th wheel.
+   I'll try to replace it with more "classical" approach: separate on/off toggle for each view aspect.
+ - Extract common interface for Goal class.
+   This is a long running refactoring that was already started in 0.5.
+   Now it simply gains a name and number.
+
+In previous versions I've implemented less features than was previously planned.
+That's also should be expected for the 0.6 version.
+When I think that the previous "intermediate checkpoint" happened too long ago, I start to publish the next one.
+Usually this means that some features remains still undone.
+That's life!
+
+---
+
+Comments are disabled for this blog, but you may leave your comments on the tweet below.
