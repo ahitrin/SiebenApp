@@ -4,7 +4,7 @@ from collections import Counter
 from contextlib import closing
 
 from hypothesis import settings, assume, note
-from hypothesis._strategies import data, integers, booleans, text
+from hypothesis.strategies import data, integers, booleans, text
 from hypothesis.stateful import (
     RuleBasedStateMachine,
     rule,
