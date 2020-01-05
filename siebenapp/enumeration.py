@@ -14,6 +14,7 @@ class Enumeration(Graph):
         "_update_mapping",
         "goaltree",
         "hold_select",
+        "insert",
         "next_view",
         "q",
         "select",
@@ -85,6 +86,9 @@ class Enumeration(Graph):
 
     def add(self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT) -> bool:
         return self.goaltree.add(name, add_to, edge_type)
+
+    def insert(self, name: str) -> None:
+        self.goaltree.insert(name)
 
     def q(self, keys: str = "name") -> Dict[int, Any]:
         self._update_mapping()

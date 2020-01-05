@@ -30,6 +30,10 @@ class Graph:
         """Saves current selection into the "previous selection" state"""
         raise NotImplementedError
 
+    def insert(self, name: str) -> None:
+        """Add an intermediate goal between two selected goals"""
+        raise NotImplementedError
+
     def q(self, keys: str = "name") -> Dict[int, Any]:
         """Run search query against goaltree state"""
         raise NotImplementedError
