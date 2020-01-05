@@ -38,6 +38,10 @@ class Graph:
         """Change a name of the given goal"""
         raise NotImplementedError
 
+    def toggle_close(self) -> None:
+        """Close an open selected goal. Re-open a closed selected goal"""
+        raise NotImplementedError
+
     def q(self, keys: str = "name") -> Dict[int, Any]:
         """Run search query against goaltree state"""
         raise NotImplementedError

@@ -20,6 +20,7 @@ class Enumeration(Graph):
         "rename",
         "select",
         "selection_cache",
+        "toggle_close",
         "view",
         "views",
     ]
@@ -125,6 +126,9 @@ class Enumeration(Graph):
 
     def hold_select(self) -> None:
         self.goaltree.hold_select()
+
+    def toggle_close(self) -> None:
+        self.goaltree.toggle_close()
 
     def next_view(self) -> None:
         self.view = self.views[self.view]
