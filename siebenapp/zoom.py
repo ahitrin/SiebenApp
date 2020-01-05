@@ -15,8 +15,9 @@ class Zoom(Graph):
         "goaltree",
         "insert",
         "hold_select",
-        "select",
         "q",
+        "rename",
+        "select",
         "toggle_close",
         "toggle_link",
         "toggle_zoom",
@@ -50,6 +51,9 @@ class Zoom(Graph):
 
     def hold_select(self) -> None:
         self.goaltree.hold_select()
+
+    def rename(self, new_name: str, goal_id: int = 0) -> None:
+        self.goaltree.rename(new_name, goal_id)
 
     def q(self, keys: str = "name") -> Dict[int, Any]:
         origin_goals = self.goaltree.q(keys)

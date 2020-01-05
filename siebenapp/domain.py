@@ -34,6 +34,10 @@ class Graph:
         """Add an intermediate goal between two selected goals"""
         raise NotImplementedError
 
+    def rename(self, new_name: str, goal_id: int = 0) -> None:
+        """Change a name of the given goal"""
+        raise NotImplementedError
+
     def q(self, keys: str = "name") -> Dict[int, Any]:
         """Run search query against goaltree state"""
         raise NotImplementedError

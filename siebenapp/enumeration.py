@@ -17,6 +17,7 @@ class Enumeration(Graph):
         "insert",
         "next_view",
         "q",
+        "rename",
         "select",
         "selection_cache",
         "view",
@@ -89,6 +90,9 @@ class Enumeration(Graph):
 
     def insert(self, name: str) -> None:
         self.goaltree.insert(name)
+
+    def rename(self, new_name: str, goal_id: int = 0) -> None:
+        self.goaltree.rename(new_name, goal_id)
 
     def q(self, keys: str = "name") -> Dict[int, Any]:
         self._update_mapping()
