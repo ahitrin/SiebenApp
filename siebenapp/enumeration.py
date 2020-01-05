@@ -125,7 +125,7 @@ class Enumeration(Graph):
 
     def __getattribute__(self, attr):
         overriden = object.__getattribute__(self, "overriden")
-        goaltree = object.__getattribute__(self, "goaltree")
         if attr in overriden:
             return object.__getattribute__(self, attr)
+        goaltree = object.__getattribute__(self, "goaltree")
         return getattr(goaltree, attr)

@@ -123,9 +123,9 @@ class Zoom(Graph):
 
     def __getattribute__(self, item):
         override = object.__getattribute__(self, "override")
-        goals = object.__getattribute__(self, "goaltree")
         if item in override:
             return object.__getattribute__(self, item)
+        goals = object.__getattribute__(self, "goaltree")
         return getattr(goals, item)
 
     @staticmethod
