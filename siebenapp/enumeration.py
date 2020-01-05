@@ -22,6 +22,7 @@ class Enumeration(Graph):
         "select",
         "selection_cache",
         "toggle_close",
+        "toggle_link",
         "view",
         "views",
     ]
@@ -130,6 +131,11 @@ class Enumeration(Graph):
 
     def toggle_close(self) -> None:
         self.goaltree.toggle_close()
+
+    def toggle_link(
+        self, lower: int = 0, upper: int = 0, edge_type: EdgeType = EdgeType.BLOCKER
+    ) -> None:
+        self.goaltree.toggle_link(lower, upper, edge_type)
 
     def delete(self, goal_id: int = 0) -> None:
         self.goaltree.delete(goal_id)

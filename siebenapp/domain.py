@@ -38,6 +38,12 @@ class Graph:
         """Change a name of the given goal"""
         raise NotImplementedError
 
+    def toggle_link(
+        self, lower: int = 0, upper: int = 0, edge_type: EdgeType = EdgeType.BLOCKER
+    ) -> None:
+        """Create or remove a link between two given goals, if possible"""
+        raise NotImplementedError
+
     def toggle_close(self) -> None:
         """Close an open selected goal. Re-open a closed selected goal"""
         raise NotImplementedError
