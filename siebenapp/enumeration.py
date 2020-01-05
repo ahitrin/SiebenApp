@@ -88,7 +88,9 @@ class Enumeration(Graph):
 
         return goals, mapping_fn
 
-    def add(self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT) -> bool:
+    def add(
+        self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
+    ) -> bool:
         return self.goaltree.add(name, add_to, edge_type)
 
     def insert(self, name: str) -> None:
