@@ -1,13 +1,14 @@
 import math
 from typing import List, Dict, Tuple, Any, Callable, Union
 
-from siebenapp.domain import Graph
+from siebenapp.domain import Graph, EdgeType
 from siebenapp.goaltree import Goals
 from siebenapp.zoom import Zoom
 
 
 class Enumeration(Graph):
     overriden = [
+        "add",
         "_goal_filter",
         "_id_mapping",
         "_update_mapping",
@@ -80,6 +81,9 @@ class Enumeration(Graph):
             return new_id
 
         return goals, mapping_fn
+
+    def add(self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT) -> bool:
+        return self.goaltree.add(name, add_to, edge_type)
 
     def q(self, keys: str = "name") -> Dict[int, Any]:
         self._update_mapping()

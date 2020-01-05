@@ -16,6 +16,12 @@ class Edge(collections.namedtuple("Edge", "source target type")):
 class Graph:
     """Base interface definition"""
 
+    def add(
+        self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
+    ) -> bool:
+        """Add a new goal to the existing tree"""
+        raise NotImplementedError
+
     def q(self, keys: str = "name") -> Dict[int, Any]:
         """Run search query against goaltree state"""
         raise NotImplementedError
