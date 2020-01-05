@@ -42,6 +42,10 @@ class Graph:
         """Close an open selected goal. Re-open a closed selected goal"""
         raise NotImplementedError
 
+    def delete(self, goal_id: int = 0) -> None:
+        """Remove given or selected goal whether it exists. Do nothiung in other case"""
+        raise NotImplementedError
+
     def q(self, keys: str = "name") -> Dict[int, Any]:
         """Run search query against goaltree state"""
         raise NotImplementedError

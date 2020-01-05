@@ -12,6 +12,7 @@ class Enumeration(Graph):
         "_goal_filter",
         "_id_mapping",
         "_update_mapping",
+        "delete",
         "goaltree",
         "hold_select",
         "insert",
@@ -129,6 +130,9 @@ class Enumeration(Graph):
 
     def toggle_close(self) -> None:
         self.goaltree.toggle_close()
+
+    def delete(self, goal_id: int = 0) -> None:
+        self.goaltree.delete(goal_id)
 
     def next_view(self) -> None:
         self.view = self.views[self.view]
