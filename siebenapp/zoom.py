@@ -14,6 +14,7 @@ class Zoom(Graph):
         "export",
         "goaltree",
         "insert",
+        "select",
         "q",
         "toggle_close",
         "toggle_link",
@@ -42,6 +43,9 @@ class Zoom(Graph):
             visible_goals = self._build_visible_goals()
             if self.settings["previous_selection"] not in visible_goals:
                 self.goaltree.hold_select()
+
+    def select(self, goal_id: int) -> None:
+        self.goaltree.select(goal_id)
 
     def q(self, keys: str = "name") -> Dict[int, Any]:
         origin_goals = self.goaltree.q(keys)

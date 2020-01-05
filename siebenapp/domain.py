@@ -22,6 +22,10 @@ class Graph:
         """Add a new goal to the existing tree"""
         raise NotImplementedError
 
+    def select(self, goal_id: int) -> None:
+        """Select a goal by its id whether it exist. Do nothing in other case"""
+        raise NotImplementedError
+
     def q(self, keys: str = "name") -> Dict[int, Any]:
         """Run search query against goaltree state"""
         raise NotImplementedError
