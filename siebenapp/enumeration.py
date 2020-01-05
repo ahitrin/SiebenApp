@@ -12,9 +12,10 @@ class Enumeration(Graph):
         "_goal_filter",
         "_id_mapping",
         "_update_mapping",
-        "q",
         "goaltree",
+        "hold_select",
         "next_view",
+        "q",
         "select",
         "selection_cache",
         "view",
@@ -113,6 +114,9 @@ class Enumeration(Graph):
             self.selection_cache = []
         else:
             self.selection_cache.append(goal_id)
+
+    def hold_select(self) -> None:
+        self.goaltree.hold_select()
 
     def next_view(self) -> None:
         self.view = self.views[self.view]

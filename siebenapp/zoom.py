@@ -14,6 +14,7 @@ class Zoom(Graph):
         "export",
         "goaltree",
         "insert",
+        "hold_select",
         "select",
         "q",
         "toggle_close",
@@ -46,6 +47,9 @@ class Zoom(Graph):
 
     def select(self, goal_id: int) -> None:
         self.goaltree.select(goal_id)
+
+    def hold_select(self) -> None:
+        self.goaltree.hold_select()
 
     def q(self, keys: str = "name") -> Dict[int, Any]:
         origin_goals = self.goaltree.q(keys)
