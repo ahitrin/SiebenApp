@@ -18,7 +18,7 @@ from siebenapp.domain import EdgeType
 from siebenapp.system import run_migrations, save_updates
 from siebenapp.zoom import Zoom
 
-settings.register_profile("ci", settings(max_examples=2000))
+settings.register_profile("ci", settings(max_examples=1000))
 settings.register_profile("dev", settings(max_examples=200))
 settings.load_profile(os.getenv("HYPOTHESIS_PROFILE", "dev"))
 
