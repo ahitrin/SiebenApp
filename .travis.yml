@@ -6,4 +6,4 @@ python:
  - "3.8"
 env:
  - HYPOTHESIS_PROFILE=ci
-script: make test lint
+script: travis_wait 15 make test lint
