@@ -172,6 +172,30 @@ def test_selection_should_be_changed_if_selected_goal_is_not_a_child_of_zoom_roo
     }
 
 
+def test_selection_should_be_changed_on_stacked_unzoom_a_long_chain_of_blockers():
+    goals = Zoom(
+        build_goaltree(
+            open_(1, "Root", blockers=[2]),
+            open_(2, "A", blockers=[3], select=selected),
+            open_(3, "D", blockers=[4]),
+            open_(4, "E"),
+        )
+    )
+    goals.toggle_zoom()  # zoom on 2
+    goals.select(3)
+    goals.toggle_zoom()  # zoom on 3
+    goals.select(4)
+    goals.hold_select()  # set previous selection onto 4
+    goals.select(3)
+    goals.toggle_zoom()  # unzoom on 3 (zoom root is on 2 again)
+    assert goals.q("name,select") == {
+        -1: {"name": "Root", "select": None},
+        2: {"name": "A", "select": None},
+        3: {"name": "D", "select": "select"},
+    }
+    assert goals.verify()
+
+
 def test_unlink_for_goal_outside_of_zoomed_tree_should_cause_selection_change():
     goals = Zoom(
         build_goaltree(

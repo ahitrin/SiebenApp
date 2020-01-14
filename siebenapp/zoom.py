@@ -40,13 +40,14 @@ class Zoom(Graph):
             # unzoom
             last_zoom = self.zoom_root.pop(-1)
             self.events.append(("unzoom", last_zoom))
-            return
-        if selection not in self.zoom_root:
+        elif selection not in self.zoom_root:
             self.zoom_root.append(selection)
             self.events.append(("zoom", len(self.zoom_root), selection))
-            visible_goals = self._build_visible_goals()
-            if self.settings["previous_selection"] not in visible_goals:
-                self.goaltree.hold_select()
+        else:
+            return
+        visible_goals = self._build_visible_goals()
+        if self.settings["previous_selection"] not in visible_goals:
+            self.goaltree.hold_select()
 
     def select(self, goal_id: int) -> None:
         self.goaltree.select(goal_id)
