@@ -1,3 +1,21 @@
+Alpha version 0.6
+-----
+
+Bug fixes:
+
+* Previous selection may get lost on unzoom #85
+
+Compatibility breaks:
+
+* Remove support for Python 3.5 #64
+
+Other improvements:
+
+* Few improvements for Travis builds
+* Extract common interface to the Goals class (WIP) #68
+* Reorganize blog: move from branch to directory
+* Update dependencies: pytest, hypothesis, mypy, pyqt5 (thx to @dependabot)
+
 Alpha version 0.5.1
 -----
 

@@ -1,0 +1,53 @@
+---
+layout: post
+title:  "Version 0.6 is here"
+date:   2019-12-02
+tags: news
+---
+
+A fast after-release following 0.5/0.5.1, with few important changes.
+
+## New Features
+
+None detected
+
+## Bug fixes
+
+ - [Previous selection may get lost on unzoom][issue85].
+   A bug found by property tests (at last!) was the main reason to schedule this release.
+
+## Compatibility breaks
+
+ - [Remove support for Python 3.5][issue64].
+   A main reason why the new version is numbered with 0.6, not 0.5.2.
+   I hope there is no big need in supporting this quite old Python version because all major distros already have new ones.
+   When targeting Python 3.6+ we could use much prettier code syntax like f-strings and type annotations.
+
+## Other interesting improvements
+
+ - [Extract common interface for Goal class][issue68].
+   Refactoring in progress.
+   It provides better support for PyCharm and Mypy.
+   The code is still not ready for static type checking, but our wagon is rolling...
+
+## Plans for version 0.7
+
+ - [CLI mode][issue65]. It's funny! Enough to say!
+ - [Save actions history][issue66].
+   Sometimes I feel it would be nice to have some kind of recorded history.
+   For example, it simplifies undoing or allows to recognize "what a crap this cat was made by walking on my keyboard".
+ - [Toggle views independently from each other][issue67].
+   Circular toggle between view modes was one of the first features.
+   It was made quick&dirty and now looks like a 5th wheel.
+   I'll try to replace it with more "classical" approach: separate on/off toggle for each view aspect.
+
+Of course, plans could change, you know.
+
+---
+
+[issue64]: https://github.com/ahitrin/SiebenApp/issues/64
+[issue65]: https://github.com/ahitrin/SiebenApp/issues/65
+[issue66]: https://github.com/ahitrin/SiebenApp/issues/66
+[issue67]: https://github.com/ahitrin/SiebenApp/issues/67
+[issue68]: https://github.com/ahitrin/SiebenApp/issues/68
+[issue85]: https://github.com/ahitrin/SiebenApp/issues/85
