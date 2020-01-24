@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Version 0.6 is here"
-date:   2019-12-02
+date:   2020-01-20
 tags: news
 ---
 
