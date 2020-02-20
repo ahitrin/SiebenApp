@@ -4,6 +4,7 @@ from html import escape
 from os import path
 from typing import Union, Callable, List, Dict
 
+from siebenapp.domain import EdgeType
 from siebenapp.goaltree import Goals
 from siebenapp.enumeration import Enumeration
 from siebenapp.zoom import Zoom
@@ -231,7 +232,7 @@ def dot_export(goals):
         for edge in data[num]["edge"]:
             color = "black" if data[edge[0]]["open"] else "gray"
             line_attrs = "color=%s" % color
-            if num < 0:
+            if edge[1] == EdgeType.BLOCKER:
                 line_attrs += ", style=dashed"
             lines.append("%d -> %d [%s];" % (edge[0], num, line_attrs))
     return "digraph g {\nnode [shape=box];\n%s\n}" % "\n".join(lines)
