@@ -206,7 +206,7 @@ def _format_name(num: int, goal: Dict[str, str]) -> str:
 
 
 def dot_export(goals):
-    data = goals.q(keys="open,name,edge,select,switchable")
+    data = goals.q(keys="open,name,edge,switchable")
     lines = []
     for num in sorted(data.keys()):
         goal = data[num]
@@ -216,10 +216,7 @@ def dot_export(goals):
         attributes = {
             "label": _format_name(num, goal),
             "color": "red" if goal["open"] else "green",
-            "fillcolor": {"select": "gray", "prev": "lightgray"}.get(goal["select"]),
         }
-        if goal["select"] is not None:
-            style.append("filled")
         if len(style) > 1:
             attributes["style"] = '"%s"' % ",".join(style)
         elif len(style) == 1:
