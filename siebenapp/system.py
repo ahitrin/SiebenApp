@@ -219,20 +219,21 @@ def dot_export(goals):
             "color": "red" if goal["open"] else "green",
         }
         if len(style) > 1:
-            attributes["style"] = '"%s"' % ",".join(style)
+            attributes["style"] = f'"{",".join(style)}"'
         elif len(style) == 1:
             attributes["style"] = style[0]
         attributes_str = ", ".join(
-            "%s=%s" % (k, attributes[k])
+            f"{k}={attributes[k]}"
             for k in ["label", "color", "style", "fillcolor"]
             if k in attributes and attributes[k]
         )
-        lines.append("%d [%s];" % (num, attributes_str))
+        lines.append(f"{num} [{attributes_str}];")
     for num in sorted(data.keys()):
         for edge in data[num]["edge"]:
             color = "black" if data[edge[0]]["open"] else "gray"
-            line_attrs = "color=%s" % color
+            line_attrs = f"color={color}"
             if edge[1] == EdgeType.BLOCKER:
                 line_attrs += ", style=dashed"
-            lines.append("%d -> %d [%s];" % (edge[0], num, line_attrs))
-    return "digraph g {\nnode [shape=box];\n%s\n}" % "\n".join(lines)
+            lines.append(f"{edge[0]} -> {num} [{line_attrs}];")
+    body = "\n".join(lines)
+    return f"digraph g {{\nnode [shape=box];\n{body}\n}}"
