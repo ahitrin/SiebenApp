@@ -1,0 +1,17 @@
+#!/usr/bin/env python3
+from argparse import ArgumentParser
+
+from siebenapp.system import DEFAULT_DB
+
+
+def main():
+    parser = ArgumentParser()
+    parser.add_argument("command", choices=["dot"])
+    parser.add_argument("db", nargs="?", default=DEFAULT_DB)
+    parser.add_argument("more_dbs", nargs="*", default=[])
+    args = parser.parse_args()
+    print(args.command)
+
+
+if __name__ == "__main__":
+    main()
