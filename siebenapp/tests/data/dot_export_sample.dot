@@ -1,0 +1,25 @@
+digraph g {
+node [shape=box];
+1 [label="1: Root", color=red];
+2 [label="2: This is closed goal
+with no children or blockers.
+It also has a long name
+that must be compacted", color=green];
+3 [label="3: I have some &quot;special&quot;
+symbols", color=red];
+4 [label="4: ", color=green];
+5 [label="5: Many blockerz", color=red];
+6 [label="6: !@#$%^&amp;*()\/,.?", color=green];
+7 [label="7: ;:[{}]&lt;&gt;", color=red, style=bold];
+2 -> 1 [color=gray];
+3 -> 1 [color=black];
+4 -> 1 [color=gray];
+5 -> 1 [color=black];
+6 -> 1 [color=gray, style=dashed];
+6 -> 3 [color=gray];
+7 -> 3 [color=black];
+2 -> 5 [color=gray, style=dashed];
+4 -> 5 [color=gray, style=dashed];
+6 -> 5 [color=gray, style=dashed];
+7 -> 5 [color=black, style=dashed];
+}

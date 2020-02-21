@@ -203,3 +203,38 @@ def _format_name(num: int, goal: Dict[str, str]) -> str:
     goal_name = escape(goal["name"])
     label = f'"{num}: {goal_name}"' if num >= 0 else f'"{goal_name}"'
     return split_long(label)
+
+
+def dot_export(goals):
+    data = goals.q(keys="open,name,edge,select,switchable")
+    lines = []
+    for num in sorted(data.keys()):
+        goal = data[num]
+        style = []
+        if goal["switchable"] and goal["open"]:
+            style.append("bold")
+        attributes = {
+            "label": _format_name(num, goal),
+            "color": "red" if goal["open"] else "green",
+            "fillcolor": {"select": "gray", "prev": "lightgray"}.get(goal["select"]),
+        }
+        if goal["select"] is not None:
+            style.append("filled")
+        if len(style) > 1:
+            attributes["style"] = '"%s"' % ",".join(style)
+        elif len(style) == 1:
+            attributes["style"] = style[0]
+        attributes_str = ", ".join(
+            "%s=%s" % (k, attributes[k])
+            for k in ["label", "color", "style", "fillcolor"]
+            if k in attributes and attributes[k]
+        )
+        lines.append("%d [%s];" % (num, attributes_str))
+    for num in sorted(data.keys()):
+        for edge in data[num]["edge"]:
+            color = "black" if data[edge[0]]["open"] else "gray"
+            line_attrs = "color=%s" % color
+            if num < 0:
+                line_attrs += ", style=dashed"
+            lines.append("%d -> %d [%s];" % (edge[0], num, line_attrs))
+    return "digraph g {\nnode [shape=box];\n%s\n}" % "\n".join(lines)

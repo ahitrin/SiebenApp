@@ -1,16 +1,32 @@
 #!/usr/bin/env python3
 from argparse import ArgumentParser
 
-from siebenapp.system import DEFAULT_DB
+from siebenapp.system import DEFAULT_DB, load, dot_export
+
+
+def print_dot(db):
+    tree = load(db).goaltree.goaltree
+    print(dot_export(tree))
+
+
+def do_nothing(db):
+    print("Sorry, this action is not implemented yet")
+
+
+ACTION_HANDLERS = {
+    "dot": print_dot,
+    "merge": do_nothing,
+    "split": do_nothing,
+}
 
 
 def main():
     parser = ArgumentParser()
     parser.add_argument("command", choices=["dot"])
     parser.add_argument("db", nargs="?", default=DEFAULT_DB)
-    parser.add_argument("more_dbs", nargs="*", default=[])
     args = parser.parse_args()
-    print(args.command)
+    action = ACTION_HANDLERS[args.command]
+    action(args.db)
 
 
 if __name__ == "__main__":
