@@ -31,7 +31,8 @@ def test_dot_export():
         open_(1, "Root", [2, 3, 4, 5], blockers=[6]),
         clos_(
             2,
-            "This is closed goal with no children or blockers. It also has a long name that must be compacted",
+            "This is closed goal with no children or blockers. "
+            "It also has a long name that must be compacted",
         ),
         open_(3, 'I have some "special" symbols', [6, 7], select=selected),
         clos_(4, ""),
