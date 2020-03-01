@@ -12,7 +12,7 @@ check:
 
 venv:
 	$([ which pipenv ] || pip install pipenv)
-	pipenv install
+	pipenv install -d
 
 test:
 	pipenv run py.test
