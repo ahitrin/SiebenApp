@@ -11,26 +11,26 @@ check:
 	if [ ! `which dot` ] ; then echo Please install Graphviz ; exit 1; fi
 
 venv:
-	virtualenv -p python3 $(ENV)
-	$(ENV)/bin/pip3 install -r requirements.txt
+	$([ which pipenv ] || pip install pipenv)
+	pipenv install
 
 test:
-	PATH=$(ENV)/bin:${PATH} py.test
+	pipenv run py.test
 
 install:
-	PATH=$(ENV)/bin:${PATH} python3 setup.py install
+	pipenv run python3 setup.py install
 
 lint:
-	PATH=$(ENV)/bin:${PATH} pylint siebenapp
+	pipenv run pylint siebenapp
 
 format:
-	PATH=$(ENV)/bin:${PATH} black sieben siebenapp
+	pipenv run black sieben siebenapp
 
 mypy:
-	PATH=$(ENV)/bin:${PATH} mypy -p siebenapp
+	pipenv run mypy -p siebenapp
 
 run:
-	PATH=$(ENV)/bin:${PATH} ./sieben
+	pipenv run ./sieben
 
 clean:
 	rm -rf build
