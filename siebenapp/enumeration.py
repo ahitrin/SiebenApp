@@ -1,5 +1,5 @@
 import math
-from typing import List, Dict, Tuple, Any, Callable, Union
+from typing import List, Dict, Tuple, Any, Callable, Union, Set
 
 from siebenapp.domain import Graph, EdgeType
 from siebenapp.goaltree import Goals
@@ -48,6 +48,7 @@ class Enumeration(Graph):
         self.selection_cache: List[int] = []
         self._open: bool = True
         self._top: bool = False
+        self._goal_filter: Set[int] = set()
         self._update_mapping()
 
     def view_title(self):
@@ -70,7 +71,7 @@ class Enumeration(Graph):
                 k for k, v in self.goaltree.q(keys="open").items() if v["open"]
             }
         else:
-            self._goal_filter = dict(self.goaltree.q())
+            self._goal_filter = set(self.goaltree.q().keys())
 
     def _id_mapping(
         self, keys: str = "name"
