@@ -23,17 +23,14 @@ class Enumeration(Graph):
         "selection_cache",
         "toggle_close",
         "toggle_link",
-        "_view",
         "view_title",
         "_views",
         "_open",
         "_top",
-        "_views_new",
         "_labels",
     ]
 
-    _views = {"open": "top", "top": "full", "full": "open"}
-    _views_new = {
+    _views = {
         (True, True): (True, True),
         (True, False): (False, True),
         (False, True): (False, False),
@@ -51,7 +48,6 @@ class Enumeration(Graph):
         self.selection_cache: List[int] = []
         self._open: bool = True
         self._top: bool = False
-        self._view: str = "open"
         self._update_mapping()
 
     def view_title(self):
@@ -165,8 +161,7 @@ class Enumeration(Graph):
         self.goaltree.delete(goal_id)
 
     def next_view(self) -> None:
-        self._view = self._views[self._view]
-        self._open, self._top = self._views_new[self._open, self._top]
+        self._open, self._top = self._views[self._open, self._top]
         self._update_mapping()
         self.selection_cache.clear()
 
