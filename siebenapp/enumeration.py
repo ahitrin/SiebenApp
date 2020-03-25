@@ -25,10 +25,10 @@ class Enumeration(Graph):
         "toggle_link",
         "_view",
         "view_title",
-        "views",
+        "_views",
     ]
 
-    views = {"open": "top", "top": "full", "full": "open"}
+    _views = {"open": "top", "top": "full", "full": "open"}
 
     def __init__(self, goaltree: Union[Goals, Zoom]) -> None:
         self.goaltree = goaltree
@@ -147,7 +147,7 @@ class Enumeration(Graph):
         self.goaltree.delete(goal_id)
 
     def next_view(self) -> None:
-        self._view = self.views[self._view]
+        self._view = self._views[self._view]
         self._update_mapping()
         self.selection_cache.clear()
 
