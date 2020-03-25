@@ -23,7 +23,7 @@ class Enumeration(Graph):
         "selection_cache",
         "toggle_close",
         "toggle_link",
-        "view",
+        "_view",
         "view_title",
         "views",
     ]
@@ -33,14 +33,14 @@ class Enumeration(Graph):
     def __init__(self, goaltree: Union[Goals, Zoom]) -> None:
         self.goaltree = goaltree
         self.selection_cache: List[int] = []
-        self.view: str = "open"
+        self._view: str = "open"
         self._update_mapping()
 
     def view_title(self):
-        return self.view
+        return self._view
 
     def _update_mapping(self) -> None:
-        if self.view == "top":
+        if self._view == "top":
             goals = {
                 k
                 for k, v in self.goaltree.q(keys="open,switchable").items()
@@ -51,7 +51,7 @@ class Enumeration(Graph):
             if goals and self.settings["previous_selection"] not in goals:
                 self.goaltree.hold_select()
             self._goal_filter = goals
-        elif self.view == "open":
+        elif self._view == "open":
             self._goal_filter = {
                 k for k, v in self.goaltree.q(keys="open").items() if v["open"]
             }
@@ -63,11 +63,11 @@ class Enumeration(Graph):
     ) -> Tuple[Dict[int, Any], Callable[[int], int]]:
         goals = self.goaltree.q(keys)
         goals = {k: v for k, v in goals.items() if k in self._goal_filter}
-        if self.view == "top":
+        if self._view == "top":
             for attrs in goals.values():
                 if "edge" in attrs:
                     attrs["edge"] = []
-        elif self.view == "open":
+        elif self._view == "open":
             for attrs in goals.values():
                 if "edge" in attrs:
                     attrs["edge"] = [
@@ -147,7 +147,7 @@ class Enumeration(Graph):
         self.goaltree.delete(goal_id)
 
     def next_view(self) -> None:
-        self.view = self.views[self.view]
+        self._view = self.views[self._view]
         self._update_mapping()
         self.selection_cache.clear()
 
