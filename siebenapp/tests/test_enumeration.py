@@ -175,13 +175,13 @@ def test_mapping_for_top():
 
 def test_toggle_switch_view():
     e = Enumeration(Goals("Root"))
-    assert e.view == "open"
+    assert e.view_title() == "open"
     e.next_view()
-    assert e.view == "top"
+    assert e.view_title() == "top"
     e.next_view()
-    assert e.view == "full"
+    assert e.view_title() == "full"
     e.next_view()
-    assert e.view == "open"
+    assert e.view_title() == "open"
 
 
 def test_goaltree_selection_may_be_changed_in_top_view():

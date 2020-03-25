@@ -24,6 +24,7 @@ class Enumeration(Graph):
         "toggle_close",
         "toggle_link",
         "view",
+        "view_title",
         "views",
     ]
 
@@ -34,6 +35,9 @@ class Enumeration(Graph):
         self.selection_cache: List[int] = []
         self.view: str = "open"
         self._update_mapping()
+
+    def view_title(self):
+        return self.view
 
     def _update_mapping(self) -> None:
         if self.view == "top":
