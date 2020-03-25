@@ -29,6 +29,7 @@ class Enumeration(Graph):
         "_open",
         "_top",
         "_views_new",
+        "_labels",
     ]
 
     _views = {"open": "top", "top": "full", "full": "open"}
@@ -38,6 +39,12 @@ class Enumeration(Graph):
         (False, True): (False, False),
         (False, False): (True, False),
     }  # (_open, _top) -> (_open, _top)
+    _labels = {
+        (True, True): "open + top",
+        (True, False): "open",
+        (False, True): "top",
+        (False, False): "full",
+    }
 
     def __init__(self, goaltree: Union[Goals, Zoom]) -> None:
         self.goaltree = goaltree
@@ -48,10 +55,10 @@ class Enumeration(Graph):
         self._update_mapping()
 
     def view_title(self):
-        return self._view
+        return self._labels[self._open, self._top]
 
     def _update_mapping(self) -> None:
-        if self._view == "top":
+        if self._top:
             goals = {
                 k
                 for k, v in self.goaltree.q(keys="open,switchable").items()
@@ -62,7 +69,7 @@ class Enumeration(Graph):
             if goals and self.settings["previous_selection"] not in goals:
                 self.goaltree.hold_select()
             self._goal_filter = goals
-        elif self._view == "open":
+        elif self._open:
             self._goal_filter = {
                 k for k, v in self.goaltree.q(keys="open").items() if v["open"]
             }
@@ -74,11 +81,11 @@ class Enumeration(Graph):
     ) -> Tuple[Dict[int, Any], Callable[[int], int]]:
         goals = self.goaltree.q(keys)
         goals = {k: v for k, v in goals.items() if k in self._goal_filter}
-        if self._view == "top":
+        if self._top:
             for attrs in goals.values():
                 if "edge" in attrs:
                     attrs["edge"] = []
-        elif self._view == "open":
+        elif self._open:
             for attrs in goals.values():
                 if "edge" in attrs:
                     attrs["edge"] = [
