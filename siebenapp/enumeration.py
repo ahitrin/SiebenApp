@@ -23,24 +23,38 @@ class Enumeration(Graph):
         "selection_cache",
         "toggle_close",
         "toggle_link",
-        "_view",
         "view_title",
         "_views",
+        "_open",
+        "_top",
+        "_labels",
     ]
 
-    _views = {"open": "top", "top": "full", "full": "open"}
+    _views = {
+        (True, True): (True, True),
+        (True, False): (False, True),
+        (False, True): (False, False),
+        (False, False): (True, False),
+    }  # (_open, _top) -> (_open, _top)
+    _labels = {
+        (True, True): "open + top",
+        (True, False): "open",
+        (False, True): "top",
+        (False, False): "full",
+    }
 
     def __init__(self, goaltree: Union[Goals, Zoom]) -> None:
         self.goaltree = goaltree
         self.selection_cache: List[int] = []
-        self._view: str = "open"
+        self._open: bool = True
+        self._top: bool = False
         self._update_mapping()
 
     def view_title(self):
-        return self._view
+        return self._labels[self._open, self._top]
 
     def _update_mapping(self) -> None:
-        if self._view == "top":
+        if self._top:
             goals = {
                 k
                 for k, v in self.goaltree.q(keys="open,switchable").items()
@@ -51,7 +65,7 @@ class Enumeration(Graph):
             if goals and self.settings["previous_selection"] not in goals:
                 self.goaltree.hold_select()
             self._goal_filter = goals
-        elif self._view == "open":
+        elif self._open:
             self._goal_filter = {
                 k for k, v in self.goaltree.q(keys="open").items() if v["open"]
             }
@@ -63,11 +77,11 @@ class Enumeration(Graph):
     ) -> Tuple[Dict[int, Any], Callable[[int], int]]:
         goals = self.goaltree.q(keys)
         goals = {k: v for k, v in goals.items() if k in self._goal_filter}
-        if self._view == "top":
+        if self._top:
             for attrs in goals.values():
                 if "edge" in attrs:
                     attrs["edge"] = []
-        elif self._view == "open":
+        elif self._open:
             for attrs in goals.values():
                 if "edge" in attrs:
                     attrs["edge"] = [
@@ -147,7 +161,7 @@ class Enumeration(Graph):
         self.goaltree.delete(goal_id)
 
     def next_view(self) -> None:
-        self._view = self._views[self._view]
+        self._open, self._top = self._views[self._open, self._top]
         self._update_mapping()
         self.selection_cache.clear()
 
