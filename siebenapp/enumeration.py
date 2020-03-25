@@ -26,13 +26,24 @@ class Enumeration(Graph):
         "_view",
         "view_title",
         "_views",
+        "_open",
+        "_top",
+        "_views_new",
     ]
 
     _views = {"open": "top", "top": "full", "full": "open"}
+    _views_new = {
+        (True, True): (True, True),
+        (True, False): (False, True),
+        (False, True): (False, False),
+        (False, False): (True, False),
+    }  # (_open, _top) -> (_open, _top)
 
     def __init__(self, goaltree: Union[Goals, Zoom]) -> None:
         self.goaltree = goaltree
         self.selection_cache: List[int] = []
+        self._open: bool = True
+        self._top: bool = False
         self._view: str = "open"
         self._update_mapping()
 
@@ -148,6 +159,7 @@ class Enumeration(Graph):
 
     def next_view(self) -> None:
         self._view = self._views[self._view]
+        self._open, self._top = self._views_new[self._open, self._top]
         self._update_mapping()
         self.selection_cache.clear()
 
