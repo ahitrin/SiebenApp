@@ -1,4 +1,4 @@
-from siebenapp.enumeration import Enumeration
+from siebenapp.enumeration import Enumeration, UniformEnumeration
 from siebenapp.goaltree import Goals
 from siebenapp.domain import EdgeType
 from siebenapp.tests.dsl import build_goaltree, open_, previous, selected
@@ -350,10 +350,8 @@ def test_do_not_enumerate_goals_with_negative_id():
 
 
 def test_all_keys_in_enumeration_must_be_of_the_same_length():
-    g = Goals("Root")
-    for i in range(2999):
-        g.add(str(i))
-    e = Enumeration(g)
-    mapping = e.q()
-    assert len(mapping) == len(g.q())
+    items = {k + 1: str(k) for k in range(2999)}
+    e = UniformEnumeration(items)
+    mapping = [e.mapping(x) for x in e.goals()]
+    assert len(mapping) == len(items)
     assert set(len(str(k)) for k in mapping) == {4}
