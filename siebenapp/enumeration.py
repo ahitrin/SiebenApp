@@ -1,5 +1,5 @@
 import math
-from typing import List, Dict, Tuple, Any, Callable, Union
+from typing import List, Dict, Tuple, Any, Callable, Union, Set
 
 from siebenapp.domain import Graph, EdgeType
 from siebenapp.goaltree import Goals
@@ -12,6 +12,8 @@ class Enumeration(Graph):
         "_goal_filter",
         "_id_mapping",
         "_update_mapping",
+        "_update_top_mapping",
+        "_update_open_mapping",
         "delete",
         "goaltree",
         "hold_select",
@@ -48,29 +50,33 @@ class Enumeration(Graph):
         self.selection_cache: List[int] = []
         self._open: bool = True
         self._top: bool = False
+        self._goal_filter: Set[int] = set()
         self._update_mapping()
 
     def view_title(self):
         return self._labels[self._open, self._top]
 
     def _update_mapping(self) -> None:
-        if self._top:
-            goals = {
-                k
-                for k, v in self.goaltree.q(keys="open,switchable").items()
-                if v["open"] and v["switchable"]
-            }
-            if goals and self.settings["selection"] not in goals:
-                self.goaltree.select(min(goals))
-            if goals and self.settings["previous_selection"] not in goals:
-                self.goaltree.hold_select()
-            self._goal_filter = goals
-        elif self._open:
-            self._goal_filter = {
-                k for k, v in self.goaltree.q(keys="open").items() if v["open"]
-            }
-        else:
-            self._goal_filter = dict(self.goaltree.q())
+        self._goal_filter = self._update_top_mapping(self._update_open_mapping())
+
+    def _update_open_mapping(self) -> Set[int]:
+        if not self._open:
+            return set(self.goaltree.q().keys())
+        return {k for k, v in self.goaltree.q(keys="open").items() if v["open"]}
+
+    def _update_top_mapping(self, original_mapping: Set[int]) -> Set[int]:
+        if not self._top:
+            return set(original_mapping)
+        goals = {
+            k
+            for k, v in self.goaltree.q(keys="open,switchable").items()
+            if v["open"] and v["switchable"] and k in original_mapping
+        }
+        if goals and self.settings["selection"] not in goals:
+            self.goaltree.select(min(goals))
+        if goals and self.settings["previous_selection"] not in goals:
+            self.goaltree.hold_select()
+        return goals
 
     def _id_mapping(
         self, keys: str = "name"
