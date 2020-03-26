@@ -6,6 +6,29 @@ from siebenapp.goaltree import Goals
 from siebenapp.zoom import Zoom
 
 
+class UniformEnumeration:
+    def __init__(self, goals: Dict[int, Any]):
+        self.source = goals
+        self.m = {g: i + 1 for i, g in enumerate(sorted(g for g in goals if g > 0))}
+        self.length = len(self.m)
+
+    def goals(self) -> Dict[int, Any]:
+        return self.source
+
+    def mapping(self, goal_id: int) -> int:
+        if goal_id < 0:
+            return goal_id
+        goal_id = self.m[goal_id]
+        new_id = goal_id % 10
+        if self.length > 10:
+            new_id += 10 * ((goal_id - 1) // 10 + 1)
+        if self.length > 90:
+            new_id += 100 * ((goal_id - 1) // 100 + 1)
+        if self.length > 900:
+            new_id += 1000 * ((goal_id - 1) // 1000 + 1)
+        return new_id
+
+
 class Enumeration(Graph):
     overriden = [
         "add",
@@ -94,23 +117,8 @@ class Enumeration(Graph):
                         e for e in attrs["edge"] if e[0] in self._goal_filter
                     ]
 
-        m = {g: i + 1 for i, g in enumerate(sorted(g for g in goals if g > 0))}
-        length = len(m)
-
-        def mapping_fn(goal_id: int) -> int:
-            if goal_id < 0:
-                return goal_id
-            goal_id = m[goal_id]
-            new_id = goal_id % 10
-            if length > 10:
-                new_id += 10 * ((goal_id - 1) // 10 + 1)
-            if length > 90:
-                new_id += 100 * ((goal_id - 1) // 100 + 1)
-            if length > 900:
-                new_id += 1000 * ((goal_id - 1) // 1000 + 1)
-            return new_id
-
-        return goals, mapping_fn
+        m = UniformEnumeration(goals)
+        return m.goals(), m.mapping
 
     def add(
         self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
