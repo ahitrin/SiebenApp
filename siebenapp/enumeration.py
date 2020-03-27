@@ -1,5 +1,5 @@
 import math
-from typing import List, Dict, Tuple, Any, Callable, Union, Set
+from typing import List, Dict, Tuple, Any, Union, Set
 
 from siebenapp.domain import Graph, EdgeType
 from siebenapp.goaltree import Goals
@@ -103,7 +103,7 @@ class Enumeration(Graph):
 
     def _id_mapping(
         self, keys: str = "name"
-    ) -> Tuple[Dict[int, Any], Callable[[int], int]]:
+    ) -> Tuple[Dict[int, Any], UniformEnumeration]:
         goals = self.goaltree.q(keys)
         goals = {k: v for k, v in goals.items() if k in self._goal_filter}
         if self._top:
@@ -117,8 +117,7 @@ class Enumeration(Graph):
                         e for e in attrs["edge"] if e[0] in self._goal_filter
                     ]
 
-        m = UniformEnumeration(goals)
-        return m.goals(), m.mapping
+        return goals, UniformEnumeration(goals)
 
     def add(
         self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
@@ -134,26 +133,28 @@ class Enumeration(Graph):
     def q(self, keys: str = "name") -> Dict[int, Any]:
         self._update_mapping()
         result: Dict[int, Any] = dict()
-        goals, mapping = self._id_mapping(keys)
+        goals, enumeration = self._id_mapping(keys)
         for old_id, val in goals.items():
-            new_id = mapping(old_id)
+            new_id = enumeration.mapping(old_id)
             result[new_id] = dict((k, v) for k, v in val.items() if k != "edge")
             if "edge" in val:
                 result[new_id]["edge"] = [
-                    (mapping(edge[0]), edge[1]) for edge in val["edge"]
+                    (enumeration.mapping(edge[0]), edge[1]) for edge in val["edge"]
                 ]
         return result
 
     def select(self, goal_id: int) -> None:
         self._update_mapping()
-        goals, mapping = self._id_mapping()
+        goals, enumeration = self._id_mapping()
         if goal_id >= 10:
             self.selection_cache = []
         if self.selection_cache:
             goal_id = 10 * self.selection_cache.pop() + goal_id
-            if goal_id > max(mapping(k) for k in goals.keys()):
+            if goal_id > max(enumeration.mapping(k) for k in goals.keys()):
                 goal_id %= int(pow(10, int(math.log(goal_id, 10))))
-        possible_selections: List[int] = [g for g in goals if mapping(g) == goal_id]
+        possible_selections: List[int] = [
+            g for g in goals if enumeration.mapping(g) == goal_id
+        ]
         if len(possible_selections) == 1:
             self.goaltree.select(possible_selections[0])
             self.selection_cache = []
