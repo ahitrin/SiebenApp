@@ -8,12 +8,8 @@ from siebenapp.zoom import Zoom
 
 class UniformEnumeration:
     def __init__(self, goals: Dict[int, Any]):
-        self.source = goals
         self.m = {g: i + 1 for i, g in enumerate(sorted(g for g in goals if g > 0))}
         self.length = len(self.m)
-
-    def goals(self) -> Dict[int, Any]:
-        return self.source
 
     def mapping(self, goal_id: int) -> int:
         if goal_id < 0:

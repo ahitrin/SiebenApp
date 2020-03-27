@@ -352,6 +352,6 @@ def test_do_not_enumerate_goals_with_negative_id():
 def test_all_keys_in_enumeration_must_be_of_the_same_length():
     items = {k + 1: str(k) for k in range(2999)}
     e = UniformEnumeration(items)
-    mapping = [e.mapping(x) for x in e.goals()]
+    mapping = [e.mapping(x) for x in items]
     assert len(mapping) == len(items)
     assert set(len(str(k)) for k in mapping) == {4}
