@@ -11,7 +11,7 @@ class UniformEnumeration:
         self.m = {g: i + 1 for i, g in enumerate(sorted(g for g in goals if g > 0))}
         self.length = len(self.m)
 
-    def mapping(self, goal_id: int) -> int:
+    def forward(self, goal_id: int) -> int:
         if goal_id < 0:
             return goal_id
         goal_id = self.m[goal_id]
@@ -129,27 +129,27 @@ class Enumeration(Graph):
     def q(self, keys: str = "name") -> Dict[int, Any]:
         self._update_mapping()
         result: Dict[int, Any] = dict()
-        goals, enumeration = self._id_mapping(keys)
+        goals, mapping = self._id_mapping(keys)
         for old_id, val in goals.items():
-            new_id = enumeration.mapping(old_id)
+            new_id = mapping.forward(old_id)
             result[new_id] = dict((k, v) for k, v in val.items() if k != "edge")
             if "edge" in val:
                 result[new_id]["edge"] = [
-                    (enumeration.mapping(edge[0]), edge[1]) for edge in val["edge"]
+                    (mapping.forward(edge[0]), edge[1]) for edge in val["edge"]
                 ]
         return result
 
     def select(self, goal_id: int) -> None:
         self._update_mapping()
-        goals, enumeration = self._id_mapping()
+        goals, mapping = self._id_mapping()
         if goal_id >= 10:
             self.selection_cache = []
         if self.selection_cache:
             goal_id = 10 * self.selection_cache.pop() + goal_id
-            if goal_id > max(enumeration.mapping(k) for k in goals.keys()):
+            if goal_id > max(mapping.forward(k) for k in goals.keys()):
                 goal_id %= int(pow(10, int(math.log(goal_id, 10))))
         possible_selections: List[int] = [
-            g for g in goals if enumeration.mapping(g) == goal_id
+            g for g in goals if mapping.forward(g) == goal_id
         ]
         if len(possible_selections) == 1:
             self.goaltree.select(possible_selections[0])
