@@ -7,8 +7,6 @@ from siebenapp.zoom import Zoom
 
 
 class UniformEnumeration:
-    NOT_FOUND = -2
-
     def __init__(self, goals: Dict[int, Any]):
         self.source = goals
         self.m = {g: i + 1 for i, g in enumerate(sorted(g for g in goals if g > 0))}
@@ -29,14 +27,6 @@ class UniformEnumeration:
         if self.length > 900:
             new_id += 1000 * ((goal_id - 1) // 1000 + 1)
         return new_id
-
-    def find_back(self, goal_id: int) -> int:
-        possible_selections: List[int] = [
-            g for g in self.goals() if self.mapping(g) == goal_id
-        ]
-        if len(possible_selections) == 1:
-            return possible_selections[0]
-        return UniformEnumeration.NOT_FOUND
 
 
 class Enumeration(Graph):
@@ -162,9 +152,11 @@ class Enumeration(Graph):
                 enumeration.mapping(k) for k in enumeration.goals().keys()
             ):
                 goal_id %= int(pow(10, int(math.log(goal_id, 10))))
-        original_id = enumeration.find_back(goal_id)
-        if original_id != UniformEnumeration.NOT_FOUND:
-            self.goaltree.select(original_id)
+        possible_selections: List[int] = [
+            g for g in enumeration.goals() if enumeration.mapping(g) == goal_id
+        ]
+        if len(possible_selections) == 1:
+            self.goaltree.select(possible_selections[0])
             self.selection_cache = []
         else:
             self.selection_cache.append(goal_id)
