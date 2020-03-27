@@ -1,23 +1,19 @@
 import math
-from typing import List, Dict, Any, Union, Set
+from typing import List, Dict, Tuple, Any, Union, Set, Iterable
 
 from siebenapp.domain import Graph, EdgeType
 from siebenapp.goaltree import Goals
 from siebenapp.zoom import Zoom
 
 
-class UniformEnumeration:
+class BidirectionalIndex:
     NOT_FOUND = -2
 
-    def __init__(self, goals: Dict[int, Any]):
-        self.source = goals
+    def __init__(self, goals: Iterable[int]):
         self.m = {g: i + 1 for i, g in enumerate(sorted(g for g in goals if g > 0))}
         self.length = len(self.m)
 
-    def goals(self) -> Dict[int, Any]:
-        return self.source
-
-    def mapping(self, goal_id: int) -> int:
+    def forward(self, goal_id: int) -> int:
         if goal_id < 0:
             return goal_id
         goal_id = self.m[goal_id]
@@ -30,13 +26,13 @@ class UniformEnumeration:
             new_id += 1000 * ((goal_id - 1) // 1000 + 1)
         return new_id
 
-    def find_back(self, goal_id: int) -> int:
+    def backward(self, goal_id: int) -> int:
         possible_selections: List[int] = [
-            g for g in self.goals() if self.mapping(g) == goal_id
+            g for g in self.m if self.forward(g) == goal_id
         ]
         if len(possible_selections) == 1:
             return possible_selections[0]
-        return UniformEnumeration.NOT_FOUND
+        return BidirectionalIndex.NOT_FOUND
 
 
 class Enumeration(Graph):
@@ -111,7 +107,9 @@ class Enumeration(Graph):
             self.goaltree.hold_select()
         return goals
 
-    def _id_mapping(self, keys: str = "name") -> UniformEnumeration:
+    def _id_mapping(
+        self, keys: str = "name"
+    ) -> Tuple[Dict[int, Any], BidirectionalIndex]:
         goals = self.goaltree.q(keys)
         goals = {k: v for k, v in goals.items() if k in self._goal_filter}
         if self._top:
@@ -125,7 +123,7 @@ class Enumeration(Graph):
                         e for e in attrs["edge"] if e[0] in self._goal_filter
                     ]
 
-        return UniformEnumeration(goals)
+        return goals, BidirectionalIndex(goals)
 
     def add(
         self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
@@ -141,29 +139,27 @@ class Enumeration(Graph):
     def q(self, keys: str = "name") -> Dict[int, Any]:
         self._update_mapping()
         result: Dict[int, Any] = dict()
-        enumeration = self._id_mapping(keys)
-        for old_id, val in enumeration.goals().items():
-            new_id = enumeration.mapping(old_id)
+        goals, index = self._id_mapping(keys)
+        for old_id, val in goals.items():
+            new_id = index.forward(old_id)
             result[new_id] = dict((k, v) for k, v in val.items() if k != "edge")
             if "edge" in val:
                 result[new_id]["edge"] = [
-                    (enumeration.mapping(edge[0]), edge[1]) for edge in val["edge"]
+                    (index.forward(edge[0]), edge[1]) for edge in val["edge"]
                 ]
         return result
 
     def select(self, goal_id: int) -> None:
         self._update_mapping()
-        enumeration = self._id_mapping()
+        goals, index = self._id_mapping()
         if goal_id >= 10:
             self.selection_cache = []
         if self.selection_cache:
             goal_id = 10 * self.selection_cache.pop() + goal_id
-            if goal_id > max(
-                enumeration.mapping(k) for k in enumeration.goals().keys()
-            ):
+            if goal_id > max(index.forward(k) for k in goals.keys()):
                 goal_id %= int(pow(10, int(math.log(goal_id, 10))))
-        original_id = enumeration.find_back(goal_id)
-        if original_id != UniformEnumeration.NOT_FOUND:
+        original_id = index.backward(goal_id)
+        if original_id != BidirectionalIndex.NOT_FOUND:
             self.goaltree.select(original_id)
             self.selection_cache = []
         else:
