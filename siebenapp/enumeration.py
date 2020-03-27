@@ -1,5 +1,5 @@
 import math
-from typing import List, Dict, Tuple, Any, Union, Set
+from typing import List, Dict, Tuple, Any, Union, Set, Iterable
 
 from siebenapp.domain import Graph, EdgeType
 from siebenapp.goaltree import Goals
@@ -7,7 +7,7 @@ from siebenapp.zoom import Zoom
 
 
 class UniformEnumeration:
-    def __init__(self, goals: Dict[int, Any]):
+    def __init__(self, goals: Iterable[int]):
         self.m = {g: i + 1 for i, g in enumerate(sorted(g for g in goals if g > 0))}
         self.length = len(self.m)
 
