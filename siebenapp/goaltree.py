@@ -66,9 +66,6 @@ class Goals(Graph):
             self.settings["selection"] = goal_id
             self.events.append(("select", goal_id))
 
-    def hold_select(self) -> None:
-        self.accept(HoldSelectCommand())
-
     def _hold_select(self):
         self.settings["previous_selection"] = self.settings["selection"]
         self.events.append(("hold_select", self.settings["selection"]))

@@ -46,7 +46,6 @@ class Enumeration(Graph):
         "_update_open_mapping",
         "delete",
         "goaltree",
-        "hold_select",
         "insert",
         "next_view",
         "q",
@@ -168,9 +167,6 @@ class Enumeration(Graph):
             self.selection_cache = []
         else:
             self.selection_cache.append(goal_id)
-
-    def hold_select(self) -> None:
-        self.accept(HoldSelectCommand)
 
     def toggle_close(self) -> None:
         self.goaltree.toggle_close()

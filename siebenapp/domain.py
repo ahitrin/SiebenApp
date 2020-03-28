@@ -34,10 +34,6 @@ class Graph:
         """Select a goal by its id whether it exist. Do nothing in other case"""
         raise NotImplementedError
 
-    def hold_select(self) -> None:
-        """Saves current selection into the "previous selection" state"""
-        raise NotImplementedError
-
     def insert(self, name: str) -> None:
         """Add an intermediate goal between two selected goals"""
         raise NotImplementedError

@@ -15,7 +15,6 @@ class Zoom(Graph):
         "export",
         "goaltree",
         "insert",
-        "hold_select",
         "q",
         "rename",
         "select",
@@ -55,9 +54,6 @@ class Zoom(Graph):
 
     def select(self, goal_id: int) -> None:
         self.goaltree.select(goal_id)
-
-    def hold_select(self) -> None:
-        self.accept(HoldSelectCommand())
 
     def rename(self, new_name: str, goal_id: int = 0) -> None:
         self.goaltree.rename(new_name, goal_id)
