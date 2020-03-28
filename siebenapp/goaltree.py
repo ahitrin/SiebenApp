@@ -7,8 +7,8 @@ from siebenapp.domain import (
     EdgeType,
     Edge,
     Command,
-    HoldSelectCommand,
-    ToggleCloseCommand,
+    HoldSelect,
+    ToggleClose,
 )
 
 GoalsData = List[Tuple[int, Optional[str], bool]]
@@ -47,9 +47,9 @@ class Goals(Graph):
         return parents.pop().source if parents else 1
 
     def accept(self, command: Command) -> None:
-        if isinstance(command, HoldSelectCommand):
+        if isinstance(command, HoldSelect):
             self._hold_select()
-        elif isinstance(command, ToggleCloseCommand):
+        elif isinstance(command, ToggleClose):
             self._toggle_close()
 
     def add(
@@ -147,7 +147,7 @@ class Goals(Graph):
                 self.closed.add(self.settings["selection"])
                 self.events.append(("toggle_close", False, self.settings["selection"]))
                 self.select(1)
-                self.accept(HoldSelectCommand())
+                self.accept(HoldSelect())
             else:
                 self._msg("This goal can't be closed because it have open subgoals")
 
@@ -173,7 +173,7 @@ class Goals(Graph):
         parent = self._parent(goal_id)
         self._delete(goal_id)
         self.select(parent)
-        self.accept(HoldSelectCommand())
+        self.accept(HoldSelect())
 
     def _delete(self, goal_id: int) -> None:
         parent = self._parent(goal_id)

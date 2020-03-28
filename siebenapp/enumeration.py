@@ -5,8 +5,8 @@ from siebenapp.domain import (
     Graph,
     EdgeType,
     Command,
-    HoldSelectCommand,
-    ToggleCloseCommand,
+    HoldSelect,
+    ToggleClose,
 )
 from siebenapp.goaltree import Goals
 from siebenapp.zoom import Zoom
@@ -109,7 +109,7 @@ class Enumeration(Graph):
         if goals and self.settings["selection"] not in goals:
             self.goaltree.select(min(goals))
         if goals and self.settings["previous_selection"] not in goals:
-            self.accept(HoldSelectCommand())
+            self.accept(HoldSelect())
         return goals
 
     def _id_mapping(

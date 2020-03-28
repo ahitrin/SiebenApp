@@ -14,7 +14,7 @@ from hypothesis.stateful import (
 )
 
 from siebenapp.goaltree import Goals
-from siebenapp.domain import EdgeType, HoldSelectCommand, ToggleCloseCommand
+from siebenapp.domain import EdgeType, HoldSelect, ToggleClose
 from siebenapp.system import run_migrations, save_updates
 from siebenapp.zoom import Zoom
 
@@ -64,7 +64,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 
     @rule()
     def hold_selection(self):
-        self.goaltree.accept(HoldSelectCommand())
+        self.goaltree.accept(HoldSelect())
 
     @rule()
     def insert(self):
@@ -87,7 +87,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 
     @rule()
     def close_or_open(self):
-        self.goaltree.accept(ToggleCloseCommand())
+        self.goaltree.accept(ToggleClose())
 
     @rule(t=text())
     def rename(self, t):

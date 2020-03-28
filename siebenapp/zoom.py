@@ -4,8 +4,8 @@ from siebenapp.domain import (
     Graph,
     EdgeType,
     Command,
-    HoldSelectCommand,
-    ToggleCloseCommand,
+    HoldSelect,
+    ToggleClose,
 )
 from siebenapp.goaltree import Goals
 
@@ -36,7 +36,7 @@ class Zoom(Graph):
         self.zoom_root = [1]
 
     def accept(self, command: Command) -> None:
-        if isinstance(command, ToggleCloseCommand):
+        if isinstance(command, ToggleClose):
             self._toggle_close()
         else:
             self.goaltree.accept(command)
@@ -59,7 +59,7 @@ class Zoom(Graph):
             return
         visible_goals = self._build_visible_goals()
         if self.settings["previous_selection"] not in visible_goals:
-            self.accept(HoldSelectCommand())
+            self.accept(HoldSelect())
 
     def select(self, goal_id: int) -> None:
         self.goaltree.select(goal_id)
@@ -85,16 +85,16 @@ class Zoom(Graph):
     def _toggle_close(self) -> None:
         if self.settings["selection"] == self.zoom_root[-1]:
             self.toggle_zoom()
-        self.goaltree.accept(ToggleCloseCommand())
+        self.goaltree.accept(ToggleClose())
         if self.settings["selection"] not in self._build_visible_goals():
             self.goaltree.select(self.zoom_root[-1])
-            self.accept(HoldSelectCommand())
+            self.accept(HoldSelect())
 
     def insert(self, name: str) -> None:
         self.goaltree.insert(name)
         if self.settings["selection"] not in self._build_visible_goals():
             self.goaltree.select(self.zoom_root[-1])
-            self.accept(HoldSelectCommand())
+            self.accept(HoldSelect())
 
     def toggle_link(
         self, lower: int = 0, upper: int = 0, edge_type: EdgeType = EdgeType.BLOCKER
@@ -102,7 +102,7 @@ class Zoom(Graph):
         self.goaltree.toggle_link(lower, upper, edge_type)
         if self.settings["selection"] not in self._build_visible_goals():
             self.goaltree.select(self.zoom_root[-1])
-            self.accept(HoldSelectCommand())
+            self.accept(HoldSelect())
 
     def delete(self, goal_id: int = 0) -> None:
         if self.settings["selection"] == self.zoom_root[-1]:
@@ -110,7 +110,7 @@ class Zoom(Graph):
         self.goaltree.delete(goal_id)
         if self.settings["selection"] != self.zoom_root[-1]:
             self.goaltree.select(self.zoom_root[-1])
-            self.accept(HoldSelectCommand())
+            self.accept(HoldSelect())
 
     def verify(self) -> bool:
         ok = self.goaltree.verify()

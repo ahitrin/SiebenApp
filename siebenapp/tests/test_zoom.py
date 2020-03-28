@@ -1,5 +1,5 @@
 from siebenapp.goaltree import Goals
-from siebenapp.domain import EdgeType, HoldSelectCommand, ToggleCloseCommand
+from siebenapp.domain import EdgeType, HoldSelect, ToggleClose
 from siebenapp.tests.dsl import build_goaltree, open_, selected, previous
 from siebenapp.zoom import Zoom
 
@@ -185,7 +185,7 @@ def test_selection_should_be_changed_on_stacked_unzoom_a_long_chain_of_blockers(
     goals.select(3)
     goals.toggle_zoom()  # zoom on 3
     goals.select(4)
-    goals.accept(HoldSelectCommand())  # set previous selection onto 4
+    goals.accept(HoldSelect())  # set previous selection onto 4
     goals.select(3)
     goals.toggle_zoom()  # unzoom on 3 (zoom root is on 2 again)
     assert goals.q("name,select") == {
@@ -205,7 +205,7 @@ def test_unlink_for_goal_outside_of_zoomed_tree_should_cause_selection_change():
         )
     )
     goals.toggle_zoom()
-    goals.accept(HoldSelectCommand())
+    goals.accept(HoldSelect())
     goals.select(2)
     goals.toggle_link()  # unlink 3 -> 2
     assert goals.q("name,select") == {
@@ -223,7 +223,7 @@ def test_closing_zoom_root_should_cause_unzoom():
         )
     )
     goals.toggle_zoom()
-    goals.accept(ToggleCloseCommand())
+    goals.accept(ToggleClose())
     assert goals.q(keys="name,select,open") == {
         1: {"name": "Root", "select": "select", "open": True},
         2: {"name": "Intermediate", "select": None, "open": True},
@@ -246,7 +246,7 @@ def test_goal_closing_must_not_cause_root_selection():
         3: {"name": "Close me", "select": None, "open": True},
     }
     goals.select(3)
-    goals.accept(ToggleCloseCommand())
+    goals.accept(ToggleClose())
     assert goals.q(keys="name,select,open") == {
         -1: {"name": "Root", "select": None, "open": True},
         2: {"name": "Zoom root", "select": "select", "open": True},
@@ -264,14 +264,14 @@ def test_goal_reopening_must_not_change_selection():
     )
     goals.toggle_zoom()
     goals.select(3)
-    goals.accept(ToggleCloseCommand())
+    goals.accept(ToggleClose())
     assert goals.q(keys="name,select,open") == {
         -1: {"name": "Root", "select": None, "open": True},
         2: {"name": "Zoom root", "select": "select", "open": True},
         3: {"name": "Reopen me", "select": None, "open": False},
     }
     goals.select(3)
-    goals.accept(ToggleCloseCommand())
+    goals.accept(ToggleClose())
     assert goals.q(keys="name,select,open") == {
         -1: {"name": "Root", "select": None, "open": True},
         2: {"name": "Zoom root", "select": "prev", "open": True},
@@ -331,7 +331,7 @@ def test_zoom_events():
     goals.toggle_zoom()
     assert goals.events[-1] == ("zoom", 2, 2)
     goals.select(4)
-    goals.accept(HoldSelectCommand())
+    goals.accept(HoldSelect())
     goals.toggle_zoom()
     assert goals.events[-1] == ("zoom", 3, 4)
     goals.toggle_zoom()

@@ -62,9 +62,9 @@ class Graph:
 # === Graph layer ===
 
 
-class HoldSelectCommand(Command):
+class HoldSelect(Command):
     """Saves current selection into the "previous selection" state"""
 
 
-class ToggleCloseCommand(Command):
+class ToggleClose(Command):
     """Close an open selected goal. Re-open a closed selected goal"""
