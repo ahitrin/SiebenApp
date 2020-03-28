@@ -1,5 +1,5 @@
 from siebenapp.goaltree import Goals
-from siebenapp.domain import EdgeType, HoldSelectCommand
+from siebenapp.domain import EdgeType, HoldSelectCommand, ToggleCloseCommand
 from siebenapp.tests.dsl import build_goaltree, open_, selected, previous
 from siebenapp.zoom import Zoom
 
@@ -223,7 +223,7 @@ def test_closing_zoom_root_should_cause_unzoom():
         )
     )
     goals.toggle_zoom()
-    goals.toggle_close()
+    goals.accept(ToggleCloseCommand())
     assert goals.q(keys="name,select,open") == {
         1: {"name": "Root", "select": "select", "open": True},
         2: {"name": "Intermediate", "select": None, "open": True},
@@ -246,7 +246,7 @@ def test_goal_closing_must_not_cause_root_selection():
         3: {"name": "Close me", "select": None, "open": True},
     }
     goals.select(3)
-    goals.toggle_close()
+    goals.accept(ToggleCloseCommand())
     assert goals.q(keys="name,select,open") == {
         -1: {"name": "Root", "select": None, "open": True},
         2: {"name": "Zoom root", "select": "select", "open": True},
@@ -264,14 +264,14 @@ def test_goal_reopening_must_not_change_selection():
     )
     goals.toggle_zoom()
     goals.select(3)
-    goals.toggle_close()
+    goals.accept(ToggleCloseCommand())
     assert goals.q(keys="name,select,open") == {
         -1: {"name": "Root", "select": None, "open": True},
         2: {"name": "Zoom root", "select": "select", "open": True},
         3: {"name": "Reopen me", "select": None, "open": False},
     }
     goals.select(3)
-    goals.toggle_close()
+    goals.accept(ToggleCloseCommand())
     assert goals.q(keys="name,select,open") == {
         -1: {"name": "Root", "select": None, "open": True},
         2: {"name": "Zoom root", "select": "prev", "open": True},

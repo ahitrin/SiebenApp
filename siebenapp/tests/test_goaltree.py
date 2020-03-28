@@ -2,7 +2,7 @@
 from unittest import TestCase
 
 from siebenapp.goaltree import Goals
-from siebenapp.domain import EdgeType, HoldSelectCommand
+from siebenapp.domain import EdgeType, HoldSelectCommand, ToggleCloseCommand
 from siebenapp.tests.dsl import build_goaltree, open_, selected, previous, clos_
 
 
@@ -95,7 +95,7 @@ class GoalsTest(TestCase):
 
     def test_close_single_goal(self):
         assert self.goals.q(keys="name,open") == {1: {"name": "Root", "open": True}}
-        self.goals.toggle_close()
+        self.goals.accept(ToggleCloseCommand())
         assert self.goals.q(keys="name,open,switchable") == {
             1: {"name": "Root", "open": False, "switchable": True}
         }
@@ -103,7 +103,7 @@ class GoalsTest(TestCase):
     def test_reopen_goal(self):
         self.goals = self.build(open_(1, "Root", [2]), clos_(2, "A", select=selected))
         assert self.goals.q(keys="open") == {1: {"open": True}, 2: {"open": False}}
-        self.goals.toggle_close()
+        self.goals.accept(ToggleCloseCommand())
         assert self.goals.q(keys="open,switchable") == {
             1: {"open": True, "switchable": False},
             2: {"open": True, "switchable": True},
@@ -114,21 +114,21 @@ class GoalsTest(TestCase):
             open_(1, "Root", [2], select=selected), open_(2, "A", [3]), clos_(3, "Ab"),
         )
         self.goals.select(2)
-        self.goals.toggle_close()
+        self.goals.accept(ToggleCloseCommand())
         assert self.goals.q(keys="open,switchable") == {
             1: {"open": True, "switchable": True},
             2: {"open": False, "switchable": True},
             3: {"open": False, "switchable": False},
         }
         self.goals.select(2)
-        self.goals.toggle_close()
+        self.goals.accept(ToggleCloseCommand())
         assert self.goals.q(keys="open,switchable") == {
             1: {"open": True, "switchable": False},
             2: {"open": True, "switchable": True},
             3: {"open": False, "switchable": True},
         }
         self.goals.select(2)
-        self.goals.toggle_close()
+        self.goals.accept(ToggleCloseCommand())
         assert self.goals.q(keys="open,switchable") == {
             1: {"open": True, "switchable": True},
             2: {"open": False, "switchable": True},
@@ -145,7 +145,7 @@ class GoalsTest(TestCase):
             3: {"open": False, "switchable": False},
         }
         self.goals.select(3)
-        self.goals.toggle_close()
+        self.goals.accept(ToggleCloseCommand())
         # nothing should change
         assert self.goals.q(keys="open,switchable") == {
             1: {"open": True, "switchable": True},
@@ -160,7 +160,7 @@ class GoalsTest(TestCase):
             open_(3, "B", [4], select=selected),
             open_(4, "C"),
         )
-        self.goals.toggle_close()
+        self.goals.accept(ToggleCloseCommand())
         assert self.goals.q(keys="open") == {
             1: {"open": True},
             2: {"open": True},
@@ -392,7 +392,7 @@ class GoalsTest(TestCase):
         self.goals = self.build(
             open_(1, "Root", [2, 3]), open_(2, "A", select=selected), open_(3, "B")
         )
-        self.goals.toggle_close()
+        self.goals.accept(ToggleCloseCommand())
         assert self.goals.q(keys="open,select") == {
             1: {"open": True, "select": "select"},
             2: {"open": False, "select": None},
@@ -470,11 +470,11 @@ class GoalsTest(TestCase):
         assert self.goals.events[-1] == ("select", 1)
 
     def test_toggle_close_events(self):
-        self.goals.toggle_close()
+        self.goals.accept(ToggleCloseCommand())
         assert self.goals.events[-3] == ("toggle_close", False, 1)
         assert self.goals.events[-2] == ("select", 1)
         assert self.goals.events[-1] == ("hold_select", 1)
-        self.goals.toggle_close()
+        self.goals.accept(ToggleCloseCommand())
         assert self.goals.events[-1] == ("toggle_close", True, 1)
 
     def test_rename_event(self):
@@ -548,24 +548,24 @@ class GoalsTest(TestCase):
         self.goals = self.build(
             open_(1, "Root", [2]), open_(2, "Top", [], select=selected)
         )
-        self.goals.toggle_close()
+        self.goals.accept(ToggleCloseCommand())
         assert self.messages == []
 
     def test_message_on_closing_blocked_goal(self):
         self.goals = self.build(open_(1, "Root", [2], select=selected), open_(2, "Top"))
-        self.goals.toggle_close()
+        self.goals.accept(ToggleCloseCommand())
         assert len(self.messages) == 1
 
     def test_no_message_on_valid_reopening(self):
         self.goals = self.build(clos_(1, "Root", [2], select=selected), clos_(2, "Top"))
-        self.goals.toggle_close()
+        self.goals.accept(ToggleCloseCommand())
         assert self.messages == []
 
     def test_message_on_reopening_blocked_goal(self):
         self.goals = self.build(
             clos_(1, "Root", [2]), clos_(2, "Top", [], select=selected)
         )
-        self.goals.toggle_close()
+        self.goals.accept(ToggleCloseCommand())
         assert len(self.messages) == 1
 
     def test_no_message_on_delete_non_root_goal(self):

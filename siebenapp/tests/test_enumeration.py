@@ -1,6 +1,6 @@
 from siebenapp.enumeration import Enumeration, BidirectionalIndex
 from siebenapp.goaltree import Goals
-from siebenapp.domain import EdgeType, HoldSelectCommand
+from siebenapp.domain import EdgeType, HoldSelectCommand, ToggleCloseCommand
 from siebenapp.tests.dsl import build_goaltree, open_, previous, selected
 
 
@@ -275,7 +275,7 @@ def test_selection_cache_should_avoid_overflow():
 
 def test_top_view_may_be_empty():
     e = Enumeration(Goals("closed"))
-    e.toggle_close()
+    e.accept(ToggleCloseCommand())
     e.next_view()
     assert e.q() == {}
 
@@ -292,7 +292,7 @@ def test_simple_top_enumeration_workflow():
 
 def test_open_view_may_be_empty():
     e = Enumeration(Goals("closed"))
-    e.toggle_close()
+    e.accept(ToggleCloseCommand())
     assert e.q() == {}
 
 
@@ -311,7 +311,7 @@ def test_simple_open_enumeration_workflow():
         2: {"name": "1", "select": "select", "open": True, "edge": []},
         3: {"name": "2", "select": None, "open": True, "edge": []},
     }
-    e.toggle_close()
+    e.accept(ToggleCloseCommand())
     assert e.q(keys="name,select,open,edge") == {
         1: {
             "name": "Root",

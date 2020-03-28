@@ -1,7 +1,13 @@
 import math
 from typing import List, Dict, Tuple, Any, Union, Set, Iterable
 
-from siebenapp.domain import Graph, EdgeType, Command, HoldSelectCommand
+from siebenapp.domain import (
+    Graph,
+    EdgeType,
+    Command,
+    HoldSelectCommand,
+    ToggleCloseCommand,
+)
 from siebenapp.goaltree import Goals
 from siebenapp.zoom import Zoom
 
@@ -169,7 +175,7 @@ class Enumeration(Graph):
             self.selection_cache.append(goal_id)
 
     def toggle_close(self) -> None:
-        self.goaltree.toggle_close()
+        self.accept(ToggleCloseCommand())
 
     def toggle_link(
         self, lower: int = 0, upper: int = 0, edge_type: EdgeType = EdgeType.BLOCKER
