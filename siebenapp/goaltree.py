@@ -2,7 +2,14 @@
 import collections
 from typing import Callable, Dict, Optional, List, Set, Any, Tuple
 
-from siebenapp.domain import Graph, EdgeType, Edge
+from siebenapp.domain import (
+    Graph,
+    EdgeType,
+    Edge,
+    Command,
+    HoldSelectCommand,
+    ToggleCloseCommand,
+)
 
 GoalsData = List[Tuple[int, Optional[str], bool]]
 EdgesData = List[Tuple[int, int, int]]
@@ -39,6 +46,12 @@ class Goals(Graph):
         parents = {e for e in self._back_edges(goal) if e.type == EdgeType.PARENT}
         return parents.pop().source if parents else 1
 
+    def accept(self, command: Command) -> None:
+        if isinstance(command, HoldSelectCommand):
+            self._hold_select()
+        elif isinstance(command, ToggleCloseCommand):
+            self._toggle_close()
+
     def add(
         self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
     ) -> bool:
@@ -62,7 +75,7 @@ class Goals(Graph):
             self.settings["selection"] = goal_id
             self.events.append(("select", goal_id))
 
-    def hold_select(self) -> None:
+    def _hold_select(self):
         self.settings["previous_selection"] = self.settings["selection"]
         self.events.append(("hold_select", self.settings["selection"]))
 
@@ -117,7 +130,7 @@ class Goals(Graph):
         self.goals[goal_id] = new_name
         self.events.append(("rename", new_name, goal_id))
 
-    def toggle_close(self) -> None:
+    def _toggle_close(self) -> None:
         if self.settings["selection"] in self.closed:
             if self._may_be_reopened():
                 self.closed.remove(self.settings["selection"])
@@ -129,7 +142,7 @@ class Goals(Graph):
                 self.closed.add(self.settings["selection"])
                 self.events.append(("toggle_close", False, self.settings["selection"]))
                 self.select(1)
-                self.hold_select()
+                self.accept(HoldSelectCommand())
             else:
                 self._msg("This goal can't be closed because it have open subgoals")
 
@@ -155,7 +168,7 @@ class Goals(Graph):
         parent = self._parent(goal_id)
         self._delete(goal_id)
         self.select(parent)
-        self.hold_select()
+        self.accept(HoldSelectCommand())
 
     def _delete(self, goal_id: int) -> None:
         parent = self._parent(goal_id)

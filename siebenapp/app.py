@@ -9,7 +9,7 @@ from PyQt5.QtGui import QPainter, QPen
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout
 from PyQt5.uic import loadUi
 
-from siebenapp.domain import EdgeType
+from siebenapp.domain import EdgeType, HoldSelectCommand, ToggleCloseCommand
 from siebenapp.render import Renderer
 from siebenapp.system import save, load, DEFAULT_DB, split_long
 from siebenapp.ui.goalwidget import Ui_GoalBody
@@ -133,7 +133,7 @@ class SiebenApp(QMainWindow):
     def close_goal(self, goal_id):
         def inner():
             self.goals.select(goal_id)
-            self.goals.toggle_close()
+            self.goals.accept(ToggleCloseCommand())
             self.refresh.emit()
 
         return inner
@@ -176,7 +176,7 @@ class SiebenApp(QMainWindow):
             Qt.Key_9: self.select_number(9),
             Qt.Key_0: self.select_number(0),
             Qt.Key_A: self.start_edit("Add new goal", self.goals.add),
-            Qt.Key_C: self.with_refresh(self.goals.toggle_close),
+            Qt.Key_C: self.with_refresh(self.goals.accept, ToggleCloseCommand()),
             Qt.Key_D: self.with_refresh(self.goals.delete),
             Qt.Key_I: self.start_edit("Insert new goal", self.goals.insert),
             Qt.Key_K: self.with_refresh(
@@ -190,7 +190,7 @@ class SiebenApp(QMainWindow):
             Qt.Key_V: self.toggle_view,
             Qt.Key_Z: self.toggle_zoom,
             Qt.Key_Escape: self.cancel_edit,
-            Qt.Key_Space: self.with_refresh(self.goals.hold_select),
+            Qt.Key_Space: self.with_refresh(self.goals.accept, HoldSelectCommand()),
             Qt.Key_Slash: self.show_keys_help,
         }
         if event.key() in key_handlers:

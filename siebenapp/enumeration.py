@@ -1,7 +1,13 @@
 import math
 from typing import List, Dict, Tuple, Any, Union, Set, Iterable
 
-from siebenapp.domain import Graph, EdgeType
+from siebenapp.domain import (
+    Graph,
+    EdgeType,
+    Command,
+    HoldSelectCommand,
+    ToggleCloseCommand,
+)
 from siebenapp.goaltree import Goals
 from siebenapp.zoom import Zoom
 
@@ -37,6 +43,7 @@ class BidirectionalIndex:
 
 class Enumeration(Graph):
     overriden = [
+        "accept",
         "add",
         "_goal_filter",
         "_id_mapping",
@@ -45,14 +52,12 @@ class Enumeration(Graph):
         "_update_open_mapping",
         "delete",
         "goaltree",
-        "hold_select",
         "insert",
         "next_view",
         "q",
         "rename",
         "select",
         "selection_cache",
-        "toggle_close",
         "toggle_link",
         "view_title",
         "_views",
@@ -104,7 +109,7 @@ class Enumeration(Graph):
         if goals and self.settings["selection"] not in goals:
             self.goaltree.select(min(goals))
         if goals and self.settings["previous_selection"] not in goals:
-            self.goaltree.hold_select()
+            self.accept(HoldSelectCommand())
         return goals
 
     def _id_mapping(
@@ -124,6 +129,9 @@ class Enumeration(Graph):
                     ]
 
         return goals, BidirectionalIndex(goals)
+
+    def accept(self, command: Command) -> None:
+        self.goaltree.accept(command)
 
     def add(
         self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
@@ -164,12 +172,6 @@ class Enumeration(Graph):
             self.selection_cache = []
         else:
             self.selection_cache.append(goal_id)
-
-    def hold_select(self) -> None:
-        self.goaltree.hold_select()
-
-    def toggle_close(self) -> None:
-        self.goaltree.toggle_close()
 
     def toggle_link(
         self, lower: int = 0, upper: int = 0, edge_type: EdgeType = EdgeType.BLOCKER

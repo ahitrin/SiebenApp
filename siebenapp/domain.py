@@ -13,8 +13,16 @@ class Edge(collections.namedtuple("Edge", "source target type")):
     __slots__ = ()
 
 
+class Command:
+    pass
+
+
 class Graph:
     """Base interface definition"""
+
+    def accept(self, command: Command) -> None:
+        """React on the given command"""
+        raise NotImplementedError
 
     def add(
         self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
@@ -24,10 +32,6 @@ class Graph:
 
     def select(self, goal_id: int) -> None:
         """Select a goal by its id whether it exist. Do nothing in other case"""
-        raise NotImplementedError
-
-    def hold_select(self) -> None:
-        """Saves current selection into the "previous selection" state"""
         raise NotImplementedError
 
     def insert(self, name: str) -> None:
@@ -44,10 +48,6 @@ class Graph:
         """Create or remove a link between two given goals, if possible"""
         raise NotImplementedError
 
-    def toggle_close(self) -> None:
-        """Close an open selected goal. Re-open a closed selected goal"""
-        raise NotImplementedError
-
     def delete(self, goal_id: int = 0) -> None:
         """Remove given or selected goal whether it exists. Do nothiung in other case"""
         raise NotImplementedError
@@ -55,3 +55,16 @@ class Graph:
     def q(self, keys: str = "name") -> Dict[int, Any]:
         """Run search query against goaltree state"""
         raise NotImplementedError
+
+
+# == Command implementations ==
+
+# === Graph layer ===
+
+
+class HoldSelectCommand(Command):
+    pass
+
+
+class ToggleCloseCommand(Command):
+    pass
