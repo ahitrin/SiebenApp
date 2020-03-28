@@ -9,6 +9,7 @@ from siebenapp.domain import (
     Command,
     HoldSelect,
     ToggleClose,
+    Delete,
 )
 
 GoalsData = List[Tuple[int, Optional[str], bool]]
@@ -51,6 +52,8 @@ class Goals(Graph):
             self._hold_select()
         elif isinstance(command, ToggleClose):
             self._toggle_close()
+        elif isinstance(command, Delete):
+            self._delete(command)
 
     def add(
         self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
@@ -165,17 +168,21 @@ class Goals(Graph):
         )
 
     def delete(self, goal_id: int = 0) -> None:
-        if goal_id == 0:
-            goal_id = self.settings["selection"]
+        self.accept(Delete(goal_id))
+
+    def _delete(self, command: Delete) -> None:
+        goal_id = (
+            command.goal_id if command.goal_id != 0 else self.settings["selection"]
+        )
         if goal_id == 1:
             self._msg("Root goal can't be deleted")
             return
         parent = self._parent(goal_id)
-        self._delete(goal_id)
+        self._delete_subtree(goal_id)
         self.select(parent)
         self.accept(HoldSelect())
 
-    def _delete(self, goal_id: int) -> None:
+    def _delete_subtree(self, goal_id: int) -> None:
         parent = self._parent(goal_id)
         self.goals[goal_id] = None
         self.closed.add(goal_id)
@@ -188,7 +195,7 @@ class Goals(Graph):
                 self._create_new_link(parent, old_blocker.target, EdgeType.BLOCKER)
         for next_goal in next_to_remove:
             if not self._back_edges(next_goal.target):
-                self._delete(next_goal.target)
+                self._delete_subtree(next_goal.target)
         self.events.append(("delete", goal_id))
 
     def toggle_link(

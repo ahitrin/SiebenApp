@@ -68,3 +68,10 @@ class HoldSelect(Command):
 
 class ToggleClose(Command):
     """Close an open selected goal. Re-open a closed selected goal"""
+
+
+class Delete(Command):
+    """Remove given or selected goal whether it exists. Do nothing in other case"""
+
+    def __init__(self, goal_id: int = 0):
+        self.goal_id = goal_id
