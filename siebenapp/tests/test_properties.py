@@ -24,6 +24,7 @@ from siebenapp.domain import (
     Select,
     Insert,
     Rename,
+    ToggleZoom,
 )
 from siebenapp.system import run_migrations, save_updates
 from siebenapp.zoom import Zoom
@@ -105,7 +106,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 
     @rule()
     def zoom(self):
-        self.goaltree.toggle_zoom()
+        self.goaltree.accept(ToggleZoom())
 
     #
     # Verifiers

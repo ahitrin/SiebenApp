@@ -28,7 +28,6 @@ class Zoom(Graph):
         "q",
         "_toggle_close",
         "_toggle_link",
-        "toggle_zoom",
         "_toggle_zoom",
         "verify",
         "zoom_root",
@@ -51,9 +50,6 @@ class Zoom(Graph):
             self._toggle_zoom()
         else:
             self.goaltree.accept(command)
-
-    def toggle_zoom(self) -> None:
-        self.accept(ToggleZoom())
 
     def _toggle_zoom(self):
         selection = self.settings["selection"]
@@ -87,7 +83,7 @@ class Zoom(Graph):
 
     def _toggle_close(self) -> None:
         if self.settings["selection"] == self.zoom_root[-1]:
-            self.toggle_zoom()
+            self._toggle_zoom()
         self.goaltree.accept(ToggleClose())
         if self.settings["selection"] not in self._build_visible_goals():
             self.goaltree.accept(Select(self.zoom_root[-1]))
@@ -107,7 +103,7 @@ class Zoom(Graph):
 
     def _delete(self, command: Delete) -> None:
         if self.settings["selection"] == self.zoom_root[-1]:
-            self.toggle_zoom()
+            self._toggle_zoom()
         self.goaltree.accept(command)
         if self.settings["selection"] != self.zoom_root[-1]:
             self.goaltree.accept(Select(self.zoom_root[-1]))

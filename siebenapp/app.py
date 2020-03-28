@@ -19,6 +19,7 @@ from siebenapp.domain import (
     Select,
     Insert,
     Rename,
+    ToggleZoom,
 )
 from siebenapp.render import Renderer
 from siebenapp.system import save, load, DEFAULT_DB, split_long
@@ -280,7 +281,7 @@ class SiebenApp(QMainWindow):
 
     def toggle_zoom(self):
         self.force_refresh = True
-        self.goals.toggle_zoom()
+        self.goals.accept(ToggleZoom())
         self.refresh.emit()
 
     def show_keys_help(self):
