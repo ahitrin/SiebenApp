@@ -11,6 +11,7 @@ from siebenapp.domain import (
     ToggleClose,
     Delete,
     ToggleLink,
+    Add,
 )
 
 GoalsData = List[Tuple[int, Optional[str], bool]]
@@ -49,7 +50,9 @@ class Goals(Graph):
         return parents.pop().source if parents else 1
 
     def accept(self, command: Command) -> None:
-        if isinstance(command, HoldSelect):
+        if isinstance(command, Add):
+            self._add(command)
+        elif isinstance(command, HoldSelect):
             self._hold_select()
         elif isinstance(command, ToggleClose):
             self._toggle_close()
@@ -61,18 +64,15 @@ class Goals(Graph):
     def add(
         self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
     ) -> None:
-        self._add(name, add_to, edge_type)
+        self.accept(Add(name, add_to, edge_type))
 
-    def _add(
-        self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
-    ) -> bool:
-        if add_to == 0:
-            add_to = self.settings["selection"]
+    def _add(self, command: Add) -> bool:
+        add_to = command.add_to if command.add_to != 0 else self.settings["selection"]
         if add_to in self.closed:
             self._msg("A new subgoal cannot be added to the closed one")
             return False
-        next_id = self._add_no_link(name)
-        self._toggle_link(ToggleLink(add_to, next_id, edge_type))
+        next_id = self._add_no_link(command.name)
+        self._toggle_link(ToggleLink(add_to, next_id, command.edge_type))
         return True
 
     def _add_no_link(self, name: str) -> int:
@@ -129,7 +129,7 @@ class Goals(Graph):
             self._msg("A new goal can be inserted only between two different goals")
             return
         edge_type = self.edges.get((lower, upper), EdgeType.BLOCKER)
-        if self._add(name, lower, edge_type):
+        if self._add(Add(name, lower, edge_type)):
             key = len(self.goals)
             self._toggle_link(ToggleLink(key, upper, edge_type))
             if self._has_link(lower, upper):

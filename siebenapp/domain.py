@@ -52,6 +52,17 @@ class Graph:
 # === Graph layer ===
 
 
+class Add(Command):
+    """Add a new goal to the existing tree"""
+
+    def __init__(
+        self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
+    ):
+        self.name = name
+        self.add_to = add_to
+        self.edge_type = edge_type
+
+
 class HoldSelect(Command):
     """Saves current selection into the "previous selection" state"""
 
