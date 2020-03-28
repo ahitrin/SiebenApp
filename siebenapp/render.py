@@ -9,8 +9,8 @@ from siebenapp.domain import Graph, EdgeType
 GoalId = Union[str, int]
 
 
-def safe_average(l: List[int]) -> int:
-    return sum(l) / len(l) if l else 0
+def safe_average(items: List[int]) -> int:
+    return int(sum(items) / len(items)) if items else 0
 
 
 class Renderer:
