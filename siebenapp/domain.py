@@ -48,10 +48,6 @@ class Graph:
         """Create or remove a link between two given goals, if possible"""
         raise NotImplementedError
 
-    def toggle_close(self) -> None:
-        """Close an open selected goal. Re-open a closed selected goal"""
-        raise NotImplementedError
-
     def delete(self, goal_id: int = 0) -> None:
         """Remove given or selected goal whether it exists. Do nothiung in other case"""
         raise NotImplementedError

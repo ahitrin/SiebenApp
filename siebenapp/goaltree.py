@@ -130,9 +130,6 @@ class Goals(Graph):
         self.goals[goal_id] = new_name
         self.events.append(("rename", new_name, goal_id))
 
-    def toggle_close(self) -> None:
-        self.accept(ToggleCloseCommand())
-
     def _toggle_close(self) -> None:
         if self.settings["selection"] in self.closed:
             if self._may_be_reopened():

@@ -24,7 +24,6 @@ class Zoom(Graph):
         "q",
         "rename",
         "select",
-        "toggle_close",
         "_toggle_close",
         "toggle_link",
         "toggle_zoom",
@@ -82,9 +81,6 @@ class Zoom(Graph):
                 ]
             zoomed_goals[-1]["edge"] = [(self.zoom_root[-1], EdgeType.BLOCKER)]
         return zoomed_goals
-
-    def toggle_close(self) -> None:
-        self._toggle_close()
 
     def _toggle_close(self) -> None:
         if self.settings["selection"] == self.zoom_root[-1]:
