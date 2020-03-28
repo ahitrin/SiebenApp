@@ -63,3 +63,12 @@ class Graph:
     def q(self, keys: str = "name") -> Dict[int, Any]:
         """Run search query against goaltree state"""
         raise NotImplementedError
+
+
+# == Command implementations ==
+
+# === Graph layer ===
+
+
+class HoldSelectCommand(Command):
+    pass

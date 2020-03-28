@@ -2,7 +2,7 @@
 import collections
 from typing import Callable, Dict, Optional, List, Set, Any, Tuple
 
-from siebenapp.domain import Graph, EdgeType, Edge, Command
+from siebenapp.domain import Graph, EdgeType, Edge, Command, HoldSelectCommand
 
 GoalsData = List[Tuple[int, Optional[str], bool]]
 EdgesData = List[Tuple[int, int, int]]
@@ -40,7 +40,8 @@ class Goals(Graph):
         return parents.pop().source if parents else 1
 
     def accept(self, command: Command) -> None:
-        pass
+        if isinstance(command, HoldSelectCommand):
+            self._hold_select()
 
     def add(
         self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
@@ -66,6 +67,9 @@ class Goals(Graph):
             self.events.append(("select", goal_id))
 
     def hold_select(self) -> None:
+        self.accept(HoldSelectCommand())
+
+    def _hold_select(self):
         self.settings["previous_selection"] = self.settings["selection"]
         self.events.append(("hold_select", self.settings["selection"]))
 
