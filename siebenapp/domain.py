@@ -91,3 +91,8 @@ class Delete(Command):
 
     def __init__(self, goal_id: int = 0):
         self.goal_id = goal_id
+
+
+# === Zoom layer ===
+class ToggleZoom(Command):
+    """Hide or show all goals blocked by the current one"""

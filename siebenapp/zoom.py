@@ -10,6 +10,7 @@ from siebenapp.domain import (
     ToggleLink,
     Select,
     Insert,
+    ToggleZoom,
 )
 from siebenapp.goaltree import Goals
 
@@ -28,6 +29,7 @@ class Zoom(Graph):
         "_toggle_close",
         "_toggle_link",
         "toggle_zoom",
+        "_toggle_zoom",
         "verify",
         "zoom_root",
     ]
@@ -45,10 +47,15 @@ class Zoom(Graph):
             self._toggle_link(command)
         elif isinstance(command, Delete):
             self._delete(command)
+        elif isinstance(command, ToggleZoom):
+            self._toggle_zoom()
         else:
             self.goaltree.accept(command)
 
     def toggle_zoom(self) -> None:
+        self.accept(ToggleZoom())
+
+    def _toggle_zoom(self):
         selection = self.settings["selection"]
         if selection == self.zoom_root[-1] and len(self.zoom_root) > 1:
             # unzoom
