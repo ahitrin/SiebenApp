@@ -67,6 +67,14 @@ class HoldSelect(Command):
     """Saves current selection into the "previous selection" state"""
 
 
+class Rename(Command):
+    """Change a name of the given goal"""
+
+    def __init__(self, new_name: str, goal_id: int = 0):
+        self.new_name = new_name
+        self.goal_id = goal_id
+
+
 class ToggleClose(Command):
     """Close an open selected goal. Re-open a closed selected goal"""
 

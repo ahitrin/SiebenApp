@@ -14,6 +14,7 @@ from siebenapp.domain import (
     Add,
     Select,
     Insert,
+    Rename,
 )
 
 GoalsData = List[Tuple[int, Optional[str], bool]]
@@ -60,6 +61,8 @@ class Goals(Graph):
             self._select(command)
         elif isinstance(command, HoldSelect):
             self._hold_select()
+        elif isinstance(command, Rename):
+            self._rename(command)
         elif isinstance(command, ToggleClose):
             self._toggle_close()
         elif isinstance(command, ToggleLink):
@@ -138,10 +141,14 @@ class Goals(Graph):
                 self._toggle_link(ToggleLink(lower, upper))
 
     def rename(self, new_name: str, goal_id: int = 0) -> None:
-        if goal_id == 0:
-            goal_id = self.settings["selection"]
-        self.goals[goal_id] = new_name
-        self.events.append(("rename", new_name, goal_id))
+        self.accept(Rename(new_name, goal_id))
+
+    def _rename(self, command: Rename):
+        goal_id = (
+            command.goal_id if command.goal_id != 0 else self.settings["selection"]
+        )
+        self.goals[goal_id] = command.new_name
+        self.events.append(("rename", command.new_name, goal_id))
 
     def _toggle_close(self) -> None:
         if self.settings["selection"] in self.closed:
