@@ -63,8 +63,8 @@ class Graph:
 
 
 class HoldSelectCommand(Command):
-    pass
+    """Saves current selection into the "previous selection" state"""
 
 
 class ToggleCloseCommand(Command):
-    pass
+    """Close an open selected goal. Re-open a closed selected goal"""
