@@ -12,6 +12,7 @@ from siebenapp.domain import (
     Delete,
     ToggleLink,
     Add,
+    Select,
 )
 
 GoalsData = List[Tuple[int, Optional[str], bool]]
@@ -52,6 +53,8 @@ class Goals(Graph):
     def accept(self, command: Command) -> None:
         if isinstance(command, Add):
             self._add(command)
+        elif isinstance(command, Select):
+            self._select(command)
         elif isinstance(command, HoldSelect):
             self._hold_select()
         elif isinstance(command, ToggleClose):
@@ -77,6 +80,10 @@ class Goals(Graph):
         return next_id
 
     def select(self, goal_id: int) -> None:
+        self.accept(Select(goal_id))
+
+    def _select(self, command: Select):
+        goal_id = command.goal_id
         if goal_id in self.goals and self.goals[goal_id] is not None:
             self.settings["selection"] = goal_id
             self.events.append(("select", goal_id))

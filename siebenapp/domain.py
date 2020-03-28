@@ -57,6 +57,13 @@ class Add(Command):
         self.edge_type = edge_type
 
 
+class Select(Command):
+    """Select a goal by its id whether it exist. Do nothing in other case"""
+
+    def __init__(self, goal_id: int):
+        self.goal_id = goal_id
+
+
 class HoldSelect(Command):
     """Saves current selection into the "previous selection" state"""
 
