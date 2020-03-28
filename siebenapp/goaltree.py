@@ -13,6 +13,8 @@ from siebenapp.domain import (
     ToggleLink,
     Add,
     Select,
+    Insert,
+    Rename,
 )
 
 GoalsData = List[Tuple[int, Optional[str], bool]]
@@ -53,10 +55,14 @@ class Goals(Graph):
     def accept(self, command: Command) -> None:
         if isinstance(command, Add):
             self._add(command)
+        elif isinstance(command, Insert):
+            self._insert(command)
         elif isinstance(command, Select):
             self._select(command)
         elif isinstance(command, HoldSelect):
             self._hold_select()
+        elif isinstance(command, Rename):
+            self._rename(command)
         elif isinstance(command, ToggleClose):
             self._toggle_close()
         elif isinstance(command, ToggleLink):
@@ -121,24 +127,25 @@ class Goals(Graph):
             return has_open_parents or has_no_parents
         return all(x.target in self.closed for x in self._forward_edges(key))
 
-    def insert(self, name: str) -> None:
+    def _insert(self, command: Insert):
         lower = self.settings["previous_selection"]
         upper = self.settings["selection"]
         if lower == upper:
             self._msg("A new goal can be inserted only between two different goals")
             return
         edge_type = self.edges.get((lower, upper), EdgeType.BLOCKER)
-        if self._add(Add(name, lower, edge_type)):
+        if self._add(Add(command.name, lower, edge_type)):
             key = len(self.goals)
             self._toggle_link(ToggleLink(key, upper, edge_type))
             if self._has_link(lower, upper):
                 self._toggle_link(ToggleLink(lower, upper))
 
-    def rename(self, new_name: str, goal_id: int = 0) -> None:
-        if goal_id == 0:
-            goal_id = self.settings["selection"]
-        self.goals[goal_id] = new_name
-        self.events.append(("rename", new_name, goal_id))
+    def _rename(self, command: Rename):
+        goal_id = (
+            command.goal_id if command.goal_id != 0 else self.settings["selection"]
+        )
+        self.goals[goal_id] = command.new_name
+        self.events.append(("rename", command.new_name, goal_id))
 
     def _toggle_close(self) -> None:
         if self.settings["selection"] in self.closed:

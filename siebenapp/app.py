@@ -17,6 +17,10 @@ from siebenapp.domain import (
     ToggleLink,
     Add,
     Select,
+    Insert,
+    Rename,
+    ToggleZoom,
+    NextView,
 )
 from siebenapp.render import Renderer
 from siebenapp.system import save, load, DEFAULT_DB, split_long
@@ -186,14 +190,14 @@ class SiebenApp(QMainWindow):
             Qt.Key_A: self.start_edit("Add new goal", self.emit_add),
             Qt.Key_C: self.with_refresh(self.goals.accept, ToggleClose()),
             Qt.Key_D: self.with_refresh(self.goals.accept, Delete()),
-            Qt.Key_I: self.start_edit("Insert new goal", self.goals.insert),
+            Qt.Key_I: self.start_edit("Insert new goal", self.emit_insert),
             Qt.Key_K: self.with_refresh(
                 self.goals.accept, ToggleLink(edge_type=EdgeType.PARENT)
             ),
             Qt.Key_L: self.with_refresh(self.goals.accept, ToggleLink()),
             Qt.Key_Q: self.quit_app.emit,
             Qt.Key_R: self.start_edit(
-                "Rename goal", self.goals.rename, self._current_goal_label
+                "Rename goal", self.emit_rename, self._current_goal_label
             ),
             Qt.Key_V: self.toggle_view,
             Qt.Key_Z: self.toggle_zoom,
@@ -246,6 +250,12 @@ class SiebenApp(QMainWindow):
     def emit_add(self, text):
         self.goals.accept(Add(text))
 
+    def emit_insert(self, text):
+        self.goals.accept(Insert(text))
+
+    def emit_rename(self, text):
+        self.goals.accept(Rename(text))
+
     def _current_goal_label(self):
         data = self.goals.q(keys="name,select").values()
         return [x["name"] for x in data if x["select"] == "select"].pop()
@@ -266,13 +276,13 @@ class SiebenApp(QMainWindow):
 
     def toggle_view(self):
         self.force_refresh = True
-        self.goals.next_view()
+        self.goals.accept(NextView())
         self._update_title()
         self.refresh.emit()
 
     def toggle_zoom(self):
         self.force_refresh = True
-        self.goals.toggle_zoom()
+        self.goals.accept(ToggleZoom())
         self.refresh.emit()
 
     def show_keys_help(self):

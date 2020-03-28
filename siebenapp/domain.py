@@ -24,14 +24,6 @@ class Graph:
         """React on the given command"""
         raise NotImplementedError
 
-    def insert(self, name: str) -> None:
-        """Add an intermediate goal between two selected goals"""
-        raise NotImplementedError
-
-    def rename(self, new_name: str, goal_id: int = 0) -> None:
-        """Change a name of the given goal"""
-        raise NotImplementedError
-
     def q(self, keys: str = "name") -> Dict[int, Any]:
         """Run search query against goaltree state"""
         raise NotImplementedError
@@ -60,8 +52,23 @@ class Select(Command):
         self.goal_id = goal_id
 
 
+class Insert(Command):
+    """Add an intermediate goal between two selected goals"""
+
+    def __init__(self, name: str):
+        self.name = name
+
+
 class HoldSelect(Command):
     """Saves current selection into the "previous selection" state"""
+
+
+class Rename(Command):
+    """Change a name of the given goal"""
+
+    def __init__(self, new_name: str, goal_id: int = 0):
+        self.new_name = new_name
+        self.goal_id = goal_id
 
 
 class ToggleClose(Command):
@@ -84,3 +91,13 @@ class Delete(Command):
 
     def __init__(self, goal_id: int = 0):
         self.goal_id = goal_id
+
+
+# === Zoom layer ===
+class ToggleZoom(Command):
+    """Hide or show all goals blocked by the current one"""
+
+
+# === Enumeration layer ===
+class NextView(Command):
+    """Switch between different view modes in a loop"""

@@ -10,6 +10,8 @@ from siebenapp.domain import (
     ToggleLink,
     Add,
     Select,
+    Insert,
+    Rename,
 )
 from siebenapp.tests.dsl import build_goaltree, open_, selected, previous, clos_
 
@@ -65,7 +67,7 @@ class GoalsTest(TestCase):
     def test_rename_goal(self):
         self.goals.accept(Add("Boom"))
         self.goals.accept(Select(2))
-        self.goals.rename("A")
+        self.goals.accept(Rename("A"))
         assert self.goals.q() == {1: {"name": "Root"}, 2: {"name": "A"}}
 
     def test_insert_goal_in_the_middle(self):
@@ -76,7 +78,7 @@ class GoalsTest(TestCase):
             1: {"name": "Root", "edge": [(2, EdgeType.PARENT)], "switchable": False},
             2: {"name": "B", "edge": [], "switchable": True},
         }
-        self.goals.insert("A")
+        self.goals.accept(Insert("A"))
         assert self.goals.q(keys="name,edge,switchable") == {
             1: {"name": "Root", "edge": [(3, EdgeType.PARENT)], "switchable": False},
             2: {"name": "B", "edge": [], "switchable": True},
@@ -89,7 +91,7 @@ class GoalsTest(TestCase):
             open_(2, "A", select=previous),
             open_(3, "B", select=selected),
         )
-        self.goals.insert("Wow")
+        self.goals.accept(Insert("Wow"))
         assert self.goals.q(keys="name,edge,switchable") == {
             1: {
                 "name": "Root",
@@ -486,7 +488,7 @@ class GoalsTest(TestCase):
         assert self.goals.events[-1] == ("toggle_close", True, 1)
 
     def test_rename_event(self):
-        self.goals.rename("New")
+        self.goals.accept(Rename("New"))
         assert self.goals.events[-1] == ("rename", "New", 1)
 
     def test_delete_events(self):
@@ -537,19 +539,19 @@ class GoalsTest(TestCase):
         self.goals = self.build(
             open_(1, "Root", [2], select=previous), open_(2, "Top", select=selected)
         )
-        self.goals.insert("Success")
+        self.goals.accept(Insert("Success"))
         assert self.messages == []
 
     def test_message_on_insert_without_two_goals(self):
         self.goals = self.build(open_(1, "Root", select=selected))
-        self.goals.insert("Failed")
+        self.goals.accept(Insert("Failed"))
         assert len(self.messages) == 1
 
     def test_message_on_circular_insert(self):
         self.goals = self.build(
             open_(1, "Root", [2], select=selected), open_(2, "Top", [], select=previous)
         )
-        self.goals.insert("Failed")
+        self.goals.accept(Insert("Failed"))
         assert len(self.messages) == 1
 
     def test_no_message_on_valid_closing(self):

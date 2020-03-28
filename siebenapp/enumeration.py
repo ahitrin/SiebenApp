@@ -1,7 +1,7 @@
 import math
 from typing import List, Dict, Tuple, Any, Union, Set, Iterable
 
-from siebenapp.domain import Graph, Command, HoldSelect, Select
+from siebenapp.domain import Graph, Command, HoldSelect, Select, NextView
 from siebenapp.goaltree import Goals
 from siebenapp.zoom import Zoom
 
@@ -44,10 +44,8 @@ class Enumeration(Graph):
         "_update_top_mapping",
         "_update_open_mapping",
         "goaltree",
-        "insert",
-        "next_view",
+        "_next_view",
         "q",
-        "rename",
         "_select",
         "selection_cache",
         "view_title",
@@ -124,14 +122,10 @@ class Enumeration(Graph):
     def accept(self, command: Command) -> None:
         if isinstance(command, Select):
             self._select(command)
+        elif isinstance(command, NextView):
+            self._next_view()
         else:
             self.goaltree.accept(command)
-
-    def insert(self, name: str) -> None:
-        self.goaltree.insert(name)
-
-    def rename(self, new_name: str, goal_id: int = 0) -> None:
-        self.goaltree.rename(new_name, goal_id)
 
     def q(self, keys: str = "name") -> Dict[int, Any]:
         self._update_mapping()
@@ -163,7 +157,7 @@ class Enumeration(Graph):
         else:
             self.selection_cache.append(goal_id)
 
-    def next_view(self) -> None:
+    def _next_view(self):
         self._open, self._top = self._views[self._open, self._top]
         self._update_mapping()
         self.selection_cache.clear()

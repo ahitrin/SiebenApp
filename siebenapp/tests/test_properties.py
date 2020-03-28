@@ -22,6 +22,9 @@ from siebenapp.domain import (
     ToggleLink,
     Add,
     Select,
+    Insert,
+    Rename,
+    ToggleZoom,
 )
 from siebenapp.system import run_migrations, save_updates
 from siebenapp.zoom import Zoom
@@ -79,7 +82,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         selection = self.goaltree.settings["selection"]
         prev_selection = self.goaltree.settings["previous_selection"]
         assume(selection != prev_selection)
-        self.goaltree.insert("i")
+        self.goaltree.accept(Insert("i"))
 
     @rule(b=booleans(), d=data())
     def toggle_link(self, b, d):
@@ -99,11 +102,11 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 
     @rule(t=text())
     def rename(self, t):
-        self.goaltree.rename(t)
+        self.goaltree.accept(Rename(t))
 
     @rule()
     def zoom(self):
-        self.goaltree.toggle_zoom()
+        self.goaltree.accept(ToggleZoom())
 
     #
     # Verifiers
