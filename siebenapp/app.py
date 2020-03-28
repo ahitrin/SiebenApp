@@ -9,7 +9,15 @@ from PyQt5.QtGui import QPainter, QPen
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout
 from PyQt5.uic import loadUi
 
-from siebenapp.domain import EdgeType, HoldSelect, ToggleClose, Delete, ToggleLink
+from siebenapp.domain import (
+    EdgeType,
+    HoldSelect,
+    ToggleClose,
+    Delete,
+    ToggleLink,
+    Add,
+    Select,
+)
 from siebenapp.render import Renderer
 from siebenapp.system import save, load, DEFAULT_DB, split_long
 from siebenapp.ui.goalwidget import Ui_GoalBody
@@ -132,7 +140,7 @@ class SiebenApp(QMainWindow):
 
     def close_goal(self, goal_id):
         def inner():
-            self.goals.select(goal_id)
+            self.goals.accept(Select(goal_id))
             self.goals.accept(ToggleClose())
             self.refresh.emit()
 
@@ -175,7 +183,7 @@ class SiebenApp(QMainWindow):
             Qt.Key_8: self.select_number(8),
             Qt.Key_9: self.select_number(9),
             Qt.Key_0: self.select_number(0),
-            Qt.Key_A: self.start_edit("Add new goal", self.goals.add),
+            Qt.Key_A: self.start_edit("Add new goal", self.emit_add),
             Qt.Key_C: self.with_refresh(self.goals.accept, ToggleClose()),
             Qt.Key_D: self.with_refresh(self.goals.accept, Delete()),
             Qt.Key_I: self.start_edit("Insert new goal", self.goals.insert),
@@ -235,6 +243,9 @@ class SiebenApp(QMainWindow):
         except TypeError:
             pass
 
+    def emit_add(self, text):
+        self.goals.accept(Add(text))
+
     def _current_goal_label(self):
         data = self.goals.q(keys="name,select").values()
         return [x["name"] for x in data if x["select"] == "select"].pop()
@@ -248,7 +259,7 @@ class SiebenApp(QMainWindow):
 
     def select_number(self, num):
         def inner():
-            self.goals.select(num)
+            self.goals.accept(Select(num))
             self.refresh.emit()
 
         return inner

@@ -1,13 +1,7 @@
 import math
 from typing import List, Dict, Tuple, Any, Union, Set, Iterable
 
-from siebenapp.domain import (
-    Graph,
-    EdgeType,
-    Command,
-    HoldSelect,
-    ToggleClose,
-)
+from siebenapp.domain import Graph, Command, HoldSelect, Select
 from siebenapp.goaltree import Goals
 from siebenapp.zoom import Zoom
 
@@ -44,7 +38,6 @@ class BidirectionalIndex:
 class Enumeration(Graph):
     overriden = [
         "accept",
-        "add",
         "_goal_filter",
         "_id_mapping",
         "_update_mapping",
@@ -55,7 +48,7 @@ class Enumeration(Graph):
         "next_view",
         "q",
         "rename",
-        "select",
+        "_select",
         "selection_cache",
         "view_title",
         "_views",
@@ -105,7 +98,7 @@ class Enumeration(Graph):
             if v["open"] and v["switchable"] and k in original_mapping
         }
         if goals and self.settings["selection"] not in goals:
-            self.goaltree.select(min(goals))
+            self.goaltree.accept(Select(min(goals)))
         if goals and self.settings["previous_selection"] not in goals:
             self.accept(HoldSelect())
         return goals
@@ -129,12 +122,10 @@ class Enumeration(Graph):
         return goals, BidirectionalIndex(goals)
 
     def accept(self, command: Command) -> None:
-        self.goaltree.accept(command)
-
-    def add(
-        self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
-    ) -> None:
-        self.goaltree.add(name, add_to, edge_type)
+        if isinstance(command, Select):
+            self._select(command)
+        else:
+            self.goaltree.accept(command)
 
     def insert(self, name: str) -> None:
         self.goaltree.insert(name)
@@ -155,8 +146,9 @@ class Enumeration(Graph):
                 ]
         return result
 
-    def select(self, goal_id: int) -> None:
+    def _select(self, command: Select):
         self._update_mapping()
+        goal_id = command.goal_id
         goals, index = self._id_mapping()
         if goal_id >= 10:
             self.selection_cache = []
@@ -166,7 +158,7 @@ class Enumeration(Graph):
                 goal_id %= int(pow(10, int(math.log(goal_id, 10))))
         original_id = index.backward(goal_id)
         if original_id != BidirectionalIndex.NOT_FOUND:
-            self.goaltree.select(original_id)
+            self.goaltree.accept(Select(original_id))
             self.selection_cache = []
         else:
             self.selection_cache.append(goal_id)

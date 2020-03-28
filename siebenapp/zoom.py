@@ -8,6 +8,7 @@ from siebenapp.domain import (
     ToggleClose,
     Delete,
     ToggleLink,
+    Select,
 )
 from siebenapp.goaltree import Goals
 
@@ -17,7 +18,6 @@ ZoomData = List[Tuple[int, int]]
 class Zoom(Graph):
     override = [
         "accept",
-        "add",
         "_build_visible_goals",
         "_delete",
         "export",
@@ -25,7 +25,6 @@ class Zoom(Graph):
         "insert",
         "q",
         "rename",
-        "select",
         "_toggle_close",
         "_toggle_link",
         "toggle_zoom",
@@ -47,11 +46,6 @@ class Zoom(Graph):
         else:
             self.goaltree.accept(command)
 
-    def add(
-        self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
-    ) -> None:
-        self.goaltree.add(name, add_to, edge_type)
-
     def toggle_zoom(self) -> None:
         selection = self.settings["selection"]
         if selection == self.zoom_root[-1] and len(self.zoom_root) > 1:
@@ -66,9 +60,6 @@ class Zoom(Graph):
         visible_goals = self._build_visible_goals()
         if self.settings["previous_selection"] not in visible_goals:
             self.accept(HoldSelect())
-
-    def select(self, goal_id: int) -> None:
-        self.goaltree.select(goal_id)
 
     def rename(self, new_name: str, goal_id: int = 0) -> None:
         self.goaltree.rename(new_name, goal_id)
@@ -93,19 +84,19 @@ class Zoom(Graph):
             self.toggle_zoom()
         self.goaltree.accept(ToggleClose())
         if self.settings["selection"] not in self._build_visible_goals():
-            self.goaltree.select(self.zoom_root[-1])
+            self.goaltree.accept(Select(self.zoom_root[-1]))
             self.accept(HoldSelect())
 
     def insert(self, name: str) -> None:
         self.goaltree.insert(name)
         if self.settings["selection"] not in self._build_visible_goals():
-            self.goaltree.select(self.zoom_root[-1])
+            self.goaltree.accept(Select(self.zoom_root[-1]))
             self.accept(HoldSelect())
 
     def _toggle_link(self, command: ToggleLink):
         self.goaltree.accept(command)
         if self.settings["selection"] not in self._build_visible_goals():
-            self.goaltree.select(self.zoom_root[-1])
+            self.goaltree.accept(Select(self.zoom_root[-1]))
             self.accept(HoldSelect())
 
     def _delete(self, command: Delete) -> None:
@@ -113,7 +104,7 @@ class Zoom(Graph):
             self.toggle_zoom()
         self.goaltree.accept(command)
         if self.settings["selection"] != self.zoom_root[-1]:
-            self.goaltree.select(self.zoom_root[-1])
+            self.goaltree.accept(Select(self.zoom_root[-1]))
             self.accept(HoldSelect())
 
     def verify(self) -> bool:

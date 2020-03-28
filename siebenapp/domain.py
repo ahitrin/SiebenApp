@@ -24,16 +24,6 @@ class Graph:
         """React on the given command"""
         raise NotImplementedError
 
-    def add(
-        self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
-    ) -> None:
-        """Add a new goal to the existing tree"""
-        raise NotImplementedError
-
-    def select(self, goal_id: int) -> None:
-        """Select a goal by its id whether it exist. Do nothing in other case"""
-        raise NotImplementedError
-
     def insert(self, name: str) -> None:
         """Add an intermediate goal between two selected goals"""
         raise NotImplementedError
@@ -50,6 +40,24 @@ class Graph:
 # == Command implementations ==
 
 # === Graph layer ===
+
+
+class Add(Command):
+    """Add a new goal to the existing tree"""
+
+    def __init__(
+        self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
+    ):
+        self.name = name
+        self.add_to = add_to
+        self.edge_type = edge_type
+
+
+class Select(Command):
+    """Select a goal by its id whether it exist. Do nothing in other case"""
+
+    def __init__(self, goal_id: int):
+        self.goal_id = goal_id
 
 
 class HoldSelect(Command):

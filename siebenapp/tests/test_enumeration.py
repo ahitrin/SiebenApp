@@ -1,6 +1,6 @@
 from siebenapp.enumeration import Enumeration, BidirectionalIndex
 from siebenapp.goaltree import Goals
-from siebenapp.domain import EdgeType, HoldSelect, ToggleClose
+from siebenapp.domain import EdgeType, HoldSelect, ToggleClose, Add, Select
 from siebenapp.tests.dsl import build_goaltree, open_, previous, selected
 
 
@@ -39,7 +39,7 @@ def test_apply_mapping_for_the_10th_element():
         0: {"name": "j", "edge": []},
     }
     # simulate goal addition
-    goals.add("k")
+    goals.accept(Add("k"))
     assert e.q(keys="name,edge") == {
         11: {"name": "a", "edge": [(12, EdgeType.PARENT), (21, EdgeType.PARENT)]},
         12: {"name": "b", "edge": [(13, EdgeType.PARENT)]},
@@ -60,7 +60,7 @@ def test_use_mapping_in_selection():
         open_(10, "j", select=selected)
     ]
     e = Enumeration(build_goaltree(*prototype))
-    e.select(0)
+    e.accept(Select(0))
     assert e.q(keys="name,select") == {
         1: {"name": "a", "select": None},
         2: {"name": "b", "select": None},
@@ -73,9 +73,9 @@ def test_use_mapping_in_selection():
         9: {"name": "i", "select": None},
         0: {"name": "j", "select": "select"},
     }
-    e.add("k")
-    e.select(1)
-    e.select(6)
+    e.accept(Add("k"))
+    e.accept(Select(1))
+    e.accept(Select(6))
     assert e.q(keys="name,select") == {
         11: {"name": "a", "select": None},
         12: {"name": "b", "select": None},
@@ -109,7 +109,7 @@ def test_select_goal_by_full_id():
         10: {"name": "j", "select": None},
         21: {"name": "k", "select": None},
     }
-    e.select(13)
+    e.accept(Select(13))
     assert e.q(keys="name,select") == {
         11: {"name": "a", "select": "prev"},
         12: {"name": "b", "select": None},
@@ -143,8 +143,8 @@ def test_select_goal_by_full_id_with_non_empty_cache():
         10: {"name": "j", "select": None},
         21: {"name": "k", "select": None},
     }
-    e.select(2)
-    e.select(13)
+    e.accept(Select(2))
+    e.accept(Select(13))
     assert e.q(keys="name,select") == {
         11: {"name": "a", "select": "prev"},
         12: {"name": "b", "select": None},
@@ -242,15 +242,15 @@ def test_selection_cache_should_be_reset_after_view_switch():
         for i in range(1, 11)
     ] + [open_(11, "11")]
     g = build_goaltree(*prototype)
-    g.add("Also top", 1)
+    g.accept(Add("Also top", 1))
     e = Enumeration(g)
-    e.select(1)
+    e.accept(Select(1))
     e.next_view()
     assert e.q("name,select") == {
         1: {"name": "11", "select": "select"},
         2: {"name": "Also top", "select": None},
     }
-    e.select(2)
+    e.accept(Select(2))
     assert e.q("name,select") == {
         1: {"name": "11", "select": "prev"},
         2: {"name": "Also top", "select": "select"},
@@ -263,12 +263,12 @@ def test_selection_cache_should_avoid_overflow():
     ] + [open_(i, str(i)) for i in range(2, 12)]
     e = Enumeration(build_goaltree(*prototype))
     assert e.q(keys="select")[11] == {"select": "select"}
-    e.select(5)
+    e.accept(Select(5))
     assert e.q(keys="select")[11] == {"select": "select"}
-    e.select(1)
+    e.accept(Select(1))
     assert e.q(keys="select")[11] == {"select": "select"}
     assert e.q(keys="select")[14] == {"select": None}
-    e.select(4)
+    e.accept(Select(4))
     assert e.q(keys="select")[11] == {"select": "prev"}
     assert e.q(keys="select")[14] == {"select": "select"}
 
@@ -282,11 +282,11 @@ def test_top_view_may_be_empty():
 
 def test_simple_top_enumeration_workflow():
     e = Enumeration(Goals("root"))
-    e.add("1")
-    e.add("2")
-    e.select(2)
+    e.accept(Add("1"))
+    e.accept(Add("2"))
+    e.accept(Select(2))
     e.next_view()
-    e.select(2)
+    e.accept(Select(2))
     assert e.q() == {1: {"name": "1"}, 2: {"name": "2"}}
 
 
@@ -298,9 +298,9 @@ def test_open_view_may_be_empty():
 
 def test_simple_open_enumeration_workflow():
     e = Enumeration(Goals("Root"))
-    e.add("1")
-    e.add("2")
-    e.select(2)
+    e.accept(Add("1"))
+    e.accept(Add("2"))
+    e.accept(Select(2))
     assert e.q(keys="name,select,open,edge") == {
         1: {
             "name": "Root",
@@ -332,10 +332,10 @@ class PseudoZoomedGoals(Goals):
 
 def test_do_not_enumerate_goals_with_negative_id():
     g = PseudoZoomedGoals("Root")
-    g.add("Zoomed")
-    g.select(2)
+    g.accept(Add("Zoomed"))
+    g.accept(Select(2))
     g.accept(HoldSelect())
-    g.add("Top")
+    g.accept(Add("Top"))
     assert g.q("name,select,edge") == {
         -1: {"name": "Root", "select": None, "edge": [(2, EdgeType.PARENT)]},
         2: {"name": "Zoomed", "select": "select", "edge": [(3, EdgeType.PARENT)]},
