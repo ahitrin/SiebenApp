@@ -9,7 +9,15 @@ from PyQt5.QtGui import QPainter, QPen
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout
 from PyQt5.uic import loadUi
 
-from siebenapp.domain import EdgeType, HoldSelect, ToggleClose, Delete, ToggleLink, Add
+from siebenapp.domain import (
+    EdgeType,
+    HoldSelect,
+    ToggleClose,
+    Delete,
+    ToggleLink,
+    Add,
+    Select,
+)
 from siebenapp.render import Renderer
 from siebenapp.system import save, load, DEFAULT_DB, split_long
 from siebenapp.ui.goalwidget import Ui_GoalBody
@@ -132,7 +140,7 @@ class SiebenApp(QMainWindow):
 
     def close_goal(self, goal_id):
         def inner():
-            self.goals.select(goal_id)
+            self.goals.accept(Select(goal_id))
             self.goals.accept(ToggleClose())
             self.refresh.emit()
 
@@ -251,7 +259,7 @@ class SiebenApp(QMainWindow):
 
     def select_number(self, num):
         def inner():
-            self.goals.select(num)
+            self.goals.accept(Select(num))
             self.refresh.emit()
 
         return inner

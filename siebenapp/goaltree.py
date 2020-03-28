@@ -79,9 +79,6 @@ class Goals(Graph):
         self.events.append(("add", next_id, name, True))
         return next_id
 
-    def select(self, goal_id: int) -> None:
-        self.accept(Select(goal_id))
-
     def _select(self, command: Select):
         goal_id = command.goal_id
         if goal_id in self.goals and self.goals[goal_id] is not None:
@@ -154,7 +151,7 @@ class Goals(Graph):
             if self._may_be_closed():
                 self.closed.add(self.settings["selection"])
                 self.events.append(("toggle_close", False, self.settings["selection"]))
-                self.select(1)
+                self._select(Select(1))
                 self.accept(HoldSelect())
             else:
                 self._msg("This goal can't be closed because it have open subgoals")
@@ -181,7 +178,7 @@ class Goals(Graph):
             return
         parent = self._parent(goal_id)
         self._delete_subtree(goal_id)
-        self.select(parent)
+        self._select(Select(parent))
         self.accept(HoldSelect())
 
     def _delete_subtree(self, goal_id: int) -> None:

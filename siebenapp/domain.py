@@ -24,10 +24,6 @@ class Graph:
         """React on the given command"""
         raise NotImplementedError
 
-    def select(self, goal_id: int) -> None:
-        """Select a goal by its id whether it exist. Do nothing in other case"""
-        raise NotImplementedError
-
     def insert(self, name: str) -> None:
         """Add an intermediate goal between two selected goals"""
         raise NotImplementedError

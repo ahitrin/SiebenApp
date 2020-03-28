@@ -48,7 +48,6 @@ class Enumeration(Graph):
         "next_view",
         "q",
         "rename",
-        "select",
         "_select",
         "selection_cache",
         "view_title",
@@ -146,9 +145,6 @@ class Enumeration(Graph):
                     (index.forward(edge[0]), edge[1]) for edge in val["edge"]
                 ]
         return result
-
-    def select(self, goal_id: int) -> None:
-        self.accept(Select(goal_id))
 
     def _select(self, command: Select):
         self._update_mapping()

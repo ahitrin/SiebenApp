@@ -8,6 +8,7 @@ from siebenapp.domain import (
     ToggleClose,
     Delete,
     ToggleLink,
+    Select,
 )
 from siebenapp.goaltree import Goals
 
@@ -24,7 +25,6 @@ class Zoom(Graph):
         "insert",
         "q",
         "rename",
-        "select",
         "_toggle_close",
         "_toggle_link",
         "toggle_zoom",
@@ -61,9 +61,6 @@ class Zoom(Graph):
         if self.settings["previous_selection"] not in visible_goals:
             self.accept(HoldSelect())
 
-    def select(self, goal_id: int) -> None:
-        self.goaltree.select(goal_id)
-
     def rename(self, new_name: str, goal_id: int = 0) -> None:
         self.goaltree.rename(new_name, goal_id)
 
@@ -87,19 +84,19 @@ class Zoom(Graph):
             self.toggle_zoom()
         self.goaltree.accept(ToggleClose())
         if self.settings["selection"] not in self._build_visible_goals():
-            self.goaltree.select(self.zoom_root[-1])
+            self.goaltree.accept(Select(self.zoom_root[-1]))
             self.accept(HoldSelect())
 
     def insert(self, name: str) -> None:
         self.goaltree.insert(name)
         if self.settings["selection"] not in self._build_visible_goals():
-            self.goaltree.select(self.zoom_root[-1])
+            self.goaltree.accept(Select(self.zoom_root[-1]))
             self.accept(HoldSelect())
 
     def _toggle_link(self, command: ToggleLink):
         self.goaltree.accept(command)
         if self.settings["selection"] not in self._build_visible_goals():
-            self.goaltree.select(self.zoom_root[-1])
+            self.goaltree.accept(Select(self.zoom_root[-1]))
             self.accept(HoldSelect())
 
     def _delete(self, command: Delete) -> None:
@@ -107,7 +104,7 @@ class Zoom(Graph):
             self.toggle_zoom()
         self.goaltree.accept(command)
         if self.settings["selection"] != self.zoom_root[-1]:
-            self.goaltree.select(self.zoom_root[-1])
+            self.goaltree.accept(Select(self.zoom_root[-1]))
             self.accept(HoldSelect())
 
     def verify(self) -> bool:

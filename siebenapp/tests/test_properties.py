@@ -14,7 +14,15 @@ from hypothesis.stateful import (
 )
 
 from siebenapp.goaltree import Goals
-from siebenapp.domain import EdgeType, HoldSelect, ToggleClose, Delete, ToggleLink, Add
+from siebenapp.domain import (
+    EdgeType,
+    HoldSelect,
+    ToggleClose,
+    Delete,
+    ToggleLink,
+    Add,
+    Select,
+)
 from siebenapp.system import run_migrations, save_updates
 from siebenapp.zoom import Zoom
 
@@ -58,7 +66,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
             integers(min_value=1, max_value=max(self.goaltree.q().keys()))
         )
         assume(random_goal in self.goaltree.q())
-        self.goaltree.select(random_goal)
+        self.goaltree.accept(Select(random_goal))
         # Any valid goal must be selectable
         assert self.goaltree.q("select")[random_goal]["select"] == "select"
 
