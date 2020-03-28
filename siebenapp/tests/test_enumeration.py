@@ -1,6 +1,6 @@
 from siebenapp.enumeration import Enumeration, BidirectionalIndex
 from siebenapp.goaltree import Goals
-from siebenapp.domain import EdgeType, HoldSelect, ToggleClose
+from siebenapp.domain import EdgeType, HoldSelect, ToggleClose, Add
 from siebenapp.tests.dsl import build_goaltree, open_, previous, selected
 
 
@@ -39,7 +39,7 @@ def test_apply_mapping_for_the_10th_element():
         0: {"name": "j", "edge": []},
     }
     # simulate goal addition
-    goals.add("k")
+    goals.accept(Add("k"))
     assert e.q(keys="name,edge") == {
         11: {"name": "a", "edge": [(12, EdgeType.PARENT), (21, EdgeType.PARENT)]},
         12: {"name": "b", "edge": [(13, EdgeType.PARENT)]},
@@ -73,7 +73,7 @@ def test_use_mapping_in_selection():
         9: {"name": "i", "select": None},
         0: {"name": "j", "select": "select"},
     }
-    e.add("k")
+    e.accept(Add("k"))
     e.select(1)
     e.select(6)
     assert e.q(keys="name,select") == {
@@ -242,7 +242,7 @@ def test_selection_cache_should_be_reset_after_view_switch():
         for i in range(1, 11)
     ] + [open_(11, "11")]
     g = build_goaltree(*prototype)
-    g.add("Also top", 1)
+    g.accept(Add("Also top", 1))
     e = Enumeration(g)
     e.select(1)
     e.next_view()
@@ -282,8 +282,8 @@ def test_top_view_may_be_empty():
 
 def test_simple_top_enumeration_workflow():
     e = Enumeration(Goals("root"))
-    e.add("1")
-    e.add("2")
+    e.accept(Add("1"))
+    e.accept(Add("2"))
     e.select(2)
     e.next_view()
     e.select(2)
@@ -298,8 +298,8 @@ def test_open_view_may_be_empty():
 
 def test_simple_open_enumeration_workflow():
     e = Enumeration(Goals("Root"))
-    e.add("1")
-    e.add("2")
+    e.accept(Add("1"))
+    e.accept(Add("2"))
     e.select(2)
     assert e.q(keys="name,select,open,edge") == {
         1: {
@@ -332,10 +332,10 @@ class PseudoZoomedGoals(Goals):
 
 def test_do_not_enumerate_goals_with_negative_id():
     g = PseudoZoomedGoals("Root")
-    g.add("Zoomed")
+    g.accept(Add("Zoomed"))
     g.select(2)
     g.accept(HoldSelect())
-    g.add("Top")
+    g.accept(Add("Top"))
     assert g.q("name,select,edge") == {
         -1: {"name": "Root", "select": None, "edge": [(2, EdgeType.PARENT)]},
         2: {"name": "Zoomed", "select": "select", "edge": [(3, EdgeType.PARENT)]},

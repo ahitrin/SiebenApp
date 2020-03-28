@@ -61,11 +61,6 @@ class Goals(Graph):
         elif isinstance(command, Delete):
             self._delete(command)
 
-    def add(
-        self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
-    ) -> None:
-        self.accept(Add(name, add_to, edge_type))
-
     def _add(self, command: Add) -> bool:
         add_to = command.add_to if command.add_to != 0 else self.settings["selection"]
         if add_to in self.closed:

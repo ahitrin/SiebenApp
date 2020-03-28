@@ -44,7 +44,6 @@ class BidirectionalIndex:
 class Enumeration(Graph):
     overriden = [
         "accept",
-        "add",
         "_goal_filter",
         "_id_mapping",
         "_update_mapping",
@@ -130,11 +129,6 @@ class Enumeration(Graph):
 
     def accept(self, command: Command) -> None:
         self.goaltree.accept(command)
-
-    def add(
-        self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
-    ) -> None:
-        self.goaltree.add(name, add_to, edge_type)
 
     def insert(self, name: str) -> None:
         self.goaltree.insert(name)

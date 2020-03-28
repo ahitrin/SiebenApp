@@ -2,7 +2,7 @@
 from unittest import TestCase
 
 from siebenapp.goaltree import Goals
-from siebenapp.domain import EdgeType, HoldSelect, ToggleClose, Delete, ToggleLink
+from siebenapp.domain import EdgeType, HoldSelect, ToggleClose, Delete, ToggleLink, Add
 from siebenapp.tests.dsl import build_goaltree, open_, selected, previous, clos_
 
 
@@ -23,22 +23,22 @@ class GoalsTest(TestCase):
         }
 
     def test_new_goal_moves_to_top(self):
-        self.goals.add("A")
+        self.goals.accept(Add("A"))
         assert self.goals.q(keys="name,switchable") == {
             1: {"name": "Root", "switchable": False},
             2: {"name": "A", "switchable": True},
         }
 
     def test_added_goal_has_strong_link_with_parent(self):
-        self.goals.add("New")
+        self.goals.accept(Add("New"))
         assert self.goals.q(keys="name,edge") == {
             1: {"name": "Root", "edge": [(2, EdgeType.PARENT)]},
             2: {"name": "New", "edge": []},
         }
 
     def test_two_new_goals_move_to_top(self):
-        self.goals.add("A")
-        self.goals.add("B")
+        self.goals.accept(Add("A"))
+        self.goals.accept(Add("B"))
         assert self.goals.q(keys="name,switchable") == {
             1: {"name": "Root", "switchable": False},
             2: {"name": "A", "switchable": True},
@@ -46,8 +46,8 @@ class GoalsTest(TestCase):
         }
 
     def test_two_goals_in_a_chain(self):
-        self.goals.add("A")
-        self.goals.add("AA", 2)
+        self.goals.accept(Add("A"))
+        self.goals.accept(Add("AA", 2))
         assert self.goals.q(keys="name,switchable") == {
             1: {"name": "Root", "switchable": False},
             2: {"name": "A", "switchable": False},
@@ -55,13 +55,13 @@ class GoalsTest(TestCase):
         }
 
     def test_rename_goal(self):
-        self.goals.add("Boom")
+        self.goals.accept(Add("Boom"))
         self.goals.select(2)
         self.goals.rename("A")
         assert self.goals.q() == {1: {"name": "Root"}, 2: {"name": "A"}}
 
     def test_insert_goal_in_the_middle(self):
-        self.goals.add("B")
+        self.goals.accept(Add("B"))
         self.goals.accept(HoldSelect())
         self.goals.select(2)
         assert self.goals.q(keys="name,edge,switchable") == {
@@ -362,12 +362,12 @@ class GoalsTest(TestCase):
 
     def test_root_goal_is_selected_by_default(self):
         assert self.goals.q(keys="select") == {1: {"select": "select"}}
-        self.goals.add("A")
+        self.goals.accept(Add("A"))
         assert self.goals.q(keys="select") == {
             1: {"select": "select"},
             2: {"select": None},
         }
-        self.goals.add("B")
+        self.goals.accept(Add("B"))
         assert self.goals.q(keys="select") == {
             1: {"select": "select"},
             2: {"select": None},
@@ -375,13 +375,13 @@ class GoalsTest(TestCase):
         }
 
     def test_new_goal_is_added_to_the_selected_node(self):
-        self.goals.add("A")
+        self.goals.accept(Add("A"))
         self.goals.select(2)
         assert self.goals.q(keys="name,select") == {
             1: {"name": "Root", "select": "prev"},
             2: {"name": "A", "select": "select"},
         }
-        self.goals.add("B")
+        self.goals.accept(Add("B"))
         assert self.goals.q(keys="name,select,edge") == {
             1: {"name": "Root", "select": "prev", "edge": [(2, EdgeType.PARENT)]},
             2: {"name": "A", "select": "select", "edge": [(3, EdgeType.PARENT)]},
@@ -456,12 +456,12 @@ class GoalsTest(TestCase):
 
     def test_add_events(self):
         assert self.goals.events.pop() == ("add", 1, "Root", True)
-        self.goals.add("Next")
+        self.goals.accept(Add("Next"))
         assert self.goals.events[-2] == ("add", 2, "Next", True)
         assert self.goals.events[-1] == ("link", 1, 2, EdgeType.PARENT)
 
     def test_select_events(self):
-        self.goals.add("Next")
+        self.goals.accept(Add("Next"))
         self.goals.select(2)
         assert self.goals.events[-1] == ("select", 2)
         self.goals.accept(HoldSelect())
@@ -482,7 +482,7 @@ class GoalsTest(TestCase):
         assert self.goals.events[-1] == ("rename", "New", 1)
 
     def test_delete_events(self):
-        self.goals.add("Sheep")
+        self.goals.accept(Add("Sheep"))
         self.goals.select(2)
         self.goals.accept(Delete())
         assert self.goals.events[-3] == ("delete", 2)
@@ -490,8 +490,8 @@ class GoalsTest(TestCase):
         assert self.goals.events[-1] == ("hold_select", 1)
 
     def test_link_events(self):
-        self.goals.add("Next")
-        self.goals.add("More")
+        self.goals.accept(Add("Next"))
+        self.goals.accept(Add("More"))
         self.goals.select(2)
         self.goals.accept(HoldSelect())
         self.goals.select(3)
@@ -517,12 +517,12 @@ class GoalsTest(TestCase):
 
     def test_no_message_on_good_add(self):
         self.goals = self.build(open_(1, "Root", select=selected))
-        self.goals.add("Success")
+        self.goals.accept(Add("Success"))
         assert self.messages == []
 
     def test_message_on_wrong_add(self):
         self.goals = self.build(clos_(1, "Root", select=selected))
-        self.goals.add("Failed")
+        self.goals.accept(Add("Failed"))
         assert len(self.messages) == 1
 
     def test_no_message_on_good_insert(self):

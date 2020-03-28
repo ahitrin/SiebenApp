@@ -1,5 +1,5 @@
 from siebenapp.goaltree import Goals
-from siebenapp.domain import EdgeType, HoldSelect, ToggleClose, Delete, ToggleLink
+from siebenapp.domain import EdgeType, HoldSelect, ToggleClose, Delete, ToggleLink, Add
 from siebenapp.tests.dsl import build_goaltree, open_, selected, previous
 from siebenapp.zoom import Zoom
 
@@ -56,7 +56,7 @@ def test_do_not_hide_subgoals():
         2: {"name": "Zoomed", "edge": [(3, EdgeType.PARENT)]},
         3: {"name": "Visible", "edge": []},
     }
-    goals.add("More children", 3)
+    goals.accept(Add("More children", 3))
     assert goals.q(keys="name,edge") == {
         -1: {"name": "Root", "edge": [(2, EdgeType.BLOCKER)]},
         2: {"name": "Zoomed", "edge": [(3, EdgeType.PARENT)]},

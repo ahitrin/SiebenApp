@@ -24,12 +24,6 @@ class Graph:
         """React on the given command"""
         raise NotImplementedError
 
-    def add(
-        self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
-    ) -> None:
-        """Add a new goal to the existing tree"""
-        raise NotImplementedError
-
     def select(self, goal_id: int) -> None:
         """Select a goal by its id whether it exist. Do nothing in other case"""
         raise NotImplementedError

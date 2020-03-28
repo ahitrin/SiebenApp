@@ -6,7 +6,7 @@ from tempfile import NamedTemporaryFile
 
 import pytest
 
-from siebenapp.domain import HoldSelect, ToggleClose, ToggleLink
+from siebenapp.domain import HoldSelect, ToggleClose, ToggleLink, Add
 from siebenapp.enumeration import Enumeration
 from siebenapp.goaltree import Goals
 from siebenapp.system import MIGRATIONS, run_migrations, load, save
@@ -59,8 +59,8 @@ def test_restore_goals_from_db():
         setup_sample_db(conn)
     actual_goals = load(file_name).goaltree
     expected_goals = Goals("Root")
-    expected_goals.add("A")
-    expected_goals.add("B")
+    expected_goals.accept(Add("A"))
+    expected_goals.accept(Add("B"))
     expected_goals.select(2)
     expected_goals.accept(HoldSelect())
     expected_goals.select(3)
@@ -114,13 +114,13 @@ def test_migration_must_run_on_load_from_existing_db():
 def test_save_and_load():
     file_name = NamedTemporaryFile().name
     goals = Enumeration(Zoom(Goals("Root")))
-    goals.add("Top")
-    goals.add("Middle")
+    goals.accept(Add("Top"))
+    goals.accept(Add("Middle"))
     goals.select(3)
     goals.accept(HoldSelect())
     goals.select(2)
     goals.accept(ToggleLink())
-    goals.add("Closed")
+    goals.accept(Add("Closed"))
     goals.select(4)
     goals.accept(ToggleClose())
     goals.select(2)
@@ -140,7 +140,7 @@ def test_multiple_saves_works_fine():
     file_name = NamedTemporaryFile().name
     goals = Zoom(Goals("Root"))
     save(goals, file_name)
-    goals.add("Next")
+    goals.accept(Add("Next"))
     save(goals, file_name)
     new_goals = load(file_name)
     assert goals.q() == new_goals.q()

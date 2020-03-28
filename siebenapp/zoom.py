@@ -17,7 +17,6 @@ ZoomData = List[Tuple[int, int]]
 class Zoom(Graph):
     override = [
         "accept",
-        "add",
         "_build_visible_goals",
         "_delete",
         "export",
@@ -46,11 +45,6 @@ class Zoom(Graph):
             self._delete(command)
         else:
             self.goaltree.accept(command)
-
-    def add(
-        self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
-    ) -> None:
-        self.goaltree.add(name, add_to, edge_type)
 
     def toggle_zoom(self) -> None:
         selection = self.settings["selection"]
