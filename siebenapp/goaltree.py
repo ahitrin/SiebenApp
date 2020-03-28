@@ -136,7 +136,7 @@ class Goals(Graph):
                 self.closed.add(self.settings["selection"])
                 self.events.append(("toggle_close", False, self.settings["selection"]))
                 self.select(1)
-                self.hold_select()
+                self.accept(HoldSelectCommand())
             else:
                 self._msg("This goal can't be closed because it have open subgoals")
 
@@ -162,7 +162,7 @@ class Goals(Graph):
         parent = self._parent(goal_id)
         self._delete(goal_id)
         self.select(parent)
-        self.hold_select()
+        self.accept(HoldSelectCommand())
 
     def _delete(self, goal_id: int) -> None:
         parent = self._parent(goal_id)

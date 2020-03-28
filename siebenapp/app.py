@@ -9,7 +9,7 @@ from PyQt5.QtGui import QPainter, QPen
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout
 from PyQt5.uic import loadUi
 
-from siebenapp.domain import EdgeType
+from siebenapp.domain import EdgeType, HoldSelectCommand
 from siebenapp.render import Renderer
 from siebenapp.system import save, load, DEFAULT_DB, split_long
 from siebenapp.ui.goalwidget import Ui_GoalBody
@@ -190,7 +190,7 @@ class SiebenApp(QMainWindow):
             Qt.Key_V: self.toggle_view,
             Qt.Key_Z: self.toggle_zoom,
             Qt.Key_Escape: self.cancel_edit,
-            Qt.Key_Space: self.with_refresh(self.goals.hold_select),
+            Qt.Key_Space: self.with_refresh(self.goals.accept, HoldSelectCommand()),
             Qt.Key_Slash: self.show_keys_help,
         }
         if event.key() in key_handlers:

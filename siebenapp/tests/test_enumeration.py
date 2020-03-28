@@ -1,6 +1,6 @@
 from siebenapp.enumeration import Enumeration, BidirectionalIndex
 from siebenapp.goaltree import Goals
-from siebenapp.domain import EdgeType
+from siebenapp.domain import EdgeType, HoldSelectCommand
 from siebenapp.tests.dsl import build_goaltree, open_, previous, selected
 
 
@@ -334,7 +334,7 @@ def test_do_not_enumerate_goals_with_negative_id():
     g = PseudoZoomedGoals("Root")
     g.add("Zoomed")
     g.select(2)
-    g.hold_select()
+    g.accept(HoldSelectCommand())
     g.add("Top")
     assert g.q("name,select,edge") == {
         -1: {"name": "Root", "select": None, "edge": [(2, EdgeType.PARENT)]},

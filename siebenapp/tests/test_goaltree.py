@@ -2,7 +2,7 @@
 from unittest import TestCase
 
 from siebenapp.goaltree import Goals
-from siebenapp.domain import EdgeType
+from siebenapp.domain import EdgeType, HoldSelectCommand
 from siebenapp.tests.dsl import build_goaltree, open_, selected, previous, clos_
 
 
@@ -62,7 +62,7 @@ class GoalsTest(TestCase):
 
     def test_insert_goal_in_the_middle(self):
         self.goals.add("B")
-        self.goals.hold_select()
+        self.goals.accept(HoldSelectCommand())
         self.goals.select(2)
         assert self.goals.q(keys="name,edge,switchable") == {
             1: {"name": "Root", "edge": [(2, EdgeType.PARENT)], "switchable": False},
@@ -464,7 +464,7 @@ class GoalsTest(TestCase):
         self.goals.add("Next")
         self.goals.select(2)
         assert self.goals.events[-1] == ("select", 2)
-        self.goals.hold_select()
+        self.goals.accept(HoldSelectCommand())
         self.goals.select(1)
         assert self.goals.events[-2] == ("hold_select", 2)
         assert self.goals.events[-1] == ("select", 1)
@@ -493,7 +493,7 @@ class GoalsTest(TestCase):
         self.goals.add("Next")
         self.goals.add("More")
         self.goals.select(2)
-        self.goals.hold_select()
+        self.goals.accept(HoldSelectCommand())
         self.goals.select(3)
         self.goals.toggle_link()
         assert self.goals.events[-1] == ("link", 2, 3, EdgeType.BLOCKER)
