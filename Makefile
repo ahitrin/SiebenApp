@@ -1,6 +1,6 @@
 ENV:=.env
 
-.PHONY: check venv test install lint format mypy run clean distclean
+.PHONY: check venv test install lint format mypy run clean distclean prepare
 
 all: check venv test
 
@@ -13,6 +13,8 @@ check:
 venv:
 	$([ which pipenv ] || pip install pipenv)
 	pipenv install -d
+
+prepare: test format lint mypy
 
 test:
 	pipenv run py.test
