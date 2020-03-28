@@ -68,3 +68,7 @@ class Graph:
 
 class HoldSelectCommand(Command):
     pass
+
+
+class ToggleCloseCommand(Command):
+    pass
