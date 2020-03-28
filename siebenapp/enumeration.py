@@ -1,7 +1,7 @@
 import math
 from typing import List, Dict, Tuple, Any, Union, Set, Iterable
 
-from siebenapp.domain import Graph, Command, HoldSelect, Select
+from siebenapp.domain import Graph, Command, HoldSelect, Select, NextView
 from siebenapp.goaltree import Goals
 from siebenapp.zoom import Zoom
 
@@ -45,6 +45,7 @@ class Enumeration(Graph):
         "_update_open_mapping",
         "goaltree",
         "next_view",
+        "_next_view",
         "q",
         "_select",
         "selection_cache",
@@ -122,6 +123,8 @@ class Enumeration(Graph):
     def accept(self, command: Command) -> None:
         if isinstance(command, Select):
             self._select(command)
+        elif isinstance(command, NextView):
+            self._next_view()
         else:
             self.goaltree.accept(command)
 
@@ -156,6 +159,9 @@ class Enumeration(Graph):
             self.selection_cache.append(goal_id)
 
     def next_view(self) -> None:
+        self.accept(NextView())
+
+    def _next_view(self):
         self._open, self._top = self._views[self._open, self._top]
         self._update_mapping()
         self.selection_cache.clear()

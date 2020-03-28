@@ -96,3 +96,8 @@ class Delete(Command):
 # === Zoom layer ===
 class ToggleZoom(Command):
     """Hide or show all goals blocked by the current one"""
+
+
+# === Enumeration layer ===
+class NextView(Command):
+    """Switch between different view modes in a loop"""
