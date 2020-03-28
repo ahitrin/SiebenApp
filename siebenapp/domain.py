@@ -66,6 +66,17 @@ class ToggleClose(Command):
     """Close an open selected goal. Re-open a closed selected goal"""
 
 
+class ToggleLink(Command):
+    """Create or remove a link between two given goals, if possible"""
+
+    def __init__(
+        self, lower: int = 0, upper: int = 0, edge_type: EdgeType = EdgeType.BLOCKER
+    ):
+        self.lower = lower
+        self.upper = upper
+        self.edge_type = edge_type
+
+
 class Delete(Command):
     """Remove given or selected goal whether it exists. Do nothing in other case"""
 

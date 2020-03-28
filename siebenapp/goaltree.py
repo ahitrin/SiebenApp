@@ -10,6 +10,7 @@ from siebenapp.domain import (
     HoldSelect,
     ToggleClose,
     Delete,
+    ToggleLink,
 )
 
 GoalsData = List[Tuple[int, Optional[str], bool]]
@@ -52,6 +53,8 @@ class Goals(Graph):
             self._hold_select()
         elif isinstance(command, ToggleClose):
             self._toggle_close()
+        elif isinstance(command, ToggleLink):
+            self._toggle_link(command)
         elif isinstance(command, Delete):
             self._delete(command)
 
@@ -198,20 +201,25 @@ class Goals(Graph):
     def toggle_link(
         self, lower: int = 0, upper: int = 0, edge_type: EdgeType = EdgeType.BLOCKER
     ) -> None:
-        lower = self.settings["previous_selection"] if lower == 0 else lower
-        upper = self.settings["selection"] if upper == 0 else upper
+        self.accept(ToggleLink(lower, upper, edge_type))
+
+    def _toggle_link(self, command: ToggleLink):
+        lower = (
+            self.settings["previous_selection"] if command.lower == 0 else command.lower
+        )
+        upper = self.settings["selection"] if command.upper == 0 else command.upper
         if lower == upper:
             self._msg("Goal can't be linked to itself")
             return
         if self._has_link(lower, upper):
             current_edge_type = self.edges[(lower, upper)]
-            if current_edge_type != edge_type:
-                self._replace_link(lower, upper, edge_type)
+            if current_edge_type != command.edge_type:
+                self._replace_link(lower, upper, command.edge_type)
                 self._transform_old_parents_into_blocked(lower, upper)
             else:
                 self._remove_existing_link(lower, upper, current_edge_type)
         else:
-            self._create_new_link(lower, upper, edge_type)
+            self._create_new_link(lower, upper, command.edge_type)
 
     def _replace_link(self, lower: int, upper: int, edge_type: EdgeType) -> None:
         old_edge_type = self.edges[(lower, upper)]
