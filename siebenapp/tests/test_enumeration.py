@@ -1,6 +1,14 @@
 from siebenapp.enumeration import Enumeration, BidirectionalIndex
 from siebenapp.goaltree import Goals
-from siebenapp.domain import EdgeType, HoldSelect, ToggleClose, Add, Select, Insert
+from siebenapp.domain import (
+    EdgeType,
+    HoldSelect,
+    ToggleClose,
+    Add,
+    Select,
+    Insert,
+    NextView,
+)
 from siebenapp.tests.dsl import build_goaltree, open_, previous, selected
 
 
@@ -176,11 +184,11 @@ def test_mapping_for_top():
 def test_toggle_switch_view():
     e = Enumeration(Goals("Root"))
     assert e.view_title() == "open"
-    e.next_view()
+    e.accept(NextView())
     assert e.view_title() == "top"
-    e.next_view()
+    e.accept(NextView())
     assert e.view_title() == "full"
-    e.next_view()
+    e.accept(NextView())
     assert e.view_title() == "open"
 
 
@@ -197,7 +205,7 @@ def test_goaltree_selection_may_be_changed_in_top_view():
         2: {"name": "Top 1", "switchable": True, "select": None},
         3: {"name": "Top 2", "switchable": True, "select": None},
     }
-    e.next_view()
+    e.accept(NextView())
     assert e.events[-2] == ("select", 2)
     assert e.events[-1] == ("hold_select", 2)
     assert e.q(keys="name,switchable,select") == {
@@ -219,7 +227,7 @@ def test_goaltree_previous_selection_may_be_changed_in_top_view():
         2: {"name": "Top 1", "switchable": True, "select": "select"},
         3: {"name": "Top 2", "switchable": True, "select": None},
     }
-    e.next_view()
+    e.accept(NextView())
     assert e.events[-1] == ("hold_select", 2)
     assert e.q(keys="name,switchable,select") == {
         1: {"name": "Top 1", "switchable": True, "select": "select"},
@@ -227,7 +235,7 @@ def test_goaltree_previous_selection_may_be_changed_in_top_view():
     }
     e.accept(Insert("Illegal goal"))
     # New goal must not be inserted because previous selection is reset after the view switching
-    e.next_view()
+    e.accept(NextView())
     assert e.q(keys="name,switchable,select") == {
         1: {"name": "Root", "switchable": False, "select": None},
         2: {"name": "Top 1", "switchable": True, "select": "select"},
@@ -245,7 +253,7 @@ def test_selection_cache_should_be_reset_after_view_switch():
     g.accept(Add("Also top", 1))
     e = Enumeration(g)
     e.accept(Select(1))
-    e.next_view()
+    e.accept(NextView())
     assert e.q("name,select") == {
         1: {"name": "11", "select": "select"},
         2: {"name": "Also top", "select": None},
@@ -276,7 +284,7 @@ def test_selection_cache_should_avoid_overflow():
 def test_top_view_may_be_empty():
     e = Enumeration(Goals("closed"))
     e.accept(ToggleClose())
-    e.next_view()
+    e.accept(NextView())
     assert e.q() == {}
 
 
@@ -285,7 +293,7 @@ def test_simple_top_enumeration_workflow():
     e.accept(Add("1"))
     e.accept(Add("2"))
     e.accept(Select(2))
-    e.next_view()
+    e.accept(NextView())
     e.accept(Select(2))
     assert e.q() == {1: {"name": "1"}, 2: {"name": "2"}}
 

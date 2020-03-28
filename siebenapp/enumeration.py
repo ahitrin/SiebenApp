@@ -44,7 +44,6 @@ class Enumeration(Graph):
         "_update_top_mapping",
         "_update_open_mapping",
         "goaltree",
-        "next_view",
         "_next_view",
         "q",
         "_select",
@@ -157,9 +156,6 @@ class Enumeration(Graph):
             self.selection_cache = []
         else:
             self.selection_cache.append(goal_id)
-
-    def next_view(self) -> None:
-        self.accept(NextView())
 
     def _next_view(self):
         self._open, self._top = self._views[self._open, self._top]

@@ -20,6 +20,7 @@ from siebenapp.domain import (
     Insert,
     Rename,
     ToggleZoom,
+    NextView,
 )
 from siebenapp.render import Renderer
 from siebenapp.system import save, load, DEFAULT_DB, split_long
@@ -275,7 +276,7 @@ class SiebenApp(QMainWindow):
 
     def toggle_view(self):
         self.force_refresh = True
-        self.goals.next_view()
+        self.goals.accept(NextView())
         self._update_title()
         self.refresh.emit()
 
