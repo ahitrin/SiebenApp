@@ -1,12 +1,6 @@
 from typing import Dict, Any, Set, List, Tuple
 
-from siebenapp.domain import (
-    Graph,
-    EdgeType,
-    Command,
-    HoldSelect,
-    ToggleClose,
-)
+from siebenapp.domain import Graph, EdgeType, Command, HoldSelect, ToggleClose, Delete
 from siebenapp.goaltree import Goals
 
 ZoomData = List[Tuple[int, int]]
@@ -17,7 +11,7 @@ class Zoom(Graph):
         "accept",
         "add",
         "_build_visible_goals",
-        "delete",
+        "_delete",
         "export",
         "goaltree",
         "insert",
@@ -38,6 +32,8 @@ class Zoom(Graph):
     def accept(self, command: Command) -> None:
         if isinstance(command, ToggleClose):
             self._toggle_close()
+        elif isinstance(command, Delete):
+            self._delete(command)
         else:
             self.goaltree.accept(command)
 
@@ -104,10 +100,10 @@ class Zoom(Graph):
             self.goaltree.select(self.zoom_root[-1])
             self.accept(HoldSelect())
 
-    def delete(self, goal_id: int = 0) -> None:
+    def _delete(self, command: Delete) -> None:
         if self.settings["selection"] == self.zoom_root[-1]:
             self.toggle_zoom()
-        self.goaltree.delete(goal_id)
+        self.goaltree.accept(command)
         if self.settings["selection"] != self.zoom_root[-1]:
             self.goaltree.select(self.zoom_root[-1])
             self.accept(HoldSelect())

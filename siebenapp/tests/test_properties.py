@@ -14,7 +14,7 @@ from hypothesis.stateful import (
 )
 
 from siebenapp.goaltree import Goals
-from siebenapp.domain import EdgeType, HoldSelect, ToggleClose
+from siebenapp.domain import EdgeType, HoldSelect, ToggleClose, Delete
 from siebenapp.system import run_migrations, save_updates
 from siebenapp.zoom import Zoom
 
@@ -50,7 +50,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 
     @rule()
     def delete_goal(self):
-        self.goaltree.delete()
+        self.goaltree.accept(Delete())
 
     @rule(d=data())
     def select_random_goal(self, d):

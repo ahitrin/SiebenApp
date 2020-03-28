@@ -167,9 +167,6 @@ class Goals(Graph):
             if k[1] == self.settings["selection"]
         )
 
-    def delete(self, goal_id: int = 0) -> None:
-        self.accept(Delete(goal_id))
-
     def _delete(self, command: Delete) -> None:
         goal_id = (
             command.goal_id if command.goal_id != 0 else self.settings["selection"]

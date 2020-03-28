@@ -2,7 +2,7 @@
 from unittest import TestCase
 
 from siebenapp.goaltree import Goals
-from siebenapp.domain import EdgeType, HoldSelect, ToggleClose
+from siebenapp.domain import EdgeType, HoldSelect, ToggleClose, Delete
 from siebenapp.tests.dsl import build_goaltree, open_, selected, previous, clos_
 
 
@@ -170,7 +170,7 @@ class GoalsTest(TestCase):
 
     def test_delete_single_goal(self):
         self.goals = self.build(open_(1, "Root", [2]), open_(2, "A", select=selected))
-        self.goals.delete()
+        self.goals.accept(Delete())
         assert self.goals.q(keys="name,select,switchable") == {
             1: {"name": "Root", "select": "select", "switchable": True},
         }
@@ -179,7 +179,7 @@ class GoalsTest(TestCase):
         self.goals = self.build(
             open_(1, "Root", [2, 3]), open_(2, "A", select=selected), open_(3, "B")
         )
-        self.goals.delete()
+        self.goals.accept(Delete())
         assert self.goals.q(keys="name,switchable") == {
             1: {"name": "Root", "switchable": False},
             3: {"name": "B", "switchable": True},
@@ -189,7 +189,7 @@ class GoalsTest(TestCase):
         self.goals = self.build(
             open_(1, "Root", [2]), open_(2, "A", [3], select=selected), open_(3, "B")
         )
-        self.goals.delete()
+        self.goals.accept(Delete())
         assert self.goals.q() == {1: {"name": "Root"}}
 
     def test_relink_goal_chain_with_blockers(self):
@@ -198,7 +198,7 @@ class GoalsTest(TestCase):
             open_(2, "A", blockers=[3], select=selected),
             open_(3, "B"),
         )
-        self.goals.delete()
+        self.goals.accept(Delete())
         assert self.goals.q("name,edge") == {
             1: {"name": "Root", "edge": [(3, EdgeType.BLOCKER)]},
             3: {"name": "B", "edge": []},
@@ -210,7 +210,7 @@ class GoalsTest(TestCase):
             open_(2, "Parent", [3]),
             open_(3, "Delete me", select=selected),
         )
-        self.goals.delete()
+        self.goals.accept(Delete())
         assert self.goals.q("name,edge,select") == {
             1: {"name": "Root", "edge": [(2, EdgeType.PARENT)], "select": None},
             2: {"name": "Parent", "edge": [], "select": "select"},
@@ -353,7 +353,7 @@ class GoalsTest(TestCase):
             4: {"name": "C", "edge": []},
         }
         self.goals.select(3)
-        self.goals.delete()
+        self.goals.accept(Delete())
         assert self.goals.q(keys="name,edge,switchable") == {
             1: {"name": "Root", "edge": [(2, EdgeType.PARENT)], "switchable": False},
             2: {"name": "A", "edge": [(4, EdgeType.PARENT)], "switchable": False},
@@ -407,7 +407,7 @@ class GoalsTest(TestCase):
         self.goals = self.build(
             open_(1, "Root", [2]), open_(2, "broken", select=selected)
         )
-        self.goals.delete()
+        self.goals.accept(Delete())
         self.goals.select(2)
         assert self.goals.q(keys="select") == {1: {"select": "select"}}
 
@@ -484,7 +484,7 @@ class GoalsTest(TestCase):
     def test_delete_events(self):
         self.goals.add("Sheep")
         self.goals.select(2)
-        self.goals.delete()
+        self.goals.accept(Delete())
         assert self.goals.events[-3] == ("delete", 2)
         assert self.goals.events[-2] == ("select", 1)
         assert self.goals.events[-1] == ("hold_select", 1)
@@ -572,12 +572,12 @@ class GoalsTest(TestCase):
         self.goals = self.build(
             clos_(1, "Root", [2]), clos_(2, "Top", [], select=selected)
         )
-        self.goals.delete()
+        self.goals.accept(Delete())
         assert self.messages == []
 
     def test_message_on_delete_root_goal(self):
         self.goals = self.build(clos_(1, "Root", [2], select=selected), clos_(2, "Top"))
-        self.goals.delete()
+        self.goals.accept(Delete())
         assert len(self.messages) == 1
 
     def test_no_message_on_allowed_link(self):

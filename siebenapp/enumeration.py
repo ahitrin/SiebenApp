@@ -50,7 +50,6 @@ class Enumeration(Graph):
         "_update_mapping",
         "_update_top_mapping",
         "_update_open_mapping",
-        "delete",
         "goaltree",
         "insert",
         "next_view",
@@ -177,9 +176,6 @@ class Enumeration(Graph):
         self, lower: int = 0, upper: int = 0, edge_type: EdgeType = EdgeType.BLOCKER
     ) -> None:
         self.goaltree.toggle_link(lower, upper, edge_type)
-
-    def delete(self, goal_id: int = 0) -> None:
-        self.goaltree.delete(goal_id)
 
     def next_view(self) -> None:
         self._open, self._top = self._views[self._open, self._top]

@@ -1,5 +1,5 @@
 from siebenapp.goaltree import Goals
-from siebenapp.domain import EdgeType, HoldSelect, ToggleClose
+from siebenapp.domain import EdgeType, HoldSelect, ToggleClose, Delete
 from siebenapp.tests.dsl import build_goaltree, open_, selected, previous
 from siebenapp.zoom import Zoom
 
@@ -288,7 +288,7 @@ def test_deleting_zoom_root_should_cause_unzoom():
         )
     )
     goals.toggle_zoom()
-    goals.delete()
+    goals.accept(Delete())
     assert goals.q(keys="name,select,open") == {
         1: {"name": "Root", "select": "select", "open": True},
         2: {"name": "Intermediate", "select": None, "open": True},
@@ -311,7 +311,7 @@ def test_goal_deletion_must_not_cause_root_selection():
         4: {"name": "Deleted", "select": None},
     }
     goals.select(4)
-    goals.delete()
+    goals.accept(Delete())
     assert goals.q(keys="name,select") == {
         -1: {"name": "Root", "select": None},
         3: {"name": "Zoom root", "select": "select"},
