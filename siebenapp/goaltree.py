@@ -13,6 +13,7 @@ from siebenapp.domain import (
     ToggleLink,
     Add,
     Select,
+    Insert,
 )
 
 GoalsData = List[Tuple[int, Optional[str], bool]]
@@ -53,6 +54,8 @@ class Goals(Graph):
     def accept(self, command: Command) -> None:
         if isinstance(command, Add):
             self._add(command)
+        elif isinstance(command, Insert):
+            self._insert(command)
         elif isinstance(command, Select):
             self._select(command)
         elif isinstance(command, HoldSelect):
@@ -122,13 +125,16 @@ class Goals(Graph):
         return all(x.target in self.closed for x in self._forward_edges(key))
 
     def insert(self, name: str) -> None:
+        self.accept(Insert(name))
+
+    def _insert(self, command: Insert):
         lower = self.settings["previous_selection"]
         upper = self.settings["selection"]
         if lower == upper:
             self._msg("A new goal can be inserted only between two different goals")
             return
         edge_type = self.edges.get((lower, upper), EdgeType.BLOCKER)
-        if self._add(Add(name, lower, edge_type)):
+        if self._add(Add(command.name, lower, edge_type)):
             key = len(self.goals)
             self._toggle_link(ToggleLink(key, upper, edge_type))
             if self._has_link(lower, upper):

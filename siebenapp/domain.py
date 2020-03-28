@@ -60,6 +60,13 @@ class Select(Command):
         self.goal_id = goal_id
 
 
+class Insert(Command):
+    """Add an intermediate goal between two selected goals"""
+
+    def __init__(self, name: str):
+        self.name = name
+
+
 class HoldSelect(Command):
     """Saves current selection into the "previous selection" state"""
 

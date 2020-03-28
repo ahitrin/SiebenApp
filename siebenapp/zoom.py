@@ -9,6 +9,7 @@ from siebenapp.domain import (
     Delete,
     ToggleLink,
     Select,
+    Insert,
 )
 from siebenapp.goaltree import Goals
 
@@ -23,6 +24,7 @@ class Zoom(Graph):
         "export",
         "goaltree",
         "insert",
+        "_insert",
         "q",
         "rename",
         "_toggle_close",
@@ -37,7 +39,9 @@ class Zoom(Graph):
         self.zoom_root = [1]
 
     def accept(self, command: Command) -> None:
-        if isinstance(command, ToggleClose):
+        if isinstance(command, Insert):
+            self._insert(command)
+        elif isinstance(command, ToggleClose):
             self._toggle_close()
         elif isinstance(command, ToggleLink):
             self._toggle_link(command)
@@ -88,7 +92,10 @@ class Zoom(Graph):
             self.accept(HoldSelect())
 
     def insert(self, name: str) -> None:
-        self.goaltree.insert(name)
+        self.accept(Insert(name))
+
+    def _insert(self, command: Insert):
+        self.goaltree.accept(command)
         if self.settings["selection"] not in self._build_visible_goals():
             self.goaltree.accept(Select(self.zoom_root[-1]))
             self.accept(HoldSelect())
