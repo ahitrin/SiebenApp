@@ -4,8 +4,13 @@ from typing import Dict, List, Tuple, Union, Any, Set
 from siebenapp.domain import Graph, EdgeType
 
 
-def safe_average(l: List[int]) -> int:
-    return sum(l) / len(l) if l else 0
+# GoalId for real nodes is integer: -1, 4, 34, etc
+# GoalId for fake nodes (used to build edges) is str: '3_5', '1_1', etc
+GoalId = Union[str, int]
+
+
+def safe_average(items: List[int]) -> int:
+    return int(sum(items) / len(items)) if items else 0
 
 
 class Renderer:
@@ -18,7 +23,7 @@ class Renderer:
         }
         self.layers: Dict[int, List[int]] = defaultdict(list)
         self.positions: Dict[int, int] = {}
-        self.edge_types: Dict[Tuple[Union[str, int], Union[str, int]], int] = {
+        self.edge_types: Dict[Tuple[GoalId, GoalId], int] = {
             (parent, child): edge_type
             for parent in self.graph
             for child, edge_type in self.graph[parent]["edge"]
@@ -32,12 +37,12 @@ class Renderer:
 
     def split_by_layers(self) -> None:
         unsorted_goals: Dict[int, List[int]] = dict(self.edges)
-        sorted_goals: Set[Union[int, str]] = set()
+        sorted_goals: Set[GoalId] = set()
         incoming_edges: Set[int] = set()
         outgoing_edges: Set[int] = set()
         current_layer = 0
         while unsorted_goals:
-            new_layer: List[Union[int, str]] = []
+            new_layer: List[GoalId] = []
             for goal, edges_len in self.candidates_for_new_layer(
                 sorted_goals, unsorted_goals
             ):
@@ -77,7 +82,7 @@ class Renderer:
 
     @staticmethod
     def candidates_for_new_layer(
-        sorted_goals: Set[Union[int, str]], unsorted_goals: Dict[int, List[int]]
+        sorted_goals: Set[GoalId], unsorted_goals: Dict[int, List[int]]
     ) -> List[Tuple[int, int]]:
         candidates = [
             (goal, len(edges))
