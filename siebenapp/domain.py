@@ -13,8 +13,16 @@ class Edge(collections.namedtuple("Edge", "source target type")):
     __slots__ = ()
 
 
+class Command:
+    pass
+
+
 class Graph:
     """Base interface definition"""
+
+    def accept(self, command: Command) -> None:
+        """React on the given command"""
+        raise NotImplementedError
 
     def add(
         self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT

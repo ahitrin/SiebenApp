@@ -1,7 +1,7 @@
 import math
 from typing import List, Dict, Tuple, Any, Union, Set, Iterable
 
-from siebenapp.domain import Graph, EdgeType
+from siebenapp.domain import Graph, EdgeType, Command
 from siebenapp.goaltree import Goals
 from siebenapp.zoom import Zoom
 
@@ -37,6 +37,7 @@ class BidirectionalIndex:
 
 class Enumeration(Graph):
     overriden = [
+        "accept",
         "add",
         "_goal_filter",
         "_id_mapping",
@@ -124,6 +125,9 @@ class Enumeration(Graph):
                     ]
 
         return goals, BidirectionalIndex(goals)
+
+    def accept(self, command: Command) -> None:
+        pass
 
     def add(
         self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT

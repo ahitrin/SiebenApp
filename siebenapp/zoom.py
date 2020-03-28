@@ -1,6 +1,6 @@
 from typing import Dict, Any, Set, List, Tuple
 
-from siebenapp.domain import Graph, EdgeType
+from siebenapp.domain import Graph, EdgeType, Command
 from siebenapp.goaltree import Goals
 
 ZoomData = List[Tuple[int, int]]
@@ -8,6 +8,7 @@ ZoomData = List[Tuple[int, int]]
 
 class Zoom(Graph):
     override = [
+        "accept",
         "add",
         "_build_visible_goals",
         "delete",
@@ -28,6 +29,9 @@ class Zoom(Graph):
     def __init__(self, goaltree: Goals) -> None:
         self.goaltree = goaltree
         self.zoom_root = [1]
+
+    def accept(self, command: Command) -> None:
+        pass
 
     def add(
         self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT

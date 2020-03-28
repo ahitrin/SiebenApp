@@ -2,7 +2,7 @@
 import collections
 from typing import Callable, Dict, Optional, List, Set, Any, Tuple
 
-from siebenapp.domain import Graph, EdgeType, Edge
+from siebenapp.domain import Graph, EdgeType, Edge, Command
 
 GoalsData = List[Tuple[int, Optional[str], bool]]
 EdgesData = List[Tuple[int, int, int]]
@@ -38,6 +38,9 @@ class Goals(Graph):
     def _parent(self, goal: int) -> int:
         parents = {e for e in self._back_edges(goal) if e.type == EdgeType.PARENT}
         return parents.pop().source if parents else 1
+
+    def accept(self, command: Command) -> None:
+        pass
 
     def add(
         self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
