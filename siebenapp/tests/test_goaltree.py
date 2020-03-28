@@ -10,6 +10,7 @@ from siebenapp.domain import (
     ToggleLink,
     Add,
     Select,
+    Insert,
 )
 from siebenapp.tests.dsl import build_goaltree, open_, selected, previous, clos_
 
@@ -76,7 +77,7 @@ class GoalsTest(TestCase):
             1: {"name": "Root", "edge": [(2, EdgeType.PARENT)], "switchable": False},
             2: {"name": "B", "edge": [], "switchable": True},
         }
-        self.goals.insert("A")
+        self.goals.accept(Insert("A"))
         assert self.goals.q(keys="name,edge,switchable") == {
             1: {"name": "Root", "edge": [(3, EdgeType.PARENT)], "switchable": False},
             2: {"name": "B", "edge": [], "switchable": True},
@@ -89,7 +90,7 @@ class GoalsTest(TestCase):
             open_(2, "A", select=previous),
             open_(3, "B", select=selected),
         )
-        self.goals.insert("Wow")
+        self.goals.accept(Insert("Wow"))
         assert self.goals.q(keys="name,edge,switchable") == {
             1: {
                 "name": "Root",
@@ -537,19 +538,19 @@ class GoalsTest(TestCase):
         self.goals = self.build(
             open_(1, "Root", [2], select=previous), open_(2, "Top", select=selected)
         )
-        self.goals.insert("Success")
+        self.goals.accept(Insert("Success"))
         assert self.messages == []
 
     def test_message_on_insert_without_two_goals(self):
         self.goals = self.build(open_(1, "Root", select=selected))
-        self.goals.insert("Failed")
+        self.goals.accept(Insert("Failed"))
         assert len(self.messages) == 1
 
     def test_message_on_circular_insert(self):
         self.goals = self.build(
             open_(1, "Root", [2], select=selected), open_(2, "Top", [], select=previous)
         )
-        self.goals.insert("Failed")
+        self.goals.accept(Insert("Failed"))
         assert len(self.messages) == 1
 
     def test_no_message_on_valid_closing(self):

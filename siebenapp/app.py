@@ -17,6 +17,7 @@ from siebenapp.domain import (
     ToggleLink,
     Add,
     Select,
+    Insert,
 )
 from siebenapp.render import Renderer
 from siebenapp.system import save, load, DEFAULT_DB, split_long
@@ -186,7 +187,7 @@ class SiebenApp(QMainWindow):
             Qt.Key_A: self.start_edit("Add new goal", self.emit_add),
             Qt.Key_C: self.with_refresh(self.goals.accept, ToggleClose()),
             Qt.Key_D: self.with_refresh(self.goals.accept, Delete()),
-            Qt.Key_I: self.start_edit("Insert new goal", self.goals.insert),
+            Qt.Key_I: self.start_edit("Insert new goal", self.emit_insert),
             Qt.Key_K: self.with_refresh(
                 self.goals.accept, ToggleLink(edge_type=EdgeType.PARENT)
             ),
@@ -245,6 +246,9 @@ class SiebenApp(QMainWindow):
 
     def emit_add(self, text):
         self.goals.accept(Add(text))
+
+    def emit_insert(self, text):
+        self.goals.accept(Insert(text))
 
     def _current_goal_label(self):
         data = self.goals.q(keys="name,select").values()

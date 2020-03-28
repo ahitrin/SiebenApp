@@ -44,7 +44,6 @@ class Enumeration(Graph):
         "_update_top_mapping",
         "_update_open_mapping",
         "goaltree",
-        "insert",
         "next_view",
         "q",
         "rename",
@@ -126,9 +125,6 @@ class Enumeration(Graph):
             self._select(command)
         else:
             self.goaltree.accept(command)
-
-    def insert(self, name: str) -> None:
-        self.goaltree.insert(name)
 
     def rename(self, new_name: str, goal_id: int = 0) -> None:
         self.goaltree.rename(new_name, goal_id)

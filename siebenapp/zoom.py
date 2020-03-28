@@ -23,7 +23,6 @@ class Zoom(Graph):
         "_delete",
         "export",
         "goaltree",
-        "insert",
         "_insert",
         "q",
         "rename",
@@ -90,9 +89,6 @@ class Zoom(Graph):
         if self.settings["selection"] not in self._build_visible_goals():
             self.goaltree.accept(Select(self.zoom_root[-1]))
             self.accept(HoldSelect())
-
-    def insert(self, name: str) -> None:
-        self.accept(Insert(name))
 
     def _insert(self, command: Insert):
         self.goaltree.accept(command)

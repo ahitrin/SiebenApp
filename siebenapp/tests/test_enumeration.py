@@ -1,6 +1,6 @@
 from siebenapp.enumeration import Enumeration, BidirectionalIndex
 from siebenapp.goaltree import Goals
-from siebenapp.domain import EdgeType, HoldSelect, ToggleClose, Add, Select
+from siebenapp.domain import EdgeType, HoldSelect, ToggleClose, Add, Select, Insert
 from siebenapp.tests.dsl import build_goaltree, open_, previous, selected
 
 
@@ -225,7 +225,7 @@ def test_goaltree_previous_selection_may_be_changed_in_top_view():
         1: {"name": "Top 1", "switchable": True, "select": "select"},
         2: {"name": "Top 2", "switchable": True, "select": None},
     }
-    e.insert("Illegal goal")
+    e.accept(Insert("Illegal goal"))
     # New goal must not be inserted because previous selection is reset after the view switching
     e.next_view()
     assert e.q(keys="name,switchable,select") == {

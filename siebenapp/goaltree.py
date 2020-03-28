@@ -124,9 +124,6 @@ class Goals(Graph):
             return has_open_parents or has_no_parents
         return all(x.target in self.closed for x in self._forward_edges(key))
 
-    def insert(self, name: str) -> None:
-        self.accept(Insert(name))
-
     def _insert(self, command: Insert):
         lower = self.settings["previous_selection"]
         upper = self.settings["selection"]

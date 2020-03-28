@@ -24,10 +24,6 @@ class Graph:
         """React on the given command"""
         raise NotImplementedError
 
-    def insert(self, name: str) -> None:
-        """Add an intermediate goal between two selected goals"""
-        raise NotImplementedError
-
     def rename(self, new_name: str, goal_id: int = 0) -> None:
         """Change a name of the given goal"""
         raise NotImplementedError
