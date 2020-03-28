@@ -27,7 +27,6 @@ class Zoom(Graph):
         "rename",
         "select",
         "_toggle_close",
-        "toggle_link",
         "_toggle_link",
         "toggle_zoom",
         "verify",
@@ -102,11 +101,6 @@ class Zoom(Graph):
         if self.settings["selection"] not in self._build_visible_goals():
             self.goaltree.select(self.zoom_root[-1])
             self.accept(HoldSelect())
-
-    def toggle_link(
-        self, lower: int = 0, upper: int = 0, edge_type: EdgeType = EdgeType.BLOCKER
-    ) -> None:
-        self.accept(ToggleLink(lower, upper, edge_type))
 
     def _toggle_link(self, command: ToggleLink):
         self.goaltree.accept(command)

@@ -1,5 +1,5 @@
 from siebenapp.goaltree import Goals
-from siebenapp.domain import EdgeType, HoldSelect, ToggleClose, Delete
+from siebenapp.domain import EdgeType, HoldSelect, ToggleClose, Delete, ToggleLink
 from siebenapp.tests.dsl import build_goaltree, open_, selected, previous
 from siebenapp.zoom import Zoom
 
@@ -207,7 +207,7 @@ def test_unlink_for_goal_outside_of_zoomed_tree_should_cause_selection_change():
     goals.toggle_zoom()
     goals.accept(HoldSelect())
     goals.select(2)
-    goals.toggle_link()  # unlink 3 -> 2
+    goals.accept(ToggleLink())  # unlink 3 -> 2
     assert goals.q("name,select") == {
         -1: {"name": "Root", "select": None},
         3: {"name": "Zoom root", "select": "select"},

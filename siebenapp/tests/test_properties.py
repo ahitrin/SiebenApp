@@ -14,7 +14,7 @@ from hypothesis.stateful import (
 )
 
 from siebenapp.goaltree import Goals
-from siebenapp.domain import EdgeType, HoldSelect, ToggleClose, Delete
+from siebenapp.domain import EdgeType, HoldSelect, ToggleClose, Delete, ToggleLink
 from siebenapp.system import run_migrations, save_updates
 from siebenapp.zoom import Zoom
 
@@ -83,7 +83,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         )
         assume(selection != prev_selection)
         edge_type = EdgeType.PARENT if b else EdgeType.BLOCKER
-        self.goaltree.toggle_link(edge_type=edge_type)
+        self.goaltree.accept(ToggleLink(edge_type=edge_type))
 
     @rule()
     def close_or_open(self):

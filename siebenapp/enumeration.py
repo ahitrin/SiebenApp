@@ -57,7 +57,6 @@ class Enumeration(Graph):
         "rename",
         "select",
         "selection_cache",
-        "toggle_link",
         "view_title",
         "_views",
         "_open",
@@ -171,11 +170,6 @@ class Enumeration(Graph):
             self.selection_cache = []
         else:
             self.selection_cache.append(goal_id)
-
-    def toggle_link(
-        self, lower: int = 0, upper: int = 0, edge_type: EdgeType = EdgeType.BLOCKER
-    ) -> None:
-        self.goaltree.toggle_link(lower, upper, edge_type)
 
     def next_view(self) -> None:
         self._open, self._top = self._views[self._open, self._top]

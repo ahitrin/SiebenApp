@@ -9,7 +9,7 @@ from PyQt5.QtGui import QPainter, QPen
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout
 from PyQt5.uic import loadUi
 
-from siebenapp.domain import EdgeType, HoldSelect, ToggleClose, Delete
+from siebenapp.domain import EdgeType, HoldSelect, ToggleClose, Delete, ToggleLink
 from siebenapp.render import Renderer
 from siebenapp.system import save, load, DEFAULT_DB, split_long
 from siebenapp.ui.goalwidget import Ui_GoalBody
@@ -180,9 +180,9 @@ class SiebenApp(QMainWindow):
             Qt.Key_D: self.with_refresh(self.goals.accept, Delete()),
             Qt.Key_I: self.start_edit("Insert new goal", self.goals.insert),
             Qt.Key_K: self.with_refresh(
-                self.goals.toggle_link, edge_type=EdgeType.PARENT
+                self.goals.accept, ToggleLink(edge_type=EdgeType.PARENT)
             ),
-            Qt.Key_L: self.with_refresh(self.goals.toggle_link),
+            Qt.Key_L: self.with_refresh(self.goals.accept, ToggleLink()),
             Qt.Key_Q: self.quit_app.emit,
             Qt.Key_R: self.start_edit(
                 "Rename goal", self.goals.rename, self._current_goal_label

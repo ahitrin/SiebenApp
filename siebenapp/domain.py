@@ -42,12 +42,6 @@ class Graph:
         """Change a name of the given goal"""
         raise NotImplementedError
 
-    def toggle_link(
-        self, lower: int = 0, upper: int = 0, edge_type: EdgeType = EdgeType.BLOCKER
-    ) -> None:
-        """Create or remove a link between two given goals, if possible"""
-        raise NotImplementedError
-
     def q(self, keys: str = "name") -> Dict[int, Any]:
         """Run search query against goaltree state"""
         raise NotImplementedError

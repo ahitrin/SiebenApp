@@ -72,7 +72,7 @@ class Goals(Graph):
             self._msg("A new subgoal cannot be added to the closed one")
             return False
         next_id = self._add_no_link(name)
-        self.toggle_link(add_to, next_id, edge_type)
+        self._toggle_link(ToggleLink(add_to, next_id, edge_type))
         return True
 
     def _add_no_link(self, name: str) -> int:
@@ -131,9 +131,9 @@ class Goals(Graph):
         edge_type = self.edges.get((lower, upper), EdgeType.BLOCKER)
         if self._add(name, lower, edge_type):
             key = len(self.goals)
-            self.toggle_link(key, upper, edge_type)
+            self._toggle_link(ToggleLink(key, upper, edge_type))
             if self._has_link(lower, upper):
-                self.toggle_link(lower, upper)
+                self._toggle_link(ToggleLink(lower, upper))
 
     def rename(self, new_name: str, goal_id: int = 0) -> None:
         if goal_id == 0:
@@ -197,11 +197,6 @@ class Goals(Graph):
             if not self._back_edges(next_goal.target):
                 self._delete_subtree(next_goal.target)
         self.events.append(("delete", goal_id))
-
-    def toggle_link(
-        self, lower: int = 0, upper: int = 0, edge_type: EdgeType = EdgeType.BLOCKER
-    ) -> None:
-        self.accept(ToggleLink(lower, upper, edge_type))
 
     def _toggle_link(self, command: ToggleLink):
         lower = (
