@@ -46,7 +46,6 @@ class Enumeration(Graph):
         "goaltree",
         "next_view",
         "q",
-        "rename",
         "_select",
         "selection_cache",
         "view_title",
@@ -125,9 +124,6 @@ class Enumeration(Graph):
             self._select(command)
         else:
             self.goaltree.accept(command)
-
-    def rename(self, new_name: str, goal_id: int = 0) -> None:
-        self.goaltree.rename(new_name, goal_id)
 
     def q(self, keys: str = "name") -> Dict[int, Any]:
         self._update_mapping()

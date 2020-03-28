@@ -18,6 +18,7 @@ from siebenapp.domain import (
     Add,
     Select,
     Insert,
+    Rename,
 )
 from siebenapp.render import Renderer
 from siebenapp.system import save, load, DEFAULT_DB, split_long
@@ -194,7 +195,7 @@ class SiebenApp(QMainWindow):
             Qt.Key_L: self.with_refresh(self.goals.accept, ToggleLink()),
             Qt.Key_Q: self.quit_app.emit,
             Qt.Key_R: self.start_edit(
-                "Rename goal", self.goals.rename, self._current_goal_label
+                "Rename goal", self.emit_rename, self._current_goal_label
             ),
             Qt.Key_V: self.toggle_view,
             Qt.Key_Z: self.toggle_zoom,
@@ -249,6 +250,9 @@ class SiebenApp(QMainWindow):
 
     def emit_insert(self, text):
         self.goals.accept(Insert(text))
+
+    def emit_rename(self, text):
+        self.goals.accept(Rename(text))
 
     def _current_goal_label(self):
         data = self.goals.q(keys="name,select").values()

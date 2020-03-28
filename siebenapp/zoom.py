@@ -25,7 +25,6 @@ class Zoom(Graph):
         "goaltree",
         "_insert",
         "q",
-        "rename",
         "_toggle_close",
         "_toggle_link",
         "toggle_zoom",
@@ -63,9 +62,6 @@ class Zoom(Graph):
         visible_goals = self._build_visible_goals()
         if self.settings["previous_selection"] not in visible_goals:
             self.accept(HoldSelect())
-
-    def rename(self, new_name: str, goal_id: int = 0) -> None:
-        self.goaltree.rename(new_name, goal_id)
 
     def q(self, keys: str = "name") -> Dict[int, Any]:
         origin_goals = self.goaltree.q(keys)

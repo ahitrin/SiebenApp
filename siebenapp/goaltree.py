@@ -140,9 +140,6 @@ class Goals(Graph):
             if self._has_link(lower, upper):
                 self._toggle_link(ToggleLink(lower, upper))
 
-    def rename(self, new_name: str, goal_id: int = 0) -> None:
-        self.accept(Rename(new_name, goal_id))
-
     def _rename(self, command: Rename):
         goal_id = (
             command.goal_id if command.goal_id != 0 else self.settings["selection"]

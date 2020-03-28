@@ -11,6 +11,7 @@ from siebenapp.domain import (
     Add,
     Select,
     Insert,
+    Rename,
 )
 from siebenapp.tests.dsl import build_goaltree, open_, selected, previous, clos_
 
@@ -66,7 +67,7 @@ class GoalsTest(TestCase):
     def test_rename_goal(self):
         self.goals.accept(Add("Boom"))
         self.goals.accept(Select(2))
-        self.goals.rename("A")
+        self.goals.accept(Rename("A"))
         assert self.goals.q() == {1: {"name": "Root"}, 2: {"name": "A"}}
 
     def test_insert_goal_in_the_middle(self):
@@ -487,7 +488,7 @@ class GoalsTest(TestCase):
         assert self.goals.events[-1] == ("toggle_close", True, 1)
 
     def test_rename_event(self):
-        self.goals.rename("New")
+        self.goals.accept(Rename("New"))
         assert self.goals.events[-1] == ("rename", "New", 1)
 
     def test_delete_events(self):

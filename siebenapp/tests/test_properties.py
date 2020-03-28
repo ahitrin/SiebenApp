@@ -23,6 +23,7 @@ from siebenapp.domain import (
     Add,
     Select,
     Insert,
+    Rename,
 )
 from siebenapp.system import run_migrations, save_updates
 from siebenapp.zoom import Zoom
@@ -100,7 +101,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 
     @rule(t=text())
     def rename(self, t):
-        self.goaltree.rename(t)
+        self.goaltree.accept(Rename(t))
 
     @rule()
     def zoom(self):
