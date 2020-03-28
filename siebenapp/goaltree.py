@@ -54,6 +54,11 @@ class Goals(Graph):
 
     def add(
         self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
+    ) -> None:
+        self._add(name, add_to, edge_type)
+
+    def _add(
+        self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
     ) -> bool:
         if add_to == 0:
             add_to = self.settings["selection"]
@@ -118,7 +123,7 @@ class Goals(Graph):
             self._msg("A new goal can be inserted only between two different goals")
             return
         edge_type = self.edges.get((lower, upper), EdgeType.BLOCKER)
-        if self.add(name, lower, edge_type):
+        if self._add(name, lower, edge_type):
             key = len(self.goals)
             self.toggle_link(key, upper, edge_type)
             if self._has_link(lower, upper):

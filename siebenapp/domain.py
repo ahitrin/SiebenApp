@@ -26,7 +26,7 @@ class Graph:
 
     def add(
         self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
-    ) -> bool:
+    ) -> None:
         """Add a new goal to the existing tree"""
         raise NotImplementedError
 

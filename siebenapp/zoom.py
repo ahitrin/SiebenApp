@@ -43,8 +43,8 @@ class Zoom(Graph):
 
     def add(
         self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
-    ) -> bool:
-        return self.goaltree.add(name, add_to, edge_type)
+    ) -> None:
+        self.goaltree.add(name, add_to, edge_type)
 
     def toggle_zoom(self) -> None:
         selection = self.settings["selection"]
