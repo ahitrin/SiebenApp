@@ -4,8 +4,10 @@ from siebenapp.domain import (
     Graph,
     EdgeType,
     Command,
-    HoldSelectCommand,
-    ToggleCloseCommand,
+    HoldSelect,
+    ToggleClose,
+    Delete,
+    ToggleLink,
 )
 from siebenapp.goaltree import Goals
 
@@ -17,7 +19,7 @@ class Zoom(Graph):
         "accept",
         "add",
         "_build_visible_goals",
-        "delete",
+        "_delete",
         "export",
         "goaltree",
         "insert",
@@ -25,7 +27,7 @@ class Zoom(Graph):
         "rename",
         "select",
         "_toggle_close",
-        "toggle_link",
+        "_toggle_link",
         "toggle_zoom",
         "verify",
         "zoom_root",
@@ -36,15 +38,19 @@ class Zoom(Graph):
         self.zoom_root = [1]
 
     def accept(self, command: Command) -> None:
-        if isinstance(command, ToggleCloseCommand):
+        if isinstance(command, ToggleClose):
             self._toggle_close()
+        elif isinstance(command, ToggleLink):
+            self._toggle_link(command)
+        elif isinstance(command, Delete):
+            self._delete(command)
         else:
             self.goaltree.accept(command)
 
     def add(
         self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
-    ) -> bool:
-        return self.goaltree.add(name, add_to, edge_type)
+    ) -> None:
+        self.goaltree.add(name, add_to, edge_type)
 
     def toggle_zoom(self) -> None:
         selection = self.settings["selection"]
@@ -59,7 +65,7 @@ class Zoom(Graph):
             return
         visible_goals = self._build_visible_goals()
         if self.settings["previous_selection"] not in visible_goals:
-            self.accept(HoldSelectCommand())
+            self.accept(HoldSelect())
 
     def select(self, goal_id: int) -> None:
         self.goaltree.select(goal_id)
@@ -85,32 +91,30 @@ class Zoom(Graph):
     def _toggle_close(self) -> None:
         if self.settings["selection"] == self.zoom_root[-1]:
             self.toggle_zoom()
-        self.goaltree.accept(ToggleCloseCommand())
+        self.goaltree.accept(ToggleClose())
         if self.settings["selection"] not in self._build_visible_goals():
             self.goaltree.select(self.zoom_root[-1])
-            self.accept(HoldSelectCommand())
+            self.accept(HoldSelect())
 
     def insert(self, name: str) -> None:
         self.goaltree.insert(name)
         if self.settings["selection"] not in self._build_visible_goals():
             self.goaltree.select(self.zoom_root[-1])
-            self.accept(HoldSelectCommand())
+            self.accept(HoldSelect())
 
-    def toggle_link(
-        self, lower: int = 0, upper: int = 0, edge_type: EdgeType = EdgeType.BLOCKER
-    ) -> None:
-        self.goaltree.toggle_link(lower, upper, edge_type)
+    def _toggle_link(self, command: ToggleLink):
+        self.goaltree.accept(command)
         if self.settings["selection"] not in self._build_visible_goals():
             self.goaltree.select(self.zoom_root[-1])
-            self.accept(HoldSelectCommand())
+            self.accept(HoldSelect())
 
-    def delete(self, goal_id: int = 0) -> None:
+    def _delete(self, command: Delete) -> None:
         if self.settings["selection"] == self.zoom_root[-1]:
             self.toggle_zoom()
-        self.goaltree.delete(goal_id)
+        self.goaltree.accept(command)
         if self.settings["selection"] != self.zoom_root[-1]:
             self.goaltree.select(self.zoom_root[-1])
-            self.accept(HoldSelectCommand())
+            self.accept(HoldSelect())
 
     def verify(self) -> bool:
         ok = self.goaltree.verify()

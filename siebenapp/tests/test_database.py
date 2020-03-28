@@ -6,7 +6,7 @@ from tempfile import NamedTemporaryFile
 
 import pytest
 
-from siebenapp.domain import HoldSelectCommand, ToggleCloseCommand
+from siebenapp.domain import HoldSelect, ToggleClose, ToggleLink
 from siebenapp.enumeration import Enumeration
 from siebenapp.goaltree import Goals
 from siebenapp.system import MIGRATIONS, run_migrations, load, save
@@ -62,11 +62,11 @@ def test_restore_goals_from_db():
     expected_goals.add("A")
     expected_goals.add("B")
     expected_goals.select(2)
-    expected_goals.accept(HoldSelectCommand())
+    expected_goals.accept(HoldSelect())
     expected_goals.select(3)
-    expected_goals.toggle_link()
+    expected_goals.accept(ToggleLink())
     expected_goals.select(3)
-    expected_goals.accept(ToggleCloseCommand())
+    expected_goals.accept(ToggleClose())
     expected_goals.select(2)
     assert expected_goals.q(keys="name,edge,open,select") == actual_goals.q(
         keys="name,edge,open,select"
@@ -117,12 +117,12 @@ def test_save_and_load():
     goals.add("Top")
     goals.add("Middle")
     goals.select(3)
-    goals.accept(HoldSelectCommand())
+    goals.accept(HoldSelect())
     goals.select(2)
-    goals.toggle_link()
+    goals.accept(ToggleLink())
     goals.add("Closed")
     goals.select(4)
-    goals.accept(ToggleCloseCommand())
+    goals.accept(ToggleClose())
     goals.select(2)
     goals.toggle_zoom()
     save(goals, file_name)

@@ -7,8 +7,10 @@ from siebenapp.domain import (
     EdgeType,
     Edge,
     Command,
-    HoldSelectCommand,
-    ToggleCloseCommand,
+    HoldSelect,
+    ToggleClose,
+    Delete,
+    ToggleLink,
 )
 
 GoalsData = List[Tuple[int, Optional[str], bool]]
@@ -47,12 +49,21 @@ class Goals(Graph):
         return parents.pop().source if parents else 1
 
     def accept(self, command: Command) -> None:
-        if isinstance(command, HoldSelectCommand):
+        if isinstance(command, HoldSelect):
             self._hold_select()
-        elif isinstance(command, ToggleCloseCommand):
+        elif isinstance(command, ToggleClose):
             self._toggle_close()
+        elif isinstance(command, ToggleLink):
+            self._toggle_link(command)
+        elif isinstance(command, Delete):
+            self._delete(command)
 
     def add(
+        self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
+    ) -> None:
+        self._add(name, add_to, edge_type)
+
+    def _add(
         self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
     ) -> bool:
         if add_to == 0:
@@ -61,7 +72,7 @@ class Goals(Graph):
             self._msg("A new subgoal cannot be added to the closed one")
             return False
         next_id = self._add_no_link(name)
-        self.toggle_link(add_to, next_id, edge_type)
+        self._toggle_link(ToggleLink(add_to, next_id, edge_type))
         return True
 
     def _add_no_link(self, name: str) -> int:
@@ -118,11 +129,11 @@ class Goals(Graph):
             self._msg("A new goal can be inserted only between two different goals")
             return
         edge_type = self.edges.get((lower, upper), EdgeType.BLOCKER)
-        if self.add(name, lower, edge_type):
+        if self._add(name, lower, edge_type):
             key = len(self.goals)
-            self.toggle_link(key, upper, edge_type)
+            self._toggle_link(ToggleLink(key, upper, edge_type))
             if self._has_link(lower, upper):
-                self.toggle_link(lower, upper)
+                self._toggle_link(ToggleLink(lower, upper))
 
     def rename(self, new_name: str, goal_id: int = 0) -> None:
         if goal_id == 0:
@@ -142,7 +153,7 @@ class Goals(Graph):
                 self.closed.add(self.settings["selection"])
                 self.events.append(("toggle_close", False, self.settings["selection"]))
                 self.select(1)
-                self.accept(HoldSelectCommand())
+                self.accept(HoldSelect())
             else:
                 self._msg("This goal can't be closed because it have open subgoals")
 
@@ -159,18 +170,19 @@ class Goals(Graph):
             if k[1] == self.settings["selection"]
         )
 
-    def delete(self, goal_id: int = 0) -> None:
-        if goal_id == 0:
-            goal_id = self.settings["selection"]
+    def _delete(self, command: Delete) -> None:
+        goal_id = (
+            command.goal_id if command.goal_id != 0 else self.settings["selection"]
+        )
         if goal_id == 1:
             self._msg("Root goal can't be deleted")
             return
         parent = self._parent(goal_id)
-        self._delete(goal_id)
+        self._delete_subtree(goal_id)
         self.select(parent)
-        self.accept(HoldSelectCommand())
+        self.accept(HoldSelect())
 
-    def _delete(self, goal_id: int) -> None:
+    def _delete_subtree(self, goal_id: int) -> None:
         parent = self._parent(goal_id)
         self.goals[goal_id] = None
         self.closed.add(goal_id)
@@ -183,26 +195,26 @@ class Goals(Graph):
                 self._create_new_link(parent, old_blocker.target, EdgeType.BLOCKER)
         for next_goal in next_to_remove:
             if not self._back_edges(next_goal.target):
-                self._delete(next_goal.target)
+                self._delete_subtree(next_goal.target)
         self.events.append(("delete", goal_id))
 
-    def toggle_link(
-        self, lower: int = 0, upper: int = 0, edge_type: EdgeType = EdgeType.BLOCKER
-    ) -> None:
-        lower = self.settings["previous_selection"] if lower == 0 else lower
-        upper = self.settings["selection"] if upper == 0 else upper
+    def _toggle_link(self, command: ToggleLink):
+        lower = (
+            self.settings["previous_selection"] if command.lower == 0 else command.lower
+        )
+        upper = self.settings["selection"] if command.upper == 0 else command.upper
         if lower == upper:
             self._msg("Goal can't be linked to itself")
             return
         if self._has_link(lower, upper):
             current_edge_type = self.edges[(lower, upper)]
-            if current_edge_type != edge_type:
-                self._replace_link(lower, upper, edge_type)
+            if current_edge_type != command.edge_type:
+                self._replace_link(lower, upper, command.edge_type)
                 self._transform_old_parents_into_blocked(lower, upper)
             else:
                 self._remove_existing_link(lower, upper, current_edge_type)
         else:
-            self._create_new_link(lower, upper, edge_type)
+            self._create_new_link(lower, upper, command.edge_type)
 
     def _replace_link(self, lower: int, upper: int, edge_type: EdgeType) -> None:
         old_edge_type = self.edges[(lower, upper)]

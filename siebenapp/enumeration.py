@@ -5,8 +5,8 @@ from siebenapp.domain import (
     Graph,
     EdgeType,
     Command,
-    HoldSelectCommand,
-    ToggleCloseCommand,
+    HoldSelect,
+    ToggleClose,
 )
 from siebenapp.goaltree import Goals
 from siebenapp.zoom import Zoom
@@ -50,7 +50,6 @@ class Enumeration(Graph):
         "_update_mapping",
         "_update_top_mapping",
         "_update_open_mapping",
-        "delete",
         "goaltree",
         "insert",
         "next_view",
@@ -58,7 +57,6 @@ class Enumeration(Graph):
         "rename",
         "select",
         "selection_cache",
-        "toggle_link",
         "view_title",
         "_views",
         "_open",
@@ -109,7 +107,7 @@ class Enumeration(Graph):
         if goals and self.settings["selection"] not in goals:
             self.goaltree.select(min(goals))
         if goals and self.settings["previous_selection"] not in goals:
-            self.accept(HoldSelectCommand())
+            self.accept(HoldSelect())
         return goals
 
     def _id_mapping(
@@ -135,8 +133,8 @@ class Enumeration(Graph):
 
     def add(
         self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
-    ) -> bool:
-        return self.goaltree.add(name, add_to, edge_type)
+    ) -> None:
+        self.goaltree.add(name, add_to, edge_type)
 
     def insert(self, name: str) -> None:
         self.goaltree.insert(name)
@@ -172,14 +170,6 @@ class Enumeration(Graph):
             self.selection_cache = []
         else:
             self.selection_cache.append(goal_id)
-
-    def toggle_link(
-        self, lower: int = 0, upper: int = 0, edge_type: EdgeType = EdgeType.BLOCKER
-    ) -> None:
-        self.goaltree.toggle_link(lower, upper, edge_type)
-
-    def delete(self, goal_id: int = 0) -> None:
-        self.goaltree.delete(goal_id)
 
     def next_view(self) -> None:
         self._open, self._top = self._views[self._open, self._top]

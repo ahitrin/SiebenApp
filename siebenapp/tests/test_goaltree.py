@@ -2,7 +2,7 @@
 from unittest import TestCase
 
 from siebenapp.goaltree import Goals
-from siebenapp.domain import EdgeType, HoldSelectCommand, ToggleCloseCommand
+from siebenapp.domain import EdgeType, HoldSelect, ToggleClose, Delete, ToggleLink
 from siebenapp.tests.dsl import build_goaltree, open_, selected, previous, clos_
 
 
@@ -62,7 +62,7 @@ class GoalsTest(TestCase):
 
     def test_insert_goal_in_the_middle(self):
         self.goals.add("B")
-        self.goals.accept(HoldSelectCommand())
+        self.goals.accept(HoldSelect())
         self.goals.select(2)
         assert self.goals.q(keys="name,edge,switchable") == {
             1: {"name": "Root", "edge": [(2, EdgeType.PARENT)], "switchable": False},
@@ -95,7 +95,7 @@ class GoalsTest(TestCase):
 
     def test_close_single_goal(self):
         assert self.goals.q(keys="name,open") == {1: {"name": "Root", "open": True}}
-        self.goals.accept(ToggleCloseCommand())
+        self.goals.accept(ToggleClose())
         assert self.goals.q(keys="name,open,switchable") == {
             1: {"name": "Root", "open": False, "switchable": True}
         }
@@ -103,7 +103,7 @@ class GoalsTest(TestCase):
     def test_reopen_goal(self):
         self.goals = self.build(open_(1, "Root", [2]), clos_(2, "A", select=selected))
         assert self.goals.q(keys="open") == {1: {"open": True}, 2: {"open": False}}
-        self.goals.accept(ToggleCloseCommand())
+        self.goals.accept(ToggleClose())
         assert self.goals.q(keys="open,switchable") == {
             1: {"open": True, "switchable": False},
             2: {"open": True, "switchable": True},
@@ -114,21 +114,21 @@ class GoalsTest(TestCase):
             open_(1, "Root", [2], select=selected), open_(2, "A", [3]), clos_(3, "Ab"),
         )
         self.goals.select(2)
-        self.goals.accept(ToggleCloseCommand())
+        self.goals.accept(ToggleClose())
         assert self.goals.q(keys="open,switchable") == {
             1: {"open": True, "switchable": True},
             2: {"open": False, "switchable": True},
             3: {"open": False, "switchable": False},
         }
         self.goals.select(2)
-        self.goals.accept(ToggleCloseCommand())
+        self.goals.accept(ToggleClose())
         assert self.goals.q(keys="open,switchable") == {
             1: {"open": True, "switchable": False},
             2: {"open": True, "switchable": True},
             3: {"open": False, "switchable": True},
         }
         self.goals.select(2)
-        self.goals.accept(ToggleCloseCommand())
+        self.goals.accept(ToggleClose())
         assert self.goals.q(keys="open,switchable") == {
             1: {"open": True, "switchable": True},
             2: {"open": False, "switchable": True},
@@ -145,7 +145,7 @@ class GoalsTest(TestCase):
             3: {"open": False, "switchable": False},
         }
         self.goals.select(3)
-        self.goals.accept(ToggleCloseCommand())
+        self.goals.accept(ToggleClose())
         # nothing should change
         assert self.goals.q(keys="open,switchable") == {
             1: {"open": True, "switchable": True},
@@ -160,7 +160,7 @@ class GoalsTest(TestCase):
             open_(3, "B", [4], select=selected),
             open_(4, "C"),
         )
-        self.goals.accept(ToggleCloseCommand())
+        self.goals.accept(ToggleClose())
         assert self.goals.q(keys="open") == {
             1: {"open": True},
             2: {"open": True},
@@ -170,7 +170,7 @@ class GoalsTest(TestCase):
 
     def test_delete_single_goal(self):
         self.goals = self.build(open_(1, "Root", [2]), open_(2, "A", select=selected))
-        self.goals.delete()
+        self.goals.accept(Delete())
         assert self.goals.q(keys="name,select,switchable") == {
             1: {"name": "Root", "select": "select", "switchable": True},
         }
@@ -179,7 +179,7 @@ class GoalsTest(TestCase):
         self.goals = self.build(
             open_(1, "Root", [2, 3]), open_(2, "A", select=selected), open_(3, "B")
         )
-        self.goals.delete()
+        self.goals.accept(Delete())
         assert self.goals.q(keys="name,switchable") == {
             1: {"name": "Root", "switchable": False},
             3: {"name": "B", "switchable": True},
@@ -189,7 +189,7 @@ class GoalsTest(TestCase):
         self.goals = self.build(
             open_(1, "Root", [2]), open_(2, "A", [3], select=selected), open_(3, "B")
         )
-        self.goals.delete()
+        self.goals.accept(Delete())
         assert self.goals.q() == {1: {"name": "Root"}}
 
     def test_relink_goal_chain_with_blockers(self):
@@ -198,7 +198,7 @@ class GoalsTest(TestCase):
             open_(2, "A", blockers=[3], select=selected),
             open_(3, "B"),
         )
-        self.goals.delete()
+        self.goals.accept(Delete())
         assert self.goals.q("name,edge") == {
             1: {"name": "Root", "edge": [(3, EdgeType.BLOCKER)]},
             3: {"name": "B", "edge": []},
@@ -210,7 +210,7 @@ class GoalsTest(TestCase):
             open_(2, "Parent", [3]),
             open_(3, "Delete me", select=selected),
         )
-        self.goals.delete()
+        self.goals.accept(Delete())
         assert self.goals.q("name,edge,select") == {
             1: {"name": "Root", "edge": [(2, EdgeType.PARENT)], "select": None},
             2: {"name": "Parent", "edge": [], "select": "select"},
@@ -230,7 +230,7 @@ class GoalsTest(TestCase):
             2: {"switchable": True, "edge": []},
             3: {"switchable": True, "edge": []},
         }
-        self.goals.toggle_link()
+        self.goals.accept(ToggleLink())
         assert self.goals.q(keys="switchable,edge") == {
             1: {
                 "switchable": False,
@@ -258,7 +258,7 @@ class GoalsTest(TestCase):
         }
 
     def test_no_link_to_self_is_allowed(self):
-        self.goals.toggle_link()
+        self.goals.accept(ToggleLink())
         assert self.goals.q(keys="edge") == {1: {"edge": []}}
 
     def test_no_loops_allowed(self):
@@ -268,7 +268,7 @@ class GoalsTest(TestCase):
             open_(3, "next", [4]),
             open_(4, "more", select=previous),
         )
-        self.goals.toggle_link()
+        self.goals.accept(ToggleLink())
         assert self.goals.q(keys="edge") == {
             1: {"edge": [(2, EdgeType.PARENT)]},
             2: {"edge": [(3, EdgeType.PARENT)]},
@@ -283,7 +283,7 @@ class GoalsTest(TestCase):
             open_(3, "New parent", select=previous),
             open_(4, "Child", select=selected),
         )
-        self.goals.toggle_link(edge_type=EdgeType.PARENT)
+        self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
         assert self.goals.q(keys="edge") == {
             1: {"edge": [(2, EdgeType.PARENT), (3, EdgeType.PARENT)]},
             2: {"edge": [(4, EdgeType.BLOCKER)]},
@@ -297,7 +297,7 @@ class GoalsTest(TestCase):
             open_(2, "A", select=selected),
             open_(3, "B", blockers=[2], select=previous),
         )
-        self.goals.toggle_link(edge_type=EdgeType.PARENT)
+        self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
         assert self.goals.q("name,edge") == {
             1: {"name": "Root", "edge": [(2, EdgeType.BLOCKER), (3, EdgeType.PARENT)]},
             2: {"name": "A", "edge": []},
@@ -310,7 +310,7 @@ class GoalsTest(TestCase):
             open_(2, "A", blockers=[3], select=previous),
             open_(3, "B", select=selected),
         )
-        self.goals.toggle_link(edge_type=EdgeType.BLOCKER)
+        self.goals.accept(ToggleLink(edge_type=EdgeType.BLOCKER))
         assert self.goals.q(keys="edge,switchable") == {
             1: {
                 "edge": [(2, EdgeType.PARENT), (3, EdgeType.PARENT)],
@@ -328,12 +328,12 @@ class GoalsTest(TestCase):
             1: {"name": "Root", "edge": [(2, EdgeType.PARENT)]},
             2: {"name": "Top", "edge": []},
         }
-        self.goals.toggle_link()
+        self.goals.accept(ToggleLink())
         assert self.goals.q(keys="name,edge") == {
             1: {"name": "Root", "edge": [(2, EdgeType.BLOCKER)]},
             2: {"name": "Top", "edge": []},
         }
-        self.goals.toggle_link(edge_type=EdgeType.PARENT)
+        self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
         assert self.goals.q(keys="name,edge") == {
             1: {"name": "Root", "edge": [(2, EdgeType.PARENT)]},
             2: {"name": "Top", "edge": []},
@@ -353,7 +353,7 @@ class GoalsTest(TestCase):
             4: {"name": "C", "edge": []},
         }
         self.goals.select(3)
-        self.goals.delete()
+        self.goals.accept(Delete())
         assert self.goals.q(keys="name,edge,switchable") == {
             1: {"name": "Root", "edge": [(2, EdgeType.PARENT)], "switchable": False},
             2: {"name": "A", "edge": [(4, EdgeType.PARENT)], "switchable": False},
@@ -392,7 +392,7 @@ class GoalsTest(TestCase):
         self.goals = self.build(
             open_(1, "Root", [2, 3]), open_(2, "A", select=selected), open_(3, "B")
         )
-        self.goals.accept(ToggleCloseCommand())
+        self.goals.accept(ToggleClose())
         assert self.goals.q(keys="open,select") == {
             1: {"open": True, "select": "select"},
             2: {"open": False, "select": None},
@@ -407,7 +407,7 @@ class GoalsTest(TestCase):
         self.goals = self.build(
             open_(1, "Root", [2]), open_(2, "broken", select=selected)
         )
-        self.goals.delete()
+        self.goals.accept(Delete())
         self.goals.select(2)
         assert self.goals.q(keys="select") == {1: {"select": "select"}}
 
@@ -464,17 +464,17 @@ class GoalsTest(TestCase):
         self.goals.add("Next")
         self.goals.select(2)
         assert self.goals.events[-1] == ("select", 2)
-        self.goals.accept(HoldSelectCommand())
+        self.goals.accept(HoldSelect())
         self.goals.select(1)
         assert self.goals.events[-2] == ("hold_select", 2)
         assert self.goals.events[-1] == ("select", 1)
 
     def test_toggle_close_events(self):
-        self.goals.accept(ToggleCloseCommand())
+        self.goals.accept(ToggleClose())
         assert self.goals.events[-3] == ("toggle_close", False, 1)
         assert self.goals.events[-2] == ("select", 1)
         assert self.goals.events[-1] == ("hold_select", 1)
-        self.goals.accept(ToggleCloseCommand())
+        self.goals.accept(ToggleClose())
         assert self.goals.events[-1] == ("toggle_close", True, 1)
 
     def test_rename_event(self):
@@ -484,7 +484,7 @@ class GoalsTest(TestCase):
     def test_delete_events(self):
         self.goals.add("Sheep")
         self.goals.select(2)
-        self.goals.delete()
+        self.goals.accept(Delete())
         assert self.goals.events[-3] == ("delete", 2)
         assert self.goals.events[-2] == ("select", 1)
         assert self.goals.events[-1] == ("hold_select", 1)
@@ -493,11 +493,11 @@ class GoalsTest(TestCase):
         self.goals.add("Next")
         self.goals.add("More")
         self.goals.select(2)
-        self.goals.accept(HoldSelectCommand())
+        self.goals.accept(HoldSelect())
         self.goals.select(3)
-        self.goals.toggle_link()
+        self.goals.accept(ToggleLink())
         assert self.goals.events[-1] == ("link", 2, 3, EdgeType.BLOCKER)
-        self.goals.toggle_link()
+        self.goals.accept(ToggleLink())
         assert self.goals.events[-1] == ("unlink", 2, 3, EdgeType.BLOCKER)
 
     def test_change_link_type_events(self):
@@ -506,7 +506,7 @@ class GoalsTest(TestCase):
             open_(2, "Lower", blockers=[3], select=previous),
             open_(3, "Upper", [], select=selected),
         )
-        self.goals.toggle_link(edge_type=EdgeType.PARENT)
+        self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
         assert self.goals.events[-4] == ("link", 2, 3, EdgeType.PARENT)
         assert self.goals.events[-3] == ("unlink", 2, 3, EdgeType.BLOCKER)
         assert self.goals.events[-2] == ("link", 1, 3, EdgeType.BLOCKER)
@@ -548,36 +548,36 @@ class GoalsTest(TestCase):
         self.goals = self.build(
             open_(1, "Root", [2]), open_(2, "Top", [], select=selected)
         )
-        self.goals.accept(ToggleCloseCommand())
+        self.goals.accept(ToggleClose())
         assert self.messages == []
 
     def test_message_on_closing_blocked_goal(self):
         self.goals = self.build(open_(1, "Root", [2], select=selected), open_(2, "Top"))
-        self.goals.accept(ToggleCloseCommand())
+        self.goals.accept(ToggleClose())
         assert len(self.messages) == 1
 
     def test_no_message_on_valid_reopening(self):
         self.goals = self.build(clos_(1, "Root", [2], select=selected), clos_(2, "Top"))
-        self.goals.accept(ToggleCloseCommand())
+        self.goals.accept(ToggleClose())
         assert self.messages == []
 
     def test_message_on_reopening_blocked_goal(self):
         self.goals = self.build(
             clos_(1, "Root", [2]), clos_(2, "Top", [], select=selected)
         )
-        self.goals.accept(ToggleCloseCommand())
+        self.goals.accept(ToggleClose())
         assert len(self.messages) == 1
 
     def test_no_message_on_delete_non_root_goal(self):
         self.goals = self.build(
             clos_(1, "Root", [2]), clos_(2, "Top", [], select=selected)
         )
-        self.goals.delete()
+        self.goals.accept(Delete())
         assert self.messages == []
 
     def test_message_on_delete_root_goal(self):
         self.goals = self.build(clos_(1, "Root", [2], select=selected), clos_(2, "Top"))
-        self.goals.delete()
+        self.goals.accept(Delete())
         assert len(self.messages) == 1
 
     def test_no_message_on_allowed_link(self):
@@ -586,7 +586,7 @@ class GoalsTest(TestCase):
             open_(2, "Middle", [3]),
             open_(3, "Top", [], select=selected),
         )
-        self.goals.toggle_link()
+        self.goals.accept(ToggleLink())
         assert self.messages == []
 
     def test_message_on_link_to_self(self):
@@ -595,7 +595,7 @@ class GoalsTest(TestCase):
             open_(2, "Middle", [3]),
             open_(3, "Top", [], select=selected),
         )
-        self.goals.toggle_link()
+        self.goals.accept(ToggleLink())
         assert len(self.messages) == 1
 
     def test_no_message_when_remove_not_last_link(self):
@@ -604,7 +604,7 @@ class GoalsTest(TestCase):
             open_(2, "Middle", blockers=[3]),
             open_(3, "Top", [], select=selected),
         )
-        self.goals.toggle_link()
+        self.goals.accept(ToggleLink())
         assert self.messages == []
 
     def test_message_when_remove_last_link(self):
@@ -613,7 +613,7 @@ class GoalsTest(TestCase):
             open_(2, "Middle", [3], select=previous),
             open_(3, "Top", [], select=selected),
         )
-        self.goals.toggle_link(edge_type=EdgeType.PARENT)
+        self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
         assert len(self.messages) == 1
 
     def test_message_when_closed_goal_is_blocked_by_open_one(self):
@@ -622,5 +622,5 @@ class GoalsTest(TestCase):
             clos_(2, "Middle", [], select=previous),
             open_(3, "Top", [], select=selected),
         )
-        self.goals.toggle_link()
+        self.goals.accept(ToggleLink())
         assert len(self.messages) == 1
