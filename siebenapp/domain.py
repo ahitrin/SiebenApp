@@ -30,6 +30,9 @@ class Graph:
         """Returns given inner value by the key"""
         return Graph.NO_VALUE
 
+    def events(self) -> collections.deque:
+        raise NotImplementedError
+
     def q(self, keys: str = "name") -> Dict[int, Any]:
         """Run search query against goaltree state"""
         raise NotImplementedError

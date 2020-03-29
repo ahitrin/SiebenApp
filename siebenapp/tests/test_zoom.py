@@ -156,7 +156,7 @@ def test_selection_should_be_changed_if_selected_goal_is_sibling_to_zoom_root():
         )
     )
     goals.accept(ToggleZoom())
-    assert goals.events[-1] == ("hold_select", 3)
+    assert goals.events()[-1] == ("hold_select", 3)
     assert goals.q("name,select") == {
         -1: {"name": "Root", "select": None},
         3: {"name": "Zoomed", "select": "select"},
@@ -173,7 +173,7 @@ def test_selection_should_be_changed_if_selected_goal_is_not_a_child_of_zoom_roo
         )
     )
     goals.accept(ToggleZoom())
-    assert goals.events[-1] == ("hold_select", 4)
+    assert goals.events()[-1] == ("hold_select", 4)
     assert goals.q("name,select") == {
         -1: {"name": "Root", "select": None},
         2: {"name": "Blocker", "select": None},
@@ -338,10 +338,10 @@ def test_zoom_events():
         )
     )
     goals.accept(ToggleZoom())
-    assert goals.events[-1] == ("zoom", 2, 2)
+    assert goals.events()[-1] == ("zoom", 2, 2)
     goals.accept(Select(4))
     goals.accept(HoldSelect())
     goals.accept(ToggleZoom())
-    assert goals.events[-1] == ("zoom", 3, 4)
+    assert goals.events()[-1] == ("zoom", 3, 4)
     goals.accept(ToggleZoom())
-    assert goals.events[-1] == ("unzoom", 4)
+    assert goals.events()[-1] == ("unzoom", 4)

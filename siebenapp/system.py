@@ -116,7 +116,7 @@ def save(goals: AnyGraph, filename: str = DEFAULT_DB) -> None:
         cur.executemany("insert into edges values (?,?,?)", edges_export)
         cur.executemany("insert into settings values (?,?)", select_export)
         cur.executemany("insert into zoom values (?, ?)", zoom_export)
-        root_goals.events.clear()
+        root_goals._events.clear()  # pylint: disable=protected-access
         connection.commit()
         connection.close()
 
@@ -145,8 +145,8 @@ def save_updates(goals: AnyGraph, connection: sqlite3.Connection) -> None:
         "unzoom": ["delete from zoom where goal=?"],
     }
     cur = connection.cursor()
-    while goals.events:
-        event = goals.events.popleft()
+    while goals.events():
+        event = goals.events().popleft()
         if event[0] in actions:
             for query in actions[event[0]]:
                 if "?" in query:

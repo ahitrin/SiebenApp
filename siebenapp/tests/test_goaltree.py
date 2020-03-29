@@ -465,39 +465,39 @@ class GoalsTest(TestCase):
         }
 
     def test_add_events(self):
-        assert self.goals.events.pop() == ("add", 1, "Root", True)
+        assert self.goals.events().pop() == ("add", 1, "Root", True)
         self.goals.accept(Add("Next"))
-        assert self.goals.events[-2] == ("add", 2, "Next", True)
-        assert self.goals.events[-1] == ("link", 1, 2, EdgeType.PARENT)
+        assert self.goals.events()[-2] == ("add", 2, "Next", True)
+        assert self.goals.events()[-1] == ("link", 1, 2, EdgeType.PARENT)
 
     def test_select_events(self):
         self.goals.accept(Add("Next"))
         self.goals.accept(Select(2))
-        assert self.goals.events[-1] == ("select", 2)
+        assert self.goals.events()[-1] == ("select", 2)
         self.goals.accept(HoldSelect())
         self.goals.accept(Select(1))
-        assert self.goals.events[-2] == ("hold_select", 2)
-        assert self.goals.events[-1] == ("select", 1)
+        assert self.goals.events()[-2] == ("hold_select", 2)
+        assert self.goals.events()[-1] == ("select", 1)
 
     def test_toggle_close_events(self):
         self.goals.accept(ToggleClose())
-        assert self.goals.events[-3] == ("toggle_close", False, 1)
-        assert self.goals.events[-2] == ("select", 1)
-        assert self.goals.events[-1] == ("hold_select", 1)
+        assert self.goals.events()[-3] == ("toggle_close", False, 1)
+        assert self.goals.events()[-2] == ("select", 1)
+        assert self.goals.events()[-1] == ("hold_select", 1)
         self.goals.accept(ToggleClose())
-        assert self.goals.events[-1] == ("toggle_close", True, 1)
+        assert self.goals.events()[-1] == ("toggle_close", True, 1)
 
     def test_rename_event(self):
         self.goals.accept(Rename("New"))
-        assert self.goals.events[-1] == ("rename", "New", 1)
+        assert self.goals.events()[-1] == ("rename", "New", 1)
 
     def test_delete_events(self):
         self.goals.accept(Add("Sheep"))
         self.goals.accept(Select(2))
         self.goals.accept(Delete())
-        assert self.goals.events[-3] == ("delete", 2)
-        assert self.goals.events[-2] == ("select", 1)
-        assert self.goals.events[-1] == ("hold_select", 1)
+        assert self.goals.events()[-3] == ("delete", 2)
+        assert self.goals.events()[-2] == ("select", 1)
+        assert self.goals.events()[-1] == ("hold_select", 1)
 
     def test_link_events(self):
         self.goals.accept(Add("Next"))
@@ -506,9 +506,9 @@ class GoalsTest(TestCase):
         self.goals.accept(HoldSelect())
         self.goals.accept(Select(3))
         self.goals.accept(ToggleLink())
-        assert self.goals.events[-1] == ("link", 2, 3, EdgeType.BLOCKER)
+        assert self.goals.events()[-1] == ("link", 2, 3, EdgeType.BLOCKER)
         self.goals.accept(ToggleLink())
-        assert self.goals.events[-1] == ("unlink", 2, 3, EdgeType.BLOCKER)
+        assert self.goals.events()[-1] == ("unlink", 2, 3, EdgeType.BLOCKER)
 
     def test_change_link_type_events(self):
         self.goals = self.build(
@@ -517,10 +517,10 @@ class GoalsTest(TestCase):
             open_(3, "Upper", [], select=selected),
         )
         self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
-        assert self.goals.events[-4] == ("link", 2, 3, EdgeType.PARENT)
-        assert self.goals.events[-3] == ("unlink", 2, 3, EdgeType.BLOCKER)
-        assert self.goals.events[-2] == ("link", 1, 3, EdgeType.BLOCKER)
-        assert self.goals.events[-1] == ("unlink", 1, 3, EdgeType.PARENT)
+        assert self.goals.events()[-4] == ("link", 2, 3, EdgeType.PARENT)
+        assert self.goals.events()[-3] == ("unlink", 2, 3, EdgeType.BLOCKER)
+        assert self.goals.events()[-2] == ("link", 1, 3, EdgeType.BLOCKER)
+        assert self.goals.events()[-1] == ("unlink", 1, 3, EdgeType.PARENT)
 
     def test_no_messages_at_start(self):
         assert self.messages == []

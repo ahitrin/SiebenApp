@@ -203,8 +203,8 @@ def test_goaltree_selection_may_be_changed_in_top_view():
         3: {"name": "Top 2", "switchable": True, "select": None},
     }
     e.accept(NextView())
-    assert g.events[-2] == ("select", 2)
-    assert g.events[-1] == ("hold_select", 2)
+    assert g.events()[-2] == ("select", 2)
+    assert g.events()[-1] == ("hold_select", 2)
     assert e.q(keys="name,switchable,select") == {
         1: {"name": "Top 1", "switchable": True, "select": "select"},
         2: {"name": "Top 2", "switchable": True, "select": None},
@@ -224,7 +224,7 @@ def test_goaltree_previous_selection_may_be_changed_in_top_view():
         3: {"name": "Top 2", "switchable": True, "select": None},
     }
     e.accept(NextView())
-    assert g.events[-1] == ("hold_select", 2)
+    assert g.events()[-1] == ("hold_select", 2)
     assert e.q(keys="name,switchable,select") == {
         1: {"name": "Top 1", "switchable": True, "select": "select"},
         2: {"name": "Top 2", "switchable": True, "select": None},

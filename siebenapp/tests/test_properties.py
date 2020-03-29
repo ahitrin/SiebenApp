@@ -131,7 +131,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     @precondition(lambda self: self.db_is_ready)
     def test_full_export_and_streaming_export_must_be_the_same(self):
         save_updates(self.goaltree, self.database)
-        assert not self.goaltree.events
+        assert not self.goaltree.events()
         ng = build_goals(self.database)
         q1 = self.goaltree.goaltree.q("name,open,edge,select,switchable")
         q2 = ng.q("name,open,edge,select,switchable")

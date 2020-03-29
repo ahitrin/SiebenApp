@@ -1,3 +1,4 @@
+import collections
 import math
 from typing import List, Dict, Tuple, Any, Union, Set, Iterable
 
@@ -107,6 +108,9 @@ class Enumeration(Graph):
             self._next_view()
         else:
             self.goaltree.accept(command)
+
+    def events(self) -> collections.deque:
+        return self.goaltree.events()
 
     def q(self, keys: str = "name") -> Dict[int, Any]:
         self._update_mapping()

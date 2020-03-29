@@ -31,7 +31,7 @@ class Goals(Graph):
         self.closed: Set[int] = set()
         self.selection = Goals.ROOT_ID
         self.previous_selection = Goals.ROOT_ID
-        self.events: collections.deque = collections.deque()
+        self._events: collections.deque = collections.deque()
         self.message_fn = message_fn
         self._add_no_link(name)
 
@@ -76,6 +76,9 @@ class Goals(Graph):
             "previous_selection": self.previous_selection,
         }.get(key)
 
+    def events(self) -> collections.deque:
+        return self._events
+
     def _add(self, command: Add) -> bool:
         add_to = command.add_to if command.add_to != 0 else self.selection
         if add_to in self.closed:
@@ -88,18 +91,18 @@ class Goals(Graph):
     def _add_no_link(self, name: str) -> int:
         next_id = max(list(self.goals.keys()) + [0]) + 1
         self.goals[next_id] = name
-        self.events.append(("add", next_id, name, True))
+        self._events.append(("add", next_id, name, True))
         return next_id
 
     def _select(self, command: Select):
         goal_id = command.goal_id
         if goal_id in self.goals and self.goals[goal_id] is not None:
             self.selection = goal_id
-            self.events.append(("select", goal_id))
+            self._events.append(("select", goal_id))
 
     def _hold_select(self):
         self.previous_selection = self.selection
-        self.events.append(("hold_select", self.selection))
+        self._events.append(("hold_select", self.selection))
 
     def q(self, keys: str = "name") -> Dict[int, Any]:
         def sel(x: int) -> Optional[str]:
@@ -149,19 +152,19 @@ class Goals(Graph):
     def _rename(self, command: Rename):
         goal_id = command.goal_id if command.goal_id != 0 else self.selection
         self.goals[goal_id] = command.new_name
-        self.events.append(("rename", command.new_name, goal_id))
+        self._events.append(("rename", command.new_name, goal_id))
 
     def _toggle_close(self) -> None:
         if self.selection in self.closed:
             if self._may_be_reopened():
                 self.closed.remove(self.selection)
-                self.events.append(("toggle_close", True, self.selection))
+                self._events.append(("toggle_close", True, self.selection))
             else:
                 self._msg("This goal can't be reopened because other subgoals block it")
         else:
             if self._may_be_closed():
                 self.closed.add(self.selection)
-                self.events.append(("toggle_close", False, self.selection))
+                self._events.append(("toggle_close", False, self.selection))
                 self._select(Select(Goals.ROOT_ID))
                 self.accept(HoldSelect())
             else:
@@ -201,7 +204,7 @@ class Goals(Graph):
         for next_goal in next_to_remove:
             if not self._back_edges(next_goal.target):
                 self._delete_subtree(next_goal.target)
-        self.events.append(("delete", goal_id))
+        self._events.append(("delete", goal_id))
 
     def _toggle_link(self, command: ToggleLink):
         lower = self.previous_selection if command.lower == 0 else command.lower
@@ -222,8 +225,8 @@ class Goals(Graph):
     def _replace_link(self, lower: int, upper: int, edge_type: EdgeType) -> None:
         old_edge_type = self.edges[(lower, upper)]
         self.edges[(lower, upper)] = edge_type
-        self.events.append(("link", lower, upper, edge_type))
-        self.events.append(("unlink", lower, upper, old_edge_type))
+        self._events.append(("link", lower, upper, edge_type))
+        self._events.append(("unlink", lower, upper, old_edge_type))
 
     def _remove_existing_link(
         self, lower: int, upper: int, edge_type: int = None
@@ -231,7 +234,7 @@ class Goals(Graph):
         edges_to_upper = self._back_edges(upper)
         if len(edges_to_upper) > 1:
             self.edges.pop((lower, upper))
-            self.events.append(("unlink", lower, upper, edge_type))
+            self._events.append(("unlink", lower, upper, edge_type))
         else:
             self._msg("Can't remove the last link")
 
@@ -245,7 +248,7 @@ class Goals(Graph):
         if edge_type == EdgeType.PARENT:
             self._transform_old_parents_into_blocked(lower, upper)
         self.edges[lower, upper] = edge_type
-        self.events.append(("link", lower, upper, edge_type))
+        self._events.append(("link", lower, upper, edge_type))
 
     def _transform_old_parents_into_blocked(self, lower, upper):
         old_parents = [
@@ -305,7 +308,7 @@ class Goals(Graph):
     def build(goals, edges, settings, message_fn=None):
         # type: (GoalsData, EdgesData, OptionsData, Callable[[str], None]) -> Goals
         result = Goals("", message_fn)
-        result.events.clear()  # remove initial goal
+        result._events.clear()  # pylint: disable=protected-access
         goals_dict = dict((g[0], g[1]) for g in goals)
         result.goals = dict(
             (i, goals_dict.get(i)) for i in range(1, max(goals_dict.keys()) + 1)

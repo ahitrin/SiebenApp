@@ -1,3 +1,4 @@
+import collections
 from typing import Dict, Any, Set, List, Tuple
 
 from siebenapp.domain import (
@@ -31,6 +32,7 @@ class Zoom(Graph):
         "_toggle_zoom",
         "verify",
         "zoom_root",
+        "events",
     ]
 
     def __init__(self, goaltree: Goals) -> None:
@@ -56,15 +58,18 @@ class Zoom(Graph):
         if selection == self.zoom_root[-1] and len(self.zoom_root) > 1:
             # unzoom
             last_zoom = self.zoom_root.pop(-1)
-            self.events.append(("unzoom", last_zoom))
+            self.events().append(("unzoom", last_zoom))
         elif selection not in self.zoom_root:
             self.zoom_root.append(selection)
-            self.events.append(("zoom", len(self.zoom_root), selection))
+            self.events().append(("zoom", len(self.zoom_root), selection))
         else:
             return
         visible_goals = self._build_visible_goals()
         if self.settings("previous_selection") not in visible_goals:
             self.accept(HoldSelect())
+
+    def events(self) -> collections.deque:
+        return self.goaltree.events()
 
     def q(self, keys: str = "name") -> Dict[int, Any]:
         origin_goals = self.goaltree.q(keys)

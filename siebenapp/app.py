@@ -151,7 +151,7 @@ class SiebenApp(QMainWindow):
         return inner
 
     def save_and_render(self):
-        if not self.goals.goaltree.events and not self.force_refresh:
+        if not self.goals.events() and not self.force_refresh:
             return
         self.force_refresh = False
         self.statusBar().clearMessage()
