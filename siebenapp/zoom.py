@@ -19,22 +19,6 @@ ZoomData = List[Tuple[int, int]]
 
 
 class Zoom(Graph):
-    override = [
-        "accept",
-        "_build_visible_goals",
-        "_delete",
-        "export",
-        "goaltree",
-        "_insert",
-        "q",
-        "_toggle_close",
-        "_toggle_link",
-        "_toggle_zoom",
-        "verify",
-        "zoom_root",
-        "events",
-    ]
-
     def __init__(self, goaltree: Goals) -> None:
         self.goaltree = goaltree
         self.zoom_root = [1]
@@ -52,6 +36,9 @@ class Zoom(Graph):
             self._toggle_zoom()
         else:
             self.goaltree.accept(command)
+
+    def settings(self, key: str) -> int:
+        return self.goaltree.settings(key)
 
     def _toggle_zoom(self):
         selection = self.settings("selection")
@@ -138,13 +125,6 @@ class Zoom(Graph):
             if next_edge[1] == EdgeType.PARENT:
                 edges_to_visit.update(edges[next_edge[0]]["edge"])
         return visible_goals
-
-    def __getattribute__(self, item):
-        override = object.__getattribute__(self, "override")
-        if item in override:
-            return object.__getattribute__(self, item)
-        goals = object.__getattribute__(self, "goaltree")
-        return getattr(goals, item)
 
     @staticmethod
     def build(goals, data):
