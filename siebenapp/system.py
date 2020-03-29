@@ -103,14 +103,20 @@ def save(goals: AnyGraph, filename: str = DEFAULT_DB) -> None:
     else:
         connection = sqlite3.connect(filename)
         run_migrations(connection)
-        goals_export, edges_export, select_export = Goals.export(goals)
-        zoom_export = Zoom.export(goals)
+        root_goals = goals
+        while not isinstance(root_goals, Goals):
+            root_goals = root_goals.goaltree
+        goals_export, edges_export, select_export = Goals.export(root_goals)
+        zoom_goals = goals
+        while not isinstance(zoom_goals, Zoom):
+            zoom_goals = zoom_goals.goaltree
+        zoom_export = Zoom.export(zoom_goals)
         cur = connection.cursor()
         cur.executemany("insert into goals values (?,?,?)", goals_export)
         cur.executemany("insert into edges values (?,?,?)", edges_export)
         cur.executemany("insert into settings values (?,?)", select_export)
         cur.executemany("insert into zoom values (?, ?)", zoom_export)
-        goals.events.clear()
+        root_goals.events.clear()
         connection.commit()
         connection.close()
 

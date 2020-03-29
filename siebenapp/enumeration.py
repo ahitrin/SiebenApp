@@ -36,25 +36,6 @@ class BidirectionalIndex:
 
 
 class Enumeration(Graph):
-    overriden = [
-        "accept",
-        "_goal_filter",
-        "_id_mapping",
-        "_update_mapping",
-        "_update_top_mapping",
-        "_update_open_mapping",
-        "goaltree",
-        "_next_view",
-        "q",
-        "_select",
-        "selection_cache",
-        "view_title",
-        "_views",
-        "_open",
-        "_top",
-        "_labels",
-    ]
-
     _views = {
         (True, True): (True, True),
         (True, False): (False, True),
@@ -95,9 +76,9 @@ class Enumeration(Graph):
             for k, v in self.goaltree.q(keys="open,switchable").items()
             if v["open"] and v["switchable"] and k in original_mapping
         }
-        if goals and self.settings("selection") not in goals:
+        if goals and self.goaltree.settings("selection") not in goals:
             self.goaltree.accept(Select(min(goals)))
-        if goals and self.settings("previous_selection") not in goals:
+        if goals and self.goaltree.settings("previous_selection") not in goals:
             self.accept(HoldSelect())
         return goals
 
@@ -161,10 +142,3 @@ class Enumeration(Graph):
         self._open, self._top = self._views[self._open, self._top]
         self._update_mapping()
         self.selection_cache.clear()
-
-    def __getattribute__(self, attr):
-        overriden = object.__getattribute__(self, "overriden")
-        if attr in overriden:
-            return object.__getattribute__(self, attr)
-        goaltree = object.__getattribute__(self, "goaltree")
-        return getattr(goaltree, attr)

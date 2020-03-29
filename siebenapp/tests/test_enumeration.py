@@ -193,21 +193,18 @@ def test_toggle_switch_view():
 
 
 def test_goaltree_selection_may_be_changed_in_top_view():
-    e = Enumeration(
-        build_goaltree(
-            open_(1, "Root", [2, 3], select=selected),
-            open_(2, "Top 1"),
-            open_(3, "Top 2"),
-        )
+    g = build_goaltree(
+        open_(1, "Root", [2, 3], select=selected), open_(2, "Top 1"), open_(3, "Top 2"),
     )
+    e = Enumeration(g)
     assert e.q(keys="name,switchable,select") == {
         1: {"name": "Root", "switchable": False, "select": "select"},
         2: {"name": "Top 1", "switchable": True, "select": None},
         3: {"name": "Top 2", "switchable": True, "select": None},
     }
     e.accept(NextView())
-    assert e.events[-2] == ("select", 2)
-    assert e.events[-1] == ("hold_select", 2)
+    assert g.events[-2] == ("select", 2)
+    assert g.events[-1] == ("hold_select", 2)
     assert e.q(keys="name,switchable,select") == {
         1: {"name": "Top 1", "switchable": True, "select": "select"},
         2: {"name": "Top 2", "switchable": True, "select": None},
@@ -215,20 +212,19 @@ def test_goaltree_selection_may_be_changed_in_top_view():
 
 
 def test_goaltree_previous_selection_may_be_changed_in_top_view():
-    e = Enumeration(
-        build_goaltree(
-            open_(1, "Root", [2, 3], select=previous),
-            open_(2, "Top 1", select=selected),
-            open_(3, "Top 2"),
-        )
+    g = build_goaltree(
+        open_(1, "Root", [2, 3], select=previous),
+        open_(2, "Top 1", select=selected),
+        open_(3, "Top 2"),
     )
+    e = Enumeration(g)
     assert e.q(keys="name,switchable,select") == {
         1: {"name": "Root", "switchable": False, "select": "prev"},
         2: {"name": "Top 1", "switchable": True, "select": "select"},
         3: {"name": "Top 2", "switchable": True, "select": None},
     }
     e.accept(NextView())
-    assert e.events[-1] == ("hold_select", 2)
+    assert g.events[-1] == ("hold_select", 2)
     assert e.q(keys="name,switchable,select") == {
         1: {"name": "Top 1", "switchable": True, "select": "select"},
         2: {"name": "Top 2", "switchable": True, "select": None},
