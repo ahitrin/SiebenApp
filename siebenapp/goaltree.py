@@ -23,13 +23,15 @@ OptionsData = List[Tuple[str, int]]
 
 
 class Goals(Graph):
+    ROOT_ID = 1
+
     def __init__(self, name: str, message_fn: Callable[[str], None] = None) -> None:
         self.goals: Dict[int, Optional[str]] = {}
         self.edges: Dict[Tuple[int, int], EdgeType] = {}
         self.closed: Set[int] = set()
         self._settings: Dict[str, int] = {
-            "selection": 1,
-            "previous_selection": 1,
+            "selection": Goals.ROOT_ID,
+            "previous_selection": Goals.ROOT_ID,
         }
         self.events: collections.deque = collections.deque()
         self.message_fn = message_fn
@@ -50,7 +52,7 @@ class Goals(Graph):
 
     def _parent(self, goal: int) -> int:
         parents = {e for e in self._back_edges(goal) if e.type == EdgeType.PARENT}
-        return parents.pop().source if parents else 1
+        return parents.pop().source if parents else Goals.ROOT_ID
 
     def accept(self, command: Command) -> None:
         if isinstance(command, Add):
@@ -161,7 +163,7 @@ class Goals(Graph):
             if self._may_be_closed():
                 self.closed.add(self._settings["selection"])
                 self.events.append(("toggle_close", False, self._settings["selection"]))
-                self._select(Select(1))
+                self._select(Select(Goals.ROOT_ID))
                 self.accept(HoldSelect())
             else:
                 self._msg("This goal can't be closed because it have open subgoals")
@@ -183,7 +185,7 @@ class Goals(Graph):
         goal_id = (
             command.goal_id if command.goal_id != 0 else self._settings["selection"]
         )
-        if goal_id == 1:
+        if goal_id == Goals.ROOT_ID:
             self._msg("Root goal can't be deleted")
             return
         parent = self._parent(goal_id)
@@ -282,7 +284,7 @@ class Goals(Graph):
             g.target in self.closed for p in self.closed for g in self._forward_edges(p)
         ), "Open goals could not be blocked by closed ones"
 
-        queue: List[int] = [1]
+        queue: List[int] = [Goals.ROOT_ID]
         visited: Set[int] = set()
         while queue:
             goal = queue.pop()
