@@ -31,10 +31,13 @@ class Graph:
         return Graph.NO_VALUE
 
     def events(self) -> collections.deque:
+        """Returns queue of applied actions.
+        Note: this queue is modifiable -- you may push new events into it. But this
+        behavior may be changed in future."""
         raise NotImplementedError
 
     def q(self, keys: str = "name") -> Dict[int, Any]:
-        """Run search query against goaltree state"""
+        """Run search query against content"""
         raise NotImplementedError
 
 
