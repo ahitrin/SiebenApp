@@ -79,8 +79,8 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 
     @rule()
     def insert(self):
-        selection = self.goaltree.settings["selection"]
-        prev_selection = self.goaltree.settings["previous_selection"]
+        selection = self.goaltree.settings("selection")
+        prev_selection = self.goaltree.settings("previous_selection")
         assume(selection != prev_selection)
         self.goaltree.accept(Insert("i"))
 

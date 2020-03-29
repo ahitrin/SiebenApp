@@ -52,7 +52,7 @@ class Zoom(Graph):
             self.goaltree.accept(command)
 
     def _toggle_zoom(self):
-        selection = self.settings["selection"]
+        selection = self.settings("selection")
         if selection == self.zoom_root[-1] and len(self.zoom_root) > 1:
             # unzoom
             last_zoom = self.zoom_root.pop(-1)
@@ -63,7 +63,7 @@ class Zoom(Graph):
         else:
             return
         visible_goals = self._build_visible_goals()
-        if self.settings["previous_selection"] not in visible_goals:
+        if self.settings("previous_selection") not in visible_goals:
             self.accept(HoldSelect())
 
     def q(self, keys: str = "name") -> Dict[int, Any]:
@@ -82,30 +82,30 @@ class Zoom(Graph):
         return zoomed_goals
 
     def _toggle_close(self) -> None:
-        if self.settings["selection"] == self.zoom_root[-1]:
+        if self.settings("selection") == self.zoom_root[-1]:
             self._toggle_zoom()
         self.goaltree.accept(ToggleClose())
-        if self.settings["selection"] not in self._build_visible_goals():
+        if self.settings("selection") not in self._build_visible_goals():
             self.goaltree.accept(Select(self.zoom_root[-1]))
             self.accept(HoldSelect())
 
     def _insert(self, command: Insert):
         self.goaltree.accept(command)
-        if self.settings["selection"] not in self._build_visible_goals():
+        if self.settings("selection") not in self._build_visible_goals():
             self.goaltree.accept(Select(self.zoom_root[-1]))
             self.accept(HoldSelect())
 
     def _toggle_link(self, command: ToggleLink):
         self.goaltree.accept(command)
-        if self.settings["selection"] not in self._build_visible_goals():
+        if self.settings("selection") not in self._build_visible_goals():
             self.goaltree.accept(Select(self.zoom_root[-1]))
             self.accept(HoldSelect())
 
     def _delete(self, command: Delete) -> None:
-        if self.settings["selection"] == self.zoom_root[-1]:
+        if self.settings("selection") == self.zoom_root[-1]:
             self._toggle_zoom()
         self.goaltree.accept(command)
-        if self.settings["selection"] != self.zoom_root[-1]:
+        if self.settings("selection") != self.zoom_root[-1]:
             self.goaltree.accept(Select(self.zoom_root[-1]))
             self.accept(HoldSelect())
 
@@ -115,10 +115,10 @@ class Zoom(Graph):
             return ok
         visible_goals = self._build_visible_goals()
         assert (
-            self.settings["selection"] in visible_goals
+            self.settings("selection") in visible_goals
         ), "Selected goal must be within visible area"
         assert (
-            self.settings["previous_selection"] in visible_goals
+            self.settings("previous_selection") in visible_goals
         ), "Prev-selected goal must be within visible area"
         return ok
 

@@ -20,9 +20,15 @@ class Command:
 class Graph:
     """Base interface definition"""
 
+    NO_VALUE = -1
+
     def accept(self, command: Command) -> None:
         """React on the given command"""
         raise NotImplementedError
+
+    def settings(self, key: str) -> int:  # pylint: disable=unused-argument,no-self-use
+        """Returns given inner value by the key"""
+        return Graph.NO_VALUE
 
     def q(self, keys: str = "name") -> Dict[int, Any]:
         """Run search query against goaltree state"""

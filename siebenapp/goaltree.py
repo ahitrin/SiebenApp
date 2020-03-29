@@ -27,7 +27,7 @@ class Goals(Graph):
         self.goals: Dict[int, Optional[str]] = {}
         self.edges: Dict[Tuple[int, int], EdgeType] = {}
         self.closed: Set[int] = set()
-        self.settings: Dict[str, int] = {
+        self._settings: Dict[str, int] = {
             "selection": 1,
             "previous_selection": 1,
         }
@@ -70,8 +70,11 @@ class Goals(Graph):
         elif isinstance(command, Delete):
             self._delete(command)
 
+    def settings(self, key: str) -> int:
+        return self._settings.get(key)
+
     def _add(self, command: Add) -> bool:
-        add_to = command.add_to if command.add_to != 0 else self.settings["selection"]
+        add_to = command.add_to if command.add_to != 0 else self._settings["selection"]
         if add_to in self.closed:
             self._msg("A new subgoal cannot be added to the closed one")
             return False
@@ -88,18 +91,18 @@ class Goals(Graph):
     def _select(self, command: Select):
         goal_id = command.goal_id
         if goal_id in self.goals and self.goals[goal_id] is not None:
-            self.settings["selection"] = goal_id
+            self._settings["selection"] = goal_id
             self.events.append(("select", goal_id))
 
     def _hold_select(self):
-        self.settings["previous_selection"] = self.settings["selection"]
-        self.events.append(("hold_select", self.settings["selection"]))
+        self._settings["previous_selection"] = self._settings["selection"]
+        self.events.append(("hold_select", self._settings["selection"]))
 
     def q(self, keys: str = "name") -> Dict[int, Any]:
         def sel(x: int) -> Optional[str]:
-            if x == self.settings["selection"]:
+            if x == self._settings["selection"]:
                 return "select"
-            if x == self.settings["previous_selection"]:
+            if x == self._settings["previous_selection"]:
                 return "prev"
             return None
 
@@ -128,8 +131,8 @@ class Goals(Graph):
         return all(x.target in self.closed for x in self._forward_edges(key))
 
     def _insert(self, command: Insert):
-        lower = self.settings["previous_selection"]
-        upper = self.settings["selection"]
+        lower = self._settings["previous_selection"]
+        upper = self._settings["selection"]
         if lower == upper:
             self._msg("A new goal can be inserted only between two different goals")
             return
@@ -142,22 +145,22 @@ class Goals(Graph):
 
     def _rename(self, command: Rename):
         goal_id = (
-            command.goal_id if command.goal_id != 0 else self.settings["selection"]
+            command.goal_id if command.goal_id != 0 else self._settings["selection"]
         )
         self.goals[goal_id] = command.new_name
         self.events.append(("rename", command.new_name, goal_id))
 
     def _toggle_close(self) -> None:
-        if self.settings["selection"] in self.closed:
+        if self._settings["selection"] in self.closed:
             if self._may_be_reopened():
-                self.closed.remove(self.settings["selection"])
-                self.events.append(("toggle_close", True, self.settings["selection"]))
+                self.closed.remove(self._settings["selection"])
+                self.events.append(("toggle_close", True, self._settings["selection"]))
             else:
                 self._msg("This goal can't be reopened because other subgoals block it")
         else:
             if self._may_be_closed():
-                self.closed.add(self.settings["selection"])
-                self.events.append(("toggle_close", False, self.settings["selection"]))
+                self.closed.add(self._settings["selection"])
+                self.events.append(("toggle_close", False, self._settings["selection"]))
                 self._select(Select(1))
                 self.accept(HoldSelect())
             else:
@@ -166,19 +169,19 @@ class Goals(Graph):
     def _may_be_closed(self) -> bool:
         return all(
             g.target in self.closed
-            for g in self._forward_edges(self.settings["selection"])
+            for g in self._forward_edges(self._settings["selection"])
         )
 
     def _may_be_reopened(self) -> bool:
         return all(
             k[0] not in self.closed
             for k, v in self.edges.items()
-            if k[1] == self.settings["selection"]
+            if k[1] == self._settings["selection"]
         )
 
     def _delete(self, command: Delete) -> None:
         goal_id = (
-            command.goal_id if command.goal_id != 0 else self.settings["selection"]
+            command.goal_id if command.goal_id != 0 else self._settings["selection"]
         )
         if goal_id == 1:
             self._msg("Root goal can't be deleted")
@@ -206,9 +209,11 @@ class Goals(Graph):
 
     def _toggle_link(self, command: ToggleLink):
         lower = (
-            self.settings["previous_selection"] if command.lower == 0 else command.lower
+            self._settings["previous_selection"]
+            if command.lower == 0
+            else command.lower
         )
-        upper = self.settings["selection"] if command.upper == 0 else command.upper
+        upper = self._settings["selection"] if command.upper == 0 else command.upper
         if lower == upper:
             self._msg("Goal can't be linked to itself")
             return
@@ -296,7 +301,7 @@ class Goals(Graph):
             not self._forward_edges(n) for n in deleted_nodes
         ), "Deleted goals must have no dependencies"
 
-        assert all(k in self.settings for k in {"selection", "previous_selection"})
+        assert all(k in self._settings for k in {"selection", "previous_selection"})
 
         parent_edges = [k for k, v in self.edges.items() if v == EdgeType.PARENT]
         edges_with_parent = set(child for parent, child in parent_edges)
@@ -320,7 +325,7 @@ class Goals(Graph):
         )
         for parent, child, link_type in edges:
             result.edges[parent, child] = EdgeType(link_type)
-        result.settings.update(settings)
+        result._settings.update(settings)  # pylint: disable=protected-access
         result.verify()
         return result
 
@@ -332,5 +337,5 @@ class Goals(Graph):
             for g_id, g_name in goals.goals.items()
         )
         edges = [(k[0], k[1], v) for k, v in goals.edges.items()]
-        settings = list(goals.settings.items())
+        settings = list(goals._settings.items())  # pylint: disable=protected-access
         return nodes, edges, settings

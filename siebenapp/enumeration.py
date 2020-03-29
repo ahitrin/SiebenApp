@@ -95,9 +95,9 @@ class Enumeration(Graph):
             for k, v in self.goaltree.q(keys="open,switchable").items()
             if v["open"] and v["switchable"] and k in original_mapping
         }
-        if goals and self.settings["selection"] not in goals:
+        if goals and self.settings("selection") not in goals:
             self.goaltree.accept(Select(min(goals)))
-        if goals and self.settings["previous_selection"] not in goals:
+        if goals and self.settings("previous_selection") not in goals:
             self.accept(HoldSelect())
         return goals
 
