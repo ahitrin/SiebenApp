@@ -122,9 +122,7 @@ def test_stacked_zoom():
             open_(5, "Top"),
         )
     )
-    goals.accept(ToggleZoom())
-    goals.accept(Select(4))
-    goals.accept(ToggleZoom())
+    goals.accept_all(ToggleZoom(), Select(4), ToggleZoom())
     assert set(goals.q().keys()) == {-1, 4, 5}
     goals.accept(ToggleZoom())
     # Zoom on goal 3 still exists
@@ -190,13 +188,15 @@ def test_selection_should_be_changed_on_stacked_unzoom_a_long_chain_of_blockers(
             open_(4, "E"),
         )
     )
-    goals.accept(ToggleZoom())  # zoom on 2
-    goals.accept(Select(3))
-    goals.accept(ToggleZoom())  # zoom on 3
-    goals.accept(Select(4))
-    goals.accept(HoldSelect())  # set previous selection onto 4
-    goals.accept(Select(3))
-    goals.accept(ToggleZoom())  # unzoom on 3 (zoom root is on 2 again))
+    goals.accept_all(
+        ToggleZoom(),  # zoom on 2
+        Select(3),
+        ToggleZoom(),  # zoom on 3
+        Select(4),
+        HoldSelect(),  # set previous selection onto 4
+        Select(3),
+        ToggleZoom(),  # unzoom on 3 (zoom root is on 2 again))
+    )
     assert goals.q("name,select") == {
         -1: {"name": "Root", "select": None},
         2: {"name": "A", "select": None},
@@ -213,10 +213,9 @@ def test_unlink_for_goal_outside_of_zoomed_tree_should_cause_selection_change():
             open_(3, "Zoom root", blockers=[2], select=selected),
         )
     )
-    goals.accept(ToggleZoom())
-    goals.accept(HoldSelect())
-    goals.accept(Select(2))
-    goals.accept(ToggleLink())  # unlink 3 -> 2
+    goals.accept_all(
+        ToggleZoom(), HoldSelect(), Select(2), ToggleLink(),  # unlink 3 -> 2
+    )
     assert goals.q("name,select") == {
         -1: {"name": "Root", "select": None},
         3: {"name": "Zoom root", "select": "select"},
@@ -231,8 +230,7 @@ def test_closing_zoom_root_should_cause_unzoom():
             open_(3, "Zoom here", select=selected),
         )
     )
-    goals.accept(ToggleZoom())
-    goals.accept(ToggleClose())
+    goals.accept_all(ToggleZoom(), ToggleClose())
     assert goals.q(keys="name,select,open") == {
         1: {"name": "Root", "select": "select", "open": True},
         2: {"name": "Intermediate", "select": None, "open": True},
@@ -254,8 +252,7 @@ def test_goal_closing_must_not_cause_root_selection():
         2: {"name": "Zoom root", "select": "select", "open": True},
         3: {"name": "Close me", "select": None, "open": True},
     }
-    goals.accept(Select(3))
-    goals.accept(ToggleClose())
+    goals.accept_all(Select(3), ToggleClose())
     assert goals.q(keys="name,select,open") == {
         -1: {"name": "Root", "select": None, "open": True},
         2: {"name": "Zoom root", "select": "select", "open": True},
@@ -271,16 +268,15 @@ def test_goal_reopening_must_not_change_selection():
             open_(3, "Reopen me"),
         )
     )
-    goals.accept(ToggleZoom())
-    goals.accept(Select(3))
-    goals.accept(ToggleClose())
+    goals.accept_all(
+        ToggleZoom(), Select(3), ToggleClose(),
+    )
     assert goals.q(keys="name,select,open") == {
         -1: {"name": "Root", "select": None, "open": True},
         2: {"name": "Zoom root", "select": "select", "open": True},
         3: {"name": "Reopen me", "select": None, "open": False},
     }
-    goals.accept(Select(3))
-    goals.accept(ToggleClose())
+    goals.accept_all(Select(3), ToggleClose())
     assert goals.q(keys="name,select,open") == {
         -1: {"name": "Root", "select": None, "open": True},
         2: {"name": "Zoom root", "select": "prev", "open": True},
@@ -296,8 +292,7 @@ def test_deleting_zoom_root_should_cause_unzoom():
             open_(3, "Zoom here", select=selected),
         )
     )
-    goals.accept(ToggleZoom())
-    goals.accept(Delete())
+    goals.accept_all(ToggleZoom(), Delete())
     assert goals.q(keys="name,select,open") == {
         1: {"name": "Root", "select": "select", "open": True},
         2: {"name": "Intermediate", "select": None, "open": True},
@@ -319,8 +314,7 @@ def test_goal_deletion_must_not_cause_root_selection():
         3: {"name": "Zoom root", "select": "select"},
         4: {"name": "Deleted", "select": None},
     }
-    goals.accept(Select(4))
-    goals.accept(Delete())
+    goals.accept_all(Select(4), Delete())
     assert goals.q(keys="name,select") == {
         -1: {"name": "Root", "select": None},
         3: {"name": "Zoom root", "select": "select"},
@@ -339,9 +333,7 @@ def test_zoom_events():
     )
     goals.accept(ToggleZoom())
     assert goals.events()[-1] == ("zoom", 2, 2)
-    goals.accept(Select(4))
-    goals.accept(HoldSelect())
-    goals.accept(ToggleZoom())
+    goals.accept_all(Select(4), HoldSelect(), ToggleZoom())
     assert goals.events()[-1] == ("zoom", 3, 4)
     goals.accept(ToggleZoom())
     assert goals.events()[-1] == ("unzoom", 4)

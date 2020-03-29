@@ -67,15 +67,17 @@ def test_restore_goals_from_db():
         setup_sample_db(conn)
     actual_goals = load(file_name).goaltree
     expected_goals = Goals("Root")
-    expected_goals.accept(Add("A"))
-    expected_goals.accept(Add("B"))
-    expected_goals.accept(Select(2))
-    expected_goals.accept(HoldSelect())
-    expected_goals.accept(Select(3))
-    expected_goals.accept(ToggleLink())
-    expected_goals.accept(Select(3))
-    expected_goals.accept(ToggleClose())
-    expected_goals.accept(Select(2))
+    expected_goals.accept_all(
+        Add("A"),
+        Add("B"),
+        Select(2),
+        HoldSelect(),
+        Select(3),
+        ToggleLink(),
+        Select(3),
+        ToggleClose(),
+        Select(2),
+    )
     assert expected_goals.q(keys="name,edge,open,select") == actual_goals.q(
         keys="name,edge,open,select"
     )
@@ -122,23 +124,23 @@ def test_migration_must_run_on_load_from_existing_db():
 def test_save_and_load():
     file_name = NamedTemporaryFile().name
     goals = Enumeration(Zoom(Goals("Root")))
-    goals.accept(Add("Top"))
-    goals.accept(Add("Middle"))
-    goals.accept(Select(3))
-    goals.accept(HoldSelect())
-    goals.accept(Select(2))
-    goals.accept(ToggleLink())
-    goals.accept(Add("Closed"))
-    goals.accept(Select(4))
-    goals.accept(ToggleClose())
-    goals.accept(Select(2))
-    goals.accept(ToggleZoom())
+    goals.accept_all(
+        Add("Top"),
+        Add("Middle"),
+        Select(3),
+        HoldSelect(),
+        Select(2),
+        ToggleLink(),
+        Add("Closed"),
+        Select(4),
+        ToggleClose(),
+        Select(2),
+        ToggleZoom(),
+    )
     save(goals, file_name)
     new_goals = load(file_name)
-    goals.accept(NextView())
-    goals.accept(NextView())
-    new_goals.accept(NextView())
-    new_goals.accept(NextView())
+    goals.accept_all(NextView(), NextView())
+    new_goals.accept_all(NextView(), NextView())
     assert goals.q(keys="open,name,edge,select,switchable") == new_goals.q(
         keys="open,name,edge,select,switchable"
     )

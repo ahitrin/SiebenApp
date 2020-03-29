@@ -78,28 +78,24 @@ class Zoom(Graph):
             self._toggle_zoom()
         self.goaltree.accept(ToggleClose())
         if self.settings("selection") not in self._build_visible_goals():
-            self.goaltree.accept(Select(self.zoom_root[-1]))
-            self.accept(HoldSelect())
+            self.goaltree.accept_all(Select(self.zoom_root[-1]), HoldSelect())
 
     def _insert(self, command: Insert):
         self.goaltree.accept(command)
         if self.settings("selection") not in self._build_visible_goals():
-            self.goaltree.accept(Select(self.zoom_root[-1]))
-            self.accept(HoldSelect())
+            self.goaltree.accept_all(Select(self.zoom_root[-1]), HoldSelect())
 
     def _toggle_link(self, command: ToggleLink):
         self.goaltree.accept(command)
         if self.settings("selection") not in self._build_visible_goals():
-            self.goaltree.accept(Select(self.zoom_root[-1]))
-            self.accept(HoldSelect())
+            self.goaltree.accept_all(Select(self.zoom_root[-1]), HoldSelect())
 
     def _delete(self, command: Delete) -> None:
         if self.settings("selection") == self.zoom_root[-1]:
             self._toggle_zoom()
         self.goaltree.accept(command)
         if self.settings("selection") != self.zoom_root[-1]:
-            self.goaltree.accept(Select(self.zoom_root[-1]))
-            self.accept(HoldSelect())
+            self.goaltree.accept_all(Select(self.zoom_root[-1]), HoldSelect())
 
     def verify(self) -> bool:
         ok = self.goaltree.verify()

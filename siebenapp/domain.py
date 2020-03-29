@@ -1,7 +1,7 @@
 # pylint: disable=too-few-public-methods
 import collections
 from enum import IntEnum
-from typing import Dict, Any
+from typing import Dict, Any, Iterable
 
 
 class EdgeType(IntEnum):
@@ -25,6 +25,11 @@ class Graph:
     def accept(self, command: Command) -> None:
         """React on the given command"""
         raise NotImplementedError
+
+    def accept_all(self, *commands: Command) -> None:
+        """React on the command chain"""
+        for command in commands:
+            self.accept(command)
 
     def settings(self, key: str) -> int:  # pylint: disable=unused-argument,no-self-use
         """Returns given inner value by the key"""

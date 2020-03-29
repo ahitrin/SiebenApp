@@ -144,8 +144,7 @@ class SiebenApp(QMainWindow):
 
     def close_goal(self, goal_id):
         def inner():
-            self.goals.accept(Select(goal_id))
-            self.goals.accept(ToggleClose())
+            self.goals.accept_all(Select(goal_id), ToggleClose())
             self.refresh.emit()
 
         return inner

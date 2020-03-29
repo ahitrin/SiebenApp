@@ -47,8 +47,7 @@ class GoalsTest(TestCase):
         }
 
     def test_two_new_goals_move_to_top(self):
-        self.goals.accept(Add("A"))
-        self.goals.accept(Add("B"))
+        self.goals.accept_all(Add("A"), Add("B"))
         assert self.goals.q(keys="name,switchable") == {
             1: {"name": "Root", "switchable": False},
             2: {"name": "A", "switchable": True},
@@ -56,8 +55,7 @@ class GoalsTest(TestCase):
         }
 
     def test_two_goals_in_a_chain(self):
-        self.goals.accept(Add("A"))
-        self.goals.accept(Add("AA", 2))
+        self.goals.accept_all(Add("A"), Add("AA", 2))
         assert self.goals.q(keys="name,switchable") == {
             1: {"name": "Root", "switchable": False},
             2: {"name": "A", "switchable": False},
@@ -65,15 +63,11 @@ class GoalsTest(TestCase):
         }
 
     def test_rename_goal(self):
-        self.goals.accept(Add("Boom"))
-        self.goals.accept(Select(2))
-        self.goals.accept(Rename("A"))
+        self.goals.accept_all(Add("Boom"), Select(2), Rename("A"))
         assert self.goals.q() == {1: {"name": "Root"}, 2: {"name": "A"}}
 
     def test_insert_goal_in_the_middle(self):
-        self.goals.accept(Add("B"))
-        self.goals.accept(HoldSelect())
-        self.goals.accept(Select(2))
+        self.goals.accept_all(Add("B"), HoldSelect(), Select(2))
         assert self.goals.q(keys="name,edge,switchable") == {
             1: {"name": "Root", "edge": [(2, EdgeType.PARENT)], "switchable": False},
             2: {"name": "B", "edge": [], "switchable": True},
@@ -123,22 +117,19 @@ class GoalsTest(TestCase):
         self.goals = self.build(
             open_(1, "Root", [2], select=selected), open_(2, "A", [3]), clos_(3, "Ab"),
         )
-        self.goals.accept(Select(2))
-        self.goals.accept(ToggleClose())
+        self.goals.accept_all(Select(2), ToggleClose())
         assert self.goals.q(keys="open,switchable") == {
             1: {"open": True, "switchable": True},
             2: {"open": False, "switchable": True},
             3: {"open": False, "switchable": False},
         }
-        self.goals.accept(Select(2))
-        self.goals.accept(ToggleClose())
+        self.goals.accept_all(Select(2), ToggleClose())
         assert self.goals.q(keys="open,switchable") == {
             1: {"open": True, "switchable": False},
             2: {"open": True, "switchable": True},
             3: {"open": False, "switchable": True},
         }
-        self.goals.accept(Select(2))
-        self.goals.accept(ToggleClose())
+        self.goals.accept_all(Select(2), ToggleClose())
         assert self.goals.q(keys="open,switchable") == {
             1: {"open": True, "switchable": True},
             2: {"open": False, "switchable": True},
@@ -154,8 +145,7 @@ class GoalsTest(TestCase):
             2: {"open": False, "switchable": True},
             3: {"open": False, "switchable": False},
         }
-        self.goals.accept(Select(3))
-        self.goals.accept(ToggleClose())
+        self.goals.accept_all(Select(3), ToggleClose())
         # nothing should change
         assert self.goals.q(keys="open,switchable") == {
             1: {"open": True, "switchable": True},
@@ -362,8 +352,7 @@ class GoalsTest(TestCase):
             3: {"name": "B", "edge": [(4, EdgeType.BLOCKER)]},
             4: {"name": "C", "edge": []},
         }
-        self.goals.accept(Select(3))
-        self.goals.accept(Delete())
+        self.goals.accept_all(Select(3), Delete())
         assert self.goals.q(keys="name,edge,switchable") == {
             1: {"name": "Root", "edge": [(2, EdgeType.PARENT)], "switchable": False},
             2: {"name": "A", "edge": [(4, EdgeType.PARENT)], "switchable": False},
@@ -385,8 +374,7 @@ class GoalsTest(TestCase):
         }
 
     def test_new_goal_is_added_to_the_selected_node(self):
-        self.goals.accept(Add("A"))
-        self.goals.accept(Select(2))
+        self.goals.accept_all(Add("A"), Select(2))
         assert self.goals.q(keys="name,select") == {
             1: {"name": "Root", "select": "prev"},
             2: {"name": "A", "select": "select"},
@@ -417,8 +405,7 @@ class GoalsTest(TestCase):
         self.goals = self.build(
             open_(1, "Root", [2]), open_(2, "broken", select=selected)
         )
-        self.goals.accept(Delete())
-        self.goals.accept(Select(2))
+        self.goals.accept_all(Delete(), Select(2))
         assert self.goals.q(keys="select") == {1: {"select": "select"}}
 
     def test_selection_should_be_instant(self):
@@ -471,11 +458,9 @@ class GoalsTest(TestCase):
         assert self.goals.events()[-1] == ("link", 1, 2, EdgeType.PARENT)
 
     def test_select_events(self):
-        self.goals.accept(Add("Next"))
-        self.goals.accept(Select(2))
+        self.goals.accept_all(Add("Next"), Select(2))
         assert self.goals.events()[-1] == ("select", 2)
-        self.goals.accept(HoldSelect())
-        self.goals.accept(Select(1))
+        self.goals.accept_all(HoldSelect(), Select(1))
         assert self.goals.events()[-2] == ("hold_select", 2)
         assert self.goals.events()[-1] == ("select", 1)
 
@@ -492,20 +477,15 @@ class GoalsTest(TestCase):
         assert self.goals.events()[-1] == ("rename", "New", 1)
 
     def test_delete_events(self):
-        self.goals.accept(Add("Sheep"))
-        self.goals.accept(Select(2))
-        self.goals.accept(Delete())
+        self.goals.accept_all(Add("Sheep"), Select(2), Delete())
         assert self.goals.events()[-3] == ("delete", 2)
         assert self.goals.events()[-2] == ("select", 1)
         assert self.goals.events()[-1] == ("hold_select", 1)
 
     def test_link_events(self):
-        self.goals.accept(Add("Next"))
-        self.goals.accept(Add("More"))
-        self.goals.accept(Select(2))
-        self.goals.accept(HoldSelect())
-        self.goals.accept(Select(3))
-        self.goals.accept(ToggleLink())
+        self.goals.accept_all(
+            Add("Next"), Add("More"), Select(2), HoldSelect(), Select(3), ToggleLink()
+        )
         assert self.goals.events()[-1] == ("link", 2, 3, EdgeType.BLOCKER)
         self.goals.accept(ToggleLink())
         assert self.goals.events()[-1] == ("unlink", 2, 3, EdgeType.BLOCKER)

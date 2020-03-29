@@ -81,9 +81,7 @@ def test_use_mapping_in_selection():
         9: {"name": "i", "select": None},
         0: {"name": "j", "select": "select"},
     }
-    e.accept(Add("k"))
-    e.accept(Select(1))
-    e.accept(Select(6))
+    e.accept_all(Add("k"), Select(1), Select(6))
     assert e.q(keys="name,select") == {
         11: {"name": "a", "select": None},
         12: {"name": "b", "select": None},
@@ -151,8 +149,7 @@ def test_select_goal_by_full_id_with_non_empty_cache():
         10: {"name": "j", "select": None},
         21: {"name": "k", "select": None},
     }
-    e.accept(Select(2))
-    e.accept(Select(13))
+    e.accept_all(Select(2), Select(13))
     assert e.q(keys="name,select") == {
         11: {"name": "a", "select": "prev"},
         12: {"name": "b", "select": None},
@@ -248,8 +245,7 @@ def test_selection_cache_should_be_reset_after_view_switch():
     g = build_goaltree(*prototype)
     g.accept(Add("Also top", 1))
     e = Enumeration(g)
-    e.accept(Select(1))
-    e.accept(NextView())
+    e.accept_all(Select(1), NextView())
     assert e.q("name,select") == {
         1: {"name": "11", "select": "select"},
         2: {"name": "Also top", "select": None},
@@ -279,18 +275,13 @@ def test_selection_cache_should_avoid_overflow():
 
 def test_top_view_may_be_empty():
     e = Enumeration(Goals("closed"))
-    e.accept(ToggleClose())
-    e.accept(NextView())
+    e.accept_all(ToggleClose(), NextView())
     assert e.q() == {}
 
 
 def test_simple_top_enumeration_workflow():
     e = Enumeration(Goals("root"))
-    e.accept(Add("1"))
-    e.accept(Add("2"))
-    e.accept(Select(2))
-    e.accept(NextView())
-    e.accept(Select(2))
+    e.accept_all(Add("1"), Add("2"), Select(2), NextView(), Select(2))
     assert e.q() == {1: {"name": "1"}, 2: {"name": "2"}}
 
 
@@ -302,9 +293,7 @@ def test_open_view_may_be_empty():
 
 def test_simple_open_enumeration_workflow():
     e = Enumeration(Goals("Root"))
-    e.accept(Add("1"))
-    e.accept(Add("2"))
-    e.accept(Select(2))
+    e.accept_all(Add("1"), Add("2"), Select(2))
     assert e.q(keys="name,select,open,edge") == {
         1: {
             "name": "Root",
@@ -336,10 +325,7 @@ class PseudoZoomedGoals(Goals):
 
 def test_do_not_enumerate_goals_with_negative_id():
     g = PseudoZoomedGoals("Root")
-    g.accept(Add("Zoomed"))
-    g.accept(Select(2))
-    g.accept(HoldSelect())
-    g.accept(Add("Top"))
+    g.accept_all(Add("Zoomed"), Select(2), HoldSelect(), Add("Top"))
     assert g.q("name,select,edge") == {
         -1: {"name": "Root", "select": None, "edge": [(2, EdgeType.PARENT)]},
         2: {"name": "Zoomed", "select": "select", "edge": [(3, EdgeType.PARENT)]},
