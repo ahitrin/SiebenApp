@@ -285,10 +285,10 @@ def test_simple_top_enumeration_workflow():
     assert e.q() == {1: {"name": "1"}, 2: {"name": "2"}}
 
 
-def test_open_view_may_be_empty():
+def test_open_view_may_not_be_empty():
     e = Enumeration(Goals("closed"))
     e.accept(ToggleClose())
-    assert e.q() == {}
+    assert e.q() == {1: {"name": "closed"}}
 
 
 def test_simple_open_enumeration_workflow():

@@ -67,7 +67,8 @@ class Enumeration(Graph):
     def _update_open_mapping(self) -> Set[int]:
         if not self._open:
             return set(self.goaltree.q().keys())
-        return {k for k, v in self.goaltree.q(keys="open").items() if v["open"]}
+        return {k for k, v in self.goaltree.q(keys="open").items()
+                if v["open"] or k == 1}
 
     def _update_top_mapping(self, original_mapping: Set[int]) -> Set[int]:
         if not self._top:
