@@ -13,6 +13,7 @@ from hypothesis.stateful import (
     precondition,
 )
 
+from siebenapp.enumeration import Enumeration
 from siebenapp.goaltree import Goals
 from siebenapp.domain import (
     EdgeType,
@@ -39,7 +40,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 
     def __init__(self):
         super(GoaltreeRandomWalk, self).__init__()
-        self.goaltree = Zoom(Goals("Root"))
+        self.goaltree = Enumeration(Zoom(Goals("Root")))
         self.database = sqlite3.connect(":memory:")
 
     @initialize()
@@ -133,7 +134,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         save_updates(self.goaltree, self.database)
         assert not self.goaltree.events()
         ng = build_goals(self.database)
-        q1 = self.goaltree.goaltree.q("name,open,edge,select,switchable")
+        q1 = self.goaltree.goaltree.goaltree.q("name,open,edge,select,switchable")
         q2 = ng.q("name,open,edge,select,switchable")
         assert q1 == q2
 

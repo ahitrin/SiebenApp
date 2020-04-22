@@ -146,3 +146,6 @@ class Enumeration(Graph):
         self._open, self._top = self._views[self._open, self._top]
         self._update_mapping()
         self.selection_cache.clear()
+
+    def verify(self):
+        return self.goaltree.verify()
