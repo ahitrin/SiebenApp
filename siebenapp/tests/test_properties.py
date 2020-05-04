@@ -104,18 +104,22 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         self._accept_all(HoldSelect(), Select(random_goal), Insert("i"))
 
     @rule(b=booleans(), d=data())
+    # Ignore trivial trees (without any subgoal)
+    @precondition(lambda self: len(self.goaltree.q()) > 1)
     def toggle_link(self, b, d):
         event("toggle link")
-        selection = d.draw(
-            integers(min_value=1, max_value=max(self.goaltree.q().keys()))
-        )
-        prev_selection = d.draw(
-            integers(min_value=1, max_value=max(self.goaltree.q().keys()))
-        )
+        goal_keys = sorted(list(self.goaltree.q().keys()))
+        if -1 in goal_keys:
+            goal_keys.remove(-1)
+        assume(len(goal_keys) > 1)
+        selection = d.draw(sampled_from(goal_keys))
+        prev_selection = d.draw(sampled_from(goal_keys))
         assume(selection != prev_selection)
         event("valid toggle link")
         edge_type = EdgeType.PARENT if b else EdgeType.BLOCKER
-        self._accept(ToggleLink(edge_type=edge_type))
+        self._accept(
+            ToggleLink(lower=prev_selection, upper=selection, edge_type=edge_type)
+        )
 
     @rule()
     def close_or_open(self):
