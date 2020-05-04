@@ -80,12 +80,11 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         self.goaltree.accept(HoldSelect())
 
     @rule(d=data())
+    # Ignore trivial trees (without any subgoal)
+    @precondition(lambda self: len(self.goaltree.q()) > 1)
     def insert(self, d):
         event("insert")
         goal_keys = set(self.goaltree.q().keys())
-        # Ignore trivial trees (without any subgoal)
-        assume(len(goal_keys) > 1)
-        event("valid insert")
         selection = self.goaltree.settings("selection")
         goal_keys.discard(selection)
         random_goal = d.draw(sampled_from(sorted(list(goal_keys))))
