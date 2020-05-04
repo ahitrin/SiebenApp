@@ -97,10 +97,10 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     @precondition(lambda self: len(self.goaltree.q()) > 1)
     def insert(self, d):
         event("insert")
-        goal_keys = set(self.goaltree.q().keys())
+        goal_keys = sorted(list(self.goaltree.q().keys()))
         selection = self.goaltree.settings("selection")
-        goal_keys.discard(selection)
-        random_goal = d.draw(sampled_from(sorted(list(goal_keys))))
+        goal_keys.remove(selection)
+        random_goal = d.draw(sampled_from(goal_keys))
         self._accept_all(HoldSelect(), Select(random_goal), Insert("i"))
 
     @rule(b=booleans(), d=data())
