@@ -1,5 +1,7 @@
 from typing import Dict
 
+# pylint: disable=protected-access
+
 from siebenapp.goaltree import Goals
 
 
