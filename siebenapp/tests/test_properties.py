@@ -3,7 +3,7 @@ import sqlite3
 from collections import Counter
 from contextlib import closing
 
-from hypothesis import settings, assume, note
+from hypothesis import settings, assume, note, event
 from hypothesis.strategies import data, integers, booleans, text
 from hypothesis.stateful import (
     RuleBasedStateMachine,
@@ -65,10 +65,12 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 
     @rule(d=data())
     def select_random_goal(self, d):
+        event("select")
         random_goal = d.draw(
             integers(min_value=1, max_value=max(self.goaltree.q().keys()))
         )
         assume(random_goal in self.goaltree.q())
+        event("valid select")
         self.goaltree.accept(Select(random_goal))
         # Any valid goal must be selectable
         assert self.goaltree.q("select")[random_goal]["select"] == "select"
@@ -79,13 +81,16 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 
     @rule()
     def insert(self):
+        event("insert")
         selection = self.goaltree.settings("selection")
         prev_selection = self.goaltree.settings("previous_selection")
         assume(selection != prev_selection)
+        event("valid insert")
         self.goaltree.accept(Insert("i"))
 
     @rule(b=booleans(), d=data())
     def toggle_link(self, b, d):
+        event("toggle link")
         selection = d.draw(
             integers(min_value=1, max_value=max(self.goaltree.q().keys()))
         )
@@ -93,6 +98,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
             integers(min_value=1, max_value=max(self.goaltree.q().keys()))
         )
         assume(selection != prev_selection)
+        event("valid toggle link")
         edge_type = EdgeType.PARENT if b else EdgeType.BLOCKER
         self.goaltree.accept(ToggleLink(edge_type=edge_type))
 
