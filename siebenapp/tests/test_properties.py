@@ -24,6 +24,7 @@ from siebenapp.domain import (
     Insert,
     Rename,
     ToggleZoom,
+    Command,
 )
 from siebenapp.goaltree import Goals
 from siebenapp.system import run_migrations, save_updates
@@ -50,6 +51,15 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     def teardown(self):
         self.database.close()
 
+    def _accept_all(self, *commands: Command) -> None:
+        for command in commands:
+            note(str(command))
+        self.goaltree.accept_all(*commands)
+
+    def _accept(self, command: Command) -> None:
+        note(str(command))
+        self.goaltree.accept(command)
+
     #
     # Modifiers
     #
@@ -58,12 +68,12 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     def add_goal(self, b):
         event("add")
         edge_type = EdgeType.PARENT if b else EdgeType.BLOCKER
-        self.goaltree.accept(Add("a", edge_type=edge_type))
+        self._accept(Add("a", edge_type=edge_type))
 
     @rule()
     def delete_goal(self):
         event("delete")
-        self.goaltree.accept(Delete())
+        self._accept(Delete())
 
     @rule(d=data())
     def select_random_goal(self, d):
@@ -73,14 +83,14 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         )
         assume(random_goal in self.goaltree.q())
         event("valid select")
-        self.goaltree.accept(Select(random_goal))
+        self._accept(Select(random_goal))
         # Any valid goal must be selectable
         assert self.goaltree.q("select")[random_goal]["select"] == "select"
 
     @rule()
     def hold_selection(self):
         event("hold")
-        self.goaltree.accept(HoldSelect())
+        self._accept(HoldSelect())
 
     @rule(d=data())
     # Ignore trivial trees (without any subgoal)
@@ -91,7 +101,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         selection = self.goaltree.settings("selection")
         goal_keys.discard(selection)
         random_goal = d.draw(sampled_from(sorted(list(goal_keys))))
-        self.goaltree.accept_all(HoldSelect(), Select(random_goal), Insert("i"))
+        self._accept_all(HoldSelect(), Select(random_goal), Insert("i"))
 
     @rule(b=booleans(), d=data())
     def toggle_link(self, b, d):
@@ -105,22 +115,22 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         assume(selection != prev_selection)
         event("valid toggle link")
         edge_type = EdgeType.PARENT if b else EdgeType.BLOCKER
-        self.goaltree.accept(ToggleLink(edge_type=edge_type))
+        self._accept(ToggleLink(edge_type=edge_type))
 
     @rule()
     def close_or_open(self):
         event("close/open")
-        self.goaltree.accept(ToggleClose())
+        self._accept(ToggleClose())
 
     @rule(t=text())
     def rename(self, t):
         event("rename")
-        self.goaltree.accept(Rename(t))
+        self._accept(Rename(t))
 
     @rule()
     def zoom(self):
         event("zoom")
-        self.goaltree.accept(ToggleZoom())
+        self._accept(ToggleZoom())
 
     #
     # Verifiers
