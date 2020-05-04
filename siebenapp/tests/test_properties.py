@@ -56,11 +56,13 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 
     @rule(b=booleans())
     def add_goal(self, b):
+        event("add")
         edge_type = EdgeType.PARENT if b else EdgeType.BLOCKER
         self.goaltree.accept(Add("a", edge_type=edge_type))
 
     @rule()
     def delete_goal(self):
+        event("delete")
         self.goaltree.accept(Delete())
 
     @rule(d=data())
@@ -77,6 +79,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 
     @rule()
     def hold_selection(self):
+        event("hold")
         self.goaltree.accept(HoldSelect())
 
     @rule(d=data())
@@ -106,14 +109,17 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 
     @rule()
     def close_or_open(self):
+        event("close/open")
         self.goaltree.accept(ToggleClose())
 
     @rule(t=text())
     def rename(self, t):
+        event("rename")
         self.goaltree.accept(Rename(t))
 
     @rule()
     def zoom(self):
+        event("zoom")
         self.goaltree.accept(ToggleZoom())
 
     #
