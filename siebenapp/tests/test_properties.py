@@ -4,7 +4,6 @@ from collections import Counter
 from contextlib import closing
 
 from hypothesis import settings, assume, note, event
-from hypothesis.strategies import data, integers, booleans, text
 from hypothesis.stateful import (
     RuleBasedStateMachine,
     rule,
@@ -12,8 +11,8 @@ from hypothesis.stateful import (
     invariant,
     precondition,
 )
+from hypothesis.strategies import data, integers, booleans, text, sampled_from
 
-from siebenapp.goaltree import Goals
 from siebenapp.domain import (
     EdgeType,
     HoldSelect,
@@ -26,6 +25,7 @@ from siebenapp.domain import (
     Rename,
     ToggleZoom,
 )
+from siebenapp.goaltree import Goals
 from siebenapp.system import run_migrations, save_updates
 from siebenapp.zoom import Zoom
 
@@ -79,14 +79,17 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     def hold_selection(self):
         self.goaltree.accept(HoldSelect())
 
-    @rule()
-    def insert(self):
+    @rule(d=data())
+    def insert(self, d):
         event("insert")
-        selection = self.goaltree.settings("selection")
-        prev_selection = self.goaltree.settings("previous_selection")
-        assume(selection != prev_selection)
+        goal_keys = set(self.goaltree.q().keys())
+        # Ignore trivial trees (without any subgoal)
+        assume(len(goal_keys) > 1)
         event("valid insert")
-        self.goaltree.accept(Insert("i"))
+        selection = self.goaltree.settings("selection")
+        goal_keys.discard(selection)
+        random_goal = d.draw(sampled_from(sorted(list(goal_keys))))
+        self.goaltree.accept_all(HoldSelect(), Select(random_goal), Insert("i"))
 
     @rule(b=booleans(), d=data())
     def toggle_link(self, b, d):
