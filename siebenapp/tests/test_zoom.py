@@ -1,3 +1,5 @@
+import pytest
+
 from siebenapp.goaltree import Goals
 from siebenapp.domain import (
     EdgeType,
@@ -177,6 +179,28 @@ def test_selection_should_be_changed_if_selected_goal_is_not_a_child_of_zoom_roo
         2: {"name": "Blocker", "select": None},
         4: {"name": "Zoomed", "select": "select"},
     }
+
+
+@pytest.mark.skip("Failing: see issue #98")
+def test_previous_selection_should_be_changed_or_reset_after_zoom():
+    goals = Zoom(
+        build_goaltree(
+            open_(1, "", blockers=[3, 4, 5, 6, 7, 8]),
+            open_(2, "", blockers=[9], select=previous),
+            open_(3, ""),
+            open_(4, ""),
+            open_(5, ""),
+            open_(6, "", [8], select=selected),
+            open_(7, ""),
+            open_(8, "", [2]),
+            open_(9, ""),
+        )
+    )
+    assert goals.verify()
+    goals.accept(ToggleZoom())
+    assert goals.verify()
+    goals.accept(ToggleLink(6, 8, EdgeType.BLOCKER))
+    assert goals.verify()
 
 
 def test_selection_should_be_changed_on_stacked_unzoom_a_long_chain_of_blockers():
