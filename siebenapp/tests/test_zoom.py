@@ -185,21 +185,18 @@ def test_selection_should_be_changed_if_selected_goal_is_not_a_child_of_zoom_roo
 def test_previous_selection_should_be_changed_or_reset_after_zoom():
     goals = Zoom(
         build_goaltree(
-            open_(1, "", blockers=[3, 4, 5, 6, 7, 8]),
-            open_(2, "", blockers=[9], select=previous),
-            open_(3, ""),
-            open_(4, ""),
+            open_(1, "", blockers=[2, 3]),
+            open_(2, "", [4]),
+            open_(3, "", [2], select=selected),
+            open_(4, "", blockers=[5], select=previous),
             open_(5, ""),
-            open_(6, "", [8], select=selected),
-            open_(7, ""),
-            open_(8, "", [2]),
-            open_(9, ""),
         )
     )
     assert goals.verify()
     goals.accept(ToggleZoom())
     assert goals.verify()
-    goals.accept(ToggleLink(6, 8, EdgeType.BLOCKER))
+    # Currently we cannot make such move via user interface because goal 3 is hidden
+    goals.accept(ToggleLink(3, 2, EdgeType.BLOCKER))
     assert goals.verify()
 
 
