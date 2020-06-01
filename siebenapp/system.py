@@ -88,6 +88,8 @@ MIGRATIONS = [
         "delete from edges",
         "insert into edges select * from new_edges",
     ],
+    # 7
+    ["drop table new_edges",],
 ]
 
 
