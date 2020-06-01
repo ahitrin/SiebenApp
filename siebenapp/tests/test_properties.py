@@ -174,5 +174,10 @@ def build_goals(conn):
         goals = list(cur.execute("select * from goals"))
         edges = list(cur.execute("select parent, child, reltype from edges"))
         selection = list(cur.execute("select * from settings"))
-        note(f"Goals: {goals}, Edges: {edges}, Selection: {selection}")
-        return Goals.build(goals, edges, selection)
+        zoom_data = list(cur.execute("select * from zoom"))
+        note(
+            f"Goals: {goals}, Edges: {edges}, Selection: {selection}, Zoom: {zoom_data}"
+        )
+        goals = Goals.build(goals, edges, selection)
+        # We still have to return unzoomed data
+        return goals
