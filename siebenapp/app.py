@@ -23,7 +23,7 @@ from siebenapp.domain import (
     NextView,
 )
 from siebenapp.render import Renderer
-from siebenapp.system import save, load, DEFAULT_DB, split_long
+from siebenapp.system import save, load, split_long
 from siebenapp.ui.goalwidget import Ui_GoalBody
 
 
@@ -294,10 +294,7 @@ class SiebenApp(QMainWindow):
 def main(root_script):
     parser = ArgumentParser()
     parser.add_argument(
-        "db",
-        nargs="?",
-        default=DEFAULT_DB,
-        help="Path to the database file (sieben.db by default)",
+        "db", help="Path to the database file",
     )
     args = parser.parse_args()
     app = QApplication(sys.argv)

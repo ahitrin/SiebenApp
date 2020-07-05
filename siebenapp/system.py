@@ -9,7 +9,6 @@ from siebenapp.goaltree import Goals
 from siebenapp.enumeration import Enumeration
 from siebenapp.zoom import Zoom
 
-DEFAULT_DB = "sieben.db"
 MIGRATIONS = [
     # 0
     ["create table migrations (version integer)", "insert into migrations values (-1)"],
@@ -96,7 +95,7 @@ MIGRATIONS = [
 AnyGraph = Union[Goals, Enumeration, Zoom]
 
 
-def save(goals: AnyGraph, filename: str = DEFAULT_DB) -> None:
+def save(goals: AnyGraph, filename: str) -> None:
     if path.isfile(filename):
         connection = sqlite3.connect(filename)
         run_migrations(connection)
@@ -158,9 +157,7 @@ def save_updates(goals: AnyGraph, connection: sqlite3.Connection) -> None:
     connection.commit()
 
 
-def load(
-    filename: str = DEFAULT_DB, message_fn: Callable[[str], None] = None
-) -> Enumeration:
+def load(filename: str, message_fn: Callable[[str], None] = None) -> Enumeration:
     if path.isfile(filename):
         connection = sqlite3.connect(filename)
         run_migrations(connection)
