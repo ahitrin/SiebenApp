@@ -25,8 +25,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>576</width>
-         <height>271</height>
+         <width>580</width>
+         <height>249</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
@@ -58,13 +58,15 @@
      <x>0</x>
      <y>0</y>
      <width>596</width>
-     <height>20</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
      <string>&amp;File</string>
     </property>
+    <addaction name="actionOpen"/>
+    <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menu_Help">
@@ -123,6 +125,11 @@
   <action name="action_Hotkeys">
    <property name="text">
     <string>&amp;Hotkeys</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="text">
+    <string>Open...</string>
    </property>
   </action>
  </widget>
