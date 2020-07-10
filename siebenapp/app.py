@@ -6,7 +6,7 @@ from os.path import dirname, join, realpath
 
 from PyQt5.QtCore import pyqtSignal, Qt, QRect
 from PyQt5.QtGui import QPainter, QPen
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog
 from PyQt5.uic import loadUi
 
 from siebenapp.domain import (
@@ -127,6 +127,7 @@ class SiebenApp(QMainWindow):
     def setup(self):
         self.action_Hotkeys.triggered.connect(self.hotkeys.show)
         self.action_About.triggered.connect(self.about.show)
+        self.action_Open.triggered.connect(self.show_open_dialog)
         # Re-creation of scrollAreaWidgetContents looks like dirty hack,
         # but at the current moment I haven't found a better solution.
         # Widget creation in __init__ does not work: lines disappear.
@@ -194,6 +195,7 @@ class SiebenApp(QMainWindow):
                 self.goals.accept, ToggleLink(edge_type=EdgeType.PARENT)
             ),
             Qt.Key_L: self.with_refresh(self.goals.accept, ToggleLink()),
+            Qt.Key_O: self.show_open_dialog,
             Qt.Key_Q: self.quit_app.emit,
             Qt.Key_R: self.start_edit(
                 "Rename goal", self.emit_rename, self._current_goal_label
@@ -208,6 +210,15 @@ class SiebenApp(QMainWindow):
             key_handlers[event.key()]()
         else:
             super().keyPressEvent(event)
+
+    def show_open_dialog(self):
+        fname = QFileDialog.getOpenFileName(self, caption="Open file", filter="*.db")[0]
+        if fname:
+            self.db = fname
+            self.goals = load(fname, self.show_user_message)
+            self._update_title()
+            self.force_refresh = True
+            self.refresh.emit()
 
     def start_edit(self, label, fn, pre_fn=None):
         def inner():

@@ -65,7 +65,7 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
-    <addaction name="actionOpen"/>
+    <addaction name="action_Open"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -127,9 +127,9 @@
     <string>&amp;Hotkeys</string>
    </property>
   </action>
-  <action name="actionOpen">
+  <action name="action_Open">
    <property name="text">
-    <string>Open...</string>
+    <string>&amp;Open...</string>
    </property>
   </action>
  </widget>
