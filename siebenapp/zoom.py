@@ -87,7 +87,11 @@ class Zoom(Graph):
 
     def _toggle_link(self, command: ToggleLink):
         self.goaltree.accept(command)
-        if self.settings("selection") not in self._build_visible_goals():
+        visible_goals = self._build_visible_goals()
+        if (
+            self.settings("selection") not in visible_goals
+            or self.settings("previous_selection") not in visible_goals
+        ):
             self.goaltree.accept_all(Select(self.zoom_root[-1]), HoldSelect())
 
     def _delete(self, command: Delete) -> None:
