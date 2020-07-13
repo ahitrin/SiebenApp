@@ -113,8 +113,8 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
             goal_keys.remove(-1)
         assume(len(goal_keys) > 1)
         selection = d.draw(sampled_from(goal_keys))
+        goal_keys.remove(selection)
         prev_selection = d.draw(sampled_from(goal_keys))
-        assume(selection != prev_selection)
         event("valid toggle link")
         edge_type = EdgeType.PARENT if b else EdgeType.BLOCKER
         self._accept(
