@@ -1,0 +1,64 @@
+---
+layout: post
+title:  "Version 0.7 is here"
+date:   2020-08-11
+tags: news
+---
+
+Seems it's a significantly large update.
+Not sure whether this is a good idea.
+But you all know, we live in covid times, and all plans were scrambled.
+
+## New features
+
+* Open another file in the same window.
+  A simple but missing feature that was implemented even without a ticket.
+  Simply press `o` button to use it!
+* Restore [export][issue94] into `.dot` format.
+  Sometimes you may need to export your graph into an image to show it to other people.
+  Just use following procedure:
+
+```
+$ sieben-manage dot my_file.db > output.dot
+$ dot -Tpng -o graph.png output.dot
+```
+
+## Bug fixes
+
+* Zoom: [inconsistent behavior when close zoom root][issue98]
+* Improve [tests stability][issue92]
+* Migration: drop empty table 'new_edges' (crap left after [previous migration][issue16])
+
+## Refactoring
+
+* [Replace Graph methods with commands][issue97] (reduce coupling between classes)
+* [Extract common interface to the Goals class][issue68] (reduce coupling between implementations)
+* [Toggle views independently from each other][issue67] (inner preparations for a feature)
+
+## Compatibility breaks
+
+* Do *not* open `sieben.db` file by default when called without argument.
+  This "feature" exists from the very first version of application, but now it's not actually used anymore.
+* Use f-strings (no more Python3.5)
+
+## Other improvements
+
+Various improvements in development process.
+
+* Move from requirements.txt to Pipenv
+* Update dependencies: PyQt5, Hypothesis, Pytest, Mypy, Pylint
+* Add Black for formatting
+* Fix some Mypy warnings
+
+## Plans for version 0.8
+
+Well, not much yet.
+Look for issues and commits to stay in touch.
+
+[issue16]: https://github.com/ahitrin/SiebenApp/issues/16
+[issue67]: https://github.com/ahitrin/SiebenApp/issues/67
+[issue68]: https://github.com/ahitrin/SiebenApp/issues/68
+[issue92]: https://github.com/ahitrin/SiebenApp/issues/92
+[issue94]: https://github.com/ahitrin/SiebenApp/issues/94
+[issue97]: https://github.com/ahitrin/SiebenApp/issues/97
+[issue98]: https://github.com/ahitrin/SiebenApp/issues/98
