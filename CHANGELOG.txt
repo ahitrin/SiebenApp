@@ -1,3 +1,35 @@
+Alpha version 0.7
+-----
+
+New features:
+
+* Open another file in the same window (no Github ticket, LOL)
+* Restore export into .dot format #94 (in a new 'sieben-manage' script)
+
+Bug fixes:
+
+* Zoom: inconsistent behavior when close zoom root #98
+* Improve tests stability #92
+* Migration: drop empty table 'new_edges' (crap left after #16)
+
+Refactoring:
+
+* Replace Graph methods with commands #97 (reduce coupling between classes)
+* Extract common interface to the Goals class #68
+* Toggle views independently from each other (inner preparations) #67
+
+Compatibility breaks:
+
+* Do *not* open 'sieben.db' file by default when called without argument
+* Use f-strings (no more Python3.5)
+
+Other improvements:
+
+* Move from requirements.txt to Pipenv
+* Update dependencies: PyQt5, Hypothesis, Pytest, Mypy, Pylint
+* Add Black for formatting
+* Fix some Mypy warnings
+
 Alpha version 0.6
 -----
 
