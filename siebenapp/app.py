@@ -4,10 +4,10 @@ import sys
 from argparse import ArgumentParser
 from os.path import dirname, join, realpath
 
-from PyQt5.QtCore import pyqtSignal, Qt, QRect
-from PyQt5.QtGui import QPainter, QPen
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog
-from PyQt5.uic import loadUi
+from PyQt5.QtCore import pyqtSignal, Qt, QRect  # type: ignore
+from PyQt5.QtGui import QPainter, QPen  # type: ignore
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog  # type: ignore
+from PyQt5.uic import loadUi  # type: ignore
 
 from siebenapp.domain import (
     EdgeType,
@@ -24,7 +24,7 @@ from siebenapp.domain import (
 )
 from siebenapp.render import Renderer
 from siebenapp.system import save, load, split_long
-from siebenapp.ui.goalwidget import Ui_GoalBody
+from siebenapp.ui.goalwidget import Ui_GoalBody  # type: ignore
 
 
 class GoalWidget(QWidget, Ui_GoalBody):
