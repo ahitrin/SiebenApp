@@ -29,7 +29,7 @@ format:
 	pipenv run black sieben siebenapp
 
 mypy:
-	pipenv run mypy -p siebenapp
+	pipenv run mypy --pretty -p siebenapp
 
 run:
 	pipenv run ./sieben
