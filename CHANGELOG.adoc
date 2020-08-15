@@ -1,16 +1,18 @@
-Alpha version 0.7
------
+= Changelog
+
+== Alpha version 0.7
+2020-08-11
 
 New features:
 
 * Open another file in the same window (no Github ticket, LOL)
-* Restore export into .dot format #94 (in a new 'sieben-manage' script)
+* Restore export into .dot format #94 (in a new `sieben-manage` script)
 
 Bug fixes:
 
 * Zoom: inconsistent behavior when close zoom root #98
 * Improve tests stability #92
-* Migration: drop empty table 'new_edges' (crap left after #16)
+* Migration: drop empty table `new_edges` (crap left after #16)
 
 Refactoring:
 
@@ -20,7 +22,7 @@ Refactoring:
 
 Compatibility breaks:
 
-* Do *not* open 'sieben.db' file by default when called without argument
+* Do *not* open `sieben.db` file by default when called without argument
 * Use f-strings (no more Python3.5)
 
 Other improvements:
@@ -30,8 +32,8 @@ Other improvements:
 * Add Black for formatting
 * Fix some Mypy warnings
 
-Alpha version 0.6
------
+== Alpha version 0.6
+2020-01-20
 
 Bug fixes:
 
@@ -48,8 +50,8 @@ Other improvements:
 * Reorganize blog: move from branch to directory
 * Update dependencies: pytest, hypothesis, mypy, pyqt5 (thx to @dependabot)
 
-Alpha version 0.5.1
------
+== Alpha version 0.5.1
+2019-11-25
 
 Bug fixes:
 
@@ -59,8 +61,8 @@ Other improvements:
 
 * Update Hypothesis and Pytest dependencies
 
-Alpha version 0.5
------
+== Alpha version 0.5
+2019-11-20
 
 New features:
 
@@ -80,8 +82,8 @@ Compatibility breaks:
 * Remove unused 'swap goals' feature
 * API change: use 'q' for query method, not 'all'
 
-Alpha version 0.4
------
+== Alpha version 0.4
+2018-03-22
 
 New features:
 
@@ -107,8 +109,8 @@ Compatibility breaks:
 
  * Drop Graphviz drawing engine #5
 
-Alpha version 0.3
------
+== Alpha version 0.3
+2017-06-12
 
 New features:
 
@@ -136,15 +138,15 @@ Other improvements:
  * Update PyQt version: 5.7->5.8.2
  * Use special Hypothesis profile for CI
 
-Alpha version 0.2
------
+== Alpha version 0.2
+2016-12-18
 
 New features:
 
  * Use SqliteDB for save/load #2
  * Add several validation checks
 
-Alpha version 0.1
-------
+== Alpha version 0.1
+2016-11-28
 
 The very first public release. Very limited functionality, but already working.
