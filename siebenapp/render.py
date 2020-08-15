@@ -18,11 +18,11 @@ class Renderer:
 
     def __init__(self, goals: Graph) -> None:
         self.graph = goals.q(keys="name,edge,open,select,switchable")
-        self.edges = {
+        self.edges: Dict[GoalId, List[Any]] = {
             key: [e[0] for e in values["edge"]] for key, values in self.graph.items()
         }
-        self.layers: Dict[int, List[int]] = defaultdict(list)
-        self.positions: Dict[int, int] = {}
+        self.layers: Dict[int, List[GoalId]] = defaultdict(list)
+        self.positions: Dict[GoalId, int] = {}
         self.edge_types: Dict[Tuple[GoalId, GoalId], EdgeType] = {
             (parent, child): edge_type
             for parent in self.graph
@@ -36,10 +36,10 @@ class Renderer:
         return self.graph
 
     def split_by_layers(self) -> None:
-        unsorted_goals: Dict[int, List[int]] = dict(self.edges)
+        unsorted_goals: Dict[GoalId, List[int]] = dict(self.edges)
         sorted_goals: Set[GoalId] = set()
-        incoming_edges: Set[int] = set()
-        outgoing_edges: Set[int] = set()
+        incoming_edges: Set[GoalId] = set()
+        outgoing_edges: Set[GoalId] = set()
         current_layer = 0
         while unsorted_goals:
             new_layer: List[GoalId] = []
@@ -82,8 +82,8 @@ class Renderer:
 
     @staticmethod
     def candidates_for_new_layer(
-        sorted_goals: Set[GoalId], unsorted_goals: Dict[int, List[int]]
-    ) -> List[Tuple[int, int]]:
+        sorted_goals: Set[GoalId], unsorted_goals: Dict[GoalId, List[int]]
+    ) -> List[Tuple[GoalId, int]]:
         candidates = [
             (goal, len(edges))
             for goal, edges in unsorted_goals.items()
