@@ -55,7 +55,7 @@ Other improvements:
 
 Bug fixes:
 
-* Fix https://github.com/ahitrin/SiebenApp/issues/[#]3: focus may be lost after unlink in zoomed mode
+* Fix https://github.com/ahitrin/SiebenApp/issues/3[#3]: focus may be lost after unlink in zoomed mode
 
 Other improvements:
 
