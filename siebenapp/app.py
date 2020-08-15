@@ -6,7 +6,13 @@ from os.path import dirname, join, realpath
 
 from PyQt5.QtCore import pyqtSignal, Qt, QRect  # type: ignore
 from PyQt5.QtGui import QPainter, QPen  # type: ignore
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog  # type: ignore
+from PyQt5.QtWidgets import (  # type: ignore
+    QApplication,
+    QMainWindow,
+    QWidget,
+    QGridLayout,
+    QFileDialog,
+)
 from PyQt5.uic import loadUi  # type: ignore
 
 from siebenapp.domain import (
