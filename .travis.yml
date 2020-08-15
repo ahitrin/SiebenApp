@@ -6,4 +6,4 @@ python:
  - "3.8"
 env:
  - HYPOTHESIS_PROFILE=ci
-script: make venv test lint
+script: make venv test lint mypy
