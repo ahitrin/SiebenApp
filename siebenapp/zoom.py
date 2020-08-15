@@ -20,6 +20,7 @@ ZoomData = List[Tuple[int, int]]
 
 class Zoom(Graph):
     def __init__(self, goaltree: Goals) -> None:
+        super().__init__()
         self.goaltree = goaltree
         self.zoom_root = [1]
 

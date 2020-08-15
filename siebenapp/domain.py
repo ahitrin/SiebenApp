@@ -22,6 +22,9 @@ class Graph:
 
     NO_VALUE = -1
 
+    def __init__(self):
+        self.goaltree: Graph = self
+
     def accept(self, command: Command) -> None:
         """React on the given command"""
         raise NotImplementedError
@@ -44,6 +47,10 @@ class Graph:
     def q(self, keys: str = "name") -> Dict[int, Any]:
         """Run search query against content"""
         raise NotImplementedError
+
+    def verify(self) -> bool:  # pylint: disable=no-self-use
+        """Check all inner data for correctness"""
+        return False
 
 
 # == Command implementations ==

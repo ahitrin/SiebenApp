@@ -26,6 +26,7 @@ class Goals(Graph):
     ROOT_ID = 1
 
     def __init__(self, name: str, message_fn: Callable[[str], None] = None) -> None:
+        super().__init__()
         self.goals: Dict[int, Optional[str]] = {}
         self.edges: Dict[Tuple[int, int], EdgeType] = {}
         self.closed: Set[int] = set()

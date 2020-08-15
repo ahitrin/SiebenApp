@@ -4,7 +4,7 @@ from html import escape
 from os import path
 from typing import Union, Callable, List, Dict
 
-from siebenapp.domain import EdgeType
+from siebenapp.domain import EdgeType, Graph
 from siebenapp.goaltree import Goals
 from siebenapp.enumeration import Enumeration
 from siebenapp.zoom import Zoom
@@ -92,10 +92,7 @@ MIGRATIONS = [
 ]
 
 
-AnyGraph = Union[Goals, Enumeration, Zoom]
-
-
-def save(goals: AnyGraph, filename: str) -> None:
+def save(goals: Graph, filename: str) -> None:
     if path.isfile(filename):
         connection = sqlite3.connect(filename)
         run_migrations(connection)
@@ -122,7 +119,7 @@ def save(goals: AnyGraph, filename: str) -> None:
         connection.close()
 
 
-def save_updates(goals: AnyGraph, connection: sqlite3.Connection) -> None:
+def save_updates(goals: Graph, connection: sqlite3.Connection) -> None:
     actions = {
         "add": ["insert into goals values (?,?,?)"],
         "toggle_close": ["update goals set open=? where goal_id=?"],

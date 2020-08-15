@@ -51,6 +51,7 @@ class Enumeration(Graph):
     }
 
     def __init__(self, goaltree: Union[Goals, Zoom]) -> None:
+        super().__init__()
         self.goaltree = goaltree
         self.selection_cache: List[int] = []
         self._open: bool = True
