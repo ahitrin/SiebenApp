@@ -6,19 +6,19 @@
 New features:
 
 * Open another file in the same window (no Github ticket, LOL)
-* Restore export into .dot format #94 (in a new `sieben-manage` script)
+* Restore export into `.dot` format https://github.com/ahitrin/SiebenApp/issues/94[#94] (in a new `sieben-manage` script)
 
 Bug fixes:
 
-* Zoom: inconsistent behavior when close zoom root #98
-* Improve tests stability #92
-* Migration: drop empty table `new_edges` (crap left after #16)
+* Zoom: inconsistent behavior when close zoom root https://github.com/ahitrin/SiebenApp/issues/98[#98]
+* Improve tests stability https://github.com/ahitrin/SiebenApp/issues/92[#92]
+* Migration: drop empty table `new_edges` (crap left after https://github.com/ahitrin/SiebenApp/issues/16[#16])
 
 Refactoring:
 
-* Replace Graph methods with commands #97 (reduce coupling between classes)
-* Extract common interface to the Goals class #68
-* Toggle views independently from each other (inner preparations) #67
+* Replace Graph methods with commands https://github.com/ahitrin/SiebenApp/issues/97[#97] (reduce coupling between classes)
+* Extract common interface to the Goals class https://github.com/ahitrin/SiebenApp/issues/68[#68]
+* Toggle views independently from each other (inner preparations) https://github.com/ahitrin/SiebenApp/issues/67[#67]
 
 Compatibility breaks:
 
@@ -37,16 +37,16 @@ Other improvements:
 
 Bug fixes:
 
-* Previous selection may get lost on unzoom #85
+* Previous selection may get lost on unzoom https://github.com/ahitrin/SiebenApp/issues/85[#85]
 
 Compatibility breaks:
 
-* Remove support for Python 3.5 #64
+* Remove support for Python 3.5 https://github.com/ahitrin/SiebenApp/issues/64[#64]
 
 Other improvements:
 
 * Few improvements for Travis builds
-* Extract common interface to the Goals class (WIP) #68
+* Extract common interface to the Goals class (WIP) https://github.com/ahitrin/SiebenApp/issues/68[#68]
 * Reorganize blog: move from branch to directory
 * Update dependencies: pytest, hypothesis, mypy, pyqt5 (thx to @dependabot)
 
@@ -55,7 +55,7 @@ Other improvements:
 
 Bug fixes:
 
-* Fix #63: focus may be lost after unlink in zoomed mode
+* Fix https://github.com/ahitrin/SiebenApp/issues/[#]3: focus may be lost after unlink in zoomed mode
 
 Other improvements:
 
@@ -66,8 +66,8 @@ Other improvements:
 
 New features:
 
-* Use two link categories: parent-child vs bloker-blocked #16
-* Use nested zoom levels #17
+* Use two link categories: parent-child vs bloker-blocked https://github.com/ahitrin/SiebenApp/issues/16[#16]
+* Use nested zoom levels https://github.com/ahitrin/SiebenApp/issues/17[#17]
 
 Other improvements:
 
@@ -87,17 +87,17 @@ Compatibility breaks:
 
 New features:
 
- * Use native rendering instead of Graphviz #5
- * Allow to cancel edit #8
- * Show error messages #11
- * Hotkeys help window #12
+ * Use native rendering instead of Graphviz https://github.com/ahitrin/SiebenApp/issues/5[#5]
+ * Allow to cancel edit https://github.com/ahitrin/SiebenApp/issues/8[#8]
+ * Show error messages https://github.com/ahitrin/SiebenApp/issues/11[#11]
+ * Hotkeys help window https://github.com/ahitrin/SiebenApp/issues/12[#12]
  * Show DB name in window title
  * Set path to DB file in app args
  * Use current goal name as default value when rename goals
 
 Bug fixes:
 
- * Escape special symbols in goal names #9
+ * Escape special symbols in goal names https://github.com/ahitrin/SiebenApp/issues/9[#9]
  * Do not use fixed Python version in scripts
 
 Other improvements:
@@ -107,7 +107,7 @@ Other improvements:
 
 Compatibility breaks:
 
- * Drop Graphviz drawing engine #5
+ * Drop Graphviz drawing engine https://github.com/ahitrin/SiebenApp/issues/5[#5]
 
 == Alpha version 0.3
 2017-06-12
@@ -117,8 +117,8 @@ New features:
  * Allow SiebenApp to be called from another dir
  * Redesing main window
  * New action: swap goals
- * New actions: zoom / unzoom #6
- * Use adaptive goal tree enumeration #7
+ * New actions: zoom / unzoom https://github.com/ahitrin/SiebenApp/issues/6[#6]
+ * Use adaptive goal tree enumeration https://github.com/ahitrin/SiebenApp/issues/7[#7]
 
 Bug fixes:
 
@@ -129,7 +129,7 @@ Bug fixes:
  * Exit when Graphviz is not found
  * Disallow to re-open goal atop of the closed one
  * Fix: goal deletion may cause failure on the next startup
- * Fix: migrations did not run for existing DB #2
+ * Fix: migrations did not run for existing DB https://github.com/ahitrin/SiebenApp/issues/2[#2]
  * Improve selection UX: avoid buffer overflow
 
 Other improvements:
@@ -143,7 +143,7 @@ Other improvements:
 
 New features:
 
- * Use SqliteDB for save/load #2
+ * Use SqliteDB for save/load https://github.com/ahitrin/SiebenApp/issues/2[#2]
  * Add several validation checks
 
 == Alpha version 0.1
