@@ -23,7 +23,7 @@ class Renderer:
         }
         self.layers: Dict[int, List[int]] = defaultdict(list)
         self.positions: Dict[int, int] = {}
-        self.edge_types: Dict[Tuple[GoalId, GoalId], int] = {
+        self.edge_types: Dict[Tuple[GoalId, GoalId], EdgeType] = {
             (parent, child): edge_type
             for parent in self.graph
             for child, edge_type in self.graph[parent]["edge"]

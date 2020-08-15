@@ -18,7 +18,7 @@ from siebenapp.domain import (
 )
 
 GoalsData = List[Tuple[int, Optional[str], bool]]
-EdgesData = List[Tuple[int, int, int]]
+EdgesData = List[Tuple[int, int, EdgeType]]
 OptionsData = List[Tuple[str, int]]
 
 
@@ -74,7 +74,7 @@ class Goals(Graph):
         return {
             "selection": self.selection,
             "previous_selection": self.previous_selection,
-        }.get(key)
+        }.get(key, 0)
 
     def events(self) -> collections.deque:
         return self._events
