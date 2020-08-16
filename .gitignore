@@ -1,13 +1,7 @@
 *.pyc
 .cache
-.env
 .hypothesis
 .idea
-.ipynb_checkpoints
 .mypy_cache
 __pycache__
 build
-sieben.db
-venv
-work.dot
-work.png
