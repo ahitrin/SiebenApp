@@ -11,7 +11,7 @@ allowed_selects = {selected, previous, None}
 
 @dataclass(frozen=True)
 class GoalPrototype:
-    id: int
+    goal_id: int
     name: str
     open: bool
     children: List[int]
@@ -38,12 +38,12 @@ def clos_(goal_id, name, children=None, blockers=None, select=None):
 
 
 def build_goaltree(*goal_prototypes, message_fn=None):
-    goals = [(g.id, g.name, g.open) for g in goal_prototypes]
+    goals = [(g.goal_id, g.name, g.open) for g in goal_prototypes]
     edges = [
-        (g.id, e, EdgeType.PARENT) for g in goal_prototypes for e in g.children
-    ] + [(g.id, e, EdgeType.BLOCKER) for g in goal_prototypes for e in g.blockers]
-    selection = {g.id for g in goal_prototypes if g.select == selected}
-    prev_selection = {g.id for g in goal_prototypes if g.select == previous}
+        (g.goal_id, e, EdgeType.PARENT) for g in goal_prototypes for e in g.children
+    ] + [(g.goal_id, e, EdgeType.BLOCKER) for g in goal_prototypes for e in g.blockers]
+    selection = {g.goal_id for g in goal_prototypes if g.select == selected}
+    prev_selection = {g.goal_id for g in goal_prototypes if g.select == previous}
     assert len(selection) == 1
     assert len(prev_selection) <= 1
     selection_id = selection.pop()
