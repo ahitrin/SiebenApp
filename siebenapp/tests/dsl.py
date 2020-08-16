@@ -1,12 +1,22 @@
-from collections import namedtuple
+from dataclasses import dataclass
+from typing import List, Optional
 
-from siebenapp.goaltree import Goals
 from siebenapp.domain import EdgeType
+from siebenapp.goaltree import Goals
 
 selected = "select"
 previous = "previous"
 allowed_selects = {selected, previous, None}
-GoalPrototype = namedtuple("GoalPrototype", "id name open children blockers select")
+
+
+@dataclass(frozen=True)
+class GoalPrototype:
+    id: int
+    name: str
+    open: bool
+    children: List[int]
+    blockers: List[int]
+    select: Optional[str]
 
 
 def _build_goal_prototype(
