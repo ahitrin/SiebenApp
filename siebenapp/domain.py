@@ -1,7 +1,8 @@
 # pylint: disable=too-few-public-methods
-import collections
+from collections import deque
+from dataclasses import dataclass
 from enum import IntEnum
-from typing import Dict, Any, Iterable
+from typing import Dict, Any
 
 
 class EdgeType(IntEnum):
@@ -9,8 +10,11 @@ class EdgeType(IntEnum):
     PARENT = 2
 
 
-class Edge(collections.namedtuple("Edge", "source target type")):
-    __slots__ = ()
+@dataclass(frozen=True)
+class Edge:
+    source: int
+    target: int
+    type: EdgeType
 
 
 class Command:
@@ -38,7 +42,7 @@ class Graph:
         """Returns given inner value by the key"""
         return Graph.NO_VALUE
 
-    def events(self) -> collections.deque:
+    def events(self) -> deque:
         """Returns queue of applied actions.
         Note: this queue is modifiable -- you may push new events into it. But this
         behavior may be changed in future."""
