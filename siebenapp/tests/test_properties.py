@@ -39,7 +39,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     db_is_ready = False
 
     def __init__(self):
-        super(GoaltreeRandomWalk, self).__init__()
+        super().__init__()
         self.goaltree = Zoom(Goals("Root"))
         self.database = sqlite3.connect(":memory:")
 

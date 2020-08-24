@@ -318,7 +318,7 @@ def test_simple_open_enumeration_workflow():
 
 class PseudoZoomedGoals(Goals):
     def q(self, keys="name"):
-        goals = super(PseudoZoomedGoals, self).q(keys)
+        goals = super().q(keys)
         goals[-1] = goals.pop(1)
         return goals
 
