@@ -2,7 +2,7 @@
 import sqlite3
 from html import escape
 from os import path
-from typing import Union, Callable, List, Dict
+from typing import Callable, List, Dict
 
 from siebenapp.domain import EdgeType, Graph
 from siebenapp.goaltree import Goals
