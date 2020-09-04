@@ -2,18 +2,29 @@
 from argparse import ArgumentParser
 
 from siebenapp.system import load
+from siebenapp.domain import Select
 
 
 def fmt(goal_id, goal_vars):
     name = goal_vars["name"]
-    status = " " if goal_vars["open"] else "x"
+    op = " " if goal_vars["open"] else "x"
+    status = f"[{op}]" if goal_vars["switchable"] else f" {op} "
+    selection = " "
+    if goal_vars["select"] == "select":
+        selection = ">"
+    elif goal_vars["select"] == "prev":
+        selection = "_"
     children = ""
-    if not goal_vars["switchable"]:
-        status = "-"
     if goal_vars["edge"]:
         child_list = ",".join(str(e[0]) for e in goal_vars["edge"])
         children = f" [{child_list}]"
-    return f"{goal_id}[{status}] {name}{children}"
+    return f"{goal_id}{status}{selection}{name}{children}"
+
+
+def build_actions(command):
+    if command and all(c in '1234567890' for c in command):
+        return [Select(int(c)) for c in command]
+    return []
 
 
 def loop(goals):
@@ -26,6 +37,9 @@ def loop(goals):
             cmd = input('> ').strip()
         except EOFError:
             break
+        actions = build_actions(cmd)
+        if actions:
+            goals.accept_all(*actions)
 
 
 def main():
