@@ -1,0 +1,36 @@
+#!/usr/bin/env python3
+from argparse import ArgumentParser
+
+from siebenapp.system import load
+
+
+def fmt(goal_id, goal_vars):
+    name = goal_vars["name"]
+    status = " " if goal_vars["open"] else "x"
+    children = ""
+    if not goal_vars["switchable"]:
+        status = "-"
+    if goal_vars["edge"]:
+        child_list = ",".join(str(e[0]) for e in goal_vars["edge"])
+        children = f" [{child_list}]"
+    return f"{goal_id}[{status}] {name}{children}"
+
+
+def loop(goals):
+    x = goals.q('name,edge,open,select,switchable')
+    for goal_id, goal_vars in x.items():
+        print(fmt(goal_id, goal_vars))
+
+
+def main():
+    parser = ArgumentParser()
+    parser.add_argument(
+        "db", help="Path to the database file",
+    )
+    args = parser.parse_args()
+    goals = load(args.db)
+    loop(goals)
+
+
+if __name__ == "__main__":
+    main()
