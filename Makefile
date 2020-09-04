@@ -23,10 +23,10 @@ install:
 	pipenv run python3 setup.py install
 
 lint:
-	pipenv run pylint siebenapp
+	pipenv run pylint siebenapp sieben clieben
 
 format:
-	pipenv run black sieben siebenapp
+	pipenv run black sieben siebenapp clieben
 
 mypy:
 	pipenv run mypy --pretty -p siebenapp
