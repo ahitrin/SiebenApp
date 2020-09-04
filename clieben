@@ -17,9 +17,15 @@ def fmt(goal_id, goal_vars):
 
 
 def loop(goals):
-    x = goals.q('name,edge,open,select,switchable')
-    for goal_id, goal_vars in x.items():
-        print(fmt(goal_id, goal_vars))
+    cmd = ''
+    while cmd != 'q':
+        x = goals.q('name,edge,open,select,switchable')
+        for goal_id, goal_vars in x.items():
+            print(fmt(goal_id, goal_vars))
+        try:
+            cmd = input('> ').strip()
+        except EOFError:
+            break
 
 
 def main():
