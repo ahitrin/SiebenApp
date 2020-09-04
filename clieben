@@ -1,8 +1,16 @@
 #!/usr/bin/env python3
 from argparse import ArgumentParser
 
-from siebenapp.system import load
-from siebenapp.domain import Select
+from siebenapp.system import load, save
+from siebenapp.domain import Select, Add, Insert, Rename, ToggleClose, Delete, ToggleLink, HoldSelect, NextView, \
+    ToggleZoom, EdgeType
+
+USER_MESSAGE = ''
+
+
+def update_message(message=""):
+    global USER_MESSAGE
+    USER_MESSAGE = message
 
 
 def fmt(goal_id, goal_vars):
@@ -22,17 +30,37 @@ def fmt(goal_id, goal_vars):
 
 
 def build_actions(command):
+    simple_commands = {
+        'c': ToggleClose(),
+        'd': Delete(),
+        'h': HoldSelect(),
+        'k': ToggleLink(edge_type=EdgeType.PARENT),
+        'l': ToggleLink(),
+        'v': NextView(),
+        'z': ToggleZoom(),
+    }
     if command and all(c in '1234567890' for c in command):
         return [Select(int(c)) for c in command]
+    if command.startswith("a "):
+        return [Add(command[2:])]
+    if command.startswith("i "):
+        return [Insert(command[2:])]
+    if command.startswith("r "):
+        return [Rename(command[2:])]
+    if command in simple_commands:
+        return [simple_commands[command]]
     return []
 
 
-def loop(goals):
+def loop(goals, db_name):
     cmd = ''
     while cmd != 'q':
         x = goals.q('name,edge,open,select,switchable')
         for goal_id, goal_vars in x.items():
             print(fmt(goal_id, goal_vars))
+        if USER_MESSAGE:
+            print(USER_MESSAGE)
+        update_message()
         try:
             cmd = input('> ').strip()
         except EOFError:
@@ -40,6 +68,7 @@ def loop(goals):
         actions = build_actions(cmd)
         if actions:
             goals.accept_all(*actions)
+        save(goals, db_name)
 
 
 def main():
@@ -48,8 +77,8 @@ def main():
         "db", help="Path to the database file",
     )
     args = parser.parse_args()
-    goals = load(args.db)
-    loop(goals)
+    goals = load(args.db, update_message)
+    loop(goals, args.db)
 
 
 if __name__ == "__main__":
