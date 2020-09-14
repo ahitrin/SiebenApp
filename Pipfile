@@ -12,7 +12,7 @@ pytest = "==6.0.2"
 black = "==19.10b0"
 
 [packages]
-PyQt5 = "==5.15.0"
+PyQt5 = "==5.15.1"
 
 [requires]
 python_version = "3.7"
