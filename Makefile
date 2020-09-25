@@ -5,8 +5,8 @@ ENV:=.env
 all: check venv test
 
 check:
-	if [ ! `which python3` ] ; then echo Please install Python 3.5 or greater ; exit 1; fi
-	if [ `python3 -V | cut -d. -f2` -lt 6 ]; then echo Please install Python 3.6 or greater; exit 1; fi
+	if [ ! `which python3` ] ; then echo Please install Python 3.7 or greater ; exit 1; fi
+	if [ `python3 -V | cut -d. -f2` -lt 7 ]; then echo Please install Python 3.7 or greater; exit 1; fi
 	if [ ! `which virtualenv` ] ; then echo Please install virtualenv ; exit 1; fi
 
 venv:
