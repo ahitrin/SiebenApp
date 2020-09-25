@@ -1,5 +1,3 @@
-ENV:=.env
-
 .PHONY: check venv test install lint format mypy run clean distclean prepare
 
 all: check venv test
@@ -38,4 +36,4 @@ clean:
 	find . -name \*.pyc -delete
 
 distclean:
-	rm -rf $(ENV)
+	pipenv --rm
