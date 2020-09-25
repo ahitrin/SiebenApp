@@ -32,7 +32,6 @@ run:
 	pipenv run ./sieben
 
 clean:
-	rm -rf build
 	find . -name \*.pyc -delete
 
 distclean:
