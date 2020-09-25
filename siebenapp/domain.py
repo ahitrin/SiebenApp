@@ -62,100 +62,70 @@ class Graph:
 # === Graph layer ===
 
 
+@dataclass(frozen=True)
 class Add(Command):
     """Add a new goal to the existing tree"""
 
-    def __init__(
-        self, name: str, add_to: int = 0, edge_type: EdgeType = EdgeType.PARENT
-    ):
-        self.name = name
-        self.add_to = add_to
-        self.edge_type = edge_type
-
-    def __str__(self):
-        return f"Add['{self.name}', {self.add_to}, {self.edge_type.name}]"
+    name: str
+    add_to: int = 0
+    edge_type: EdgeType = EdgeType.PARENT
 
 
+@dataclass(frozen=True)
 class Select(Command):
     """Select a goal by its id whether it exist. Do nothing in other case"""
 
-    def __init__(self, goal_id: int):
-        self.goal_id = goal_id
-
-    def __str__(self):
-        return f"Select[{self.goal_id}]"
+    goal_id: int
 
 
+@dataclass(frozen=True)
 class Insert(Command):
     """Add an intermediate goal between two selected goals"""
 
-    def __init__(self, name: str):
-        self.name = name
-
-    def __str__(self):
-        return f"Insert['{self.name}']"
+    name: str
 
 
+@dataclass(frozen=True)
 class HoldSelect(Command):
     """Saves current selection into the "previous selection" state"""
 
-    def __str__(self):
-        return "HoldSelect[]"
 
-
+@dataclass(frozen=True)
 class Rename(Command):
     """Change a name of the given goal"""
 
-    def __init__(self, new_name: str, goal_id: int = 0):
-        self.new_name = new_name
-        self.goal_id = goal_id
-
-    def __str__(self):
-        return f"Rename['{self.new_name}', {self.goal_id}]"
+    new_name: str
+    goal_id: int = 0
 
 
+@dataclass(frozen=True)
 class ToggleClose(Command):
     """Close an open selected goal. Re-open a closed selected goal"""
 
-    def __str__(self):
-        return "ToggleClose[]"
 
-
+@dataclass(frozen=True)
 class ToggleLink(Command):
     """Create or remove a link between two given goals, if possible"""
 
-    def __init__(
-        self, lower: int = 0, upper: int = 0, edge_type: EdgeType = EdgeType.BLOCKER
-    ):
-        self.lower = lower
-        self.upper = upper
-        self.edge_type = edge_type
-
-    def __str__(self):
-        return f"ToggleLink[{self.lower}, {self.upper}, {self.edge_type.name}]"
+    lower: int = 0
+    upper: int = 0
+    edge_type: EdgeType = EdgeType.BLOCKER
 
 
+@dataclass(frozen=True)
 class Delete(Command):
     """Remove given or selected goal whether it exists. Do nothing in other case"""
 
-    def __init__(self, goal_id: int = 0):
-        self.goal_id = goal_id
-
-    def __str__(self):
-        return f"Delete[{self.goal_id}]"
+    goal_id: int = 0
 
 
 # === Zoom layer ===
+@dataclass(frozen=True)
 class ToggleZoom(Command):
     """Hide or show all goals blocked by the current one"""
 
-    def __str__(self):
-        return "ToggleZoom[]"
-
 
 # === Enumeration layer ===
+@dataclass(frozen=True)
 class NextView(Command):
     """Switch between different view modes in a loop"""
-
-    def __str__(self):
-        return "NextView[]"
