@@ -23,12 +23,11 @@ from siebenapp.domain import (
     Select,
     Insert,
     Rename,
-    ToggleZoom,
     Command,
 )
 from siebenapp.goaltree import Goals
 from siebenapp.system import run_migrations, save_updates
-from siebenapp.zoom import Zoom
+from siebenapp.zoom import Zoom, ToggleZoom
 
 settings.register_profile("ci", settings(max_examples=1000))
 settings.register_profile("dev", settings(max_examples=200))

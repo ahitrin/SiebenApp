@@ -9,10 +9,9 @@ from siebenapp.domain import (
     ToggleLink,
     Add,
     Select,
-    ToggleZoom,
 )
 from siebenapp.tests.dsl import build_goaltree, open_, selected, previous
-from siebenapp.zoom import Zoom
+from siebenapp.zoom import Zoom, ToggleZoom
 
 
 def test_single_goal_could_not_be_zoomed():

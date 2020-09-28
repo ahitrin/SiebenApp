@@ -1,7 +1,7 @@
 import pytest
 
-from siebenapp.enumeration import Enumeration
-from siebenapp.domain import EdgeType, NextView
+from siebenapp.enumeration import Enumeration, NextView
+from siebenapp.domain import EdgeType
 from siebenapp.render import Renderer, place
 from siebenapp.tests.dsl import build_goaltree, open_, selected
 

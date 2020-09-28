@@ -117,15 +117,3 @@ class Delete(Command):
     """Remove given or selected goal whether it exists. Do nothing in other case"""
 
     goal_id: int = 0
-
-
-# === Zoom layer ===
-@dataclass(frozen=True)
-class ToggleZoom(Command):
-    """Hide or show all goals blocked by the current one"""
-
-
-# === Enumeration layer ===
-@dataclass(frozen=True)
-class NextView(Command):
-    """Switch between different view modes in a loop"""

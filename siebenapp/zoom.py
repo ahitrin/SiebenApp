@@ -1,4 +1,5 @@
 import collections
+from dataclasses import dataclass
 from typing import Dict, Any, Set, List, Tuple
 
 from siebenapp.domain import (
@@ -11,9 +12,14 @@ from siebenapp.domain import (
     ToggleLink,
     Select,
     Insert,
-    ToggleZoom,
 )
 from siebenapp.goaltree import Goals
+
+
+@dataclass(frozen=True)
+class ToggleZoom(Command):
+    """Hide or show all goals blocked by the current one"""
+
 
 ZoomData = List[Tuple[int, int]]
 

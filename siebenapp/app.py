@@ -25,11 +25,11 @@ from siebenapp.domain import (
     Select,
     Insert,
     Rename,
-    ToggleZoom,
-    NextView,
 )
+from siebenapp.enumeration import NextView
 from siebenapp.render import Renderer
 from siebenapp.system import save, load, split_long
+from siebenapp.zoom import ToggleZoom
 from siebenapp.ui.goalwidget import Ui_GoalBody  # type: ignore
 
 

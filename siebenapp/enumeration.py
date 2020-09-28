@@ -1,10 +1,16 @@
 import collections
 import math
+from dataclasses import dataclass
 from typing import List, Dict, Tuple, Any, Union, Set, Iterable
 
-from siebenapp.domain import Graph, Command, HoldSelect, Select, NextView
+from siebenapp.domain import Graph, Command, HoldSelect, Select
 from siebenapp.goaltree import Goals
 from siebenapp.zoom import Zoom
+
+
+@dataclass(frozen=True)
+class NextView(Command):
+    """Switch between different view modes in a loop"""
 
 
 class BidirectionalIndex:

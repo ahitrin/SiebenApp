@@ -12,13 +12,11 @@ from siebenapp.domain import (
     ToggleLink,
     Add,
     Select,
-    ToggleZoom,
-    NextView,
 )
-from siebenapp.enumeration import Enumeration
+from siebenapp.enumeration import Enumeration, NextView
 from siebenapp.goaltree import Goals
 from siebenapp.system import MIGRATIONS, run_migrations, load, save
-from siebenapp.zoom import Zoom
+from siebenapp.zoom import Zoom, ToggleZoom
 
 
 def test_initial_migration_on_empty_db():

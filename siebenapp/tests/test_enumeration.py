@@ -1,4 +1,4 @@
-from siebenapp.enumeration import Enumeration, BidirectionalIndex
+from siebenapp.enumeration import Enumeration, BidirectionalIndex, NextView
 from siebenapp.goaltree import Goals
 from siebenapp.domain import (
     EdgeType,
@@ -7,7 +7,6 @@ from siebenapp.domain import (
     Add,
     Select,
     Insert,
-    NextView,
 )
 from siebenapp.tests.dsl import build_goaltree, open_, previous, selected
 
