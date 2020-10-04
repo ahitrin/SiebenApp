@@ -129,6 +129,10 @@ class Enumeration(Graph):
             self._open = not self._open
             self._update_mapping()
             self.selection_cache.clear()
+        elif isinstance(command, ToggleSwitchableView):
+            self._top = not self._top
+            self._update_mapping()
+            self.selection_cache.clear()
         else:
             self.goaltree.accept(command)
 
