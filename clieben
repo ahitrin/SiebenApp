@@ -13,7 +13,7 @@ from siebenapp.domain import (
     ToggleClose,
     ToggleLink,
 )
-from siebenapp.enumeration import NextView
+from siebenapp.enumeration import ToggleOpenView, ToggleSwitchableView
 from siebenapp.system import load, save
 from siebenapp.zoom import ToggleZoom
 
@@ -48,7 +48,8 @@ def build_actions(command):
         "h": HoldSelect(),
         "k": ToggleLink(edge_type=EdgeType.PARENT),
         "l": ToggleLink(),
-        "v": NextView(),
+        "n": ToggleOpenView(),
+        "t": ToggleSwitchableView(),
         "z": ToggleZoom(),
     }
     if command and all(c in "1234567890" for c in command):
