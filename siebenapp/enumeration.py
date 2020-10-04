@@ -13,6 +13,16 @@ class NextView(Command):
     """Switch between different view modes in a loop"""
 
 
+@dataclass(frozen=True)
+class ToggleOpenView(Command):
+    """Switch between "only open goals" and "all goals" views"""
+
+
+@dataclass(frozen=True)
+class ToggleSwitchableView(Command):
+    """Switch between "only switchable goals" and "all goals" views"""
+
+
 class BidirectionalIndex:
     NOT_FOUND = -2
 
