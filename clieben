@@ -84,7 +84,7 @@ def loop(goals, db_name):
 
 
 def main():
-    sys.stdin.reconfigure(encoding='utf-8')
+    sys.stdin.reconfigure(encoding="utf-8")
     parser = ArgumentParser()
     parser.add_argument(
         "db", help="Path to the database file",
