@@ -26,11 +26,11 @@ from siebenapp.domain import (
     Insert,
     Rename,
 )
-from siebenapp.enumeration import NextView
+from siebenapp.enumeration import ToggleSwitchableView, ToggleOpenView
 from siebenapp.render import Renderer
 from siebenapp.system import save, load, split_long
-from siebenapp.zoom import ToggleZoom
 from siebenapp.ui.goalwidget import Ui_GoalBody  # type: ignore
+from siebenapp.zoom import ToggleZoom
 
 
 class GoalWidget(QWidget, Ui_GoalBody):
@@ -201,12 +201,13 @@ class SiebenApp(QMainWindow):
                 self.goals.accept, ToggleLink(edge_type=EdgeType.PARENT)
             ),
             Qt.Key_L: self.with_refresh(self.goals.accept, ToggleLink()),
+            Qt.Key_N: self.with_refresh(self.toggle_view, ToggleOpenView()),
             Qt.Key_O: self.show_open_dialog,
             Qt.Key_Q: self.quit_app.emit,
             Qt.Key_R: self.start_edit(
                 "Rename goal", self.emit_rename, self._current_goal_label
             ),
-            Qt.Key_V: self.toggle_view,
+            Qt.Key_T: self.with_refresh(self.toggle_view, ToggleSwitchableView()),
             Qt.Key_Z: self.toggle_zoom,
             Qt.Key_Escape: self.cancel_edit,
             Qt.Key_Space: self.with_refresh(self.goals.accept, HoldSelect()),
@@ -290,11 +291,10 @@ class SiebenApp(QMainWindow):
 
         return inner
 
-    def toggle_view(self):
+    def toggle_view(self, event):
         self.force_refresh = True
-        self.goals.accept(NextView())
+        self.goals.accept(event)
         self._update_title()
-        self.refresh.emit()
 
     def toggle_zoom(self):
         self.force_refresh = True
