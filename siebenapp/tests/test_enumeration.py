@@ -1,4 +1,9 @@
-from siebenapp.enumeration import Enumeration, BidirectionalIndex, NextView
+from siebenapp.enumeration import (
+    Enumeration,
+    BidirectionalIndex,
+    NextView,
+    ToggleOpenView,
+)
 from siebenapp.goaltree import Goals
 from siebenapp.domain import (
     EdgeType,
@@ -186,6 +191,25 @@ def test_toggle_switch_view():
     assert e.view_title() == "full"
     e.accept(NextView())
     assert e.view_title() == "open"
+
+
+def test_toggle_switch_open_view_without_top():
+    e = Enumeration(Goals("Root"))
+    assert e.view_title() == "open"
+    e.accept(ToggleOpenView())
+    assert e.view_title() == "full"
+    e.accept(ToggleOpenView())
+    assert e.view_title() == "open"
+
+
+def test_toggle_switch_open_view_with_top():
+    e = Enumeration(Goals("Root"))
+    e.accept(NextView())
+    assert e.view_title() == "top"
+    e.accept(ToggleOpenView())
+    assert e.view_title() == "open + top"
+    e.accept(ToggleOpenView())
+    assert e.view_title() == "top"
 
 
 def test_goaltree_selection_may_be_changed_in_top_view():
