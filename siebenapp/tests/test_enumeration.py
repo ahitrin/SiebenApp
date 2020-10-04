@@ -205,12 +205,12 @@ def test_toggle_switch_open_view_without_top():
 
 def test_toggle_switch_open_view_with_top():
     e = Enumeration(Goals("Root"))
-    e.accept(NextView())
-    assert e.view_title() == "top"
-    e.accept(ToggleOpenView())
+    e.accept(ToggleSwitchableView())
     assert e.view_title() == "open + top"
     e.accept(ToggleOpenView())
     assert e.view_title() == "top"
+    e.accept(ToggleOpenView())
+    assert e.view_title() == "open + top"
 
 
 def test_toggle_switch_top_view_with_open():
@@ -224,12 +224,12 @@ def test_toggle_switch_top_view_with_open():
 
 def test_toggle_switch_top_view_without_open():
     e = Enumeration(Goals("Root"))
-    e.accept(NextView())
-    assert e.view_title() == "top"
-    e.accept(ToggleSwitchableView())
+    e.accept(ToggleOpenView())
     assert e.view_title() == "full"
     e.accept(ToggleSwitchableView())
     assert e.view_title() == "top"
+    e.accept(ToggleSwitchableView())
+    assert e.view_title() == "full"
 
 
 def test_goaltree_selection_may_be_changed_in_top_view():
@@ -242,7 +242,7 @@ def test_goaltree_selection_may_be_changed_in_top_view():
         2: {"name": "Top 1", "switchable": True, "select": None},
         3: {"name": "Top 2", "switchable": True, "select": None},
     }
-    e.accept(NextView())
+    e.accept(ToggleSwitchableView())
     assert g.events()[-2] == ("select", 2)
     assert g.events()[-1] == ("hold_select", 2)
     assert e.q(keys="name,switchable,select") == {
@@ -263,7 +263,7 @@ def test_goaltree_previous_selection_may_be_changed_in_top_view():
         2: {"name": "Top 1", "switchable": True, "select": "select"},
         3: {"name": "Top 2", "switchable": True, "select": None},
     }
-    e.accept(NextView())
+    e.accept(ToggleSwitchableView())
     assert g.events()[-1] == ("hold_select", 2)
     assert e.q(keys="name,switchable,select") == {
         1: {"name": "Top 1", "switchable": True, "select": "select"},
@@ -271,7 +271,8 @@ def test_goaltree_previous_selection_may_be_changed_in_top_view():
     }
     e.accept(Insert("Illegal goal"))
     # New goal must not be inserted because previous selection is reset after the view switching
-    e.accept(NextView())
+    e.accept(ToggleSwitchableView())
+    e.accept(ToggleOpenView())
     assert e.q(keys="name,switchable,select") == {
         1: {"name": "Root", "switchable": False, "select": None},
         2: {"name": "Top 1", "switchable": True, "select": "select"},
@@ -288,7 +289,7 @@ def test_selection_cache_should_be_reset_after_view_switch():
     g = build_goaltree(*prototype)
     g.accept(Add("Also top", 1))
     e = Enumeration(g)
-    e.accept_all(Select(1), NextView())
+    e.accept_all(Select(1), ToggleSwitchableView())
     assert e.q("name,select") == {
         1: {"name": "11", "select": "select"},
         2: {"name": "Also top", "select": None},
@@ -318,13 +319,13 @@ def test_selection_cache_should_avoid_overflow():
 
 def test_top_view_may_be_empty():
     e = Enumeration(Goals("closed"))
-    e.accept_all(ToggleClose(), NextView())
+    e.accept_all(ToggleClose(), ToggleSwitchableView())
     assert e.q() == {}
 
 
 def test_simple_top_enumeration_workflow():
     e = Enumeration(Goals("root"))
-    e.accept_all(Add("1"), Add("2"), Select(2), NextView(), Select(2))
+    e.accept_all(Add("1"), Add("2"), Select(2), ToggleSwitchableView(), Select(2))
     assert e.q() == {1: {"name": "1"}, 2: {"name": "2"}}
 
 

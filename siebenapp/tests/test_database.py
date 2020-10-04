@@ -13,7 +13,7 @@ from siebenapp.domain import (
     Add,
     Select,
 )
-from siebenapp.enumeration import Enumeration, NextView
+from siebenapp.enumeration import Enumeration, ToggleOpenView
 from siebenapp.goaltree import Goals
 from siebenapp.system import MIGRATIONS, run_migrations, load, save
 from siebenapp.zoom import Zoom, ToggleZoom
@@ -137,8 +137,8 @@ def test_save_and_load():
     )
     save(goals, file_name)
     new_goals = load(file_name)
-    goals.accept_all(NextView(), NextView())
-    new_goals.accept_all(NextView(), NextView())
+    goals.accept_all(ToggleOpenView())
+    new_goals.accept_all(ToggleOpenView())
     assert goals.q(keys="open,name,edge,select,switchable") == new_goals.q(
         keys="open,name,edge,select,switchable"
     )

@@ -10,7 +10,8 @@ from siebenapp.zoom import Zoom
 
 @dataclass(frozen=True)
 class NextView(Command):
-    """Switch between different view modes in a loop"""
+    """Switch between different view modes in a loop.
+    Deprecated and should be removed soon (see issue #67)."""
 
 
 @dataclass(frozen=True)
