@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import sys
 from argparse import ArgumentParser
 
 from siebenapp.domain import (
@@ -83,6 +84,7 @@ def loop(goals, db_name):
 
 
 def main():
+    sys.stdin.reconfigure(encoding='utf-8')
     parser = ArgumentParser()
     parser.add_argument(
         "db", help="Path to the database file",
