@@ -79,8 +79,10 @@ class Enumeration(Graph):
     def view_title(self):
         return self._labels[self._open, self._top]
 
-    def _update_mapping(self) -> None:
+    def _update_mapping(self, clear_cache: bool = False) -> None:
         self._goal_filter = self._update_top_mapping(self._update_open_mapping())
+        if clear_cache:
+            self.selection_cache.clear()
 
     def _update_open_mapping(self) -> Set[int]:
         if not self._open:
@@ -124,16 +126,13 @@ class Enumeration(Graph):
             self._select(command)
         elif isinstance(command, NextView):
             self._next_view()
-            self._update_mapping()
-            self.selection_cache.clear()
+            self._update_mapping(clear_cache=True)
         elif isinstance(command, ToggleOpenView):
             self._open = not self._open
-            self._update_mapping()
-            self.selection_cache.clear()
+            self._update_mapping(clear_cache=True)
         elif isinstance(command, ToggleSwitchableView):
             self._top = not self._top
-            self._update_mapping()
-            self.selection_cache.clear()
+            self._update_mapping(clear_cache=True)
         else:
             self.goaltree.accept(command)
 
