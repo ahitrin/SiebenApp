@@ -123,6 +123,8 @@ class Enumeration(Graph):
             self._select(command)
         elif isinstance(command, NextView):
             self._next_view()
+            self._update_mapping()
+            self.selection_cache.clear()
         else:
             self.goaltree.accept(command)
 
@@ -161,5 +163,3 @@ class Enumeration(Graph):
 
     def _next_view(self):
         self._open, self._top = self._views[self._open, self._top]
-        self._update_mapping()
-        self.selection_cache.clear()
