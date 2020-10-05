@@ -9,12 +9,6 @@ from siebenapp.zoom import Zoom
 
 
 @dataclass(frozen=True)
-class NextView(Command):
-    """Switch between different view modes in a loop.
-    Deprecated and should be removed soon (see issue #67)."""
-
-
-@dataclass(frozen=True)
 class ToggleOpenView(Command):
     """Switch between "only open goals" and "all goals" views"""
 
@@ -124,9 +118,6 @@ class Enumeration(Graph):
     def accept(self, command: Command) -> None:
         if isinstance(command, Select):
             self._select(command)
-        elif isinstance(command, NextView):
-            self._next_view()
-            self._update_mapping(clear_cache=True)
         elif isinstance(command, ToggleOpenView):
             self._open = not self._open
             self._update_mapping(clear_cache=True)

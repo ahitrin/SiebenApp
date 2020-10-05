@@ -1,7 +1,6 @@
 from siebenapp.enumeration import (
     Enumeration,
     BidirectionalIndex,
-    NextView,
     ToggleOpenView,
     ToggleSwitchableView,
 )
@@ -181,17 +180,6 @@ def test_mapping_for_top():
         2: {"name": "b", "switchable": True, "select": None},
         3: {"name": "x", "switchable": True, "select": None},
     }
-
-
-def test_toggle_switch_view():
-    e = Enumeration(Goals("Root"))
-    assert e.view_title() == "open"
-    e.accept(NextView())
-    assert e.view_title() == "top"
-    e.accept(NextView())
-    assert e.view_title() == "full"
-    e.accept(NextView())
-    assert e.view_title() == "open"
 
 
 def test_toggle_switch_open_view_without_top():
