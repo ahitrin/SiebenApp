@@ -48,12 +48,6 @@ class BidirectionalIndex:
 
 
 class Enumeration(Graph):
-    _views = {
-        (True, True): (True, True),
-        (True, False): (False, True),
-        (False, True): (False, False),
-        (False, False): (True, False),
-    }  # (_open, _top) -> (_open, _top)
     _labels = {
         (True, True): "open + top",
         (True, False): "open",
@@ -159,6 +153,3 @@ class Enumeration(Graph):
             self.selection_cache = []
         else:
             self.selection_cache.append(goal_id)
-
-    def _next_view(self):
-        self._open, self._top = self._views[self._open, self._top]
