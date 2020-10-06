@@ -1,7 +1,6 @@
 from siebenapp.enumeration import (
     Enumeration,
     BidirectionalIndex,
-    ToggleOpenView,
     ToggleSwitchableView,
 )
 from siebenapp.goaltree import Goals
@@ -222,7 +221,6 @@ def test_goaltree_previous_selection_may_be_changed_in_top_view():
     e.accept(Insert("Illegal goal"))
     # New goal must not be inserted because previous selection is reset after the view switching
     e.accept(ToggleSwitchableView())
-    e.accept(ToggleOpenView())
     assert e.q(keys="name,switchable,select") == {
         1: {"name": "Root", "switchable": False, "select": None},
         2: {"name": "Top 1", "switchable": True, "select": "select"},
