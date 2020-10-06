@@ -47,6 +47,23 @@ class BidirectionalIndex:
         return BidirectionalIndex.NOT_FOUND
 
 
+class OpenView(Graph):
+    """Non-persistent view layer that allows to switch
+    between only-open and all goals"""
+
+    def __init__(self, goaltree: Graph):
+        self.goaltree = goaltree
+
+    def accept(self, command: Command) -> None:
+        self.goaltree.accept(command)
+
+    def events(self) -> collections.deque:
+        return self.goaltree.events()
+
+    def q(self, keys: str = "name") -> Dict[int, Any]:
+        return self.goaltree.q(keys)
+
+
 class Enumeration(Graph):
     def __init__(self, goaltree: Graph) -> None:
         super().__init__()
