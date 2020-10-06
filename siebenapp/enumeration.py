@@ -1,7 +1,7 @@
 import collections
 import math
 from dataclasses import dataclass
-from typing import List, Dict, Tuple, Any, Union, Set, Iterable
+from typing import List, Dict, Tuple, Any, Set, Iterable
 
 from siebenapp.domain import Graph, Command, HoldSelect, Select
 from siebenapp.goaltree import Goals
@@ -48,7 +48,7 @@ class BidirectionalIndex:
 
 
 class Enumeration(Graph):
-    def __init__(self, goaltree: Union[Goals, Zoom]) -> None:
+    def __init__(self, goaltree: Graph) -> None:
         super().__init__()
         self.goaltree = goaltree
         self.selection_cache: List[int] = []
