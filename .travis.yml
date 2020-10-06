@@ -3,6 +3,7 @@ dist: bionic
 python:
  - "3.7"
  - "3.8"
+ - "3.9-dev"
 env:
  - HYPOTHESIS_PROFILE=ci
 script: make venv test lint mypy
