@@ -182,44 +182,6 @@ def test_mapping_for_top():
     }
 
 
-def test_toggle_switch_open_view_without_top():
-    e = Enumeration(Goals("Root"))
-    assert e.view_title() == "open"
-    e.accept(ToggleOpenView())
-    assert e.view_title() == "full"
-    e.accept(ToggleOpenView())
-    assert e.view_title() == "open"
-
-
-def test_toggle_switch_open_view_with_top():
-    e = Enumeration(Goals("Root"))
-    e.accept(ToggleSwitchableView())
-    assert e.view_title() == "open + top"
-    e.accept(ToggleOpenView())
-    assert e.view_title() == "top"
-    e.accept(ToggleOpenView())
-    assert e.view_title() == "open + top"
-
-
-def test_toggle_switch_top_view_with_open():
-    e = Enumeration(Goals("Root"))
-    assert e.view_title() == "open"
-    e.accept(ToggleSwitchableView())
-    assert e.view_title() == "open + top"
-    e.accept(ToggleSwitchableView())
-    assert e.view_title() == "open"
-
-
-def test_toggle_switch_top_view_without_open():
-    e = Enumeration(Goals("Root"))
-    e.accept(ToggleOpenView())
-    assert e.view_title() == "full"
-    e.accept(ToggleSwitchableView())
-    assert e.view_title() == "top"
-    e.accept(ToggleSwitchableView())
-    assert e.view_title() == "full"
-
-
 def test_goaltree_selection_may_be_changed_in_top_view():
     g = build_goaltree(
         open_(1, "Root", [2, 3], select=selected), open_(2, "Top 1"), open_(3, "Top 2"),

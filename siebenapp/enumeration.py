@@ -48,13 +48,6 @@ class BidirectionalIndex:
 
 
 class Enumeration(Graph):
-    _labels = {
-        (True, True): "open + top",
-        (True, False): "open",
-        (False, True): "top",
-        (False, False): "full",
-    }
-
     def __init__(self, goaltree: Union[Goals, Zoom]) -> None:
         super().__init__()
         self.goaltree = goaltree
@@ -63,9 +56,6 @@ class Enumeration(Graph):
         self._top: bool = False
         self._goal_filter: Set[int] = set()
         self._update_mapping()
-
-    def view_title(self):
-        return self._labels[self._open, self._top]
 
     def _update_mapping(self, clear_cache: bool = False) -> None:
         self._goal_filter = self._update_top_mapping(self._update_open_mapping())
