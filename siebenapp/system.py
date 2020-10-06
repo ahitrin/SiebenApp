@@ -6,7 +6,7 @@ from typing import Callable, List, Dict
 
 from siebenapp.domain import EdgeType, Graph
 from siebenapp.goaltree import Goals
-from siebenapp.enumeration import Enumeration
+from siebenapp.enumeration import Enumeration, OpenView
 from siebenapp.zoom import Zoom
 
 MIGRATIONS = [
@@ -169,7 +169,7 @@ def load(filename: str, message_fn: Callable[[str], None] = None) -> Enumeration
     else:
         goals = Goals("Rename me", message_fn)
         zoom = Zoom(goals)
-    return Enumeration(zoom)
+    return Enumeration(OpenView(zoom))
 
 
 def run_migrations(
