@@ -1,7 +1,7 @@
 import collections
 import math
 from dataclasses import dataclass
-from typing import List, Dict, Tuple, Any, Set, Iterable
+from typing import List, Dict, Tuple, Any, Set, Iterable, KeysView
 
 from siebenapp.domain import Graph, Command, HoldSelect, Select
 
@@ -50,14 +50,11 @@ class Enumeration(Graph):
         self._update_mapping()
 
     def _update_mapping(self, clear_cache: bool = False) -> None:
-        self._goal_filter = self._update_top_mapping(self._update_open_mapping())
+        self._goal_filter = self._update_top_mapping(self.goaltree.q().keys())
         if clear_cache:
             self.selection_cache.clear()
 
-    def _update_open_mapping(self) -> Set[int]:
-        return set(self.goaltree.q().keys())
-
-    def _update_top_mapping(self, original_mapping: Set[int]) -> Set[int]:
+    def _update_top_mapping(self, original_mapping: KeysView[int]) -> Set[int]:
         if not self._top:
             return set(original_mapping)
         goals = {
