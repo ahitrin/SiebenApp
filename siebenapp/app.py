@@ -26,7 +26,8 @@ from siebenapp.domain import (
     Insert,
     Rename,
 )
-from siebenapp.enumeration import ToggleSwitchableView, ToggleOpenView
+from siebenapp.enumeration import ToggleSwitchableView
+from siebenapp.open_view import ToggleOpenView
 from siebenapp.render import Renderer
 from siebenapp.system import save, load, split_long
 from siebenapp.ui.goalwidget import Ui_GoalBody  # type: ignore

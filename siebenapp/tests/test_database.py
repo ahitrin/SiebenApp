@@ -13,7 +13,8 @@ from siebenapp.domain import (
     Add,
     Select,
 )
-from siebenapp.enumeration import Enumeration, ToggleOpenView
+from siebenapp.enumeration import Enumeration
+from siebenapp.open_view import ToggleOpenView
 from siebenapp.goaltree import Goals
 from siebenapp.system import MIGRATIONS, run_migrations, load, save
 from siebenapp.zoom import Zoom, ToggleZoom
