@@ -63,7 +63,8 @@ def test_restore_goals_from_db():
     with sqlite3.connect(file_name) as conn:
         run_migrations(conn)
         setup_sample_db(conn)
-    actual_goals = load(file_name).goaltree
+    actual_goals = load(file_name)
+    actual_goals.accept(ToggleOpenView())
     expected_goals = Goals("Root")
     expected_goals.accept_all(
         Add("A"),
@@ -76,9 +77,8 @@ def test_restore_goals_from_db():
         ToggleClose(),
         Select(2),
     )
-    assert expected_goals.q(keys="name,edge,open,select") == actual_goals.q(
-        keys="name,edge,open,select"
-    )
+    keys = "name,edge,open,select"
+    assert expected_goals.q(keys=keys) == actual_goals.q(keys=keys)
     assert not actual_goals.events()
 
 

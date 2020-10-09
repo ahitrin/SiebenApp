@@ -2,6 +2,7 @@ from siebenapp.enumeration import (
     Enumeration,
     BidirectionalIndex,
     ToggleSwitchableView,
+    OpenView,
 )
 from siebenapp.goaltree import Goals
 from siebenapp.domain import (
@@ -277,14 +278,8 @@ def test_simple_top_enumeration_workflow():
     assert e.q() == {1: {"name": "1"}, 2: {"name": "2"}}
 
 
-def test_open_view_may_be_empty():
-    e = Enumeration(Goals("closed"))
-    e.accept(ToggleClose())
-    assert e.q() == {}
-
-
 def test_simple_open_enumeration_workflow():
-    e = Enumeration(Goals("Root"))
+    e = Enumeration(OpenView(Goals("Root")))
     e.accept_all(Add("1"), Add("2"), Select(2))
     assert e.q(keys="name,select,open,edge") == {
         1: {

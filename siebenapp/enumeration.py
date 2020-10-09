@@ -4,8 +4,6 @@ from dataclasses import dataclass
 from typing import List, Dict, Tuple, Any, Set, Iterable
 
 from siebenapp.domain import Graph, Command, HoldSelect, Select
-from siebenapp.goaltree import Goals
-from siebenapp.zoom import Zoom
 
 
 @dataclass(frozen=True)
@@ -54,15 +52,37 @@ class OpenView(Graph):
     def __init__(self, goaltree: Graph):
         super().__init__()
         self.goaltree = goaltree
+        self._open: bool = True
 
     def accept(self, command: Command) -> None:
-        self.goaltree.accept(command)
+        if isinstance(command, ToggleOpenView):
+            self._open = not self._open
+        else:
+            self.goaltree.accept(command)
 
     def events(self) -> collections.deque:
         return self.goaltree.events()
 
     def q(self, keys: str = "name") -> Dict[int, Any]:
-        return self.goaltree.q(keys)
+        skip_open = "open" not in keys
+        if skip_open:
+            keys = ",".join([keys, "open"])
+        goals = self.goaltree.q(keys)
+        result: Dict[int, Any] = {
+            k: {} for k, v in goals.items() if not self._open or v["open"]
+        }
+        for goal_id in result:
+            val = goals[goal_id]
+            result[goal_id] = dict(
+                (k, v) for k, v in val.items() if k not in ["edge", "open"]
+            )
+            if not skip_open:
+                result[goal_id]["open"] = val["open"]
+            if "edge" in val:
+                result[goal_id]["edge"] = [
+                    (edge[0], edge[1]) for edge in val["edge"] if edge[0] in result
+                ]
+        return result
 
 
 class Enumeration(Graph):
@@ -70,7 +90,6 @@ class Enumeration(Graph):
         super().__init__()
         self.goaltree = goaltree
         self.selection_cache: List[int] = []
-        self._open: bool = True
         self._top: bool = False
         self._goal_filter: Set[int] = set()
         self._update_mapping()
@@ -81,9 +100,7 @@ class Enumeration(Graph):
             self.selection_cache.clear()
 
     def _update_open_mapping(self) -> Set[int]:
-        if not self._open:
-            return set(self.goaltree.q().keys())
-        return {k for k, v in self.goaltree.q(keys="open").items() if v["open"]}
+        return set(self.goaltree.q().keys())
 
     def _update_top_mapping(self, original_mapping: Set[int]) -> Set[int]:
         if not self._top:
@@ -108,21 +125,12 @@ class Enumeration(Graph):
             for attrs in goals.values():
                 if "edge" in attrs:
                     attrs["edge"] = []
-        elif self._open:
-            for attrs in goals.values():
-                if "edge" in attrs:
-                    attrs["edge"] = [
-                        e for e in attrs["edge"] if e[0] in self._goal_filter
-                    ]
 
         return goals, BidirectionalIndex(goals)
 
     def accept(self, command: Command) -> None:
         if isinstance(command, Select):
             self._select(command)
-        elif isinstance(command, ToggleOpenView):
-            self._open = not self._open
-            self._update_mapping(clear_cache=True)
         elif isinstance(command, ToggleSwitchableView):
             self._top = not self._top
             self._update_mapping(clear_cache=True)

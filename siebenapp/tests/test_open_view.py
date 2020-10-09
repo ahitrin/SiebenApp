@@ -1,8 +1,9 @@
 import pytest
 
-from siebenapp.domain import Select
-from siebenapp.enumeration import Enumeration, ToggleOpenView
+from siebenapp.domain import Select, ToggleClose, EdgeType
+from siebenapp.enumeration import ToggleOpenView, OpenView
 from siebenapp.tests.dsl import build_goaltree, open_, selected, clos_
+
 
 # pylint: disable=redefined-outer-name
 
@@ -10,13 +11,13 @@ from siebenapp.tests.dsl import build_goaltree, open_, selected, clos_
 @pytest.fixture
 def trivial():
     g = build_goaltree(open_(1, "Start", [], [], select=selected))
-    return Enumeration(g)
+    return OpenView(g)
 
 
 @pytest.fixture
 def two_goals():
     g = build_goaltree(open_(1, "Open", [2], [], select=selected), clos_(2, "Closed"))
-    return Enumeration(g)
+    return OpenView(g)
 
 
 def test_open_goal_is_shown_by_default(trivial):
@@ -28,15 +29,27 @@ def test_open_goal_is_shown_after_switch(trivial):
     assert trivial.q("name") == {1: {"name": "Start"}}
 
 
+def test_view_may_be_empty(trivial):
+    trivial.accept(ToggleClose())
+    assert trivial.q() == {}
+
+
 def test_closed_goal_is_not_shown_by_default(two_goals):
-    assert two_goals.q("name") == {1: {"name": "Open"}}
+    assert two_goals.q("name,open,edge") == {
+        1: {"name": "Open", "open": True, "edge": []}
+    }
 
 
 def test_closed_goal_is_shown_after_switch(two_goals):
     two_goals.accept(ToggleOpenView())
-    assert two_goals.q("name") == {1: {"name": "Open"}, 2: {"name": "Closed"}}
+    assert two_goals.q("name,open,edge") == {
+        1: {"name": "Open", "open": True, "edge": [(2, EdgeType.PARENT)]},
+        2: {"name": "Closed", "open": False, "edge": []},
+    }
     two_goals.accept(ToggleOpenView())
-    assert two_goals.q("name") == {1: {"name": "Open"}}
+    assert two_goals.q("name,open,edge") == {
+        1: {"name": "Open", "open": True, "edge": []}
+    }
 
 
 def test_closed_selection_must_be_reset_after_hide(two_goals):
