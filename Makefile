@@ -16,6 +16,9 @@ prepare: test format lint mypy
 test:
 	pipenv run py.test
 
+test-cov:
+	pipenv run py.test --cov=siebenapp --cov-report=html
+
 install:
 	pipenv run python3 setup.py install
 
