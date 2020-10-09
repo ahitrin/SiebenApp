@@ -1,10 +1,3 @@
-from siebenapp.enumeration import (
-    Enumeration,
-    BidirectionalIndex,
-    ToggleSwitchableView,
-    OpenView,
-)
-from siebenapp.goaltree import Goals
 from siebenapp.domain import (
     EdgeType,
     HoldSelect,
@@ -13,6 +6,12 @@ from siebenapp.domain import (
     Select,
     Insert,
 )
+from siebenapp.enumeration import (
+    Enumeration,
+    BidirectionalIndex,
+    ToggleSwitchableView,
+)
+from siebenapp.goaltree import Goals
 from siebenapp.tests.dsl import build_goaltree, open_, previous, selected
 
 
@@ -276,31 +275,6 @@ def test_simple_top_enumeration_workflow():
     e = Enumeration(Goals("root"))
     e.accept_all(Add("1"), Add("2"), Select(2), ToggleSwitchableView(), Select(2))
     assert e.q() == {1: {"name": "1"}, 2: {"name": "2"}}
-
-
-def test_simple_open_enumeration_workflow():
-    e = Enumeration(OpenView(Goals("Root")))
-    e.accept_all(Add("1"), Add("2"), Select(2))
-    assert e.q(keys="name,select,open,edge") == {
-        1: {
-            "name": "Root",
-            "select": "prev",
-            "open": True,
-            "edge": [(2, EdgeType.PARENT), (3, EdgeType.PARENT)],
-        },
-        2: {"name": "1", "select": "select", "open": True, "edge": []},
-        3: {"name": "2", "select": None, "open": True, "edge": []},
-    }
-    e.accept(ToggleClose())
-    assert e.q(keys="name,select,open,edge") == {
-        1: {
-            "name": "Root",
-            "select": "select",
-            "open": True,
-            "edge": [(2, EdgeType.PARENT)],
-        },
-        2: {"name": "2", "select": None, "open": True, "edge": []},
-    }
 
 
 class PseudoZoomedGoals(Goals):

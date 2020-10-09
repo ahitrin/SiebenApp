@@ -2,7 +2,7 @@ import pytest
 
 from siebenapp.domain import Select, ToggleClose, EdgeType
 from siebenapp.enumeration import ToggleOpenView, OpenView
-from siebenapp.tests.dsl import build_goaltree, open_, selected, clos_
+from siebenapp.tests.dsl import build_goaltree, open_, selected, clos_, previous
 
 
 # pylint: disable=redefined-outer-name
@@ -58,4 +58,34 @@ def test_closed_selection_must_be_reset_after_hide(two_goals):
     assert two_goals.q("name,select") == {
         1: {"name": "Open", "select": "prev"},
         2: {"name": "Closed", "select": "select"},
+    }
+
+
+def test_simple_open_enumeration_workflow():
+    e = OpenView(
+        build_goaltree(
+            open_(1, "Root", [2, 3], select=previous),
+            open_(2, "1", select=selected),
+            open_(3, "2"),
+        )
+    )
+    assert e.q(keys="name,select,open,edge") == {
+        1: {
+            "name": "Root",
+            "select": "prev",
+            "open": True,
+            "edge": [(2, EdgeType.PARENT), (3, EdgeType.PARENT)],
+        },
+        2: {"name": "1", "select": "select", "open": True, "edge": []},
+        3: {"name": "2", "select": None, "open": True, "edge": []},
+    }
+    e.accept(ToggleClose())
+    assert e.q(keys="name,select,open,edge") == {
+        1: {
+            "name": "Root",
+            "select": "select",
+            "open": True,
+            "edge": [(3, EdgeType.PARENT)],
+        },
+        3: {"name": "2", "select": None, "open": True, "edge": []},
     }
