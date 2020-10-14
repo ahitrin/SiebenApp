@@ -59,6 +59,8 @@ def test_closed_selection_must_be_reset_after_hide(two_goals):
         1: {"name": "Open", "select": "prev"},
         2: {"name": "Closed", "select": "select"},
     }
+    assert two_goals.settings("selection") == 2
+    assert two_goals.settings("previous_selection") == 1
 
 
 def test_simple_open_enumeration_workflow():

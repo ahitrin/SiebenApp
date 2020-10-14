@@ -28,6 +28,9 @@ class OpenView(Graph):
     def events(self) -> collections.deque:
         return self.goaltree.events()
 
+    def settings(self, key: str) -> int:
+        return self.goaltree.settings(key)
+
     def q(self, keys: str = "name") -> Dict[int, Any]:
         skip_open = "open" not in keys
         if skip_open:
