@@ -12,6 +12,7 @@ from siebenapp.enumeration import (
     ToggleSwitchableView,
 )
 from siebenapp.goaltree import Goals
+from siebenapp.open_view import OpenView
 from siebenapp.tests.dsl import build_goaltree, open_, previous, selected
 
 
@@ -265,8 +266,8 @@ def test_selection_cache_should_avoid_overflow():
     assert e.q(keys="select")[14] == {"select": "select"}
 
 
-def test_top_view_may_be_empty():
-    e = Enumeration(Goals("closed"))
+def test_top_view_may_be_empty_when_underlying_layer_is_empty():
+    e = Enumeration(OpenView(Goals("closed")))
     e.accept_all(ToggleClose(), ToggleSwitchableView())
     assert e.q() == {}
 
