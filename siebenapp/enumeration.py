@@ -1,7 +1,7 @@
 import collections
 import math
 from dataclasses import dataclass
-from typing import List, Dict, Tuple, Any, Set, Iterable, KeysView
+from typing import List, Dict, Tuple, Any, Set, Iterable
 
 from siebenapp.domain import Graph, Command, HoldSelect, Select
 
@@ -50,23 +50,22 @@ class Enumeration(Graph):
         self._update_mapping()
 
     def _update_mapping(self, clear_cache: bool = False) -> None:
-        self._goal_filter = self._update_top_mapping(self.goaltree.q().keys())
+        original_mapping = self.goaltree.q().keys()
+        if self._top:
+            goals = {
+                k
+                for k, v in self.goaltree.q(keys="switchable").items()
+                if v["switchable"] and k in original_mapping
+            }
+            if goals and self.goaltree.settings("selection") not in goals:
+                self.goaltree.accept(Select(min(goals)))
+            if goals and self.goaltree.settings("previous_selection") not in goals:
+                self.accept(HoldSelect())
+            self._goal_filter = goals
+        else:
+            self._goal_filter = set(original_mapping)
         if clear_cache:
             self.selection_cache.clear()
-
-    def _update_top_mapping(self, original_mapping: KeysView[int]) -> Set[int]:
-        if not self._top:
-            return set(original_mapping)
-        goals = {
-            k
-            for k, v in self.goaltree.q(keys="switchable").items()
-            if v["switchable"] and k in original_mapping
-        }
-        if goals and self.goaltree.settings("selection") not in goals:
-            self.goaltree.accept(Select(min(goals)))
-        if goals and self.goaltree.settings("previous_selection") not in goals:
-            self.accept(HoldSelect())
-        return goals
 
     def _id_mapping(
         self, keys: str = "name"
