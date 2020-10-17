@@ -40,6 +40,27 @@ class BidirectionalIndex:
         return BidirectionalIndex.NOT_FOUND
 
 
+class SwitchableView(Graph):
+    """Non-persistent layer that allows to
+    show only switchable goals"""
+
+    def __init__(self, goaltree: Graph):
+        super.__init__()
+        self.goaltree = goaltree
+
+    def accept(self, command: Command) -> None:
+        self.goaltree.accept(command)
+
+    def events(self) -> collections.deque:
+        return self.goaltree.events()
+
+    def settings(self, key: str) -> int:
+        return self.goaltree.settings(key)
+
+    def q(self, keys: str = "name") -> Dict[int, Any]:
+        return self.goaltree.q(keys)
+
+
 class Enumeration(Graph):
     def __init__(self, goaltree: Graph) -> None:
         super().__init__()
