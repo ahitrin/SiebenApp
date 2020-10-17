@@ -45,7 +45,7 @@ class SwitchableView(Graph):
     show only switchable goals"""
 
     def __init__(self, goaltree: Graph):
-        super.__init__()
+        super().__init__()
         self.goaltree = goaltree
 
     def accept(self, command: Command) -> None:
