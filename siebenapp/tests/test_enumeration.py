@@ -18,13 +18,15 @@ from siebenapp.tests.dsl import build_goaltree, open_, previous, selected
 
 
 def test_simple_enumeration_is_not_changed():
-    e = Enumeration(SwitchableView(
-        build_goaltree(
-            open_(1, "a", [2, 3]),
-            open_(2, "b", blockers=[3], select=previous),
-            open_(3, "c", select=selected),
+    e = Enumeration(
+        SwitchableView(
+            build_goaltree(
+                open_(1, "a", [2, 3]),
+                open_(2, "b", blockers=[3], select=previous),
+                open_(3, "c", select=selected),
+            )
         )
-    ))
+    )
     assert e.q(keys="name,edge") == {
         1: {"name": "a", "edge": [(2, EdgeType.PARENT), (3, EdgeType.PARENT)]},
         2: {"name": "b", "edge": [(3, EdgeType.BLOCKER)]},
@@ -171,11 +173,13 @@ def test_select_goal_by_full_id_with_non_empty_cache():
 
 
 def test_mapping_for_top():
-    e = Enumeration(SwitchableView(
-        build_goaltree(
-            open_(1, "a", [2, 20], select=selected), open_(2, "b"), open_(20, "x")
+    e = Enumeration(
+        SwitchableView(
+            build_goaltree(
+                open_(1, "a", [2, 20], select=selected), open_(2, "b"), open_(20, "x")
+            )
         )
-    ))
+    )
     assert e.q(keys="name,switchable,select") == {
         1: {"name": "a", "switchable": False, "select": "select"},
         2: {"name": "b", "switchable": True, "select": None},

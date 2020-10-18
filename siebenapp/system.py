@@ -170,9 +170,7 @@ def load(filename: str, message_fn: Callable[[str], None] = None) -> Enumeration
     else:
         goals = Goals("Rename me", message_fn)
         zoom = Zoom(goals)
-    return Enumeration(
-            SwitchableView(
-                OpenView(zoom)))
+    return Enumeration(SwitchableView(OpenView(zoom)))
 
 
 def run_migrations(
