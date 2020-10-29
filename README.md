@@ -14,6 +14,14 @@ Second, not all goals are independent from each other. Here, the word "independe
 
 SiebenApp is an experimental goal manager that tries to solve these problems.
 
+## Installation notes
+
+In order to run SiebenApp you need to have Qt5, Python 3.7+ and PyQt installed.
+Clone this repository and run it locally.
+
+Currently, there is no separate package distribution and/or installer for SiebenApp.
+If you need one, please let me know in #1.
+
 ## How it works
 
 The word "sieben" means "seven" in German. This name reflects broadly known idea that human mind is usually possible to keep control on 7±2 thoughts at most. Therefore, a good goal manager should reduce amount of visible goals when they are not being processed.
@@ -28,7 +36,7 @@ Let's take a look at simple example: travel planning.
 
 Imagine that you want to travel into the beautiful country Wonderstan. Inspired by this idea, you run SiebenApp and start to plan your travel.
 
-    ./sieben
+    ./sieben test.db
 
 SiebenApp starts with a single default goal.
 
