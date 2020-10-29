@@ -20,7 +20,7 @@ In order to run SiebenApp you need to have Qt5, Python 3.7+ and PyQt installed.
 Clone this repository and run it locally.
 
 Currently, there is no separate package distribution and/or installer for SiebenApp.
-If you need one, please let me know in #1.
+If you need one, please let me know in [#1](https://github.com/ahitrin/SiebenApp/issues/1).
 
 ## How it works
 
