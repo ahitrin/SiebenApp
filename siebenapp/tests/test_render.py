@@ -1,6 +1,6 @@
 import pytest
 
-from siebenapp.enumeration import Enumeration, ToggleSwitchableView
+from siebenapp.enumeration import Enumeration, ToggleSwitchableView, SwitchableView
 from siebenapp.domain import EdgeType
 from siebenapp.render import Renderer, place
 from siebenapp.tests.dsl import build_goaltree, open_, selected
@@ -159,7 +159,7 @@ def test_render_in_top_view():
         open_(5, "Cinco"),
         open_(6, "Sext"),
     )
-    view = Enumeration(goals)
+    view = Enumeration(SwitchableView(goals))
     view.accept(ToggleSwitchableView())
     result = Renderer(view).build()
     # Just verify that it renders fine

@@ -79,7 +79,7 @@ class SwitchableView(Graph):
             goals = {k: v for k, v in goals.items() if v["switchable"]}
             for v in goals.values():
                 if "edge" in v:
-                    v.pop("edge")
+                    v["edge"] = []
         if skip_switchable:
             for v in goals.values():
                 v.pop("switchable")
@@ -91,25 +91,12 @@ class Enumeration(Graph):
         super().__init__()
         self.goaltree = goaltree
         self.selection_cache: List[int] = []
-        self._top: bool = False
         self._goal_filter: Set[int] = set()
         self._update_mapping()
 
     def _update_mapping(self, clear_cache: bool = False) -> None:
         original_mapping = self.goaltree.q().keys()
-        if self._top:
-            goals = {
-                k
-                for k, v in self.goaltree.q(keys="switchable").items()
-                if v["switchable"] and k in original_mapping
-            }
-            if goals and self.goaltree.settings("selection") not in goals:
-                self.goaltree.accept(Select(min(goals)))
-            if goals and self.goaltree.settings("previous_selection") not in goals:
-                self.accept(HoldSelect())
-            self._goal_filter = goals
-        else:
-            self._goal_filter = set(original_mapping)
+        self._goal_filter = set(original_mapping)
         if clear_cache:
             self.selection_cache.clear()
 
@@ -118,19 +105,11 @@ class Enumeration(Graph):
     ) -> Tuple[Dict[int, Any], BidirectionalIndex]:
         goals = self.goaltree.q(keys)
         goals = {k: v for k, v in goals.items() if k in self._goal_filter}
-        if self._top:
-            for attrs in goals.values():
-                if "edge" in attrs:
-                    attrs["edge"] = []
-
         return goals, BidirectionalIndex(goals)
 
     def accept(self, command: Command) -> None:
         if isinstance(command, Select):
             self._select(command)
-        elif isinstance(command, ToggleSwitchableView):
-            self._top = not self._top
-            self._update_mapping(clear_cache=True)
         else:
             self.goaltree.accept(command)
 
