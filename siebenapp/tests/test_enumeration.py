@@ -1,6 +1,5 @@
 from siebenapp.domain import (
     EdgeType,
-    HoldSelect,
     ToggleClose,
     Add,
     Select,
@@ -15,6 +14,7 @@ from siebenapp.enumeration import (
 from siebenapp.goaltree import Goals
 from siebenapp.open_view import OpenView
 from siebenapp.tests.dsl import build_goaltree, open_, previous, selected
+from siebenapp.zoom import Zoom, ToggleZoom
 
 
 def test_simple_enumeration_is_not_changed():
@@ -283,24 +283,23 @@ def test_simple_top_enumeration_workflow():
     assert e.q() == {1: {"name": "1"}, 2: {"name": "2"}}
 
 
-class PseudoZoomedGoals(Goals):
-    def q(self, keys="name"):
-        goals = super().q(keys)
-        goals[-1] = goals.pop(1)
-        return goals
-
-
 def test_do_not_enumerate_goals_with_negative_id():
-    g = PseudoZoomedGoals("Root")
-    g.accept_all(Add("Zoomed"), Select(2), HoldSelect(), Add("Top"))
+    g = Zoom(
+        build_goaltree(
+            open_(1, "Root", [2]),
+            open_(2, "Zoomed", [3], select=selected),
+            open_(3, "Top"),
+        )
+    )
+    g.accept(ToggleZoom())
     assert g.q("name,select,edge") == {
-        -1: {"name": "Root", "select": None, "edge": [(2, EdgeType.PARENT)]},
+        -1: {"name": "Root", "select": None, "edge": [(2, EdgeType.BLOCKER)]},
         2: {"name": "Zoomed", "select": "select", "edge": [(3, EdgeType.PARENT)]},
         3: {"name": "Top", "select": None, "edge": []},
     }
     e = Enumeration(SwitchableView(g))
     assert e.q("name,select,edge") == {
-        -1: {"name": "Root", "select": None, "edge": [(1, EdgeType.PARENT)]},
+        -1: {"name": "Root", "select": None, "edge": [(1, EdgeType.BLOCKER)]},
         1: {"name": "Zoomed", "select": "select", "edge": [(2, EdgeType.PARENT)]},
         2: {"name": "Top", "select": None, "edge": []},
     }
