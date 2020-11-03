@@ -180,10 +180,10 @@ def build_goals(conn):
     with closing(conn.cursor()) as cur:
         goals = list(cur.execute("select * from goals"))
         edges = list(cur.execute("select parent, child, reltype from edges"))
-        selection = list(cur.execute("select * from settings"))
+        db_settings = list(cur.execute("select * from settings"))
         zoom_data = list(cur.execute("select * from zoom"))
         note(
-            f"Goals: {goals}, Edges: {edges}, Selection: {selection}, Zoom: {zoom_data}"
+            f"Goals: {goals}, Edges: {edges}, Settings: {db_settings}, Zoom: {zoom_data}"
         )
-        goals = Goals.build(goals, edges, selection)
+        goals = Goals.build(goals, edges, db_settings)
         return SwitchableView(Zoom.build(goals, zoom_data))
