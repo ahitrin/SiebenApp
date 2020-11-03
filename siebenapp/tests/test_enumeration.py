@@ -1,30 +1,15 @@
-from siebenapp.domain import (
-    EdgeType,
-    ToggleClose,
-    Add,
-    Select,
-    Insert,
-)
-from siebenapp.enumeration import (
-    Enumeration,
-    BidirectionalIndex,
-    ToggleSwitchableView,
-    SwitchableView,
-)
-from siebenapp.goaltree import Goals
-from siebenapp.open_view import OpenView
+from siebenapp.domain import EdgeType, Add, Select
+from siebenapp.enumeration import Enumeration, BidirectionalIndex
 from siebenapp.tests.dsl import build_goaltree, open_, previous, selected
 from siebenapp.zoom import Zoom, ToggleZoom
 
 
 def test_simple_enumeration_is_not_changed():
     e = Enumeration(
-        SwitchableView(
-            build_goaltree(
-                open_(1, "a", [2, 3]),
-                open_(2, "b", blockers=[3], select=previous),
-                open_(3, "c", select=selected),
-            )
+        build_goaltree(
+            open_(1, "a", [2, 3]),
+            open_(2, "b", blockers=[3], select=previous),
+            open_(3, "c", select=selected),
         )
     )
     assert e.q(keys="name,edge") == {
@@ -40,7 +25,7 @@ def test_apply_mapping_for_the_10th_element():
         for i, c in enumerate("abcdefghi")
     ] + [open_(10, "j")]
     goals = build_goaltree(*prototype)
-    e = Enumeration(SwitchableView(goals))
+    e = Enumeration(goals)
     assert e.q(keys="name,edge") == {
         1: {"name": "a", "edge": [(2, EdgeType.PARENT)]},
         2: {"name": "b", "edge": [(3, EdgeType.PARENT)]},
@@ -74,7 +59,7 @@ def test_use_mapping_in_selection():
     prototype = [open_(i + 1, c, [i + 2]) for i, c in enumerate("abcdefghi")] + [
         open_(10, "j", select=selected)
     ]
-    e = Enumeration(SwitchableView(build_goaltree(*prototype)))
+    e = Enumeration(build_goaltree(*prototype))
     e.accept(Select(0))
     assert e.q(keys="name,select") == {
         1: {"name": "a", "select": None},
@@ -108,7 +93,7 @@ def test_select_goal_by_full_id():
     prototype = [open_(1, "a", [2, 3, 4, 5, 6, 7, 8, 9, 10, 11], select=selected)] + [
         open_(i + 2, c) for i, c in enumerate("bcdefghijk")
     ]
-    e = Enumeration(SwitchableView(build_goaltree(*prototype)))
+    e = Enumeration(build_goaltree(*prototype))
     assert e.q(keys="name,select") == {
         11: {"name": "a", "select": "select"},
         12: {"name": "b", "select": None},
@@ -142,7 +127,7 @@ def test_select_goal_by_full_id_with_non_empty_cache():
     prototype = [open_(1, "a", [2, 3, 4, 5, 6, 7, 8, 9, 10, 11], select=selected)] + [
         open_(i + 2, c) for i, c in enumerate("bcdefghijk")
     ]
-    e = Enumeration(SwitchableView(build_goaltree(*prototype)))
+    e = Enumeration(build_goaltree(*prototype))
     assert e.q(keys="name,select") == {
         11: {"name": "a", "select": "select"},
         12: {"name": "b", "select": None},
@@ -174,10 +159,8 @@ def test_select_goal_by_full_id_with_non_empty_cache():
 
 def test_mapping_for_top():
     e = Enumeration(
-        SwitchableView(
-            build_goaltree(
-                open_(1, "a", [2, 20], select=selected), open_(2, "b"), open_(20, "x")
-            )
+        build_goaltree(
+            open_(1, "a", [2, 20], select=selected), open_(2, "b"), open_(20, "x")
         )
     )
     assert e.q(keys="name,switchable,select") == {
@@ -187,79 +170,11 @@ def test_mapping_for_top():
     }
 
 
-def test_goaltree_selection_may_be_changed_in_top_view():
-    g = build_goaltree(
-        open_(1, "Root", [2, 3], select=selected), open_(2, "Top 1"), open_(3, "Top 2"),
-    )
-    e = Enumeration(SwitchableView(g))
-    assert e.q(keys="name,switchable,select") == {
-        1: {"name": "Root", "switchable": False, "select": "select"},
-        2: {"name": "Top 1", "switchable": True, "select": None},
-        3: {"name": "Top 2", "switchable": True, "select": None},
-    }
-    e.accept(ToggleSwitchableView())
-    assert g.events()[-2] == ("select", 2)
-    assert g.events()[-1] == ("hold_select", 2)
-    assert e.q(keys="name,switchable,select") == {
-        1: {"name": "Top 1", "switchable": True, "select": "select"},
-        2: {"name": "Top 2", "switchable": True, "select": None},
-    }
-
-
-def test_goaltree_previous_selection_may_be_changed_in_top_view():
-    g = build_goaltree(
-        open_(1, "Root", [2, 3], select=previous),
-        open_(2, "Top 1", select=selected),
-        open_(3, "Top 2"),
-    )
-    e = Enumeration(SwitchableView(g))
-    assert e.q(keys="name,switchable,select") == {
-        1: {"name": "Root", "switchable": False, "select": "prev"},
-        2: {"name": "Top 1", "switchable": True, "select": "select"},
-        3: {"name": "Top 2", "switchable": True, "select": None},
-    }
-    e.accept(ToggleSwitchableView())
-    assert g.events()[-1] == ("hold_select", 2)
-    assert e.q(keys="name,switchable,select") == {
-        1: {"name": "Top 1", "switchable": True, "select": "select"},
-        2: {"name": "Top 2", "switchable": True, "select": None},
-    }
-    e.accept(Insert("Illegal goal"))
-    # New goal must not be inserted because previous selection is reset after the view switching
-    e.accept(ToggleSwitchableView())
-    assert e.q(keys="name,switchable,select") == {
-        1: {"name": "Root", "switchable": False, "select": None},
-        2: {"name": "Top 1", "switchable": True, "select": "select"},
-        3: {"name": "Top 2", "switchable": True, "select": None},
-    }
-
-
-def test_selection_cache_should_be_reset_after_view_switch():
-    # 1 -> 2 -> 3 -> .. -> 10 -> 11
-    prototype = [
-        open_(i, str(i), [i + 1], select=(selected if i == 1 else None))
-        for i in range(1, 11)
-    ] + [open_(11, "11")]
-    g = build_goaltree(*prototype)
-    g.accept(Add("Also top", 1))
-    e = Enumeration(SwitchableView(g))
-    e.accept_all(Select(1), ToggleSwitchableView())
-    assert e.q("name,select") == {
-        1: {"name": "11", "select": "select"},
-        2: {"name": "Also top", "select": None},
-    }
-    e.accept(Select(2))
-    assert e.q("name,select") == {
-        1: {"name": "11", "select": "prev"},
-        2: {"name": "Also top", "select": "select"},
-    }
-
-
 def test_selection_cache_should_avoid_overflow():
     prototype = [
         open_(1, "Root", [2, 3, 4, 5, 6, 7, 8, 9, 10, 11], select=selected)
     ] + [open_(i, str(i)) for i in range(2, 12)]
-    e = Enumeration(SwitchableView(build_goaltree(*prototype)))
+    e = Enumeration(build_goaltree(*prototype))
     assert e.q(keys="select")[11] == {"select": "select"}
     e.accept(Select(5))
     assert e.q(keys="select")[11] == {"select": "select"}
@@ -269,18 +184,6 @@ def test_selection_cache_should_avoid_overflow():
     e.accept(Select(4))
     assert e.q(keys="select")[11] == {"select": "prev"}
     assert e.q(keys="select")[14] == {"select": "select"}
-
-
-def test_top_view_may_be_empty_when_underlying_layer_is_empty():
-    e = Enumeration(SwitchableView(OpenView(Goals("closed"))))
-    e.accept_all(ToggleClose(), ToggleSwitchableView())
-    assert e.q() == {}
-
-
-def test_simple_top_enumeration_workflow():
-    e = Enumeration(SwitchableView(Goals("root")))
-    e.accept_all(Add("1"), Add("2"), Select(2), ToggleSwitchableView(), Select(2))
-    assert e.q() == {1: {"name": "1"}, 2: {"name": "2"}}
 
 
 def test_do_not_enumerate_goals_with_negative_id():
@@ -297,7 +200,7 @@ def test_do_not_enumerate_goals_with_negative_id():
         2: {"name": "Zoomed", "select": "select", "edge": [(3, EdgeType.PARENT)]},
         3: {"name": "Top", "select": None, "edge": []},
     }
-    e = Enumeration(SwitchableView(g))
+    e = Enumeration(g)
     assert e.q("name,select,edge") == {
         -1: {"name": "Root", "select": None, "edge": [(1, EdgeType.BLOCKER)]},
         1: {"name": "Zoomed", "select": "select", "edge": [(2, EdgeType.PARENT)]},
