@@ -76,7 +76,7 @@ def test_change_selection_on_goal_closing():
     g = build_goaltree(
         open_(1, "Root", [2]),
         open_(2, "Subroot", [3]),
-        open_(3, "Closing", select=selected)
+        open_(3, "Closing", select=selected),
     )
     v = SwitchableView(OpenView(g))
     v.accept(ToggleSwitchableView())

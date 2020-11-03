@@ -2,7 +2,17 @@ import collections
 from dataclasses import dataclass
 from typing import Dict, Any
 
-from siebenapp.domain import Command, Graph, Select, HoldSelect, Add, ToggleClose, Insert, ToggleLink, Delete
+from siebenapp.domain import (
+    Command,
+    Graph,
+    Select,
+    HoldSelect,
+    Add,
+    ToggleClose,
+    Insert,
+    ToggleLink,
+    Delete,
+)
 
 TREE_MODIFIERS = [Add, Delete, Insert, ToggleClose, ToggleLink]
 
