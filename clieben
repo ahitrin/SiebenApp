@@ -13,7 +13,7 @@ from siebenapp.domain import (
     ToggleClose,
     ToggleLink,
 )
-from siebenapp.enumeration import ToggleSwitchableView
+from siebenapp.switchable_view import ToggleSwitchableView
 from siebenapp.open_view import ToggleOpenView
 from siebenapp.system import load, save
 from siebenapp.zoom import ToggleZoom

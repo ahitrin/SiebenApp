@@ -26,7 +26,7 @@ from siebenapp.domain import (
     Insert,
     Rename,
 )
-from siebenapp.enumeration import ToggleSwitchableView
+from siebenapp.switchable_view import ToggleSwitchableView
 from siebenapp.open_view import ToggleOpenView
 from siebenapp.render import Renderer
 from siebenapp.system import save, load, split_long

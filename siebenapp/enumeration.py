@@ -1,14 +1,8 @@
 import collections
 import math
-from dataclasses import dataclass
 from typing import List, Dict, Tuple, Any, Set, Iterable
 
-from siebenapp.domain import Graph, Command, HoldSelect, Select
-
-
-@dataclass(frozen=True)
-class ToggleSwitchableView(Command):
-    """Switch between "only switchable goals" and "all goals" views"""
+from siebenapp.domain import Graph, Command, Select
 
 
 class BidirectionalIndex:
@@ -38,52 +32,6 @@ class BidirectionalIndex:
         if len(possible_selections) == 1:
             return possible_selections[0]
         return BidirectionalIndex.NOT_FOUND
-
-
-class SwitchableView(Graph):
-    """Non-persistent layer that allows to
-    show only switchable goals"""
-
-    def __init__(self, goaltree: Graph):
-        super().__init__()
-        self.goaltree = goaltree
-        self._only_switchable: bool = False
-
-    def accept(self, command: Command) -> None:
-        if isinstance(command, ToggleSwitchableView):
-            self._only_switchable = not self._only_switchable
-            if not self._only_switchable:
-                return
-            ids = [
-                k for k, v in self.goaltree.q("switchable").items() if v["switchable"]
-            ]
-            if ids and self.goaltree.settings("selection") not in ids:
-                self.goaltree.accept(Select(min(ids)))
-            if ids and self.goaltree.settings("previous_selection") not in ids:
-                self.goaltree.accept(HoldSelect())
-        else:
-            self.goaltree.accept(command)
-
-    def events(self) -> collections.deque:
-        return self.goaltree.events()
-
-    def settings(self, key: str) -> int:
-        return self.goaltree.settings(key)
-
-    def q(self, keys: str = "name") -> Dict[int, Any]:
-        skip_switchable = "switchable" not in keys
-        if skip_switchable:
-            keys = ",".join([keys, "switchable"])
-        goals = self.goaltree.q(keys)
-        if self._only_switchable:
-            goals = {k: v for k, v in goals.items() if v["switchable"]}
-            for v in goals.values():
-                if "edge" in v:
-                    v["edge"] = []
-        if skip_switchable:
-            for v in goals.values():
-                v.pop("switchable")
-        return goals
 
 
 class Enumeration(Graph):

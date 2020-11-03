@@ -6,7 +6,8 @@ from typing import Callable, List, Dict
 
 from siebenapp.domain import EdgeType, Graph
 from siebenapp.goaltree import Goals
-from siebenapp.enumeration import Enumeration, SwitchableView
+from siebenapp.enumeration import Enumeration
+from siebenapp.switchable_view import SwitchableView
 from siebenapp.open_view import OpenView
 from siebenapp.zoom import Zoom
 

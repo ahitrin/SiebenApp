@@ -1,5 +1,5 @@
 from siebenapp.domain import Insert, Add, Select, ToggleClose
-from siebenapp.enumeration import SwitchableView, ToggleSwitchableView
+from siebenapp.switchable_view import ToggleSwitchableView, SwitchableView
 from siebenapp.goaltree import Goals
 from siebenapp.open_view import OpenView
 from siebenapp.tests.dsl import build_goaltree, open_, selected, previous

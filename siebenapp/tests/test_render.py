@@ -1,6 +1,7 @@
 import pytest
 
-from siebenapp.enumeration import Enumeration, ToggleSwitchableView, SwitchableView
+from siebenapp.enumeration import Enumeration
+from siebenapp.switchable_view import ToggleSwitchableView, SwitchableView
 from siebenapp.domain import EdgeType
 from siebenapp.render import Renderer, place
 from siebenapp.tests.dsl import build_goaltree, open_, selected

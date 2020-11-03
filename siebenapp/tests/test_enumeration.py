@@ -1,10 +1,6 @@
 from siebenapp.domain import EdgeType, Add, Select
-from siebenapp.enumeration import (
-    Enumeration,
-    BidirectionalIndex,
-    SwitchableView,
-    ToggleSwitchableView,
-)
+from siebenapp.enumeration import Enumeration, BidirectionalIndex
+from siebenapp.switchable_view import ToggleSwitchableView, SwitchableView
 from siebenapp.tests.dsl import build_goaltree, open_, previous, selected
 from siebenapp.zoom import Zoom, ToggleZoom
 
