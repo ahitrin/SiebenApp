@@ -1,5 +1,10 @@
 from siebenapp.domain import EdgeType, Add, Select
-from siebenapp.enumeration import Enumeration, BidirectionalIndex
+from siebenapp.enumeration import (
+    Enumeration,
+    BidirectionalIndex,
+    SwitchableView,
+    ToggleSwitchableView,
+)
 from siebenapp.tests.dsl import build_goaltree, open_, previous, selected
 from siebenapp.zoom import Zoom, ToggleZoom
 
@@ -167,6 +172,27 @@ def test_mapping_for_top():
         1: {"name": "a", "switchable": False, "select": "select"},
         2: {"name": "b", "switchable": True, "select": None},
         3: {"name": "x", "switchable": True, "select": None},
+    }
+
+
+def test_selection_cache_should_be_reset_after_view_switch():
+    # 1 -> 2 -> 3 -> .. -> 10 -> 11
+    prototype = [
+        open_(i, str(i), [i + 1], select=(selected if i == 1 else None))
+        for i in range(1, 11)
+    ] + [open_(11, "11")]
+    g = build_goaltree(*prototype)
+    g.accept(Add("Also top", 1))
+    e = Enumeration(SwitchableView(g))
+    e.accept_all(Select(1), ToggleSwitchableView())
+    assert e.q("name,select") == {
+        1: {"name": "11", "select": "select"},
+        2: {"name": "Also top", "select": None},
+    }
+    e.accept(Select(2))
+    assert e.q("name,select") == {
+        1: {"name": "11", "select": "prev"},
+        2: {"name": "Also top", "select": "select"},
     }
 
 
