@@ -64,11 +64,10 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     # Modifiers
     #
 
-    @rule(b=booleans())
-    def add_goal(self, b):
+    @rule()
+    def add_goal(self):
         event("add")
-        edge_type = EdgeType.PARENT if b else EdgeType.BLOCKER
-        self._accept(Add("a", edge_type=edge_type))
+        self._accept(Add("a"))
 
     @rule()
     def delete_goal(self):
