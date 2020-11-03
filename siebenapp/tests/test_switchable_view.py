@@ -64,3 +64,9 @@ def test_simple_switchable_enumeration_workflow():
     e = SwitchableView(Goals("root"))
     e.accept_all(Add("1"), Add("2"), Select(2), ToggleSwitchableView(), Select(2))
     assert e.q() == {2: {"name": "1"}, 3: {"name": "2"}}
+
+
+def test_change_selection_on_goal_add():
+    v = SwitchableView(Goals("Root"))
+    v.accept_all(ToggleSwitchableView(), Add("Must be selected"))
+    assert v.q("name,select") == {2: {"name": "Must be selected", "select": "select"}}

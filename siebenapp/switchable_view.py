@@ -2,7 +2,7 @@ import collections
 from dataclasses import dataclass
 from typing import Dict, Any
 
-from siebenapp.domain import Command, Graph, Select, HoldSelect
+from siebenapp.domain import Command, Graph, Select, HoldSelect, Add
 
 
 @dataclass(frozen=True)
@@ -22,17 +22,21 @@ class SwitchableView(Graph):
     def accept(self, command: Command) -> None:
         if isinstance(command, ToggleSwitchableView):
             self._only_switchable = not self._only_switchable
-            if not self._only_switchable:
-                return
-            ids = [
-                k for k, v in self.goaltree.q("switchable").items() if v["switchable"]
-            ]
-            if ids and self.goaltree.settings("selection") not in ids:
-                self.goaltree.accept(Select(min(ids)))
-            if ids and self.goaltree.settings("previous_selection") not in ids:
-                self.goaltree.accept(HoldSelect())
+            self._fix_selection()
+        elif isinstance(command, Add):
+            self.goaltree.accept_all(command)
+            self._fix_selection()
         else:
             self.goaltree.accept(command)
+
+    def _fix_selection(self):
+        if not self._only_switchable:
+            return
+        ids = [k for k, v in self.goaltree.q("switchable").items() if v["switchable"]]
+        if ids and self.goaltree.settings("selection") not in ids:
+            self.goaltree.accept(Select(min(ids)))
+        if ids and self.goaltree.settings("previous_selection") not in ids:
+            self.goaltree.accept(HoldSelect())
 
     def events(self) -> collections.deque:
         return self.goaltree.events()
