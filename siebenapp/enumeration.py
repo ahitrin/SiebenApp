@@ -47,9 +47,22 @@ class SwitchableView(Graph):
     def __init__(self, goaltree: Graph):
         super().__init__()
         self.goaltree = goaltree
+        self._only_switchable: bool = False
 
     def accept(self, command: Command) -> None:
-        self.goaltree.accept(command)
+        if isinstance(command, ToggleSwitchableView):
+            self._only_switchable = not self._only_switchable
+            if not self._only_switchable:
+                return
+            ids = [
+                k for k, v in self.goaltree.q("switchable").items() if v["switchable"]
+            ]
+            if ids and self.goaltree.settings("selection") not in ids:
+                self.goaltree.accept(Select(min(ids)))
+            if ids and self.goaltree.settings("previous_selection") not in ids:
+                self.goaltree.accept(HoldSelect())
+        else:
+            self.goaltree.accept(command)
 
     def events(self) -> collections.deque:
         return self.goaltree.events()
@@ -58,7 +71,19 @@ class SwitchableView(Graph):
         return self.goaltree.settings(key)
 
     def q(self, keys: str = "name") -> Dict[int, Any]:
-        return self.goaltree.q(keys)
+        skip_switchable = "switchable" not in keys
+        if skip_switchable:
+            keys = ",".join([keys, "switchable"])
+        goals = self.goaltree.q(keys)
+        if self._only_switchable:
+            goals = {k: v for k, v in goals.items() if v["switchable"]}
+            for v in goals.values():
+                if "edge" in v:
+                    v.pop("edge")
+        if skip_switchable:
+            for v in goals.values():
+                v.pop("switchable")
+        return goals
 
 
 class Enumeration(Graph):
