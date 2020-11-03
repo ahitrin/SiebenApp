@@ -70,3 +70,16 @@ def test_change_selection_on_goal_add():
     v = SwitchableView(Goals("Root"))
     v.accept_all(ToggleSwitchableView(), Add("Must be selected"))
     assert v.q("name,select") == {2: {"name": "Must be selected", "select": "select"}}
+
+
+def test_change_selection_on_goal_closing():
+    g = build_goaltree(
+        open_(1, "Root", [2]),
+        open_(2, "Subroot", [3]),
+        open_(3, "Closing", select=selected)
+    )
+    v = SwitchableView(OpenView(g))
+    v.accept(ToggleSwitchableView())
+    assert v.q("name,select") == {3: {"name": "Closing", "select": "select"}}
+    v.accept(ToggleClose())
+    assert v.q("name,select") == {2: {"name": "Subroot", "select": "select"}}

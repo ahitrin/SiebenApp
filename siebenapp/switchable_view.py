@@ -2,7 +2,9 @@ import collections
 from dataclasses import dataclass
 from typing import Dict, Any
 
-from siebenapp.domain import Command, Graph, Select, HoldSelect, Add
+from siebenapp.domain import Command, Graph, Select, HoldSelect, Add, ToggleClose, Insert, ToggleLink, Delete
+
+TREE_MODIFIERS = [Add, Delete, Insert, ToggleClose, ToggleLink]
 
 
 @dataclass(frozen=True)
@@ -23,7 +25,7 @@ class SwitchableView(Graph):
         if isinstance(command, ToggleSwitchableView):
             self._only_switchable = not self._only_switchable
             self._fix_selection()
-        elif isinstance(command, Add):
+        elif command.__class__ in TREE_MODIFIERS:
             self.goaltree.accept_all(command)
             self._fix_selection()
         else:
