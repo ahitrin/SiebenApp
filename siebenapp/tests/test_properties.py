@@ -160,7 +160,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         save_updates(self.goaltree, self.database)
         assert not self.goaltree.events()
         ng = build_goals(self.database)
-        q1 = self.goaltree.goaltree.q("name,open,edge,select,switchable")
+        q1 = self.goaltree.q("name,open,edge,select,switchable")
         q2 = ng.q("name,open,edge,select,switchable")
         assert q1 == q2
 
@@ -178,5 +178,4 @@ def build_goals(conn):
             f"Goals: {goals}, Edges: {edges}, Selection: {selection}, Zoom: {zoom_data}"
         )
         goals = Goals.build(goals, edges, selection)
-        # We still have to return unzoomed data
-        return goals
+        return Zoom.build(goals, zoom_data)
