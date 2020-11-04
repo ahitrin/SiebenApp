@@ -3,6 +3,7 @@ from siebenapp.switchable_view import ToggleSwitchableView, SwitchableView
 from siebenapp.goaltree import Goals
 from siebenapp.open_view import OpenView
 from siebenapp.tests.dsl import build_goaltree, open_, selected, previous
+from siebenapp.zoom import ToggleZoom, Zoom
 
 
 def test_goaltree_selection_may_be_changed_in_switchable_view():
@@ -83,3 +84,17 @@ def test_change_selection_on_goal_closing():
     assert v.q("name,select") == {3: {"name": "Closing", "select": "select"}}
     v.accept(ToggleClose())
     assert v.q("name,select") == {2: {"name": "Subroot", "select": "select"}}
+
+
+def test_how_should_we_deal_with_zooming():
+    g = build_goaltree(
+        open_(1, "Root", [2]),
+        open_(2, "Zoomed", blockers=[3], select=selected),
+        open_(3, "Ex-top"),
+    )
+    v = SwitchableView(Zoom(g))
+    v.accept_all(ToggleZoom(), ToggleSwitchableView())
+    assert v.q("name,select") == {3: {"name": "Ex-top", "select": "select"}}
+    v.accept(Add("Unexpectedly hidden"))
+    # I definitely don't like this behavior. Seems that we should show something here
+    assert v.q("name,select") == {}

@@ -36,7 +36,7 @@ class SwitchableView(Graph):
             self._only_switchable = not self._only_switchable
             self._fix_selection()
         elif command.__class__ in TREE_MODIFIERS:
-            self.goaltree.accept_all(command)
+            self.goaltree.accept(command)
             self._fix_selection()
         else:
             self.goaltree.accept(command)
