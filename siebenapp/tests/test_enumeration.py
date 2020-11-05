@@ -1,15 +1,18 @@
 import pytest
 
-from siebenapp.domain import EdgeType, Add, Select, HoldSelect
+from siebenapp.domain import EdgeType, Add, Select
 from siebenapp.enumeration import Enumeration, BidirectionalIndex
 from siebenapp.switchable_view import ToggleSwitchableView, SwitchableView
 from siebenapp.tests.dsl import build_goaltree, open_, previous, selected
 from siebenapp.zoom import Zoom, ToggleZoom
 
 
+# pylint: disable=redefined-outer-name
+
+
 @pytest.fixture
-def goal_chain():
-    """1 → 2 → 3 → ... → 10"""
+def goal_chain_10():
+    """a → b → c → ... → j"""
     return build_goaltree(
         open_(1, "a", [2], select=selected),
         open_(2, "b", [3]),
@@ -22,6 +25,14 @@ def goal_chain():
         open_(9, "i", [10]),
         open_(10, "j", []),
     )
+
+
+@pytest.fixture
+def goal_chain_11(goal_chain_10):
+    """a → b → c → ... → j → k"""
+    goals = goal_chain_10
+    goals.accept_all(Select(10), Add("k"), Select(1))
+    return goals
 
 
 def test_simple_enumeration_is_not_changed():
@@ -39,8 +50,8 @@ def test_simple_enumeration_is_not_changed():
     }
 
 
-def test_apply_mapping_for_the_10th_element(goal_chain):
-    e = Enumeration(goal_chain)
+def test_apply_mapping_for_the_10th_element(goal_chain_10):
+    e = Enumeration(goal_chain_10)
     assert e.q(keys="name,edge") == {
         1: {"name": "a", "edge": [(2, EdgeType.PARENT)]},
         2: {"name": "b", "edge": [(3, EdgeType.PARENT)]},
@@ -55,11 +66,10 @@ def test_apply_mapping_for_the_10th_element(goal_chain):
     }
 
 
-def test_apply_mapping_for_the_11th_element(goal_chain):
-    e = Enumeration(goal_chain)
-    e.accept(Add("k"))
+def test_apply_mapping_for_the_11th_element(goal_chain_11):
+    e = Enumeration(goal_chain_11)
     assert e.q(keys="name,edge") == {
-        11: {"name": "a", "edge": [(12, EdgeType.PARENT), (21, EdgeType.PARENT)]},
+        11: {"name": "a", "edge": [(12, EdgeType.PARENT)]},
         12: {"name": "b", "edge": [(13, EdgeType.PARENT)]},
         13: {"name": "c", "edge": [(14, EdgeType.PARENT)]},
         14: {"name": "d", "edge": [(15, EdgeType.PARENT)]},
@@ -68,16 +78,16 @@ def test_apply_mapping_for_the_11th_element(goal_chain):
         17: {"name": "g", "edge": [(18, EdgeType.PARENT)]},
         18: {"name": "h", "edge": [(19, EdgeType.PARENT)]},
         19: {"name": "i", "edge": [(10, EdgeType.PARENT)]},
-        10: {"name": "j", "edge": []},
+        10: {"name": "j", "edge": [(21, EdgeType.PARENT)]},
         21: {"name": "k", "edge": []},
     }
 
 
-def test_use_mapping_in_selection(goal_chain):
-    e = Enumeration(goal_chain)
+def test_use_mapping_in_selection(goal_chain_10):
+    e = Enumeration(goal_chain_10)
     e.accept(Select(0))
     assert e.q(keys="name,select") == {
-        1: {"name": "a", "select": 'prev'},
+        1: {"name": "a", "select": "prev"},
         2: {"name": "b", "select": None},
         3: {"name": "c", "select": None},
         4: {"name": "d", "select": None},
@@ -88,9 +98,13 @@ def test_use_mapping_in_selection(goal_chain):
         9: {"name": "i", "select": None},
         0: {"name": "j", "select": "select"},
     }
-    e.accept_all(HoldSelect(), Add("k"), Select(1), Select(6))
+
+
+def test_select_goal_by_id_parts(goal_chain_11):
+    e = Enumeration(goal_chain_11)
+    e.accept_all(Select(1), Select(6))
     assert e.q(keys="name,select") == {
-        11: {"name": "a", "select": None},
+        11: {"name": "a", "select": "prev"},
         12: {"name": "b", "select": None},
         13: {"name": "c", "select": None},
         14: {"name": "d", "select": None},
@@ -99,14 +113,13 @@ def test_use_mapping_in_selection(goal_chain):
         17: {"name": "g", "select": None},
         18: {"name": "h", "select": None},
         19: {"name": "i", "select": None},
-        10: {"name": "j", "select": "prev"},
+        10: {"name": "j", "select": None},
         21: {"name": "k", "select": None},
     }
 
 
-def test_select_goal_by_full_id(goal_chain):
-    e = Enumeration(goal_chain)
-    e.accept(Add("k"))
+def test_select_goal_by_full_id(goal_chain_11):
+    e = Enumeration(goal_chain_11)
     assert e.q(keys="name,select") == {
         11: {"name": "a", "select": "select"},
         12: {"name": "b", "select": None},
@@ -136,9 +149,8 @@ def test_select_goal_by_full_id(goal_chain):
     }
 
 
-def test_select_goal_by_full_id_with_non_empty_cache(goal_chain):
-    e = Enumeration(goal_chain)
-    e.accept(Add("k"))
+def test_select_goal_by_full_id_with_non_empty_cache(goal_chain_11):
+    e = Enumeration(goal_chain_11)
     assert e.q(keys="name,select") == {
         11: {"name": "a", "select": "select"},
         12: {"name": "b", "select": None},
@@ -181,9 +193,9 @@ def test_enumerated_goals_must_have_the_same_dimension():
     }
 
 
-def test_selection_cache_should_be_reset_after_view_switch(goal_chain):
-    e = Enumeration(SwitchableView(goal_chain))
-    e.accept_all(Select(10), Add("k"), Select(10), Add("Also top"))
+def test_selection_cache_should_be_reset_after_view_switch(goal_chain_11):
+    e = Enumeration(SwitchableView(goal_chain_11))
+    e.accept_all(Add("Also top"))
     # Select(1) is kept in a cache
     e.accept_all(Select(1), ToggleSwitchableView())
     assert e.q("name,select") == {
@@ -199,9 +211,8 @@ def test_selection_cache_should_be_reset_after_view_switch(goal_chain):
     }
 
 
-def test_selection_cache_should_avoid_overflow(goal_chain):
-    e = Enumeration(goal_chain)
-    e.accept(Add("k"))
+def test_selection_cache_should_avoid_overflow(goal_chain_11):
+    e = Enumeration(goal_chain_11)
     assert e.q(keys="select")[11] == {"select": "select"}
     e.accept(Select(5))
     assert e.q(keys="select")[11] == {"select": "select"}
