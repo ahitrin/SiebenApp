@@ -97,6 +97,20 @@ class GoalsTest(TestCase):
             4: {"name": "Wow", "edge": [(3, EdgeType.BLOCKER)], "switchable": False},
         }
 
+    def test_reverse_insertion(self):
+        """Not sure whether such trick should be legal"""
+        self.goals = self.build(
+            open_(1, "Root", [2], select=selected),
+            open_(2, "Selected", select=previous)
+        )
+        self.goals.accept(Insert("Intermediate?"))
+        # No, it's not intermediate
+        assert self.goals.q("name,edge") == {
+            1: {"name": "Root", "edge": [(2, EdgeType.PARENT)]},
+            2: {"name": "Selected", "edge": [(3, EdgeType.BLOCKER)]},
+            3: {"name": "Intermediate?", "edge": []},
+        }
+
     def test_close_single_goal(self):
         assert self.goals.q(keys="name,open") == {1: {"name": "Root", "open": True}}
         self.goals.accept(ToggleClose())
