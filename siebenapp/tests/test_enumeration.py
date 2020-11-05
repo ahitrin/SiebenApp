@@ -158,7 +158,7 @@ def test_select_goal_by_full_id_with_non_empty_cache():
     }
 
 
-def test_mapping_for_top():
+def test_enumerated_goals_must_have_the_same_dimension():
     e = Enumeration(
         build_goaltree(
             open_(1, "a", [2, 20], select=selected), open_(2, "b"), open_(20, "x")
@@ -172,19 +172,29 @@ def test_mapping_for_top():
 
 
 def test_selection_cache_should_be_reset_after_view_switch():
-    # 1 -> 2 -> 3 -> .. -> 10 -> 11
-    prototype = [
-        open_(i, str(i), [i + 1], select=(selected if i == 1 else None))
-        for i in range(1, 11)
-    ] + [open_(11, "11")]
-    g = build_goaltree(*prototype)
-    g.accept(Add("Also top", 1))
+    g = build_goaltree(
+        open_(1, "1", [2, 12], select=selected),
+        open_(2, "2", [3]),
+        open_(3, "3", [4]),
+        open_(4, "4", [5]),
+        open_(5, "5", [6]),
+        open_(6, "6", [7]),
+        open_(7, "7", [8]),
+        open_(8, "8", [9]),
+        open_(9, "9", [10]),
+        open_(10, "10", [11]),
+        open_(11, "11"),
+        open_(12, "Also top"),
+    )
     e = Enumeration(SwitchableView(g))
+    # Select(1) is kept in a cache
     e.accept_all(Select(1), ToggleSwitchableView())
     assert e.q("name,select") == {
         1: {"name": "11", "select": "select"},
         2: {"name": "Also top", "select": None},
     }
+    # Select(2) is being applied without any effect from the previous selection
+    # This happens because selection cache was reset
     e.accept(Select(2))
     assert e.q("name,select") == {
         1: {"name": "11", "select": "prev"},
