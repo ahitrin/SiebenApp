@@ -1,8 +1,27 @@
+import pytest
+
 from siebenapp.domain import EdgeType, Add, Select
 from siebenapp.enumeration import Enumeration, BidirectionalIndex
 from siebenapp.switchable_view import ToggleSwitchableView, SwitchableView
 from siebenapp.tests.dsl import build_goaltree, open_, previous, selected
 from siebenapp.zoom import Zoom, ToggleZoom
+
+
+@pytest.fixture
+def goal_chain():
+    """1 → 2 → 3 → ... → 10"""
+    return build_goaltree(
+        open_(1, "a", [2], select=selected),
+        open_(2, "b", [3]),
+        open_(3, "c", [4]),
+        open_(4, "d", [5]),
+        open_(5, "e", [6]),
+        open_(6, "f", [7]),
+        open_(7, "g", [8]),
+        open_(8, "h", [9]),
+        open_(9, "i", [10]),
+        open_(10, "j", []),
+    )
 
 
 def test_simple_enumeration_is_not_changed():
@@ -20,20 +39,8 @@ def test_simple_enumeration_is_not_changed():
     }
 
 
-def test_apply_mapping_for_the_10th_element():
-    goals = build_goaltree(
-        open_(1, "a", [2], select=selected),
-        open_(2, "b", [3]),
-        open_(3, "c", [4]),
-        open_(4, "d", [5]),
-        open_(5, "e", [6]),
-        open_(6, "f", [7]),
-        open_(7, "g", [8]),
-        open_(8, "h", [9]),
-        open_(9, "i", [10]),
-        open_(10, "j", []),
-    )
-    e = Enumeration(goals)
+def test_apply_mapping_for_the_10th_element(goal_chain):
+    e = Enumeration(goal_chain)
     assert e.q(keys="name,edge") == {
         1: {"name": "a", "edge": [(2, EdgeType.PARENT)]},
         2: {"name": "b", "edge": [(3, EdgeType.PARENT)]},
@@ -48,20 +55,8 @@ def test_apply_mapping_for_the_10th_element():
     }
 
 
-def test_apply_mapping_for_the_11th_element():
-    goals = build_goaltree(
-        open_(1, "a", [2], select=selected),
-        open_(2, "b", [3]),
-        open_(3, "c", [4]),
-        open_(4, "d", [5]),
-        open_(5, "e", [6]),
-        open_(6, "f", [7]),
-        open_(7, "g", [8]),
-        open_(8, "h", [9]),
-        open_(9, "i", [10]),
-        open_(10, "j", []),
-    )
-    e = Enumeration(goals)
+def test_apply_mapping_for_the_11th_element(goal_chain):
+    e = Enumeration(goal_chain)
     e.accept(Add("k"))
     assert e.q(keys="name,edge") == {
         11: {"name": "a", "edge": [(12, EdgeType.PARENT), (21, EdgeType.PARENT)]},
