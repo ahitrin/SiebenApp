@@ -46,8 +46,23 @@ def test_apply_mapping_for_the_10th_element():
         9: {"name": "i", "edge": [(0, EdgeType.PARENT)]},
         0: {"name": "j", "edge": []},
     }
-    # simulate goal addition
-    goals.accept(Add("k"))
+
+
+def test_apply_mapping_for_the_11th_element():
+    goals = build_goaltree(
+        open_(1, "a", [2], select=selected),
+        open_(2, "b", [3]),
+        open_(3, "c", [4]),
+        open_(4, "d", [5]),
+        open_(5, "e", [6]),
+        open_(6, "f", [7]),
+        open_(7, "g", [8]),
+        open_(8, "h", [9]),
+        open_(9, "i", [10]),
+        open_(10, "j", []),
+    )
+    e = Enumeration(goals)
+    e.accept(Add("k"))
     assert e.q(keys="name,edge") == {
         11: {"name": "a", "edge": [(12, EdgeType.PARENT), (21, EdgeType.PARENT)]},
         12: {"name": "b", "edge": [(13, EdgeType.PARENT)]},
