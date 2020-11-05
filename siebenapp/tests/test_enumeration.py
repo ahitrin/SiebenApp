@@ -1,6 +1,6 @@
 import pytest
 
-from siebenapp.domain import EdgeType, Add, Select
+from siebenapp.domain import EdgeType, Add, Select, HoldSelect
 from siebenapp.enumeration import Enumeration, BidirectionalIndex
 from siebenapp.switchable_view import ToggleSwitchableView, SwitchableView
 from siebenapp.tests.dsl import build_goaltree, open_, previous, selected
@@ -73,14 +73,11 @@ def test_apply_mapping_for_the_11th_element(goal_chain):
     }
 
 
-def test_use_mapping_in_selection():
-    prototype = [open_(i + 1, c, [i + 2]) for i, c in enumerate("abcdefghi")] + [
-        open_(10, "j", select=selected)
-    ]
-    e = Enumeration(build_goaltree(*prototype))
+def test_use_mapping_in_selection(goal_chain):
+    e = Enumeration(goal_chain)
     e.accept(Select(0))
     assert e.q(keys="name,select") == {
-        1: {"name": "a", "select": None},
+        1: {"name": "a", "select": 'prev'},
         2: {"name": "b", "select": None},
         3: {"name": "c", "select": None},
         4: {"name": "d", "select": None},
@@ -91,7 +88,7 @@ def test_use_mapping_in_selection():
         9: {"name": "i", "select": None},
         0: {"name": "j", "select": "select"},
     }
-    e.accept_all(Add("k"), Select(1), Select(6))
+    e.accept_all(HoldSelect(), Add("k"), Select(1), Select(6))
     assert e.q(keys="name,select") == {
         11: {"name": "a", "select": None},
         12: {"name": "b", "select": None},
@@ -107,11 +104,9 @@ def test_use_mapping_in_selection():
     }
 
 
-def test_select_goal_by_full_id():
-    prototype = [open_(1, "a", [2, 3, 4, 5, 6, 7, 8, 9, 10, 11], select=selected)] + [
-        open_(i + 2, c) for i, c in enumerate("bcdefghijk")
-    ]
-    e = Enumeration(build_goaltree(*prototype))
+def test_select_goal_by_full_id(goal_chain):
+    e = Enumeration(goal_chain)
+    e.accept(Add("k"))
     assert e.q(keys="name,select") == {
         11: {"name": "a", "select": "select"},
         12: {"name": "b", "select": None},
@@ -141,11 +136,9 @@ def test_select_goal_by_full_id():
     }
 
 
-def test_select_goal_by_full_id_with_non_empty_cache():
-    prototype = [open_(1, "a", [2, 3, 4, 5, 6, 7, 8, 9, 10, 11], select=selected)] + [
-        open_(i + 2, c) for i, c in enumerate("bcdefghijk")
-    ]
-    e = Enumeration(build_goaltree(*prototype))
+def test_select_goal_by_full_id_with_non_empty_cache(goal_chain):
+    e = Enumeration(goal_chain)
+    e.accept(Add("k"))
     assert e.q(keys="name,select") == {
         11: {"name": "a", "select": "select"},
         12: {"name": "b", "select": None},
@@ -188,42 +181,27 @@ def test_enumerated_goals_must_have_the_same_dimension():
     }
 
 
-def test_selection_cache_should_be_reset_after_view_switch():
-    g = build_goaltree(
-        open_(1, "1", [2, 12], select=selected),
-        open_(2, "2", [3]),
-        open_(3, "3", [4]),
-        open_(4, "4", [5]),
-        open_(5, "5", [6]),
-        open_(6, "6", [7]),
-        open_(7, "7", [8]),
-        open_(8, "8", [9]),
-        open_(9, "9", [10]),
-        open_(10, "10", [11]),
-        open_(11, "11"),
-        open_(12, "Also top"),
-    )
-    e = Enumeration(SwitchableView(g))
+def test_selection_cache_should_be_reset_after_view_switch(goal_chain):
+    e = Enumeration(SwitchableView(goal_chain))
+    e.accept_all(Select(10), Add("k"), Select(10), Add("Also top"))
     # Select(1) is kept in a cache
     e.accept_all(Select(1), ToggleSwitchableView())
     assert e.q("name,select") == {
-        1: {"name": "11", "select": "select"},
+        1: {"name": "k", "select": "select"},
         2: {"name": "Also top", "select": None},
     }
     # Select(2) is being applied without any effect from the previous selection
     # This happens because selection cache was reset
     e.accept(Select(2))
     assert e.q("name,select") == {
-        1: {"name": "11", "select": "prev"},
+        1: {"name": "k", "select": "prev"},
         2: {"name": "Also top", "select": "select"},
     }
 
 
-def test_selection_cache_should_avoid_overflow():
-    prototype = [
-        open_(1, "Root", [2, 3, 4, 5, 6, 7, 8, 9, 10, 11], select=selected)
-    ] + [open_(i, str(i)) for i in range(2, 12)]
-    e = Enumeration(build_goaltree(*prototype))
+def test_selection_cache_should_avoid_overflow(goal_chain):
+    e = Enumeration(goal_chain)
+    e.accept(Add("k"))
     assert e.q(keys="select")[11] == {"select": "select"}
     e.accept(Select(5))
     assert e.q(keys="select")[11] == {"select": "select"}
