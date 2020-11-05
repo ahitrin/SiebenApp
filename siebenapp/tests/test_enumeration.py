@@ -21,11 +21,18 @@ def test_simple_enumeration_is_not_changed():
 
 
 def test_apply_mapping_for_the_10th_element():
-    prototype = [
-        open_(i + 1, c, [i + 2], select=(selected if i == 0 else None))
-        for i, c in enumerate("abcdefghi")
-    ] + [open_(10, "j")]
-    goals = build_goaltree(*prototype)
+    goals = build_goaltree(
+        open_(1, "a", [2], select=selected),
+        open_(2, "b", [3]),
+        open_(3, "c", [4]),
+        open_(4, "d", [5]),
+        open_(5, "e", [6]),
+        open_(6, "f", [7]),
+        open_(7, "g", [8]),
+        open_(8, "h", [9]),
+        open_(9, "i", [10]),
+        open_(10, "j", []),
+    )
     e = Enumeration(goals)
     assert e.q(keys="name,edge") == {
         1: {"name": "a", "edge": [(2, EdgeType.PARENT)]},
