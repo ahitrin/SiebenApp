@@ -100,6 +100,25 @@ def test_use_mapping_in_selection(goal_chain_10):
     }
 
 
+def test_do_not_select_goal_by_partial_id(goal_chain_11):
+    e = Enumeration(goal_chain_11)
+    # Select(1) is kept in cache, and selection is not changed yet
+    e.accept_all(Select(1))
+    assert e.q(keys="name,select") == {
+        11: {"name": "a", "select": "select"},
+        12: {"name": "b", "select": None},
+        13: {"name": "c", "select": None},
+        14: {"name": "d", "select": None},
+        15: {"name": "e", "select": None},
+        16: {"name": "f", "select": None},
+        17: {"name": "g", "select": None},
+        18: {"name": "h", "select": None},
+        19: {"name": "i", "select": None},
+        10: {"name": "j", "select": None},
+        21: {"name": "k", "select": None},
+    }
+
+
 def test_select_goal_by_id_parts(goal_chain_11):
     e = Enumeration(goal_chain_11)
     e.accept_all(Select(1), Select(6))
