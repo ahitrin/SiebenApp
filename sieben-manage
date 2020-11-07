@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
 from argparse import ArgumentParser
 
-from siebenapp.system import load, dot_export
+from siebenapp.system import load, dot_export, save
 
 
 def print_dot(db):
     tree = load(db).goaltree.goaltree
     print(dot_export(tree))
+
+
+def migrate(db):
+    goals = load(db)
+    save(goals, db)
 
 
 def do_nothing(db):
@@ -15,6 +20,7 @@ def do_nothing(db):
 
 ACTION_HANDLERS = {
     "dot": print_dot,
+    "migrate": migrate,
     "merge": do_nothing,
     "split": do_nothing,
 }
@@ -22,7 +28,7 @@ ACTION_HANDLERS = {
 
 def main():
     parser = ArgumentParser()
-    parser.add_argument("command", choices=["dot"])
+    parser.add_argument("command", choices=["dot", "migrate"])
     parser.add_argument("db")
     args = parser.parse_args()
     action = ACTION_HANDLERS[args.command]
