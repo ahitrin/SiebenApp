@@ -101,7 +101,7 @@ class GoalsTest(TestCase):
         """Not sure whether such trick should be legal"""
         self.goals = self.build(
             open_(1, "Root", [2], select=selected),
-            open_(2, "Selected", select=previous)
+            open_(2, "Selected", select=previous),
         )
         self.goals.accept(Insert("Intermediate?"))
         # No, it's not intermediate

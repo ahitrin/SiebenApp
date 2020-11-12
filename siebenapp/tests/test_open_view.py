@@ -1,6 +1,6 @@
 import pytest
 
-from siebenapp.domain import Select, ToggleClose, EdgeType
+from siebenapp.domain import Select, ToggleClose, EdgeType, HoldSelect
 from siebenapp.open_view import ToggleOpenView, OpenView
 from siebenapp.tests.dsl import build_goaltree, open_, selected, clos_, previous
 
@@ -90,4 +90,32 @@ def test_simple_open_enumeration_workflow():
             "edge": [(3, EdgeType.PARENT)],
         },
         3: {"name": "2", "select": None, "open": True, "edge": []},
+    }
+
+
+def test_selection_reset():
+    v = OpenView(
+        build_goaltree(
+            open_(1, "Root", [2, 3], select=selected),
+            clos_(2, "closed"),
+            clos_(3, "closed too"),
+        )
+    )
+    v.accept_all(ToggleOpenView(), Select(2), HoldSelect(), Select(3))
+    assert v.q("name,select") == {
+        1: {"name": "Root", "select": None},
+        2: {"name": "closed", "select": "prev"},
+        3: {"name": "closed too", "select": "select"},
+    }
+    v.accept(ToggleOpenView())
+    # The problem is here: selection disappears
+    assert v.q("name,select") == {
+        1: {"name": "Root", "select": None},
+    }
+    v.accept(ToggleOpenView())
+    # Selection is still tied to the closed subgoals
+    assert v.q("name,select") == {
+        1: {"name": "Root", "select": None},
+        2: {"name": "closed", "select": "prev"},
+        3: {"name": "closed too", "select": "select"},
     }
