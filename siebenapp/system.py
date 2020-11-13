@@ -13,7 +13,10 @@ from siebenapp.zoom import Zoom
 
 MIGRATIONS = [
     # 0
-    ["create table migrations (version integer)", "insert into migrations values (-1)"],
+    [
+        "create table migrations (version integer)",
+        "insert into migrations values (-1)",
+    ],
     # 1
     [
         """create table goals (
@@ -61,7 +64,9 @@ MIGRATIONS = [
         "alter table selection rename to settings",
     ],
     # 4
-    ["alter table edges add column reltype integer not null default 1"],
+    [
+        "alter table edges add column reltype integer not null default 1",
+    ],
     # 5
     [
         """create table zoom (
