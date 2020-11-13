@@ -234,7 +234,10 @@ def test_unlink_for_goal_outside_of_zoomed_tree_should_cause_selection_change():
         )
     )
     goals.accept_all(
-        ToggleZoom(), HoldSelect(), Select(2), ToggleLink(),  # unlink 3 -> 2
+        ToggleZoom(),
+        HoldSelect(),
+        Select(2),
+        ToggleLink(),  # unlink 3 -> 2
     )
     assert goals.q("name,select") == {
         -1: {"name": "Root", "select": None},
@@ -289,7 +292,9 @@ def test_goal_reopening_must_not_change_selection():
         )
     )
     goals.accept_all(
-        ToggleZoom(), Select(3), ToggleClose(),
+        ToggleZoom(),
+        Select(3),
+        ToggleClose(),
     )
     assert goals.q(keys="name,select,open") == {
         -1: {"name": "Root", "select": None, "open": True},

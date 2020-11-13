@@ -129,7 +129,9 @@ class GoalsTest(TestCase):
 
     def test_close_goal_again(self):
         self.goals = self.build(
-            open_(1, "Root", [2], select=selected), open_(2, "A", [3]), clos_(3, "Ab"),
+            open_(1, "Root", [2], select=selected),
+            open_(2, "A", [3]),
+            clos_(3, "Ab"),
         )
         self.goals.accept_all(Select(2), ToggleClose())
         assert self.goals.q(keys="open,switchable") == {

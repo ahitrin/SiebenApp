@@ -107,7 +107,10 @@ def test_migration_must_run_on_load_from_existing_db():
     goals = Zoom(Goals("Just a simple goal tree"))
     save(goals, file_name)
     MIGRATIONS.append(
-        ["create table dummy (answer integer)", "insert into dummy values (42)",]
+        [
+            "create table dummy (answer integer)",
+            "insert into dummy values (42)",
+        ]
     )
     try:
         load(file_name)

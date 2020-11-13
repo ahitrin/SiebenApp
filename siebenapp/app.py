@@ -312,7 +312,8 @@ class SiebenApp(QMainWindow):
 def main(root_script):
     parser = ArgumentParser()
     parser.add_argument(
-        "db", help="Path to the database file",
+        "db",
+        help="Path to the database file",
     )
     args = parser.parse_args()
     app = QApplication(sys.argv)

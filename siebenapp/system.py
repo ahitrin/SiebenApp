@@ -57,7 +57,9 @@ MIGRATIONS = [
         """drop table old_selection""",
     ],
     # 3
-    ["alter table selection rename to settings",],
+    [
+        "alter table selection rename to settings",
+    ],
     # 4
     ["alter table edges add column reltype integer not null default 1"],
     # 5
@@ -90,7 +92,9 @@ MIGRATIONS = [
         "insert into edges select * from new_edges",
     ],
     # 7
-    ["drop table new_edges",],
+    [
+        "drop table new_edges",
+    ],
 ]
 
 
