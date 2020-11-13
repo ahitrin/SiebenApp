@@ -35,11 +35,10 @@ class SwitchableView(Graph):
         if isinstance(command, ToggleSwitchableView):
             self._only_switchable = not self._only_switchable
             self._fix_selection()
-        elif command.__class__ in TREE_MODIFIERS:
-            self.goaltree.accept(command)
-            self._fix_selection()
         else:
             self.goaltree.accept(command)
+            if command.__class__ in TREE_MODIFIERS:
+                self._fix_selection()
 
     def _fix_selection(self):
         if not self._only_switchable:
