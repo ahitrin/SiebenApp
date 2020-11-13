@@ -2,7 +2,7 @@ import collections
 from dataclasses import dataclass
 from typing import Dict, Any
 
-from siebenapp.domain import Command, Graph
+from siebenapp.domain import Command, Graph, Select, HoldSelect
 
 
 @dataclass(frozen=True)
@@ -22,8 +22,18 @@ class OpenView(Graph):
     def accept(self, command: Command) -> None:
         if isinstance(command, ToggleOpenView):
             self._open = not self._open
+            self._fix_selection()
         else:
             self.goaltree.accept(command)
+
+    def _fix_selection(self):
+        if not self._open:
+            return
+        ids = [k for k, v in self.goaltree.q("open").items() if v["open"]]
+        if ids and self.goaltree.settings("selection") not in ids:
+            self.goaltree.accept(Select(min(ids)))
+        if ids and self.goaltree.settings("previous_selection") not in ids:
+            self.goaltree.accept(HoldSelect())
 
     def events(self) -> collections.deque:
         return self.goaltree.events()

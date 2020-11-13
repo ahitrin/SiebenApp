@@ -93,7 +93,7 @@ def test_simple_open_enumeration_workflow():
     }
 
 
-def test_selection_reset():
+def test_goaltree_selection_may_be_changed_in_open_view():
     v = OpenView(
         build_goaltree(
             open_(1, "Root", [2, 3], select=selected),
@@ -108,14 +108,13 @@ def test_selection_reset():
         3: {"name": "closed too", "select": "select"},
     }
     v.accept(ToggleOpenView())
-    # The problem is here: selection disappears
     assert v.q("name,select") == {
-        1: {"name": "Root", "select": None},
+        1: {"name": "Root", "select": "select"},
     }
     v.accept(ToggleOpenView())
     # Selection is still tied to the closed subgoals
     assert v.q("name,select") == {
-        1: {"name": "Root", "select": None},
-        2: {"name": "closed", "select": "prev"},
-        3: {"name": "closed too", "select": "select"},
+        1: {"name": "Root", "select": "select"},
+        2: {"name": "closed", "select": None},
+        3: {"name": "closed too", "select": None},
     }
