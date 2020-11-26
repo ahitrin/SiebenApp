@@ -292,7 +292,6 @@ class Goals(Graph):
             x for x in self.goals if self.goals[x] is not None
         }, "All subgoals must be accessible from the root goal"
 
-
         deleted_nodes = [g for g, v in self.goals.items() if v is None]
         assert all(
             not self._forward_edges(n) for n in deleted_nodes
