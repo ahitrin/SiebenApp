@@ -108,7 +108,6 @@ def save(goals: Graph, filename: str) -> None:
         connection = sqlite3.connect(filename)
         run_migrations(connection)
         save_updates(goals, connection)
-        connection.close()
     else:
         connection = sqlite3.connect(filename)
         run_migrations(connection)
@@ -127,7 +126,8 @@ def save(goals: Graph, filename: str) -> None:
         cur.executemany("insert into zoom values (?, ?)", zoom_export)
         root_goals._events.clear()  # pylint: disable=protected-access
         connection.commit()
-        connection.close()
+
+    connection.close()
 
 
 def save_updates(goals: Graph, connection: sqlite3.Connection) -> None:

@@ -288,9 +288,10 @@ class Goals(Graph):
                 if g.target not in visited and self.goals[g.target] is not None
             )
             visited.add(goal)
-        assert visited == set(
+        assert visited == {
             x for x in self.goals if self.goals[x] is not None
-        ), "All subgoals must be accessible from the root goal"
+        }, "All subgoals must be accessible from the root goal"
+
 
         deleted_nodes = [g for g, v in self.goals.items() if v is None]
         assert all(
@@ -298,7 +299,7 @@ class Goals(Graph):
         ), "Deleted goals must have no dependencies"
 
         parent_edges = [k for k, v in self.edges.items() if v == EdgeType.PARENT]
-        edges_with_parent = set(child for parent, child in parent_edges)
+        edges_with_parent = {child for parent, child in parent_edges}
         assert len(parent_edges) == len(
             edges_with_parent
         ), "Each goal must have at most 1 parent"
@@ -310,13 +311,15 @@ class Goals(Graph):
         # type: (GoalsData, EdgesData, OptionsData, Callable[[str], None]) -> Goals
         result = Goals("", message_fn)
         result._events.clear()  # pylint: disable=protected-access
-        goals_dict = dict((g[0], g[1]) for g in goals)
-        result.goals = dict(
-            (i, goals_dict.get(i)) for i in range(1, max(goals_dict.keys()) + 1)
+        goals_dict = {g[0]: g[1] for g in goals}
+        result.goals = {
+            i: goals_dict.get(i) for i in range(1, max(goals_dict.keys()) + 1)
+        }
+
+        result.closed = {g[0] for g in goals if not g[2]}.union(
+            {k for k, v in result.goals.items() if v is None}
         )
-        result.closed = set(g[0] for g in goals if not g[2]).union(
-            set(k for k, v in result.goals.items() if v is None)
-        )
+
         for parent, child, link_type in edges:
             result.edges[parent, child] = EdgeType(link_type)
         selection_dict = dict(settings)
@@ -330,10 +333,11 @@ class Goals(Graph):
     @staticmethod
     def export(goals):
         # type: (Goals) -> Tuple[GoalsData, EdgesData, OptionsData]
-        nodes = list(
+        nodes = [
             (g_id, g_name, g_id not in goals.closed)
             for g_id, g_name in goals.goals.items()
-        )
+        ]
+
         edges = [(k[0], k[1], v) for k, v in goals.edges.items()]
         settings = [
             ("selection", goals.selection),

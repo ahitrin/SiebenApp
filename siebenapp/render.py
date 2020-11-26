@@ -50,7 +50,7 @@ class Renderer:
                 sorted_goals.add(goal)
                 new_layer.append(goal)
                 back_edges = [k for k, vs in self.edges.items() if goal in vs]
-                outgoing_edges.update(e for e in back_edges)
+                outgoing_edges.update(iter(back_edges))
                 if (len(new_layer) >= self.WIDTH_LIMIT and edges_len < 1) or (
                     len(outgoing_edges) >= self.WIDTH_LIMIT
                 ):

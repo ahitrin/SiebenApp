@@ -51,9 +51,7 @@ class OpenView(Graph):
         }
         for goal_id in result:
             val = goals[goal_id]
-            result[goal_id] = dict(
-                (k, v) for k, v in val.items() if k not in ["edge", "open"]
-            )
+            result[goal_id] = {k: v for k, v in val.items() if k not in ["edge", "open"]}
             if not skip_open:
                 result[goal_id]["open"] = val["open"]
             if "edge" in val:

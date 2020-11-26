@@ -94,7 +94,7 @@ class CentralWidget(QWidget):
         layout = QGridLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
-        self.dependencies = dict()
+        self.dependencies = {}
 
     def setDependencies(self, new_dependencies):
         self.dependencies = new_dependencies
@@ -114,7 +114,7 @@ class CentralWidget(QWidget):
                 painter.setPen(self.EDGE_PENS[edge[1]])
                 painter.drawLine(line_start, line_end)
             if not points[2]:
-                style = max([e[1] for e in self.dependencies[widget_id]])
+                style = max(e[1] for e in self.dependencies[widget_id])
                 painter.setPen(self.EDGE_PENS[style])
                 painter.drawLine(points[0], points[1])
 

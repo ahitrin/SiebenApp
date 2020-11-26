@@ -70,7 +70,7 @@ class Enumeration(Graph):
         goals, index = self._id_mapping(keys)
         for old_id, val in goals.items():
             new_id = index.forward(old_id)
-            result[new_id] = dict((k, v) for k, v in val.items() if k != "edge")
+            result[new_id] = {k: v for k, v in val.items() if k != "edge"}
             if "edge" in val:
                 result[new_id]["edge"] = [
                     (index.forward(edge[0]), edge[1]) for edge in val["edge"]
