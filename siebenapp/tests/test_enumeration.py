@@ -270,4 +270,4 @@ def test_all_keys_in_enumeration_must_be_of_the_same_length():
     e = BidirectionalIndex(items)
     mapped = [e.forward(x) for x in items]
     assert len(mapped) == len(items)
-    assert set(len(str(k)) for k in mapped) == {4}
+    assert {len(str(k)) for k in mapped} == {4}
