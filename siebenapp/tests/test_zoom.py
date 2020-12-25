@@ -1,6 +1,3 @@
-import pytest
-
-from siebenapp.goaltree import Goals
 from siebenapp.domain import (
     EdgeType,
     HoldSelect,
@@ -10,6 +7,7 @@ from siebenapp.domain import (
     Add,
     Select,
 )
+from siebenapp.goaltree import Goals
 from siebenapp.tests.dsl import build_goaltree, open_, selected, previous
 from siebenapp.zoom import Zoom, ToggleZoom
 
@@ -180,7 +178,6 @@ def test_selection_should_be_changed_if_selected_goal_is_not_a_child_of_zoom_roo
     }
 
 
-@pytest.mark.skip("Failing: see issue #98")
 def test_previous_selection_should_be_changed_or_reset_after_zoom():
     goals = Zoom(
         build_goaltree(
