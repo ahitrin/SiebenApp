@@ -1,4 +1,5 @@
 from collections import defaultdict
+from dataclasses import dataclass
 from typing import Dict, List, Tuple, Union, Any, Set
 
 from siebenapp.domain import Graph, EdgeType
@@ -7,6 +8,11 @@ from siebenapp.domain import Graph, EdgeType
 # GoalId for real nodes is integer: -1, 4, 34, etc
 # GoalId for fake nodes (used to build edges) is str: '3_5', '1_1', etc
 GoalId = Union[str, int]
+
+
+@dataclass(frozen=True)
+class RenderResult:
+    graph: Dict[int, Any]
 
 
 def safe_average(items: List[int]) -> int:
@@ -29,11 +35,11 @@ class Renderer:
             for child, edge_type in self.graph[parent]["edge"]
         }
 
-    def build(self) -> Dict[int, Any]:
+    def build(self) -> RenderResult:
         self.split_by_layers()
         self.reorder()
         self.update_graph()
-        return self.graph
+        return RenderResult(self.graph)
 
     def split_by_layers(self) -> None:
         unsorted_goals: Dict[GoalId, List[int]] = dict(self.edges)

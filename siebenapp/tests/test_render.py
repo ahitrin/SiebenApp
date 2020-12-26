@@ -13,7 +13,7 @@ def get_in(data, column):
 
 def test_render_simplest_goal_tree():
     goals = build_goaltree(open_(1, "Alone", [], select=selected))
-    result = Renderer(goals).build()
+    result = Renderer(goals).build().graph
     assert result == {
         1: {
             "row": 0,
@@ -35,7 +35,7 @@ def test_render_4_subgoals_in_a_row():
         open_(4, "C"),
         open_(5, "D"),
     )
-    result = Renderer(goals).build()
+    result = Renderer(goals).build().graph
     assert get_in(result, "row") == {
         2: 0,
         3: 0,
@@ -51,7 +51,7 @@ def test_render_add_fake_vertex():
         open_(2, "A", blockers=[3]),
         open_(3, "B"),
     )
-    result = Renderer(goals).build()
+    result = Renderer(goals).build().graph
     assert get_in(result, "row") == {
         3: 0,
         2: 1,
@@ -68,7 +68,7 @@ def test_render_add_several_fake_vertex():
         open_(4, "C", blockers=[5]),
         open_(5, "top"),
     )
-    result = Renderer(goals).build()
+    result = Renderer(goals).build().graph
     assert get_in(result, "row") == {
         5: 0,
         4: 1,
@@ -90,7 +90,7 @@ def test_render_5_subgoals_in_several_rows():
         open_(5, "Five"),
         open_(6, "Six"),
     )
-    result = Renderer(goals).build()
+    result = Renderer(goals).build().graph
     assert get_in(result, "row") == {
         2: 0,
         3: 0,
@@ -110,7 +110,7 @@ def test_split_long_edges_using_fake_goals():
         open_(4, "C", [5]),
         open_(5, "top"),
     )
-    result = Renderer(goals).build()
+    result = Renderer(goals).build().graph
     assert get_in(result, "edge") == {
         5: [],
         4: [(5, EdgeType.PARENT)],
@@ -129,7 +129,7 @@ def test_use_different_long_edge_types():
         open_(2, "A", [3]),
         open_(3, "B", []),
     )
-    result = Renderer(goals).build()
+    result = Renderer(goals).build().graph
     assert get_in(result, "edge") == {
         3: [],
         2: [(3, EdgeType.PARENT)],
@@ -146,7 +146,7 @@ def test_balance_upper_level():
         open_(4, "C", [5]),
         open_(5, "Top"),
     )
-    result = Renderer(goals).build()
+    result = Renderer(goals).build().graph
     # Top goal should be placed in the middle of the layer
     assert result[5]["col"] == 1
 
@@ -162,7 +162,7 @@ def test_render_in_top_view():
     )
     view = Enumeration(SwitchableView(goals))
     view.accept(ToggleSwitchableView())
-    result = Renderer(view).build()
+    result = Renderer(view).build().graph
     # Just verify that it renders fine
     assert len(result) == 5
 

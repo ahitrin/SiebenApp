@@ -166,7 +166,7 @@ class SiebenApp(QMainWindow):
         for child in self.scrollAreaWidgetContents.children():
             if isinstance(child, GoalWidget):
                 child.deleteLater()
-        graph = Renderer(self.goals).build()
+        graph = Renderer(self.goals).build().graph
         if "setDependencies" in dir(self.scrollAreaWidgetContents):
             self.scrollAreaWidgetContents.setDependencies(
                 {g: graph[g]["edge"] for g in graph}
