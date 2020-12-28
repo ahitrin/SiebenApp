@@ -108,15 +108,15 @@ class CentralWidget(QWidget):
             if isinstance(w, GoalWidget)
         }
         for widget_id, points in widgets.items():
-            line_start = points[0]
+            top_point, bottom_point, is_real = points
             for edge in self.dependencies[widget_id]:
                 line_end = widgets[edge[0]][1]
                 painter.setPen(self.EDGE_PENS[edge[1]])
-                painter.drawLine(line_start, line_end)
-            if not points[2]:
+                painter.drawLine(top_point, line_end)
+            if not is_real:
                 style = max(e[1] for e in self.dependencies[widget_id])
                 painter.setPen(self.EDGE_PENS[style])
-                painter.drawLine(points[0], points[1])
+                painter.drawLine(top_point, bottom_point)
 
 
 class SiebenApp(QMainWindow):
