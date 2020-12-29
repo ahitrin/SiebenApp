@@ -7,3 +7,4 @@ __pycache__
 build
 .coverage
 htmlcov
+siebenapp/tests/*.received.txt
