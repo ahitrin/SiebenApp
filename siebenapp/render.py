@@ -41,7 +41,7 @@ class Renderer:
         self.split_by_layers()
         self.reorder()
         self.update_graph()
-        self.calculate_layers()
+        self.build_index()
         return RenderResult(self.graph, self.result_index)
 
     def split_by_layers(self) -> None:
@@ -161,7 +161,7 @@ class Renderer:
                     }
                 )
 
-    def calculate_layers(self):
+    def build_index(self):
         for goal_id, attrs in self.graph.items():
             row = attrs["row"]
             col = attrs["col"]
