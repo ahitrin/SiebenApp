@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "2d55d1e58011917ce2e270ab59744fc5e750907c51013e64a0f4241ef172f0d9"
+            "sha256": "cc8de10279aa0e34aca4339d10f8fc0575a845cc0ae42e22118d465125069f80"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -61,6 +61,13 @@
                 "sha256:a841dacd6b99318a741b166adb07e19ee71a274450e68237b4650ca1055ab128"
             ],
             "version": "==1.4.4"
+        },
+        "approvaltests": {
+            "hashes": [
+                "sha256:3f912c4d71c75e658e65bcac0a8397bcde6abac97f984a7ab69362375d7ff940",
+                "sha256:691652e9df626314a967ed73c29ee7f7808f5abc441f5fb0a1eb9f688381c74c"
+            ],
+            "version": "==0.2.10"
         },
         "astroid": {
             "hashes": [
@@ -270,6 +277,12 @@
             ],
             "version": "==2.4.7"
         },
+        "pyperclip": {
+            "hashes": [
+                "sha256:a3cb6df5d8f1557ca8fc514d94fabf50dc5a97042c90e5ba4f3611864fed3fc5"
+            ],
+            "version": "==1.5.27"
+        },
         "pytest": {
             "hashes": [
                 "sha256:1969f797a1a0dbd8ccf0fecc80262312729afea9c17f1d70ebf85c5e76c6f7c8",
@@ -277,6 +290,14 @@
             ],
             "index": "pypi",
             "version": "==6.2.1"
+        },
+        "pytest-approvaltests": {
+            "hashes": [
+                "sha256:271c0e968c7078e043f9d7528aa0ea4e82667cb81e1db77796e1bc6793fd8199",
+                "sha256:2e3dabe69450dad5806b92c24d2502497941f28421dd538631212ca8c2e04bba"
+            ],
+            "index": "pypi",
+            "version": "==0.1.0"
         },
         "pytest-cov": {
             "hashes": [
