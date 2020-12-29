@@ -23,6 +23,6 @@ def test_render_bug_example():
     with io.StringIO() as out:
         print("== Graph\n", file=out)
         pprint(result.graph, out)
-        print("\n== Layers\n", file=out)
-        pprint(result.layers, out)
+        print("\n== Index\n", file=out)
+        pprint(result.index, out)
         verify(out.getvalue())

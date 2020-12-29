@@ -13,7 +13,7 @@ GoalId = Union[str, int]
 @dataclass(frozen=True)
 class RenderResult:
     graph: Dict[int, Any]
-    layers: Dict[int, Dict[int, GoalId]]
+    index: Dict[int, Dict[int, GoalId]]
 
 
 def safe_average(items: List[int]) -> int:
@@ -35,14 +35,14 @@ class Renderer:
             for parent in self.graph
             for child, edge_type in self.graph[parent]["edge"]
         }
-        self.result_layers: Dict[int, Dict[int, GoalId]] = {}
+        self.result_index: Dict[int, Dict[int, GoalId]] = {}
 
     def build(self) -> RenderResult:
         self.split_by_layers()
         self.reorder()
         self.update_graph()
         self.calculate_layers()
-        return RenderResult(self.graph, self.result_layers)
+        return RenderResult(self.graph, self.result_index)
 
     def split_by_layers(self) -> None:
         unsorted_goals: Dict[GoalId, List[int]] = dict(self.edges)
@@ -165,9 +165,9 @@ class Renderer:
         for goal_id, attrs in self.graph.items():
             row = attrs["row"]
             col = attrs["col"]
-            if row not in self.result_layers:
-                self.result_layers[row] = {}
-            self.result_layers[row][col] = goal_id
+            if row not in self.result_index:
+                self.result_index[row] = {}
+            self.result_index[row][col] = goal_id
 
 
 def place(source):

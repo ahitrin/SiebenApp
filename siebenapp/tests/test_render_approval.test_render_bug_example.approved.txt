@@ -131,7 +131,7 @@
          'select': None,
          'switchable': False}}
 
-== Layers
+== Index
 
 {0: {1: 8},
  1: {0: '1_1', 1: '3_1', 2: 7, 3: '4_1'},
