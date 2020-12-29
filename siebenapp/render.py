@@ -162,7 +162,12 @@ class Renderer:
                 )
 
     def calculate_layers(self):
-        pass
+        for goal_id, attrs in self.graph.items():
+            row = attrs["row"]
+            col = attrs["col"]
+            if row not in self.result_layers:
+                self.result_layers[row] = {}
+            self.result_layers[row][col] = goal_id
 
 
 def place(source):
