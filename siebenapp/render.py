@@ -13,6 +13,7 @@ GoalId = Union[str, int]
 @dataclass(frozen=True)
 class RenderResult:
     graph: Dict[int, Any]
+    layers: Dict[int, Dict[int, GoalId]]
 
 
 def safe_average(items: List[int]) -> int:
@@ -34,12 +35,14 @@ class Renderer:
             for parent in self.graph
             for child, edge_type in self.graph[parent]["edge"]
         }
+        self.result_layers: Dict[int, Dict[int, GoalId]] = {}
 
     def build(self) -> RenderResult:
         self.split_by_layers()
         self.reorder()
         self.update_graph()
-        return RenderResult(self.graph)
+        self.calculate_layers()
+        return RenderResult(self.graph, self.result_layers)
 
     def split_by_layers(self) -> None:
         unsorted_goals: Dict[GoalId, List[int]] = dict(self.edges)
@@ -157,6 +160,9 @@ class Renderer:
                         ],
                     }
                 )
+
+    def calculate_layers(self):
+        pass
 
 
 def place(source):

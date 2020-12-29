@@ -19,7 +19,10 @@ def test_render_bug_example():
         clos_(8, "Finally 8"),
     )
     r = Renderer(g)
+    result = r.build()
     with io.StringIO() as out:
         print("== Graph\n", file=out)
-        pprint(r.build().graph, out)
+        pprint(result.graph, out)
+        print("\n== Layers\n", file=out)
+        pprint(result.layers, out)
         verify(out.getvalue())
