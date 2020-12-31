@@ -25,4 +25,6 @@ def test_render_bug_example():
         pprint(result.graph, out)
         print("\n== Index\n", file=out)
         pprint(result.index, out)
+        print("\n== Edge options\n", file=out)
+        pprint(result.edge_opts, out)
         verify(out.getvalue())

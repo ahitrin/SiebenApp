@@ -14,6 +14,7 @@ GoalId = Union[str, int]
 class RenderResult:
     graph: Dict[int, Any]
     index: Dict[int, Dict[int, GoalId]]
+    edge_opts: Dict[int, Tuple[int, int]]
 
 
 def safe_average(items: List[int]) -> int:
@@ -42,7 +43,7 @@ class Renderer:
         self.reorder()
         self.update_graph()
         self.build_index()
-        return RenderResult(self.graph, self.result_index)
+        return RenderResult(self.graph, self.result_index, {})
 
     def split_by_layers(self) -> None:
         unsorted_goals: Dict[GoalId, List[int]] = dict(self.edges)
