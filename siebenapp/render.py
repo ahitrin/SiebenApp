@@ -141,10 +141,14 @@ class Renderer:
 
     def update_graph(self):
         for row in sorted(self.layers.keys()):
+            real_col = 0
             for col, goal_id in enumerate(self.layers[row]):
                 if goal_id is None:
                     continue
-                if goal_id not in self.graph:
+                if goal_id in self.graph:
+                    self.graph[goal_id]['col1'] = real_col
+                    real_col += 1
+                else:
                     self.graph[goal_id] = {
                         "name": "",
                         "edge": [],
