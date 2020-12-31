@@ -14,7 +14,7 @@ GoalId = Union[str, int]
 class RenderResult:
     graph: Dict[int, Any]
     index: Dict[int, Dict[int, GoalId]]
-    edge_opts: Dict[int, Tuple[int, int]]
+    edge_opts: Dict[str, Tuple[int, int]]
 
 
 def safe_average(items: List[int]) -> int:
@@ -37,13 +37,14 @@ class Renderer:
             for child, edge_type in self.graph[parent]["edge"]
         }
         self.result_index: Dict[int, Dict[int, GoalId]] = {}
+        self.result_edge_options: Dict[str, Tuple[int, int]] = {}
 
     def build(self) -> RenderResult:
         self.split_by_layers()
         self.reorder()
         self.update_graph()
         self.build_index()
-        return RenderResult(self.graph, self.result_index, {})
+        return RenderResult(self.graph, self.result_index, self.result_edge_options)
 
     def split_by_layers(self) -> None:
         unsorted_goals: Dict[GoalId, List[int]] = dict(self.edges)
@@ -169,6 +170,28 @@ class Renderer:
             if row not in self.result_index:
                 self.result_index[row] = {}
             self.result_index[row][col] = goal_id
+
+        for row, row_vals in self.result_index.items():
+            left, right = 0, 0
+            edges: List[str] = []
+            phase = "none"
+
+            for col, goal_id in sorted(row_vals.items(), key=lambda x: x[0]):
+                if isinstance(goal_id, int):
+                    if phase == "none":
+                        phase = "goals"
+                    elif phase == "edges":
+                        right = col
+                        self._write_edges(edges, left, right)
+                        edges = []
+                    left = col
+                else:
+                    phase = "edges"
+                    edges.append(goal_id)
+            self._write_edges(edges, left, len(row_vals))
+
+    def _write_edges(self, edges: List[str], left: int, right: int):
+        self.result_edge_options.update({e: (left, right) for e in edges})
 
 
 def place(source):
