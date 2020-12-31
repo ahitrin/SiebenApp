@@ -14,7 +14,7 @@ GoalId = Union[str, int]
 class RenderResult:
     graph: Dict[int, Any]
     index: Dict[int, Dict[int, GoalId]]
-    edge_opts: Dict[str, Tuple[int, int]]
+    edge_opts: Dict[str, Tuple[int, int, int]]
 
 
 def safe_average(items: List[int]) -> int:
@@ -37,7 +37,7 @@ class Renderer:
             for child, edge_type in self.graph[parent]["edge"]
         }
         self.result_index: Dict[int, Dict[int, GoalId]] = {}
-        self.result_edge_options: Dict[str, Tuple[int, int]] = {}
+        self.result_edge_options: Dict[str, Tuple[int, int, int]] = {}
 
     def build(self) -> RenderResult:
         self.split_by_layers()
@@ -191,7 +191,8 @@ class Renderer:
             self._write_edges(edges, left, len(row_vals))
 
     def _write_edges(self, edges: List[str], left: int, right: int):
-        self.result_edge_options.update({e: (left, right) for e in edges})
+        self.result_edge_options.update({e: (left, right, i)
+                                         for i, e in enumerate(edges)})
 
 
 def place(source):
