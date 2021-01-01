@@ -66,19 +66,28 @@ class Zoom(Graph):
         return self.goaltree.events()
 
     def q(self, keys: str = "name") -> Dict[int, Any]:
-        origin_goals = self.goaltree.q(keys)
+        has_edge_key = "edge" in keys
+        origin_goals = self.goaltree.q(keys if has_edge_key else keys + ",edge")
         if self.zoom_root == [1]:
-            return origin_goals
-        visible_goals = self._build_visible_goals()
+            return Zoom._filter_edges(origin_goals, has_edge_key)
+        visible_goals = self._build_visible_goals(origin_goals)
         zoomed_goals = {k: v for k, v in origin_goals.items() if k in visible_goals}
         zoomed_goals[-1] = origin_goals[1]
-        if "edge" in keys:
+        if has_edge_key:
             for goal in zoomed_goals:
                 zoomed_goals[goal]["edge"] = [
                     g for g in zoomed_goals[goal]["edge"] if g[0] in visible_goals
                 ]
             zoomed_goals[-1]["edge"] = [(self.zoom_root[-1], EdgeType.BLOCKER)]
-        return zoomed_goals
+        return Zoom._filter_edges(zoomed_goals, has_edge_key)
+
+    @staticmethod
+    def _filter_edges(goals, has_edge_key):
+        if has_edge_key:
+            return goals
+        return {
+            k: {a: b for a, b in v.items() if a != "edge"} for k, v in goals.items()
+        }
 
     def _toggle_close(self) -> None:
         if self.settings("selection") == self.zoom_root[-1]:
@@ -121,8 +130,9 @@ class Zoom(Graph):
         ), "Prev-selected goal must be within visible area"
         return ok
 
-    def _build_visible_goals(self) -> Set[int]:
-        edges = self.goaltree.q("edge")
+    def _build_visible_goals(self, edges: Dict[int, Any] = None) -> Set[int]:
+        if edges is None:
+            edges = self.goaltree.q("edge")
         current_zoom_root = self.zoom_root[-1]
         visible_goals = {current_zoom_root}
         edges_to_visit = set(edges[current_zoom_root]["edge"])
