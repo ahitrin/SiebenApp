@@ -4,7 +4,7 @@ import sys
 from argparse import ArgumentParser
 from os.path import dirname, join, realpath
 
-from PyQt5.QtCore import pyqtSignal, Qt, QRect  # type: ignore
+from PyQt5.QtCore import pyqtSignal, Qt, QRect, QPoint  # type: ignore
 from PyQt5.QtGui import QPainter, QPen  # type: ignore
 from PyQt5.QtWidgets import (  # type: ignore
     QApplication,
@@ -81,6 +81,16 @@ class GoalWidget(QWidget, Ui_GoalBody):
         return (rect.bottomLeft() + rect.bottomRight()) / 2
 
 
+def top_point(w):
+    rect = w.geometry()
+    return (rect.topLeft() + rect.topRight()) / 2
+
+
+def bottom_point(w):
+    rect = w.geometry()
+    return (rect.bottomLeft() + rect.bottomRight()) / 2
+
+
 class CentralWidget(QWidget):
     EDGE_PENS = {
         EdgeType.BLOCKER: QPen(Qt.black, 1, Qt.DashLine),
@@ -104,21 +114,44 @@ class CentralWidget(QWidget):
     def paintEvent(self, event):  # pylint: disable=unused-argument
         painter = QPainter(self)
 
-        widgets = {
-            w.widget_id: (w.top_point(), w.bottom_point(), w.is_real)
-            for w in self.children()
-            if isinstance(w, GoalWidget)
-        }
-        for widget_id, points in widgets.items():
-            top_point, bottom_point, is_real = points
-            for edge in self.dependencies[widget_id]:
-                line_end = widgets[edge[0]][1]
-                painter.setPen(self.EDGE_PENS[edge[1]])
-                painter.drawLine(top_point, line_end)
-            if not is_real:
-                style = max(e[1] for e in self.dependencies[widget_id])
-                painter.setPen(self.EDGE_PENS[style])
-                painter.drawLine(top_point, bottom_point)
+        for goal_id, attrs in self.render_result.graph.items():
+            for e_target, e_type in attrs["edge"]:
+                start, end = None, None
+                if isinstance(goal_id, int):
+                    start = top_point(
+                        self.layout().itemAtPosition(attrs["row"], attrs["col1"])
+                    )
+                else:
+                    left_id, p, q = self.render_result.edge_opts[goal_id]
+                    if left_id > 0:
+                        left = self.render_result.graph[left_id]["col1"]
+                        left_widget = self.layout().itemAtPosition(attrs["row"], left)
+                        right_widget = self.layout().itemAtPosition(
+                            attrs["row"], left + 1
+                        )
+                        if right_widget is not None:
+                            x1 = top_point(left_widget)
+                            x2 = top_point(right_widget)
+                            start = x1 + (x2 - x1) / q * p
+                        else:
+                            start = left_widget.geometry().topRight() + QPoint(
+                                10 * (p + 1), 0
+                            )
+                    else:
+                        right_widget = self.layout().itemAtPosition(attrs["row"], 0)
+                        x2 = right_widget.geometry().topLeft()
+                        x1 = QPoint(0, x2.y())
+                        start = x1 + (x2 - x1) / (q + 1) * (p + 1)
+                if isinstance(e_target, int):
+                    target_attrs = self.render_result.graph[e_target]
+                    end = bottom_point(
+                        self.layout().itemAtPosition(
+                            target_attrs["row"], target_attrs["col1"]
+                        )
+                    )
+                if start is not None and end is not None:
+                    painter.setPen(self.EDGE_PENS[e_type])
+                    painter.drawLine(start, end)
 
 
 class SiebenApp(QMainWindow):
@@ -175,12 +208,12 @@ class SiebenApp(QMainWindow):
                 {g: render_result.graph[g]["edge"] for g in render_result.graph},
             )
         for goal_id, attributes in render_result.graph.items():
-            widget = GoalWidget()
-            self.scrollAreaWidgetContents.layout().addWidget(
-                widget, attributes["row"], attributes["col"]
-            )
-            widget.setup_data(goal_id, attributes)
             if isinstance(goal_id, int):
+                widget = GoalWidget()
+                self.scrollAreaWidgetContents.layout().addWidget(
+                    widget, attributes["row"], attributes["col1"]
+                )
+                widget.setup_data(goal_id, attributes)
                 widget.clicked.connect(self.select_number(goal_id))
                 widget.check_open.clicked.connect(self.close_goal(goal_id))
         self.scrollAreaWidgetContents.update()
