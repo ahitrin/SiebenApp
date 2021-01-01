@@ -128,13 +128,13 @@ class Goals(Graph):
 
     def _switchable(self, key: int) -> bool:
         if key in self.closed:
-            has_open_parents = any(
-                True
-                for k, v in self.edges.items()
-                if k[0] not in self.closed and k[1] == key
-            )
-            has_no_parents = not self._back_edges(key)
-            return has_open_parents or has_no_parents
+            has_parents = False
+            for k in self.edges.keys():
+                if k[1] == key:
+                    has_parents = True
+                    if k[0] not in self.closed:
+                        return True
+            return not has_parents
         return all(x.target in self.closed for x in self._forward_edges(key))
 
     def _insert(self, command: Insert):
