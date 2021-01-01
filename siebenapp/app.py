@@ -73,21 +73,13 @@ class GoalWidget(QWidget, Ui_GoalBody):
             self.clicked.emit()
         self._click_in_progress = False
 
-    def top_point(self):
-        rect = self.geometry()
-        return (rect.topLeft() + rect.topRight()) / 2
 
-    def bottom_point(self):
-        rect = self.geometry()
-        return (rect.bottomLeft() + rect.bottomRight()) / 2
-
-
-def top_point(w):
+def top_center(w):
     rect = w.geometry()
     return (rect.topLeft() + rect.topRight()) / 2
 
 
-def bottom_point(w):
+def bottom_center(w):
     rect = w.geometry()
     return (rect.bottomLeft() + rect.bottomRight()) / 2
 
@@ -120,7 +112,7 @@ class CentralWidget(QWidget):
             for e_target, e_type in attrs["edge"]:
                 target_attrs = self.render_result.graph[e_target]
                 if isinstance(goal_id, int):
-                    start = top_point(
+                    start = top_center(
                         self.layout().itemAtPosition(attrs["row"], attrs["col1"])
                     )
                 else:
@@ -150,7 +142,7 @@ class CentralWidget(QWidget):
                         edges[goal_id]["bottom"] = start
                         edges[goal_id]["style"] = max(edges[goal_id]["style"], e_type)
                 if isinstance(e_target, int):
-                    end = bottom_point(
+                    end = bottom_center(
                         self.layout().itemAtPosition(
                             target_attrs["row"], target_attrs["col1"]
                         )
