@@ -194,7 +194,7 @@ class Renderer:
 
     def _write_edges(self, edges: List[str], left: int):
         self.result_edge_options.update(
-            {e: (left, i, len(edges)) for i, e in enumerate(edges)}
+            {e: (left, i + 1, len(edges) + 1) for i, e in enumerate(edges)}
         )
 
 
