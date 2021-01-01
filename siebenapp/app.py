@@ -132,8 +132,8 @@ class CentralWidget(QWidget):
                             attrs["row"], left + 1
                         )
                         if right_widget is not None:
-                            x1 = top_point(left_widget)
-                            x2 = top_point(right_widget)
+                            x1 = left_widget.geometry().topRight()
+                            x2 = right_widget.geometry().topLeft()
                             start = x1 + (x2 - x1) / q * p
                         else:
                             start = left_widget.geometry().topRight() + QPoint(
@@ -166,8 +166,8 @@ class CentralWidget(QWidget):
                             target_attrs["row"], left + 1
                         )
                         if right_widget is not None:
-                            x1 = bottom_point(left_widget)
-                            x2 = bottom_point(right_widget)
+                            x1 = left_widget.geometry().bottomRight()
+                            x2 = right_widget.geometry().bottomLeft()
                             end = x1 + (x2 - x1) / q * p
                         else:
                             end = left_widget.geometry().bottomRight() + QPoint(
