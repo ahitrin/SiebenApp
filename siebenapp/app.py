@@ -117,6 +117,7 @@ class CentralWidget(QWidget):
         for goal_id, attrs in self.render_result.graph.items():
             for e_target, e_type in attrs["edge"]:
                 start, end = None, None
+                target_attrs = self.render_result.graph[e_target]
                 if isinstance(goal_id, int):
                     start = top_point(
                         self.layout().itemAtPosition(attrs["row"], attrs["col1"])
@@ -143,12 +144,32 @@ class CentralWidget(QWidget):
                         x1 = QPoint(0, x2.y())
                         start = x1 + (x2 - x1) / (q + 1) * (p + 1)
                 if isinstance(e_target, int):
-                    target_attrs = self.render_result.graph[e_target]
                     end = bottom_point(
                         self.layout().itemAtPosition(
                             target_attrs["row"], target_attrs["col1"]
                         )
                     )
+                else:
+                    left_id, p, q = self.render_result.edge_opts[e_target]
+                    if left_id > 0:
+                        left = self.render_result.graph[left_id]["col1"]
+                        left_widget = self.layout().itemAtPosition(target_attrs["row"], left)
+                        right_widget = self.layout().itemAtPosition(
+                            target_attrs["row"], left + 1
+                        )
+                        if right_widget is not None:
+                            x1 = bottom_point(left_widget)
+                            x2 = bottom_point(right_widget)
+                            end = x1 + (x2 - x1) / q * p
+                        else:
+                            end = left_widget.geometry().bottomRight() + QPoint(
+                                10 * (p + 1), 0
+                            )
+                    else:
+                        right_widget = self.layout().itemAtPosition(target_attrs["row"], 0)
+                        x2 = right_widget.geometry().bottomLeft()
+                        x1 = QPoint(0, x2.y())
+                        end = x1 + (x2 - x1) / (q + 1) * (p + 1)
                 if start is not None and end is not None:
                     painter.setPen(self.EDGE_PENS[e_type])
                     painter.drawLine(start, end)
