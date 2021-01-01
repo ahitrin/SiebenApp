@@ -113,10 +113,10 @@ class CentralWidget(QWidget):
 
     def paintEvent(self, event):  # pylint: disable=unused-argument
         painter = QPainter(self)
+        edges = {}
 
         for goal_id, attrs in self.render_result.graph.items():
             for e_target, e_type in attrs["edge"]:
-                start, end = None, None
                 target_attrs = self.render_result.graph[e_target]
                 if isinstance(goal_id, int):
                     start = top_point(
@@ -142,7 +142,12 @@ class CentralWidget(QWidget):
                         right_widget = self.layout().itemAtPosition(attrs["row"], 0)
                         x2 = right_widget.geometry().topLeft()
                         x1 = QPoint(0, x2.y())
-                        start = x1 + (x2 - x1) / (q + 1) * (p + 1)
+                        start = x1 + (x2 - x1) / q * p
+                    if goal_id not in edges:
+                        edges[goal_id] = {"bottom": start, "style": e_type}
+                    else:
+                        edges[goal_id]["bottom"] = start
+                        edges[goal_id]["style"] = max(edges[goal_id]["style"], e_type)
                 if isinstance(e_target, int):
                     end = bottom_point(
                         self.layout().itemAtPosition(
@@ -153,7 +158,9 @@ class CentralWidget(QWidget):
                     left_id, p, q = self.render_result.edge_opts[e_target]
                     if left_id > 0:
                         left = self.render_result.graph[left_id]["col1"]
-                        left_widget = self.layout().itemAtPosition(target_attrs["row"], left)
+                        left_widget = self.layout().itemAtPosition(
+                            target_attrs["row"], left
+                        )
                         right_widget = self.layout().itemAtPosition(
                             target_attrs["row"], left + 1
                         )
@@ -166,13 +173,23 @@ class CentralWidget(QWidget):
                                 10 * (p + 1), 0
                             )
                     else:
-                        right_widget = self.layout().itemAtPosition(target_attrs["row"], 0)
+                        right_widget = self.layout().itemAtPosition(
+                            target_attrs["row"], 0
+                        )
                         x2 = right_widget.geometry().bottomLeft()
                         x1 = QPoint(0, x2.y())
-                        end = x1 + (x2 - x1) / (q + 1) * (p + 1)
-                if start is not None and end is not None:
-                    painter.setPen(self.EDGE_PENS[e_type])
-                    painter.drawLine(start, end)
+                        end = x1 + (x2 - x1) / q * p
+                    if e_target not in edges:
+                        edges[e_target] = {"top": end, "style": e_type}
+                    else:
+                        edges[e_target]["top"] = end
+                        edges[e_target]["style"] = max(edges[e_target]["style"], e_type)
+                painter.setPen(self.EDGE_PENS[e_type])
+                painter.drawLine(start, end)
+
+        for e in edges.values():
+            painter.setPen(self.EDGE_PENS[e["style"]])
+            painter.drawLine(e["bottom"], e["top"])
 
 
 class SiebenApp(QMainWindow):
