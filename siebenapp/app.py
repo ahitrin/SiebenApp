@@ -98,11 +98,9 @@ class CentralWidget(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
         self.render_result = None
-        self.dependencies = {}
 
-    def setupData(self, render_result, new_dependencies):
+    def setupData(self, render_result):
         self.render_result = render_result
-        self.dependencies = new_dependencies
 
     def paintEvent(self, event):  # pylint: disable=unused-argument
         painter = QPainter(self)
@@ -234,10 +232,7 @@ class SiebenApp(QMainWindow):
                 child.deleteLater()
         render_result = Renderer(self.goals).build()
         if "setupData" in dir(self.scrollAreaWidgetContents):
-            self.scrollAreaWidgetContents.setupData(
-                render_result,
-                {g: render_result.graph[g]["edge"] for g in render_result.graph},
-            )
+            self.scrollAreaWidgetContents.setupData(render_result)
         for goal_id, attributes in render_result.graph.items():
             if isinstance(goal_id, int):
                 widget = GoalWidget()
