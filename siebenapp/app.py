@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # coding: utf-8
+# pylint: disable=too-many-locals,too-many-branches,too-many-statements
 import sys
 from argparse import ArgumentParser
 from os.path import dirname, join, realpath
