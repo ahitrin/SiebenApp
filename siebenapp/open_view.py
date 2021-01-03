@@ -39,6 +39,8 @@ class OpenView(Graph):
         return self.goaltree.events()
 
     def settings(self, key: str) -> int:
+        if key == "filter_open":
+            return self._open
         return self.goaltree.settings(key)
 
     def q(self, keys: str = "name") -> Dict[int, Any]:

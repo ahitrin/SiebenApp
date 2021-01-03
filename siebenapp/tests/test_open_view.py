@@ -29,6 +29,15 @@ def test_open_goal_is_shown_after_switch(trivial):
     assert trivial.q("name") == {1: {"name": "Start"}}
 
 
+def test_filter_open_setting_is_set_by_default(trivial):
+    assert trivial.settings("filter_open") == 1
+
+
+def test_filter_open_setting_is_changed_after_switch(trivial):
+    trivial.accept(ToggleOpenView())
+    assert trivial.settings("filter_open") == 0
+
+
 def test_view_may_be_empty(trivial):
     trivial.accept(ToggleClose())
     assert trivial.q() == {}
