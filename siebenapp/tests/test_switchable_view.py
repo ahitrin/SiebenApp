@@ -98,3 +98,14 @@ def test_how_should_we_deal_with_zooming():
     v.accept(Add("Unexpectedly hidden"))
     # I definitely don't like this behavior. Seems that we should show something here
     assert v.q("name,select") == {}
+
+
+def test_filter_switchable_setting_is_not_set_by_default():
+    v = SwitchableView(build_goaltree(open_(1, "only", select=selected)))
+    assert v.settings("filter_switchable") == 0
+
+
+def test_filter_switchable_setting_is_changed_after_switch():
+    v = SwitchableView(build_goaltree(open_(1, "only", select=selected)))
+    v.accept(ToggleSwitchableView())
+    assert v.settings("filter_switchable") == 1

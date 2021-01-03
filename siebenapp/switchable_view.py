@@ -53,6 +53,8 @@ class SwitchableView(Graph):
         return self.goaltree.events()
 
     def settings(self, key: str) -> int:
+        if key == "filter_switchable":
+            return self._only_switchable
         return self.goaltree.settings(key)
 
     def q(self, keys: str = "name") -> Dict[int, Any]:
