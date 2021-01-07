@@ -122,21 +122,6 @@ class Renderer:
                     deltas[e].append(self.positions[goal] - self.positions[e])
         return {k: safe_average(v) for k, v in deltas.items()}
 
-    def intersections(self, layer):
-        enumerated_edges = [
-            (self.positions[t], self.positions[e])
-            for t in self.layers[layer]
-            for e in self.edges[t]
-        ]
-        return len(
-            [
-                1
-                for a in enumerated_edges
-                for b in enumerated_edges
-                if a[0] < b[0] and a[1] > b[1]
-            ]
-        )
-
     def update_graph(self):
         for row in sorted(self.layers.keys()):
             real_col = 0
