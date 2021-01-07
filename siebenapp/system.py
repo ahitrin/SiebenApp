@@ -224,17 +224,15 @@ def dot_export(goals):
     lines = []
     for num in sorted(data.keys()):
         goal = data[num]
-        style = []
+        style = None
         if goal["switchable"] and goal["open"]:
-            style.append("bold")
+            style = "bold"
         attributes = {
             "label": _format_name(num, goal),
             "color": "red" if goal["open"] else "green",
         }
-        if len(style) > 1:
-            attributes["style"] = f'"{",".join(style)}"'
-        elif len(style) == 1:
-            attributes["style"] = style[0]
+        if style is not None:
+            attributes["style"] = style
         attributes_str = ", ".join(
             f"{k}={attributes[k]}"
             for k in ["label", "color", "style", "fillcolor"]
