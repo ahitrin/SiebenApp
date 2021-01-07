@@ -1,7 +1,6 @@
 # coding: utf-8
-from pathlib import Path
-
 import pytest
+from approvaltests import verify  # type: ignore
 
 from siebenapp.system import split_long, dot_export
 from siebenapp.tests.dsl import build_goaltree, open_, clos_, selected, previous
@@ -40,8 +39,4 @@ def test_dot_export():
         clos_(6, "!@#$%^&*()\\/,.?"),
         open_(7, ";:[{}]<>", select=previous),
     )
-    actual = dot_export(goals).split("\n")
-    sample_path = Path(__file__).parent / "data" / "dot_export_sample.dot"
-    with sample_path.open() as f:
-        expected = [s.rstrip() for s in f.readlines()]
-    assert expected == actual
+    verify(dot_export(goals))
