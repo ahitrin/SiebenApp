@@ -35,7 +35,6 @@ class Renderer:
             for parent in self.graph
             for child, edge_type in self.graph[parent]["edge"]
         }
-        self.result_index: Dict[int, Dict[int, GoalId]] = {}
         self.result_edge_options: Dict[str, Tuple[int, int, int]] = {}
 
     def build(self) -> RenderResult:
@@ -167,14 +166,15 @@ class Renderer:
                 )
 
     def build_index(self):
+        result_index: Dict[int, Dict[int, GoalId]] = {}
         for goal_id, attrs in self.graph.items():
             row = attrs["row"]
             col = attrs["col"]
-            if row not in self.result_index:
-                self.result_index[row] = {}
-            self.result_index[row][col] = goal_id
+            if row not in result_index:
+                result_index[row] = {}
+            result_index[row][col] = goal_id
 
-        for row, row_vals in self.result_index.items():
+        for row, row_vals in result_index.items():
             left = 0
             edges: List[str] = []
             phase = "goals"
