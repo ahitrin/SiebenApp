@@ -42,11 +42,9 @@ class Enumeration(Graph):
         self._goal_filter: Set[int] = set()
         self._update_mapping()
 
-    def _update_mapping(self, clear_cache: bool = False) -> None:
+    def _update_mapping(self) -> None:
         original_mapping = self.goaltree.q().keys()
         self._goal_filter = set(original_mapping)
-        if clear_cache:
-            self.selection_cache.clear()
 
     def _id_mapping(
         self, keys: str = "name"
