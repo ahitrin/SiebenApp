@@ -23,8 +23,6 @@ def test_render_bug_example():
     with io.StringIO() as out:
         print("== Graph\n", file=out)
         pprint(result.graph, out)
-        print("\n== Index\n", file=out)
-        pprint(result.index, out)
         print("\n== Edge options\n", file=out)
         pprint(result.edge_opts, out)
         verify(out.getvalue())

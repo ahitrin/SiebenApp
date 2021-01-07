@@ -13,7 +13,6 @@ GoalId = Union[str, int]
 @dataclass(frozen=True)
 class RenderResult:
     graph: Dict[int, Any]
-    index: Dict[int, Dict[int, GoalId]]
     edge_opts: Dict[str, Tuple[int, int, int]]
 
 
@@ -44,7 +43,7 @@ class Renderer:
         self.reorder()
         self.update_graph()
         self.build_index()
-        return RenderResult(self.graph, self.result_index, self.result_edge_options)
+        return RenderResult(self.graph, self.result_edge_options)
 
     def split_by_layers(self) -> None:
         unsorted_goals: Dict[GoalId, List[int]] = dict(self.edges)
