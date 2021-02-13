@@ -196,9 +196,10 @@ class SiebenApp(QMainWindow):
         self.force_refresh = True
 
     def setup(self):
+        self.action_New.triggered.connect(self.show_new_dialog)
+        self.action_Open.triggered.connect(self.show_open_dialog)
         self.action_Hotkeys.triggered.connect(self.hotkeys.show)
         self.action_About.triggered.connect(self.about.show)
-        self.action_Open.triggered.connect(self.show_open_dialog)
         # Re-creation of scrollAreaWidgetContents looks like dirty hack,
         # but at the current moment I haven't found a better solution.
         # Widget creation in __init__ does not work: lines disappear.
@@ -280,6 +281,15 @@ class SiebenApp(QMainWindow):
             key_handlers[event.key()]()
         else:
             super().keyPressEvent(event)
+
+    def show_new_dialog(self):
+        fname = QFileDialog.getSaveFileName(self, caption="Save as...", filter="*.db")[0]
+        if fname:
+            self.db = fname
+            self.goals = load(fname, self.show_user_message)
+            self._update_title()
+            self.force_refresh = True
+            self.refresh.emit()
 
     def show_open_dialog(self):
         fname = QFileDialog.getOpenFileName(self, caption="Open file", filter="*.db")[0]
