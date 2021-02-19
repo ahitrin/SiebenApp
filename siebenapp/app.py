@@ -283,19 +283,21 @@ class SiebenApp(QMainWindow):
             super().keyPressEvent(event)
 
     def show_new_dialog(self):
-        fname = QFileDialog.getSaveFileName(self, caption="Save as...", filter="*.db")[0]
-        if fname:
-            self.db = fname
-            self.goals = load(fname, self.show_user_message)
+        name = QFileDialog.getSaveFileName(self, caption="Save as...", filter="*.db")[0]
+        if name:
+            if not name.endswith(".db"):
+                name = name + ".db"
+            self.db = name
+            self.goals = load(name, self.show_user_message)
             self._update_title()
             self.force_refresh = True
             self.refresh.emit()
 
     def show_open_dialog(self):
-        fname = QFileDialog.getOpenFileName(self, caption="Open file", filter="*.db")[0]
-        if fname:
-            self.db = fname
-            self.goals = load(fname, self.show_user_message)
+        name = QFileDialog.getOpenFileName(self, caption="Open file", filter="*.db")[0]
+        if name:
+            self.db = name
+            self.goals = load(name, self.show_user_message)
             self._update_title()
             self.force_refresh = True
             self.refresh.emit()
@@ -385,7 +387,9 @@ def main(root_script):
     parser = ArgumentParser()
     parser.add_argument(
         "db",
-        help="Path to the database file",
+        nargs="?",
+        default="sieben.db",
+        help="Path to the database file (default: sieben.db)",
     )
     args = parser.parse_args()
     app = QApplication(sys.argv)

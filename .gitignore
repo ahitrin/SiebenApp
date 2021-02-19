@@ -8,3 +8,4 @@ build
 .coverage
 htmlcov
 siebenapp/tests/*.received.txt
+sieben.db
