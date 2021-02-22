@@ -2,7 +2,7 @@ import collections
 from dataclasses import dataclass
 from typing import Dict, Any
 
-from siebenapp.domain import Command, Graph, Select, HoldSelect
+from siebenapp.domain import Command, Graph
 
 
 @dataclass(frozen=True)
@@ -12,7 +12,7 @@ class ToggleOpenView(Command):
 
 class OpenView(Graph):
     """Non-persistent view layer that allows to switch
-    between only-open and all goals"""
+    between only-open (plus selected) and all goals"""
 
     def __init__(self, goaltree: Graph):
         super().__init__()
@@ -22,18 +22,8 @@ class OpenView(Graph):
     def accept(self, command: Command) -> None:
         if isinstance(command, ToggleOpenView):
             self._open = not self._open
-            self._fix_selection()
         else:
             self.goaltree.accept(command)
-
-    def _fix_selection(self):
-        if not self._open:
-            return
-        ids = [k for k, v in self.goaltree.q("open").items() if v["open"]]
-        if ids and self.goaltree.settings("selection") not in ids:
-            self.goaltree.accept(Select(min(ids)))
-        if ids and self.goaltree.settings("previous_selection") not in ids:
-            self.goaltree.accept(HoldSelect())
 
     def events(self) -> collections.deque:
         return self.goaltree.events()
@@ -47,9 +37,19 @@ class OpenView(Graph):
         skip_open = "open" not in keys
         if skip_open:
             keys = ",".join([keys, "open"])
+        pass_through = [
+            k
+            for k in [
+                self.goaltree.settings("selection"),
+                self.goaltree.settings("previous_selection"),
+            ]
+            if k is not None
+        ]
         goals = self.goaltree.q(keys)
         result: Dict[int, Any] = {
-            k: {} for k, v in goals.items() if not self._open or v["open"]
+            k: {}
+            for k, v in goals.items()
+            if not self._open or v["open"] or k in pass_through
         }
         for goal_id in result:
             val = goals[goal_id]
