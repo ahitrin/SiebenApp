@@ -19,6 +19,9 @@ class OpenView(Graph):
         self.goaltree = goaltree
         self._open: bool = True
 
+    def verify(self) -> bool:
+        return self.goaltree.verify()
+
     def accept(self, command: Command) -> None:
         if isinstance(command, ToggleOpenView):
             self._open = not self._open
