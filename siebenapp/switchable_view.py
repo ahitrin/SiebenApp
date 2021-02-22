@@ -2,19 +2,7 @@ import collections
 from dataclasses import dataclass
 from typing import Dict, Any
 
-from siebenapp.domain import (
-    Command,
-    Graph,
-    Select,
-    HoldSelect,
-    Add,
-    ToggleClose,
-    Insert,
-    ToggleLink,
-    Delete,
-)
-
-TREE_MODIFIERS = [Add, Delete, Insert, ToggleClose, ToggleLink]
+from siebenapp.domain import Command, Graph
 
 
 @dataclass(frozen=True)
@@ -24,7 +12,7 @@ class ToggleSwitchableView(Command):
 
 class SwitchableView(Graph):
     """Non-persistent layer that allows to
-    show only switchable goals"""
+    show only switchable and/or selected goals"""
 
     def __init__(self, goaltree: Graph):
         super().__init__()
@@ -34,20 +22,8 @@ class SwitchableView(Graph):
     def accept(self, command: Command) -> None:
         if isinstance(command, ToggleSwitchableView):
             self._only_switchable = not self._only_switchable
-            self._fix_selection()
         else:
             self.goaltree.accept(command)
-            if command.__class__ in TREE_MODIFIERS:
-                self._fix_selection()
-
-    def _fix_selection(self):
-        if not self._only_switchable:
-            return
-        ids = [k for k, v in self.goaltree.q("switchable").items() if v["switchable"]]
-        if ids and self.goaltree.settings("selection") not in ids:
-            self.goaltree.accept(Select(min(ids)))
-        if ids and self.goaltree.settings("previous_selection") not in ids:
-            self.goaltree.accept(HoldSelect())
 
     def events(self) -> collections.deque:
         return self.goaltree.events()
@@ -61,9 +37,19 @@ class SwitchableView(Graph):
         skip_switchable = "switchable" not in keys
         if skip_switchable:
             keys = ",".join([keys, "switchable"])
+        pass_through = [
+            k
+            for k in [
+                self.goaltree.settings("selection"),
+                self.goaltree.settings("previous_selection"),
+            ]
+            if k is not None
+        ]
         goals = self.goaltree.q(keys)
         if self._only_switchable:
-            goals = {k: v for k, v in goals.items() if v["switchable"]}
+            goals = {
+                k: v for k, v in goals.items() if v["switchable"] or k in pass_through
+            }
             for v in goals.values():
                 if "edge" in v:
                     v["edge"] = []
