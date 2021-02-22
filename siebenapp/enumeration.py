@@ -53,6 +53,9 @@ class Enumeration(Graph):
         goals = {k: v for k, v in goals.items() if k in self._goal_filter}
         return goals, BidirectionalIndex(goals)
 
+    def settings(self, key: str) -> int:
+        return self.goaltree.settings(key)
+
     def accept(self, command: Command) -> None:
         if isinstance(command, Select):
             self._select(command)

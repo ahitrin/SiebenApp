@@ -265,13 +265,13 @@ class SiebenApp(QMainWindow):
                 self.goals.accept, ToggleLink(edge_type=EdgeType.PARENT)
             ),
             Qt.Key_L: self.with_refresh(self.goals.accept, ToggleLink()),
-            Qt.Key_N: self.with_refresh(self.toggle_view, ToggleOpenView()),
+            Qt.Key_N: self.with_refresh(self.toggle_open_view),
             Qt.Key_O: self.show_open_dialog,
             Qt.Key_Q: self.quit_app.emit,
             Qt.Key_R: self.start_edit(
                 "Rename goal", self.emit_rename, self._current_goal_label
             ),
-            Qt.Key_T: self.with_refresh(self.toggle_view, ToggleSwitchableView()),
+            Qt.Key_T: self.with_refresh(self.toggle_switchable_view),
             Qt.Key_Z: self.toggle_zoom,
             Qt.Key_Escape: self.cancel_edit,
             Qt.Key_Space: self.with_refresh(self.goals.accept, HoldSelect()),
@@ -366,9 +366,16 @@ class SiebenApp(QMainWindow):
 
         return inner
 
-    def toggle_view(self, event):
+    def toggle_open_view(self):
         self.force_refresh = True
-        self.goals.accept(event)
+        self.goals.accept(ToggleOpenView())
+        self.toggleOpen.setChecked(self.goals.settings("filter_open"))
+        self._update_title()
+
+    def toggle_switchable_view(self):
+        self.force_refresh = True
+        self.goals.accept(ToggleSwitchableView())
+        self.toggleSwitchable.setChecked(self.goals.settings("filter_switchable"))
         self._update_title()
 
     def toggle_zoom(self):
