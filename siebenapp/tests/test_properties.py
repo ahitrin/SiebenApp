@@ -26,6 +26,7 @@ from siebenapp.domain import (
     Command,
 )
 from siebenapp.goaltree import Goals
+from siebenapp.switchable_view import SwitchableView, ToggleSwitchableView
 from siebenapp.system import run_migrations, save_updates
 from siebenapp.zoom import Zoom, ToggleZoom
 
@@ -39,7 +40,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 
     def __init__(self):
         super().__init__()
-        self.goaltree = Zoom(Goals("Root"))
+        self.goaltree = SwitchableView(Zoom(Goals("Root")))
         self.database = sqlite3.connect(":memory:")
 
     @initialize()
@@ -134,6 +135,11 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         event("zoom")
         self._accept(ToggleZoom())
 
+    @rule()
+    def switchable_view(self):
+        event("switchable_view")
+        self._accept(ToggleSwitchableView())
+
     #
     # Verifiers
     #
@@ -155,10 +161,14 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 
     @invariant()
     @precondition(lambda self: self.db_is_ready)
-    def test_full_export_and_streaming_export_must_be_the_same(self):
+    def full_export_and_streaming_export_must_be_the_same(self):
         save_updates(self.goaltree, self.database)
         assert not self.goaltree.events()
         ng = build_goals(self.database)
+        # Dirty hack: sync non-persistent view states
+        if self.goaltree.settings("filter_switchable"):
+            ng.accept(ToggleSwitchableView())
+        # End of dirty hack
         q1 = self.goaltree.q("name,open,edge,select,switchable")
         q2 = ng.q("name,open,edge,select,switchable")
         assert q1 == q2
@@ -177,4 +187,4 @@ def build_goals(conn):
             f"Goals: {goals}, Edges: {edges}, Settings: {db_settings}, Zoom: {zoom_data}"
         )
         goals = Goals.build(goals, edges, db_settings)
-        return Zoom.build(goals, zoom_data)
+        return SwitchableView(Zoom.build(goals, zoom_data))

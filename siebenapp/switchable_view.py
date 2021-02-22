@@ -19,6 +19,9 @@ class SwitchableView(Graph):
         self.goaltree = goaltree
         self._only_switchable: bool = False
 
+    def verify(self) -> bool:
+        return self.goaltree.verify()
+
     def accept(self, command: Command) -> None:
         if isinstance(command, ToggleSwitchableView):
             self._only_switchable = not self._only_switchable
