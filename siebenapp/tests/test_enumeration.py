@@ -215,18 +215,21 @@ def test_enumerated_goals_must_have_the_same_dimension():
 def test_selection_cache_should_be_reset_after_view_switch(goal_chain_11):
     e = Enumeration(SwitchableView(goal_chain_11))
     e.accept_all(Add("Also top"))
-    # Select(1) is kept in a cache
-    e.accept_all(Select(1), ToggleSwitchableView())
+    e.accept(Select(1))
+    # Select(1) is kept in a cache and not applied yet
+    e.accept(ToggleSwitchableView())
     assert e.q("name,select") == {
-        1: {"name": "k", "select": "select"},
-        2: {"name": "Also top", "select": None},
+        1: {"name": "a", "select": "select"},
+        2: {"name": "k", "select": None},
+        3: {"name": "Also top", "select": None},
     }
     # Select(2) is being applied without any effect from the previous selection
     # This happens because selection cache was reset
     e.accept(Select(2))
     assert e.q("name,select") == {
-        1: {"name": "k", "select": "prev"},
-        2: {"name": "Also top", "select": "select"},
+        1: {"name": "a", "select": "prev"},
+        2: {"name": "k", "select": "select"},
+        3: {"name": "Also top", "select": None},
     }
 
 

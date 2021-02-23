@@ -152,14 +152,14 @@ def test_balance_upper_level():
     assert result[5]["col"] == 1
 
 
-def test_render_in_top_view():
+def test_render_in_switchable_view():
     goals = build_goaltree(
-        open_(1, "Uno", [2, 3, 4, 5, 6], select=selected),
+        open_(1, "Uno", [2, 3, 4, 5, 6]),
         open_(2, "Dos"),
         open_(3, "Tres"),
         open_(4, "Quatro"),
         open_(5, "Cinco"),
-        open_(6, "Sext"),
+        open_(6, "Sext", select=selected),
     )
     view = Enumeration(SwitchableView(goals))
     view.accept(ToggleSwitchableView())
