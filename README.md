@@ -2,7 +2,7 @@
 
 ![Logo](doc/Logo.png)
 
-[![Build Status](https://travis-ci.org/ahitrin/SiebenApp.svg?branch=master)](https://travis-ci.org/ahitrin/SiebenApp)
+[![Build Status](https://travis-ci.com/ahitrin/SiebenApp.svg?branch=master)](https://travis-ci.com/ahitrin/SiebenApp)
 
 ## Motivation
 
