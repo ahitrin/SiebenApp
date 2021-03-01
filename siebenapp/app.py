@@ -86,8 +86,8 @@ def bottom_center(w):
 
 class CentralWidget(QWidget):
     EDGE_PENS = {
-        EdgeType.BLOCKER: QPen(Qt.black, 1, Qt.DashLine),
-        EdgeType.PARENT: QPen(Qt.black, 1, Qt.SolidLine),
+        EdgeType.BLOCKER: QPen(Qt.black, 1, Qt.DashLine),  # type: ignore
+        EdgeType.PARENT: QPen(Qt.black, 1, Qt.SolidLine),  # type: ignore
     }
 
     def __init__(self):
