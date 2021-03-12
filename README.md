@@ -84,7 +84,7 @@ Wow, it disappears! And you may become even more focused because now you see the
 
 ![step9](doc/example9.png)
 
-Something interesting happens. Your current goal has been replaced with a new one. It means that nothing stops you from applying for a visa right now. Neat! Press `t` and `n` to change _view_ again and look what happens behind the scenes.
+Something interesting happens. Your current goal has been replaced with a new one. It means that nothing stops you from applying for a visa right now. Neat! Press `t` and `n` one after one to change _view_ again and look what happens behind the scenes.
 
 ![step10](doc/example10.png)
 
