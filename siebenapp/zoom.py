@@ -92,9 +92,8 @@ class Zoom(Graph):
     def _toggle_close(self) -> None:
         if self.settings("selection") == self.zoom_root[-1]:
             self._toggle_zoom()
-        self.goaltree.accept(ToggleClose())
-        if self.settings("selection") not in self._build_visible_goals():
-            self.goaltree.accept_all(Select(self.zoom_root[-1]), HoldSelect())
+        # Note: zoom_root may be changed inside _toggle_zoom
+        self.goaltree.accept(ToggleClose(self.zoom_root[-1]))
 
     def _insert(self, command: Insert):
         self.goaltree.accept(command)
@@ -134,13 +133,15 @@ class Zoom(Graph):
         if edges is None:
             edges = self.goaltree.q("edge")
         current_zoom_root = self.zoom_root[-1]
+        if current_zoom_root == Goals.ROOT_ID:
+            return set(edges.keys())
         visible_goals = {current_zoom_root}
         edges_to_visit = set(edges[current_zoom_root]["edge"])
         while edges_to_visit:
-            next_edge = edges_to_visit.pop()
-            visible_goals.add(next_edge[0])
-            if next_edge[1] == EdgeType.PARENT:
-                edges_to_visit.update(edges[next_edge[0]]["edge"])
+            edge_id, edge_type = edges_to_visit.pop()
+            visible_goals.add(edge_id)
+            if edge_type == EdgeType.PARENT:
+                edges_to_visit.update(edges[edge_id]["edge"])
         return visible_goals
 
     @staticmethod

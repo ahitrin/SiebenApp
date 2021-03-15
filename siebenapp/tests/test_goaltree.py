@@ -402,15 +402,51 @@ class GoalsTest(TestCase):
             3: {"name": "B", "select": None, "edge": []},
         }
 
-    def test_move_selection_to_the_root_after_closing(self):
+    def test_move_selection_to_another_open_goal_after_closing(self):
         self.goals = self.build(
             open_(1, "Root", [2, 3]), open_(2, "A", select=selected), open_(3, "B")
         )
         self.goals.accept(ToggleClose())
         assert self.goals.q(keys="open,select") == {
-            1: {"open": True, "select": "select"},
+            1: {"open": True, "select": None},
             2: {"open": False, "select": None},
+            3: {"open": True, "select": "select"},
+        }
+
+    def test_move_selection_to_another_open_goal_with_given_root_after_closing(self):
+        self.goals = self.build(
+            open_(1, "Root", [2, 3]),
+            open_(2, "Should not be selected"),
+            open_(3, "Subroot", [4, 5]),
+            open_(4, "Must be selected"),
+            open_(5, "Closing", select=selected),
+        )
+        self.goals.accept(ToggleClose(3))
+        assert self.goals.q(keys="open,select") == {
+            1: {"open": True, "select": None},
+            2: {"open": True, "select": None},
             3: {"open": True, "select": None},
+            4: {"open": True, "select": "select"},
+            5: {"open": False, "select": None},
+        }
+
+    def test_do_not_select_unswitchable_goal_after_closing(self):
+        self.goals = self.build(
+            open_(1, "Root", [2, 3]),
+            open_(2, "Should not be selected"),
+            open_(3, "Subroot", [4, 5]),
+            open_(4, "intermediate", [6]),
+            open_(5, "Closing", select=selected),
+            open_(6, "Must be selected"),
+        )
+        self.goals.accept(ToggleClose(3))
+        assert self.goals.q(keys="open,select") == {
+            1: {"open": True, "select": None},
+            2: {"open": True, "select": None},
+            3: {"open": True, "select": None},
+            4: {"open": True, "select": None},
+            5: {"open": False, "select": None},
+            6: {"open": True, "select": "select"},
         }
 
     def test_ignore_wrong_selection(self):

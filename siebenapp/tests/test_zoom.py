@@ -206,13 +206,13 @@ def test_selection_should_be_changed_on_stacked_unzoom_a_long_chain_of_blockers(
         )
     )
     goals.accept_all(
-        ToggleZoom(),  # zoom on 2
+        ToggleZoom(),  # zoom on 2/A
         Select(3),
-        ToggleZoom(),  # zoom on 3
+        ToggleZoom(),  # zoom on 3/D
         Select(4),
-        HoldSelect(),  # set previous selection onto 4
+        HoldSelect(),  # set previous selection onto 4/E
         Select(3),
-        ToggleZoom(),  # unzoom on 3 (zoom root is on 2 again))
+        ToggleZoom(),  # unzoom on 3/D (zoom root is on 2/A again))
     )
     assert goals.q("name,select") == {
         -1: {"name": "Root", "select": None},
@@ -252,8 +252,8 @@ def test_closing_zoom_root_should_cause_unzoom():
     )
     goals.accept_all(ToggleZoom(), ToggleClose())
     assert goals.q(keys="name,select,open") == {
-        1: {"name": "Root", "select": "select", "open": True},
-        2: {"name": "Intermediate", "select": None, "open": True},
+        1: {"name": "Root", "select": None, "open": True},
+        2: {"name": "Intermediate", "select": "select", "open": True},
         3: {"name": "Zoom here", "select": None, "open": False},
     }
 
@@ -359,3 +359,7 @@ def test_zoom_events():
     assert goals.events()[-1] == ("zoom", 3, 4)
     goals.accept(ToggleZoom())
     assert goals.events()[-1] == ("unzoom", 4)
+    goals.accept_all(Select(5), ToggleClose())
+    assert goals.events()[-3] == ("toggle_close", False, 5)
+    assert goals.events()[-2] == ("select", 4)
+    assert goals.events()[-1] == ("hold_select", 4)

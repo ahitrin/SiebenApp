@@ -102,6 +102,8 @@ class Rename(Command):
 class ToggleClose(Command):
     """Close an open selected goal. Re-open a closed selected goal"""
 
+    root: int = 0
+
 
 @dataclass(frozen=True)
 class ToggleLink(Command):

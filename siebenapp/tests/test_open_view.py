@@ -78,11 +78,11 @@ def test_simple_open_enumeration_workflow():
     assert e.q(keys="name,select,open,edge") == {
         1: {
             "name": "Root",
-            "select": "select",
+            "select": None,
             "open": True,
             "edge": [(3, EdgeType.PARENT)],
         },
-        3: {"name": "2", "select": None, "open": True, "edge": []},
+        3: {"name": "2", "select": "select", "open": True, "edge": []},
     }
 
 

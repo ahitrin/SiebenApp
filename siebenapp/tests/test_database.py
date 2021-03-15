@@ -76,6 +76,8 @@ def test_restore_goals_from_db():
         ToggleLink(),
         Select(3),
         ToggleClose(),
+        Select(1),
+        HoldSelect(),
         Select(2),
     )
     keys = "name,edge,open,select"

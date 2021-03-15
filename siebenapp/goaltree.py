@@ -65,7 +65,7 @@ class Goals(Graph):
         elif isinstance(command, Rename):
             self._rename(command)
         elif isinstance(command, ToggleClose):
-            self._toggle_close()
+            self._toggle_close(command)
         elif isinstance(command, ToggleLink):
             self._toggle_link(command)
         elif isinstance(command, Delete):
@@ -155,7 +155,7 @@ class Goals(Graph):
         self.goals[goal_id] = command.new_name
         self._events.append(("rename", command.new_name, goal_id))
 
-    def _toggle_close(self) -> None:
+    def _toggle_close(self, command: ToggleClose) -> None:
         if self.selection in self.closed:
             if self._may_be_reopened():
                 self.closed.remove(self.selection)
@@ -166,7 +166,7 @@ class Goals(Graph):
             if self._may_be_closed():
                 self.closed.add(self.selection)
                 self._events.append(("toggle_close", False, self.selection))
-                self._select(Select(Goals.ROOT_ID))
+                self._select(Select(self._first_open_and_switchable(command.root)))
                 self.accept(HoldSelect())
             else:
                 self._msg("This goal can't be closed because it have open subgoals")
@@ -180,6 +180,21 @@ class Goals(Graph):
             for k, v in self.edges.items()
             if k[1] == self.selection
         )
+
+    def _first_open_and_switchable(self, root: int) -> int:
+        root = max(root, Goals.ROOT_ID)
+        front = [root]
+        candidates: List[int] = []
+        while front:
+            next_goal = front.pop()
+            subgoals = [
+                e.target
+                for e in self._forward_edges(next_goal)
+                if e.target not in self.closed and e.type == EdgeType.PARENT
+            ]
+            front.extend(subgoals)
+            candidates.extend(g for g in subgoals if self._switchable(g))
+        return min(candidates) if candidates else root
 
     def _delete(self, command: Delete) -> None:
         goal_id = command.goal_id if command.goal_id != 0 else self.selection
