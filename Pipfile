@@ -14,7 +14,7 @@ black = "==20.8b1"
 pytest-approvaltests = "==0.2.3"
 
 [packages]
-PyQt5 = "==5.15.3"
+PyQt5 = "==5.15.4"
 
 [requires]
 python_version = "3.8"
