@@ -9,7 +9,4 @@ updates:
   ignore:
   - dependency-name: hypothesis
     versions:
-    - ">= 4.56.a, < 4.57"
-  - dependency-name: hypothesis
-    versions:
     - 6.8.4
