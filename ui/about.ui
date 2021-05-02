@@ -20,7 +20,7 @@
    <item>
     <widget class="QLabel" name="label_text">
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;SiebenApp&lt;/span&gt; v 0.7 Alpha&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;An experimental dependency-aware goal manager.&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;Copyright (c) 2016-2020 Andrey Hitrin&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;a href=&quot;https://github.com/ahitrin/SiebenApp&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Source&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;SiebenApp&lt;/span&gt; v 0.8 Alpha&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;An experimental dependency-aware goal manager.&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;Copyright (c) 2016-2021 Andrey Hitrin&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;a href=&quot;https://github.com/ahitrin/SiebenApp&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Source&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
    </item>
