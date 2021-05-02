@@ -1,5 +1,37 @@
 = Changelog
 
+== Alpha version 0.8
+2021-05-02
+
+New/done features:
+
+* Add "New file" dialog
+* Add support for Python 3.9
+* CLI mode https://github.com/ahitrin/SiebenApp/issues/65[#65]
+* Toggle views independently of each other https://github.com/ahitrin/SiebenApp/issues/67[#67]
+* `sieben-manage`: add "migrate" command
+
+Bug fixes:
+
+* More consistent behavior in zoom+close scenarios
+* Improve rendering performance
+
+Other improvements:
+
+* Renew Readme/screenshots
+* Move tutorial into separate file
+* Update runtime dependencies: pyqt5
+* Update dev dependencies: hypothesis, pylint, pytest, mypy, black (thx @dependabot!)
+* Add approval tests and pytest-cov to ensure better quality
+* Upgrade to GitHub-native Dependabot
+* Move from travis-ci.org to travis-ci.com
+* Many small improvements in code
+* Restore old ADR and add new ones
+
+Compatibility breaks:
+
+* Drop support for Python 3.6
+
 == Alpha version 0.7
 2020-08-11
 
