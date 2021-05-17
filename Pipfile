@@ -12,7 +12,7 @@ pytest = "==6.2.4"
 pytest-cov = "==2.11.1"
 black = "==20.8b1"
 pytest-approvaltests = "==0.2.3"
-approvaltests = "==0.6.0"
+approvaltests = "==0.7.0"
 
 [packages]
 PyQt5 = "==5.15.4"
