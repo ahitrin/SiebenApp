@@ -138,9 +138,7 @@ class Goals(Graph):
         return all(x.target in self.closed for x in self._forward_edges(key))
 
     def _insert(self, command: Insert):
-        lower = self.previous_selection
-        upper = self.selection
-        if lower == upper:
+        if (lower := self.previous_selection) == (upper := self.selection):
             self._msg("A new goal can be inserted only between two different goals")
             return
         edge_type = self.edges.get((lower, upper), EdgeType.BLOCKER)
@@ -229,8 +227,7 @@ class Goals(Graph):
             self._msg("Goal can't be linked to itself")
             return
         if self._has_link(lower, upper):
-            current_edge_type = self.edges[(lower, upper)]
-            if current_edge_type != command.edge_type:
+            if (current_edge_type := self.edges[(lower, upper)]) != command.edge_type:
                 self._replace_link(lower, upper, command.edge_type)
                 self._transform_old_parents_into_blocked(lower, upper)
             else:
@@ -247,8 +244,7 @@ class Goals(Graph):
     def _remove_existing_link(
         self, lower: int, upper: int, edge_type: int = None
     ) -> None:
-        edges_to_upper = self._back_edges(upper)
-        if len(edges_to_upper) > 1:
+        if len(self._back_edges(upper)) > 1:
             self.edges.pop((lower, upper))
             self._events.append(("unlink", lower, upper, edge_type))
         else:
