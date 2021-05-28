@@ -2,7 +2,7 @@ import collections
 import math
 from typing import List, Dict, Tuple, Any, Set, Iterable
 
-from siebenapp.domain import Graph, Command, Select
+from siebenapp.domain import Graph, Select
 
 
 class BidirectionalIndex:
@@ -36,8 +36,7 @@ class BidirectionalIndex:
 
 class Enumeration(Graph):
     def __init__(self, goaltree: Graph) -> None:
-        super().__init__()
-        self.goaltree = goaltree
+        super().__init__(goaltree)
         self.selection_cache: List[int] = []
         self._goal_filter: Set[int] = set()
         self._update_mapping()
@@ -56,12 +55,6 @@ class Enumeration(Graph):
     def settings(self, key: str) -> int:
         return self.goaltree.settings(key)
 
-    def accept(self, command: Command) -> None:
-        if isinstance(command, Select):
-            self._select(command)
-        else:
-            self.goaltree.accept(command)
-
     def events(self) -> collections.deque:
         return self.goaltree.events()
 
@@ -78,7 +71,7 @@ class Enumeration(Graph):
                 ]
         return result
 
-    def _select(self, command: Select):
+    def handle_Select(self, command: Select):
         self._update_mapping()
         goals, index = self._id_mapping()
         if (goal_id := command.goal_id) >= 10:
