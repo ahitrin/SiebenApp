@@ -80,16 +80,14 @@ class Enumeration(Graph):
 
     def _select(self, command: Select):
         self._update_mapping()
-        goal_id = command.goal_id
         goals, index = self._id_mapping()
-        if goal_id >= 10:
+        if (goal_id := command.goal_id) >= 10:
             self.selection_cache = []
         if self.selection_cache:
             goal_id = 10 * self.selection_cache.pop() + goal_id
             if goal_id > max(index.forward(k) for k in goals.keys()):
                 goal_id %= int(pow(10, int(math.log(goal_id, 10))))
-        original_id = index.backward(goal_id)
-        if original_id != BidirectionalIndex.NOT_FOUND:
+        if (original_id := index.backward(goal_id)) != BidirectionalIndex.NOT_FOUND:
             self.goaltree.accept(Select(original_id))
             self.selection_cache = []
         else:
