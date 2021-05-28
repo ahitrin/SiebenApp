@@ -22,6 +22,11 @@ EdgesData = List[Tuple[int, int, EdgeType]]
 OptionsData = List[Tuple[str, int]]
 
 
+def nz(value: int, default_value: int) -> int:
+    """Return first value when it is not equal to zero or default value otherwise"""
+    return value if value != 0 else default_value
+
+
 class Goals(Graph):
     ROOT_ID = 1
 
@@ -81,7 +86,7 @@ class Goals(Graph):
         return self._events
 
     def _add(self, command: Add) -> bool:
-        add_to = command.add_to if command.add_to != 0 else self.selection
+        add_to = nz(command.add_to, self.selection)
         if add_to in self.closed:
             self._msg("A new subgoal cannot be added to the closed one")
             return False
@@ -149,7 +154,7 @@ class Goals(Graph):
                 self._toggle_link(ToggleLink(lower, upper))
 
     def _rename(self, command: Rename):
-        goal_id = command.goal_id if command.goal_id != 0 else self.selection
+        goal_id = nz(command.goal_id, self.selection)
         self.goals[goal_id] = command.new_name
         self._events.append(("rename", command.new_name, goal_id))
 
@@ -195,7 +200,7 @@ class Goals(Graph):
         return min(candidates) if candidates else root
 
     def _delete(self, command: Delete) -> None:
-        goal_id = command.goal_id if command.goal_id != 0 else self.selection
+        goal_id = nz(command.goal_id, self.selection)
         if goal_id == Goals.ROOT_ID:
             self._msg("Root goal can't be deleted")
             return
@@ -221,8 +226,8 @@ class Goals(Graph):
         self._events.append(("delete", goal_id))
 
     def _toggle_link(self, command: ToggleLink):
-        lower = self.previous_selection if command.lower == 0 else command.lower
-        upper = self.selection if command.upper == 0 else command.upper
+        lower = nz(command.lower, self.previous_selection)
+        upper = nz(command.upper, self.selection)
         if lower == upper:
             self._msg("Goal can't be linked to itself")
             return
