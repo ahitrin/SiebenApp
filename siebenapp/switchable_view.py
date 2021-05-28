@@ -37,8 +37,7 @@ class SwitchableView(Graph):
         return self.goaltree.settings(key)
 
     def q(self, keys: str = "name") -> Dict[int, Any]:
-        skip_switchable = "switchable" not in keys
-        if skip_switchable:
+        if skip_switchable := "switchable" not in keys:
             keys = ",".join([keys, "switchable"])
         pass_through = [
             k
