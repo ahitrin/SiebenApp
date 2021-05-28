@@ -21,7 +21,7 @@ class OpenView(Graph):
     def verify(self) -> bool:
         return self.goaltree.verify()
 
-    def handle_ToggleOpenView(
+    def accept_ToggleOpenView(
         self, command: ToggleOpenView
     ):  # pylint: disable=unused-argument
         self._open = not self._open

@@ -37,7 +37,7 @@ class Graph:
 
     def accept(self, command: Command) -> None:
         """React on the given command"""
-        method_name = "handle_" + command.__class__.__name__
+        method_name = "accept_" + command.__class__.__name__
         if method := getattr(self, method_name):
             method(command)
         elif (parent := getattr(self, "goaltree")) != self:

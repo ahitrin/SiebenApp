@@ -32,7 +32,7 @@ class Zoom(Graph):
     def settings(self, key: str) -> int:
         return self.goaltree.settings(key)
 
-    def handle_ToggleZoom(self, command: ToggleZoom):  # pylint: disable=unused-argument
+    def accept_ToggleZoom(self, command: ToggleZoom):  # pylint: disable=unused-argument
         selection = self.settings("selection")
         if selection == self.zoom_root[-1] and len(self.zoom_root) > 1:
             # unzoom
@@ -74,20 +74,20 @@ class Zoom(Graph):
             k: {a: b for a, b in v.items() if a != "edge"} for k, v in goals.items()
         }
 
-    def handle_ToggleClose(
+    def accept_ToggleClose(
         self, command: ToggleClose
     ):  # pylint: disable=unused-argument
         if self.settings("selection") == self.zoom_root[-1]:
-            self.handle_ToggleZoom(ToggleZoom())
-        # Note: zoom_root may be changed inside handle_ToggleZoom
+            self.accept_ToggleZoom(ToggleZoom())
+        # Note: zoom_root may be changed inside accept_ToggleZoom
         self.goaltree.accept(ToggleClose(self.zoom_root[-1]))
 
-    def handle_Insert(self, command: Insert):
+    def accept_Insert(self, command: Insert):
         self.goaltree.accept(command)
         if self.settings("selection") not in self._build_visible_goals():
             self.goaltree.accept_all(Select(self.zoom_root[-1]), HoldSelect())
 
-    def handle_ToggleLink(self, command: ToggleLink):
+    def accept_ToggleLink(self, command: ToggleLink):
         self.goaltree.accept(command)
         visible_goals = self._build_visible_goals()
         if (
@@ -96,9 +96,9 @@ class Zoom(Graph):
         ):
             self.goaltree.accept_all(Select(self.zoom_root[-1]), HoldSelect())
 
-    def handle_Delete(self, command: Delete) -> None:
+    def accept_Delete(self, command: Delete) -> None:
         if self.settings("selection") == self.zoom_root[-1]:
-            self.handle_ToggleZoom(ToggleZoom())
+            self.accept_ToggleZoom(ToggleZoom())
         self.goaltree.accept(command)
         if self.settings("selection") != self.zoom_root[-1]:
             self.goaltree.accept_all(Select(self.zoom_root[-1]), HoldSelect())

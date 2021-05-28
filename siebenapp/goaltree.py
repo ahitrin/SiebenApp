@@ -61,13 +61,13 @@ class Goals(Graph):
     def events(self) -> collections.deque:
         return self._events
 
-    def handle_Add(self, command: Add) -> bool:
+    def accept_Add(self, command: Add) -> bool:
         add_to = command.add_to or self.selection
         if add_to in self.closed:
             self._msg("A new subgoal cannot be added to the closed one")
             return False
         next_id = self._add_no_link(command.name)
-        self.handle_ToggleLink(ToggleLink(add_to, next_id, command.edge_type))
+        self.accept_ToggleLink(ToggleLink(add_to, next_id, command.edge_type))
         return True
 
     def _add_no_link(self, name: str) -> int:
@@ -76,13 +76,13 @@ class Goals(Graph):
         self._events.append(("add", next_id, name, True))
         return next_id
 
-    def handle_Select(self, command: Select):
+    def accept_Select(self, command: Select):
         goal_id = command.goal_id
         if goal_id in self.goals and self.goals[goal_id] is not None:
             self.selection = goal_id
             self._events.append(("select", goal_id))
 
-    def handle_HoldSelect(self, command: HoldSelect):  # pylint: disable=unused-argument
+    def accept_HoldSelect(self, command: HoldSelect):  # pylint: disable=unused-argument
         self.previous_selection = self.selection
         self._events.append(("hold_select", self.selection))
 
@@ -118,23 +118,23 @@ class Goals(Graph):
             return not has_parents
         return all(x.target in self.closed for x in self._forward_edges(key))
 
-    def handle_Insert(self, command: Insert):
+    def accept_Insert(self, command: Insert):
         if (lower := self.previous_selection) == (upper := self.selection):
             self._msg("A new goal can be inserted only between two different goals")
             return
         edge_type = self.edges.get((lower, upper), EdgeType.BLOCKER)
-        if self.handle_Add(Add(command.name, lower, edge_type)):
+        if self.accept_Add(Add(command.name, lower, edge_type)):
             key = len(self.goals)
-            self.handle_ToggleLink(ToggleLink(key, upper, edge_type))
+            self.accept_ToggleLink(ToggleLink(key, upper, edge_type))
             if self._has_link(lower, upper):
-                self.handle_ToggleLink(ToggleLink(lower, upper))
+                self.accept_ToggleLink(ToggleLink(lower, upper))
 
-    def handle_Rename(self, command: Rename):
+    def accept_Rename(self, command: Rename):
         goal_id = command.goal_id or self.selection
         self.goals[goal_id] = command.new_name
         self._events.append(("rename", command.new_name, goal_id))
 
-    def handle_ToggleClose(self, command: ToggleClose) -> None:
+    def accept_ToggleClose(self, command: ToggleClose) -> None:
         if self.selection in self.closed:
             if self._may_be_reopened():
                 self.closed.remove(self.selection)
@@ -145,7 +145,7 @@ class Goals(Graph):
             if self._may_be_closed():
                 self.closed.add(self.selection)
                 self._events.append(("toggle_close", False, self.selection))
-                self.handle_Select(
+                self.accept_Select(
                     Select(self._first_open_and_switchable(command.root))
                 )
                 self.accept(HoldSelect())
@@ -177,13 +177,13 @@ class Goals(Graph):
             candidates.extend(g for g in subgoals if self._switchable(g))
         return min(candidates) if candidates else root
 
-    def handle_Delete(self, command: Delete) -> None:
+    def accept_Delete(self, command: Delete) -> None:
         if (goal_id := command.goal_id or self.selection) == Goals.ROOT_ID:
             self._msg("Root goal can't be deleted")
             return
         parent = self._parent(goal_id)
         self._delete_subtree(goal_id)
-        self.handle_Select(Select(parent))
+        self.accept_Select(Select(parent))
         self.accept(HoldSelect())
 
     def _delete_subtree(self, goal_id: int) -> None:
@@ -202,7 +202,7 @@ class Goals(Graph):
                 self._delete_subtree(next_goal.target)
         self._events.append(("delete", goal_id))
 
-    def handle_ToggleLink(self, command: ToggleLink):
+    def accept_ToggleLink(self, command: ToggleLink):
         if (lower := command.lower or self.previous_selection) == (
             upper := command.upper or self.selection
         ):

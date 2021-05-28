@@ -71,7 +71,7 @@ class Enumeration(Graph):
                 ]
         return result
 
-    def handle_Select(self, command: Select):
+    def accept_Select(self, command: Select):
         self._update_mapping()
         goals, index = self._id_mapping()
         if (goal_id := command.goal_id) >= 10:
