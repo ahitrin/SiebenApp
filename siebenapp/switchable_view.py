@@ -15,18 +15,16 @@ class SwitchableView(Graph):
     show only switchable and/or selected goals"""
 
     def __init__(self, goaltree: Graph):
-        super().__init__()
-        self.goaltree = goaltree
+        super().__init__(goaltree)
         self._only_switchable: bool = False
 
     def verify(self) -> bool:
         return self.goaltree.verify()
 
-    def accept(self, command: Command) -> None:
-        if isinstance(command, ToggleSwitchableView):
-            self._only_switchable = not self._only_switchable
-        else:
-            self.goaltree.accept(command)
+    def handle_ToggleSwitchableView(
+        self, command: ToggleSwitchableView
+    ):  # pylint: disable=unused-argument
+        self._only_switchable = not self._only_switchable
 
     def events(self) -> collections.deque:
         return self.goaltree.events()
