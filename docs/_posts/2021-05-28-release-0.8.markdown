@@ -1,0 +1,85 @@
+---
+layout: post
+title:  "Version 0.8 is released"
+date:   2021-05-28
+tags: news
+---
+
+Hi, it's me again.
+It was a lot of work on this version, and application has definitely become better.
+Now it's time to publish a new release!
+
+Reminder: in most cases you could use the latest version from repo and do not wait for release.
+The application is stable and contains zero known bugs.
+I use "releases" simply as milestones to track work-in-progress.
+
+## New features
+
+* Add "New file" dialog.
+  Now it's possible to create new files without quitting from application.
+  Yes, it required to reach version 0.8 to implement this, but no one complained before!
+* Add support for Python 3.9 (though main working Python version is still 3.8).
+* Add experimental [CLI mode][issue65].
+  It may be useful in GUI-less environments or when it's impossible to install Qt.
+  The CLI tool (`clieben`) uses pure Python only and could be run even without any additional dependency installed.
+  In other hand, do not expect it to be feature-rich.
+  The tool is quite primitive for now.
+  Maybe it will be improved in following versions.
+* Toggle views [independently of each other][issue67].
+  At last, it's finished!
+  This feature required heavy refactoring of the whole application's architecture, but I'm satisfied with the result.
+  Architecture has become better, usability has become better.
+* `sieben-manage`: add "migrate" command.
+  It's useful in cases when you have many sieben files with old versions and do not want to open then one after one to run DB migrations.
+  Now you could migrate 'em all with one shell command:
+  
+```bash
+find . -type f -name \*.db | xargs -I{} sieben-manage migrate {}
+```
+
+Let's be honest: I suspect this situation is only applicable for my self.
+Anyway, it's here.
+
+## Bug fixes
+
+* More consistent behavior in zoom+close scenarios.
+  I've discarded an idea that selection should be reset on zooming.
+  Instead, selected subgoals are still shown on zoom even they're out of tree.
+  Looks like this behavior is less confusing.
+
+## Refactoring
+
+* Improve rendering performance.
+  I've found and fixed non-optimal code that caused several repeated searches in goaltree.
+  Big trees now render significantly faster.
+  Now, the slowest part of rendering lies in the depth of PyQt/Qt.
+
+## Compatibility breaks
+
+* Drop support for Python 3.6.
+  I only support small sliding window of Python versions (no more than 3) in order to keep code clean and use latest language features.
+  Python 3.9 was added, and Python 3.6 was dropped.
+* Old hotkey `v` is removed (now you should use `t` and `o` independently of each other).
+  See "Hotkeys" dialog window for the list of actual hotkeys.
+
+## Other improvements
+
+* Move tutorial into [separate file][issue175].
+* Restore old ADR and add new ones
+
+## Plans for version 0.9
+
+I plan to add few features that should improve usability on large goal trees:
+
+* Calculate [goal progress][issue177].
+* Show [real goal ids][issue176].
+* Find/filter goals [by name][issue136].
+
+Also it's very possible that I'd prefer to drop Python3.7 support and start to rely on Python3.8+ syntax.
+
+[issue65]: https://github.com/ahitrin/SiebenApp/issues/65
+[issue67]: https://github.com/ahitrin/SiebenApp/issues/67
+[issue136]: https://github.com/ahitrin/SiebenApp/issues/136
+[issue175]: https://github.com/ahitrin/SiebenApp/issues/175
+[issue176]: https://github.com/ahitrin/SiebenApp/issues/176
+[issue177]: https://github.com/ahitrin/SiebenApp/issues/177
