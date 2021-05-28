@@ -15,18 +15,16 @@ class OpenView(Graph):
     between only-open (plus selected) and all goals"""
 
     def __init__(self, goaltree: Graph):
-        super().__init__()
-        self.goaltree = goaltree
+        super().__init__(goaltree)
         self._open: bool = True
 
     def verify(self) -> bool:
         return self.goaltree.verify()
 
-    def accept(self, command: Command) -> None:
-        if isinstance(command, ToggleOpenView):
-            self._open = not self._open
-        else:
-            self.goaltree.accept(command)
+    def handle_ToggleOpenView(
+        self, command: ToggleOpenView
+    ):  # pylint: disable=unused-argument
+        self._open = not self._open
 
     def events(self) -> collections.deque:
         return self.goaltree.events()
