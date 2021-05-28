@@ -14,4 +14,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           architecture: x64
+      - name: Setup pipenv
+        run: pip install pipenv
       - run: make venv test lint mypy
