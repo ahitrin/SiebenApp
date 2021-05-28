@@ -22,8 +22,8 @@ class GoalPrototype:
 def _build_goal_prototype(
     goal_id, name, is_open, children, blockers, select
 ):  # pylint: disable=too-many-arguments
-    children = [] if children is None else children
-    blockers = [] if blockers is None else blockers
+    children = children or []
+    blockers = blockers or []
     assert isinstance(children, list)
     assert select in allowed_selects
     return GoalPrototype(goal_id, name, is_open, children, blockers, select)
