@@ -153,18 +153,16 @@ class Renderer:
     def build_index(self):
         result_index: Dict[int, Dict[int, GoalId]] = {}
         for goal_id, attrs in self.graph.items():
-            row = attrs["row"]
-            col = attrs["col"]
-            if row not in result_index:
+            if (row := attrs["row"]) not in result_index:
                 result_index[row] = {}
-            result_index[row][col] = goal_id
+            result_index[row][attrs["col"]] = goal_id
 
-        for row, row_vals in result_index.items():
+        for row_vals in result_index.values():
             left = 0
             edges: List[str] = []
             phase = "goals"
 
-            for col, goal_id in sorted(row_vals.items(), key=lambda x: x[0]):
+            for _, goal_id in sorted(row_vals.items(), key=lambda x: x[0]):
                 if isinstance(goal_id, int):
                     if phase == "edges":
                         self._write_edges(edges, left)
