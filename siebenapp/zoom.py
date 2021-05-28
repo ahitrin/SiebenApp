@@ -26,28 +26,13 @@ ZoomData = List[Tuple[int, int]]
 
 class Zoom(Graph):
     def __init__(self, goaltree: Goals) -> None:
-        super().__init__()
-        self.goaltree = goaltree
+        super().__init__(goaltree)
         self.zoom_root = [1]
-
-    def accept(self, command: Command) -> None:
-        if isinstance(command, Insert):
-            self._insert(command)
-        elif isinstance(command, ToggleClose):
-            self._toggle_close()
-        elif isinstance(command, ToggleLink):
-            self._toggle_link(command)
-        elif isinstance(command, Delete):
-            self._delete(command)
-        elif isinstance(command, ToggleZoom):
-            self._toggle_zoom()
-        else:
-            self.goaltree.accept(command)
 
     def settings(self, key: str) -> int:
         return self.goaltree.settings(key)
 
-    def _toggle_zoom(self):
+    def handle_ToggleZoom(self, command: ToggleZoom):  # pylint: disable=unused-argument
         selection = self.settings("selection")
         if selection == self.zoom_root[-1] and len(self.zoom_root) > 1:
             # unzoom
@@ -89,18 +74,20 @@ class Zoom(Graph):
             k: {a: b for a, b in v.items() if a != "edge"} for k, v in goals.items()
         }
 
-    def _toggle_close(self) -> None:
+    def handle_ToggleClose(
+        self, command: ToggleClose
+    ):  # pylint: disable=unused-argument
         if self.settings("selection") == self.zoom_root[-1]:
-            self._toggle_zoom()
-        # Note: zoom_root may be changed inside _toggle_zoom
+            self.handle_ToggleZoom(ToggleZoom())
+        # Note: zoom_root may be changed inside handle_ToggleZoom
         self.goaltree.accept(ToggleClose(self.zoom_root[-1]))
 
-    def _insert(self, command: Insert):
+    def handle_Insert(self, command: Insert):
         self.goaltree.accept(command)
         if self.settings("selection") not in self._build_visible_goals():
             self.goaltree.accept_all(Select(self.zoom_root[-1]), HoldSelect())
 
-    def _toggle_link(self, command: ToggleLink):
+    def handle_ToggleLink(self, command: ToggleLink):
         self.goaltree.accept(command)
         visible_goals = self._build_visible_goals()
         if (
@@ -109,9 +96,9 @@ class Zoom(Graph):
         ):
             self.goaltree.accept_all(Select(self.zoom_root[-1]), HoldSelect())
 
-    def _delete(self, command: Delete) -> None:
+    def handle_Delete(self, command: Delete) -> None:
         if self.settings("selection") == self.zoom_root[-1]:
-            self._toggle_zoom()
+            self.handle_ToggleZoom(ToggleZoom())
         self.goaltree.accept(command)
         if self.settings("selection") != self.zoom_root[-1]:
             self.goaltree.accept_all(Select(self.zoom_root[-1]), HoldSelect())
