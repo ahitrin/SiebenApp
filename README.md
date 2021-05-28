@@ -2,8 +2,6 @@
 
 ![Logo](doc/Logo.png)
 
-[![Build Status](https://travis-ci.com/ahitrin/SiebenApp.svg?branch=master)](https://travis-ci.com/ahitrin/SiebenApp)
-
 ## Motivation
 
 Why you may need yet another task manager app in 2016? There are thousands of apps and sites nowadays that allow to create tons of checklist, or stacks of cards, or something like that... But there are two serious problems with checklists and cards.
