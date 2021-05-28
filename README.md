@@ -12,6 +12,8 @@ Second, not all goals are independent from each other. Here, the word "independe
 
 SiebenApp is an experimental goal manager that tries to solve these problems.
 
+![How does it look](doc/main.png)
+
 ## Installation notes
 
 In order to run SiebenApp you need to have Qt5, Python 3.8+ and PyQt installed.
