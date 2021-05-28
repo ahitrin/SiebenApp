@@ -50,8 +50,7 @@ class GoalWidget(QWidget, Ui_GoalBody):
         self.label_goal_name.setText(split_long(attributes["name"]))
         self.check_open.setVisible(attributes["switchable"])
         self.is_real = isinstance(number, int)
-        selection = attributes["select"]
-        if selection == "select":
+        if (selection := attributes["select"]) == "select":
             self.setStyleSheet("background-color:#808080;")
         elif selection == "prev":
             self.setStyleSheet("background-color:#C0C0C0;")
