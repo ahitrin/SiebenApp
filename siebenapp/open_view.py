@@ -37,8 +37,7 @@ class OpenView(Graph):
         return self.goaltree.settings(key)
 
     def q(self, keys: str = "name") -> Dict[int, Any]:
-        skip_open = "open" not in keys
-        if skip_open:
+        if skip_open := "open" not in keys:
             keys = ",".join([keys, "open"])
         pass_through = [
             k
