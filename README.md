@@ -14,7 +14,7 @@ SiebenApp is an experimental goal manager that tries to solve these problems.
 
 ## Installation notes
 
-In order to run SiebenApp you need to have Qt5, Python 3.7+ and PyQt installed.
+In order to run SiebenApp you need to have Qt5, Python 3.8+ and PyQt installed.
 Clone this repository and run it locally.
 
 Currently, there is no separate package distribution and/or installer for SiebenApp.
