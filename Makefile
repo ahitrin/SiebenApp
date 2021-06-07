@@ -1,4 +1,4 @@
-.PHONY: check venv test install lint format mypy run clean distclean prepare
+.PHONY: check venv test install format mypy run clean distclean prepare
 
 all: check venv test
 
@@ -11,7 +11,7 @@ venv:
 	$([ which pipenv ] || pip install pipenv)
 	pipenv install -d
 
-prepare: test format lint mypy
+prepare: test format mypy
 
 test:
 	pipenv run py.test
@@ -21,9 +21,6 @@ test-cov:
 
 install:
 	pipenv run python3 setup.py install
-
-lint:
-	pipenv run pylint siebenapp sieben clieben
 
 format:
 	pipenv run black sieben siebenapp clieben
