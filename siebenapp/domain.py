@@ -1,4 +1,3 @@
-# pylint: disable=too-few-public-methods
 from collections import deque
 from dataclasses import dataclass
 from enum import IntEnum
@@ -50,7 +49,7 @@ class Graph:
         for command in commands:
             self.accept(command)
 
-    def settings(self, key: str) -> int:  # pylint: disable=unused-argument,no-self-use
+    def settings(self, key: str) -> int:
         """Returns given inner value by the key"""
         return Graph.NO_VALUE
 
@@ -64,7 +63,7 @@ class Graph:
         """Run search query against content"""
         raise NotImplementedError
 
-    def verify(self) -> bool:  # pylint: disable=no-self-use
+    def verify(self) -> bool:
         """Check all inner data for correctness"""
         return False
 

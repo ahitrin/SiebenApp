@@ -21,9 +21,7 @@ class SwitchableView(Graph):
     def verify(self) -> bool:
         return self.goaltree.verify()
 
-    def accept_ToggleSwitchableView(
-        self, command: ToggleSwitchableView
-    ):  # pylint: disable=unused-argument
+    def accept_ToggleSwitchableView(self, command: ToggleSwitchableView):
         self._only_switchable = not self._only_switchable
 
     def events(self) -> collections.deque:

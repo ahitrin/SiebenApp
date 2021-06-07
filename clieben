@@ -22,7 +22,7 @@ USER_MESSAGE = ""
 
 
 def update_message(message=""):
-    global USER_MESSAGE  # pylint: disable=global-statement
+    global USER_MESSAGE
     USER_MESSAGE = message
 
 

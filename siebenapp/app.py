@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # coding: utf-8
-# pylint: disable=too-many-locals,too-many-branches,too-many-statements
 import sys
 from argparse import ArgumentParser
 from os.path import dirname, join, realpath
@@ -64,10 +63,10 @@ class GoalWidget(QWidget, Ui_GoalBody):
         else:
             self.setStyleSheet("color: #EEEEEE; border: #EEEEEE")
 
-    def mousePressEvent(self, event):  # pylint: disable=unused-argument
+    def mousePressEvent(self, event):
         self._click_in_progress = True
 
-    def mouseReleaseEvent(self, event):  # pylint: disable=unused-argument
+    def mouseReleaseEvent(self, event):
         if self._click_in_progress:
             self.clicked.emit()
         self._click_in_progress = False
@@ -101,7 +100,7 @@ class CentralWidget(QWidget):
     def setupData(self, render_result):
         self.render_result = render_result
 
-    def paintEvent(self, event):  # pylint: disable=unused-argument
+    def paintEvent(self, event):
         painter = QPainter(self)
         edges = {}
 
@@ -206,10 +205,7 @@ class SiebenApp(QMainWindow):
         # Re-creation of scrollAreaWidgetContents looks like dirty hack,
         # but at the current moment I haven't found a better solution.
         # Widget creation in __init__ does not work: lines disappear.
-        # Also we have to disable pylint warning in order to make build green.
-        self.scrollAreaWidgetContents = (  # pylint: disable=attribute-defined-outside-init
-            CentralWidget()
-        )
+        self.scrollAreaWidgetContents = CentralWidget()
         # End of 'looks like dirty hack'
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self._update_title()

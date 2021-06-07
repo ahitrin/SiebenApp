@@ -32,7 +32,7 @@ class Zoom(Graph):
     def settings(self, key: str) -> int:
         return self.goaltree.settings(key)
 
-    def accept_ToggleZoom(self, command: ToggleZoom):  # pylint: disable=unused-argument
+    def accept_ToggleZoom(self, command: ToggleZoom):
         selection = self.settings("selection")
         if selection == self.zoom_root[-1] and len(self.zoom_root) > 1:
             # unzoom
@@ -74,9 +74,7 @@ class Zoom(Graph):
             k: {a: b for a, b in v.items() if a != "edge"} for k, v in goals.items()
         }
 
-    def accept_ToggleClose(
-        self, command: ToggleClose
-    ):  # pylint: disable=unused-argument
+    def accept_ToggleClose(self, command: ToggleClose):
         if self.settings("selection") == self.zoom_root[-1]:
             self.accept_ToggleZoom(ToggleZoom())
         # Note: zoom_root may be changed inside accept_ToggleZoom

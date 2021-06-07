@@ -19,9 +19,7 @@ class GoalPrototype:
     select: Optional[str]
 
 
-def _build_goal_prototype(
-    goal_id, name, is_open, children, blockers, select
-):  # pylint: disable=too-many-arguments
+def _build_goal_prototype(goal_id, name, is_open, children, blockers, select):
     children = children or []
     blockers = blockers or []
     assert isinstance(children, list)

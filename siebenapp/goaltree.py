@@ -82,7 +82,7 @@ class Goals(Graph):
             self.selection = goal_id
             self._events.append(("select", goal_id))
 
-    def accept_HoldSelect(self, command: HoldSelect):  # pylint: disable=unused-argument
+    def accept_HoldSelect(self, command: HoldSelect):
         self.previous_selection = self.selection
         self._events.append(("hold_select", self.selection))
 
@@ -302,7 +302,7 @@ class Goals(Graph):
     def build(goals, edges, settings, message_fn=None):
         # type: (GoalsData, EdgesData, OptionsData, Callable[[str], None]) -> Goals
         result = Goals("", message_fn)
-        result._events.clear()  # pylint: disable=protected-access
+        result._events.clear()
         goals_dict = {g[0]: g[1] for g in goals}
         result.goals = {
             i: goals_dict.get(i) for i in range(1, max(goals_dict.keys()) + 1)

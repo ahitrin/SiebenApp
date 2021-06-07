@@ -21,9 +21,7 @@ class OpenView(Graph):
     def verify(self) -> bool:
         return self.goaltree.verify()
 
-    def accept_ToggleOpenView(
-        self, command: ToggleOpenView
-    ):  # pylint: disable=unused-argument
+    def accept_ToggleOpenView(self, command: ToggleOpenView):
         self._open = not self._open
 
     def events(self) -> collections.deque:

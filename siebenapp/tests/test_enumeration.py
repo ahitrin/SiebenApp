@@ -7,9 +7,6 @@ from siebenapp.tests.dsl import build_goaltree, open_, previous, selected
 from siebenapp.zoom import Zoom, ToggleZoom
 
 
-# pylint: disable=redefined-outer-name
-
-
 @pytest.fixture
 def goal_chain_10():
     """a → b → c → ... → j"""

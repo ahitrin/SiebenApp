@@ -124,7 +124,7 @@ def save(goals: Graph, filename: str) -> None:
         cur.executemany("insert into edges values (?,?,?)", edges_export)
         cur.executemany("insert into settings values (?,?)", select_export)
         cur.executemany("insert into zoom values (?, ?)", zoom_export)
-        root_goals._events.clear()  # pylint: disable=protected-access
+        root_goals._events.clear()
         connection.commit()
 
     connection.close()

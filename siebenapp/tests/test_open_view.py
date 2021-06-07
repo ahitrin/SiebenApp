@@ -5,9 +5,6 @@ from siebenapp.open_view import ToggleOpenView, OpenView
 from siebenapp.tests.dsl import build_goaltree, open_, selected, clos_, previous
 
 
-# pylint: disable=redefined-outer-name
-
-
 @pytest.fixture
 def trivial():
     g = build_goaltree(open_(1, "Start", [], [], select=selected))
