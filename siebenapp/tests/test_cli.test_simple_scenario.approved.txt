@@ -1,0 +1,27 @@
+1[ ]>Rename me
+> r Approval testing
+
+1[ ]>Approval testing
+> a Measure coverage
+
+1   >Approval testing [2]
+2[ ] Measure coverage
+> 2
+
+1   _Approval testing [2]
+2[ ]>Measure coverage
+> a Build simple test
+
+1   _Approval testing [2]
+2   >Measure coverage [3]
+3[ ] Build simple test
+> 3
+
+1   _Approval testing [2]
+2    Measure coverage [3]
+3[ ]>Build simple test
+> c
+
+1    Approval testing [2]
+2[ ]>Measure coverage
+*USER BREAK*
