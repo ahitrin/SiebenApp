@@ -10,5 +10,5 @@ setup(
     author_email='andrey.hitrin@gmail.com',
     url='https://github.com/ahitrin/SiebenApp',
     packages=['siebenapp'],
-    scripts=['sieben'],
+    scripts=['clieben', 'sieben', 'sieben-manage'],
 )
