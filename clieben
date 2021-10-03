@@ -12,13 +12,37 @@ from siebenapp.domain import (
     Select,
     ToggleClose,
     ToggleLink,
+    Graph,
 )
-from siebenapp.switchable_view import ToggleSwitchableView
 from siebenapp.open_view import ToggleOpenView
+from siebenapp.switchable_view import ToggleSwitchableView
 from siebenapp.system import load, save
 from siebenapp.zoom import ToggleZoom
 
 USER_MESSAGE = ""
+
+
+class IO:
+    """Simple wrapper for all input/output interactions"""
+
+    def write(self, text: str, *args) -> None:
+        raise NotImplementedError
+
+    def read(self) -> str:
+        raise NotImplementedError
+
+
+class ConsoleIO(IO):
+    def __init__(self, prompt):
+        super().__init__()
+        sys.stdin.reconfigure(encoding="utf-8")
+        self.prompt = prompt
+
+    def write(self, text: str, *args) -> None:
+        print(text, *args)
+
+    def read(self) -> str:
+        return input(self.prompt)
 
 
 def update_message(message=""):
@@ -66,17 +90,17 @@ def build_actions(command):
     return []
 
 
-def loop(goals, db_name):
+def loop(io: IO, goals: Graph, db_name: str):
     cmd = ""
     while cmd != "q":
         x = goals.q("name,edge,open,select,switchable")
         for goal_id, goal_vars in x.items():
-            print(fmt(goal_id, goal_vars))
+            io.write(fmt(goal_id, goal_vars))
         if USER_MESSAGE:
-            print(USER_MESSAGE)
+            io.write(USER_MESSAGE)
         update_message()
         try:
-            cmd = input("> ").strip()
+            cmd = io.read().strip()
         except EOFError:
             break
         actions = build_actions(cmd)
@@ -86,7 +110,7 @@ def loop(goals, db_name):
 
 
 def main():
-    sys.stdin.reconfigure(encoding="utf-8")
+    io = ConsoleIO(prompt="> ")
     parser = ArgumentParser()
     parser.add_argument(
         "db",
@@ -96,7 +120,7 @@ def main():
     )
     args = parser.parse_args()
     goals = load(args.db, update_message)
-    loop(goals, args.db)
+    loop(io, goals, args.db)
 
 
 if __name__ == "__main__":
