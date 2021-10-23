@@ -43,7 +43,7 @@ class Goals(Graph):
             self.message_fn(message)
 
     def _has_link(self, lower: int, upper: int) -> bool:
-        return (lower, upper) in self.edges
+        return upper in self.edges_forward[lower]
 
     def _forward_edges(self, goal: int) -> List[Edge]:
         return [Edge(goal, k, v) for k, v in self.edges_forward[goal].items()]
@@ -121,7 +121,7 @@ class Goals(Graph):
         if (lower := self.previous_selection) == (upper := self.selection):
             self._msg("A new goal can be inserted only between two different goals")
             return
-        edge_type = self.edges.get((lower, upper), EdgeType.BLOCKER)
+        edge_type = self.edges_forward[lower].get(upper, EdgeType.BLOCKER)
         if self.accept_Add(Add(command.name, lower, edge_type)):
             key = len(self.goals)
             self.accept_ToggleLink(ToggleLink(key, upper, edge_type))
@@ -155,11 +155,8 @@ class Goals(Graph):
         return all(g.target in self.closed for g in self._forward_edges(self.selection))
 
     def _may_be_reopened(self) -> bool:
-        return all(
-            k[0] not in self.closed
-            for k, v in self.edges.items()
-            if k[1] == self.selection
-        )
+        blocked_by_selected = [e.source for e in self._back_edges(self.selection)]
+        return all(g not in self.closed for g in blocked_by_selected)
 
     def _first_open_and_switchable(self, root: int) -> int:
         root = max(root, Goals.ROOT_ID)
