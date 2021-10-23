@@ -28,7 +28,7 @@ class Renderer:
             keys="name,edge,open,select,switchable"
         )
         self.graph: Dict[GoalId, Any] = {k: v for k, v in original_graph.items()}
-        self.edges: Dict[GoalId, List[Any]] = {
+        self.edges: Dict[GoalId, List[GoalId]] = {
             key: [e[0] for e in values["edge"]] for key, values in self.graph.items()
         }
         self.layers: Dict[int, List[GoalId]] = defaultdict(list)
@@ -48,7 +48,7 @@ class Renderer:
         return RenderResult(self.graph, self.result_edge_options)
 
     def split_by_layers(self) -> None:
-        unsorted_goals: Dict[GoalId, List[int]] = dict(self.edges)
+        unsorted_goals: Dict[GoalId, List[GoalId]] = dict(self.edges)
         sorted_goals: Set[GoalId] = set()
         incoming_edges: Set[GoalId] = set()
         outgoing_edges: List[GoalId] = []
@@ -94,7 +94,7 @@ class Renderer:
 
     @staticmethod
     def candidates_for_new_layer(
-        sorted_goals: Set[GoalId], unsorted_goals: Dict[GoalId, List[int]]
+        sorted_goals: Set[GoalId], unsorted_goals: Dict[GoalId, List[GoalId]]
     ) -> List[Tuple[GoalId, int]]:
         candidates = [
             (goal, len(edges))
@@ -117,8 +117,8 @@ class Renderer:
             self.positions.update({g: idx for idx, g in enumerate(random_line)})
             self.layers[curr_layer - 1] = random_line
 
-    def count_deltas(self, fixed_line):
-        deltas: Dict[int, List[int]] = defaultdict(list)
+    def count_deltas(self, fixed_line: List[GoalId]) -> Dict[GoalId, int]:
+        deltas: Dict[GoalId, List[int]] = defaultdict(list)
         for goal in fixed_line:
             if goal is not None:
                 for e in self.edges[goal]:
@@ -199,7 +199,7 @@ def place(source):
     return result
 
 
-def goal_key(tup):
+def goal_key(tup: Tuple[GoalId, int]) -> Tuple[int, GoalId]:
     """Sort goals by position first and by id second (transform str ids into ints)"""
     goal_id, goal_pos = tup
     if isinstance(goal_id, str):
