@@ -206,7 +206,7 @@ def place(source: Dict[GoalId, int]) -> Layer:
             result[index] = value
         else:
             unplaced.insert(0, (value, index + 1))
-    while len(result) > 4 and None in result:
+    while len(result) > Renderer.WIDTH_LIMIT and None in result:
         result.remove(None)
     return result
 
