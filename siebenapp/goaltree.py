@@ -113,11 +113,11 @@ class Goals(Graph):
     def _switchable(self, key: int) -> bool:
         if key in self.closed:
             has_parents = False
-            for k in self.edges.keys():
-                if k[1] == key:
-                    has_parents = True
-                    if k[0] not in self.closed:
-                        return True
+            back_edges = self._back_edges(key)
+            if back_edges:
+                has_parents = True
+                if any(e.source not in self.closed for e in back_edges):
+                    return True
             return not has_parents
         return all(x.target in self.closed for x in self._forward_edges(key))
 
