@@ -16,4 +16,7 @@ jobs:
           architecture: x64
       - name: Setup pipenv
         run: pip install pipenv
-      - run: make venv test mypy
+      - name: Run tests
+        run: make venv test mypy
+        env:
+          HYPOTHESIS_PROFILE: ci
