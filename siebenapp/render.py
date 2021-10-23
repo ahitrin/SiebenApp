@@ -194,15 +194,15 @@ class Renderer:
 
 def place(source: Dict[GoalId, int]) -> List[Optional[GoalId]]:
     result: List[Optional[GoalId]] = []
-    unsorted: List[Tuple[GoalId, int]] = sorted(list(source.items()), key=goal_key)
-    while unsorted:
-        value, index = unsorted.pop(0)
+    unplaced: List[Tuple[GoalId, int]] = sorted(list(source.items()), key=goal_key)
+    while unplaced:
+        value, index = unplaced.pop(0)
         if len(result) < index + 1:
             result.extend([None] * (index + 1 - len(result)))
         if result[index] is None:
             result[index] = value
         else:
-            unsorted.insert(0, (value, index + 1))
+            unplaced.insert(0, (value, index + 1))
     while len(result) > 4 and None in result:
         result.remove(None)
     return result
