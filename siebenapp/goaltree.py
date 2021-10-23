@@ -208,7 +208,7 @@ class Goals(Graph):
             self._msg("Goal can't be linked to itself")
             return
         if self._has_link(lower, upper):
-            if (current_edge_type := self.edges[(lower, upper)]) != command.edge_type:
+            if (current_edge_type := self.edges_forward[lower][upper]) != command.edge_type:
                 self._replace_link(lower, upper, command.edge_type)
                 self._transform_old_parents_into_blocked(lower, upper)
             else:
@@ -217,7 +217,7 @@ class Goals(Graph):
             self._create_new_link(lower, upper, command.edge_type)
 
     def _replace_link(self, lower: int, upper: int, edge_type: EdgeType) -> None:
-        old_edge_type = self.edges[(lower, upper)]
+        old_edge_type = self.edges_forward[lower][upper]
         self.edges[(lower, upper)] = edge_type
         self.edges_forward[lower][upper] = edge_type
         self._events.append(("link", lower, upper, edge_type))
