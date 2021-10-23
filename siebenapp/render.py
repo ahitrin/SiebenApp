@@ -24,7 +24,9 @@ class Renderer:
     WIDTH_LIMIT = 4
 
     def __init__(self, goals: Graph) -> None:
-        original_graph: Dict[int, Any] = goals.q(keys="name,edge,open,select,switchable")
+        original_graph: Dict[int, Any] = goals.q(
+            keys="name,edge,open,select,switchable"
+        )
         self.graph: Dict[GoalId, Any] = {k: v for k, v in original_graph.items()}
         self.edges: Dict[GoalId, List[Any]] = {
             key: [e[0] for e in values["edge"]] for key, values in self.graph.items()
