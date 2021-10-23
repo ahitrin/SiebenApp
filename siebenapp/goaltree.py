@@ -46,10 +46,7 @@ class Goals(Graph):
         return (lower, upper) in self.edges
 
     def _forward_edges(self, goal: int) -> List[Edge]:
-        old = [Edge(goal, k[1], v) for k, v in self.edges.items() if k[0] == goal]
-        new = [Edge(goal, k, v) for k, v in self.edges_forward[goal].items()]
-        assert old == new
-        return new
+        return [Edge(goal, k, v) for k, v in self.edges_forward[goal].items()]
 
     def _back_edges(self, goal: int) -> List[Edge]:
         return [Edge(k[0], goal, v) for k, v in self.edges.items() if k[1] == goal]
