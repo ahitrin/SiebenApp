@@ -1,6 +1,6 @@
 # coding: utf-8
-import collections
 from typing import Callable, Dict, Optional, List, Set, Any, Tuple
+from collections import deque, defaultdict
 
 from siebenapp.domain import (
     Graph,
@@ -28,10 +28,13 @@ class Goals(Graph):
         super().__init__()
         self.goals: Dict[int, Optional[str]] = {}
         self.edges: Dict[Tuple[int, int], EdgeType] = {}
+        self.edges_forward: Dict[int, Dict[int, EdgeType]] = defaultdict(
+            lambda: defaultdict(lambda: EdgeType.BLOCKER)
+        )
         self.closed: Set[int] = set()
         self.selection = Goals.ROOT_ID
         self.previous_selection = Goals.ROOT_ID
-        self._events: collections.deque = collections.deque()
+        self._events: deque = deque()
         self.message_fn = message_fn
         self._add_no_link(name)
 
@@ -43,7 +46,10 @@ class Goals(Graph):
         return (lower, upper) in self.edges
 
     def _forward_edges(self, goal: int) -> List[Edge]:
-        return [Edge(goal, k[1], v) for k, v in self.edges.items() if k[0] == goal]
+        old = [Edge(goal, k[1], v) for k, v in self.edges.items() if k[0] == goal]
+        new = [Edge(goal, k, v) for k, v in self.edges_forward[goal].items()]
+        assert old == new
+        return new
 
     def _back_edges(self, goal: int) -> List[Edge]:
         return [Edge(k[0], goal, v) for k, v in self.edges.items() if k[1] == goal]
@@ -58,7 +64,7 @@ class Goals(Graph):
             "previous_selection": self.previous_selection,
         }.get(key, 0)
 
-    def events(self) -> collections.deque:
+    def events(self) -> deque:
         return self._events
 
     def accept_Add(self, command: Add) -> bool:
@@ -193,6 +199,9 @@ class Goals(Graph):
         forward_edges = self._forward_edges(goal_id)
         next_to_remove = {e for e in forward_edges if e.type == EdgeType.PARENT}
         blockers = {e for e in forward_edges if e.type == EdgeType.BLOCKER}
+        for back_edge in self._back_edges(goal_id):
+            self.edges_forward[back_edge.source].pop(goal_id)
+        self.edges_forward[goal_id].clear()
         self.edges = {k: v for k, v in self.edges.items() if goal_id not in k}
         for old_blocker in blockers:
             if not self._back_edges(old_blocker.target):
@@ -220,6 +229,7 @@ class Goals(Graph):
     def _replace_link(self, lower: int, upper: int, edge_type: EdgeType) -> None:
         old_edge_type = self.edges[(lower, upper)]
         self.edges[(lower, upper)] = edge_type
+        self.edges_forward[lower][upper] = edge_type
         self._events.append(("link", lower, upper, edge_type))
         self._events.append(("unlink", lower, upper, old_edge_type))
 
@@ -228,6 +238,7 @@ class Goals(Graph):
     ) -> None:
         if len(self._back_edges(upper)) > 1:
             self.edges.pop((lower, upper))
+            self.edges_forward[lower].pop(upper)
             self._events.append(("unlink", lower, upper, edge_type))
         else:
             self._msg("Can't remove the last link")
@@ -242,6 +253,7 @@ class Goals(Graph):
         if edge_type == EdgeType.PARENT:
             self._transform_old_parents_into_blocked(lower, upper)
         self.edges[lower, upper] = edge_type
+        self.edges_forward[lower][upper] = edge_type
         self._events.append(("link", lower, upper, edge_type))
 
     def _transform_old_parents_into_blocked(self, lower, upper):
@@ -314,6 +326,7 @@ class Goals(Graph):
 
         for parent, child, link_type in edges:
             result.edges[parent, child] = EdgeType(link_type)
+            result.edges_forward[parent][child] = EdgeType(link_type)
         selection_dict = dict(settings)
         result.selection = selection_dict.get("selection", result.selection)
         result.previous_selection = selection_dict.get(
