@@ -52,7 +52,7 @@ class Renderer:
         sorted_goals: Set[GoalId] = set()
         incoming_edges: Set[GoalId] = set()
         outgoing_edges: List[GoalId] = []
-        current_layer = 0
+        current_layer: int = 0
         while unsorted_goals:
             new_layer: List[GoalId] = []
             for goal, edges_len in self.candidates_for_new_layer(
@@ -61,7 +61,9 @@ class Renderer:
                 unsorted_goals.pop(goal)
                 sorted_goals.add(goal)
                 new_layer.append(goal)
-                back_edges = [k for k, vs in self.edges.items() if goal in vs]
+                back_edges: List[GoalId] = [
+                    k for k, vs in self.edges.items() if goal in vs
+                ]
                 outgoing_edges.extend(iter(back_edges))
                 if (len(new_layer) >= self.WIDTH_LIMIT and edges_len < 1) or (
                     len(outgoing_edges) >= self.WIDTH_LIMIT
@@ -69,13 +71,13 @@ class Renderer:
                     break
             incoming_edges = incoming_edges.difference(set(new_layer))
             for original_id in incoming_edges:
-                new_goal_name = f"{original_id}_{current_layer}"
+                new_goal_name: str = f"{original_id}_{current_layer}"
                 self.edges[new_goal_name] = [
                     g
                     for g in self.edges[original_id]
                     if g in sorted_goals and g not in new_layer
                 ]
-                new_edge_type = EdgeType.BLOCKER
+                new_edge_type: EdgeType = EdgeType.BLOCKER
                 for g in self.edges[new_goal_name]:
                     self.edges[original_id].remove(g)
                     self.edge_types[new_goal_name, g] = self.edge_types[original_id, g]
@@ -96,7 +98,7 @@ class Renderer:
     def candidates_for_new_layer(
         sorted_goals: Set[GoalId], unsorted_goals: Dict[GoalId, List[GoalId]]
     ) -> List[Tuple[GoalId, int]]:
-        candidates = [
+        candidates: List[Tuple[GoalId, int]] = [
             (goal, len(edges))
             for goal, edges in unsorted_goals.items()
             if all(v in sorted_goals for v in edges)
@@ -106,16 +108,16 @@ class Renderer:
 
     def reorder(self) -> None:
         for curr_layer in sorted(self.layers.keys(), reverse=True)[:-1]:
-            fixed_line = self.layers[curr_layer]
-            random_line = self.layers[curr_layer - 1]
-            deltas = self.count_deltas(fixed_line)
-            new_positions = {
+            fixed_line: List[GoalId] = self.layers[curr_layer]
+            random_line: List[GoalId] = self.layers[curr_layer - 1]
+            deltas: Dict[GoalId, int] = self.count_deltas(fixed_line)
+            new_positions: Dict[GoalId, int] = {
                 g: int(self.positions[g] + deltas.get(g, 0)) for g in random_line
             }
 
-            random_line = place(new_positions)
-            self.positions.update({g: idx for idx, g in enumerate(random_line)})
-            self.layers[curr_layer - 1] = random_line
+            placed_line: List[GoalId] = place(new_positions)
+            self.positions.update({g: idx for idx, g in enumerate(placed_line)})
+            self.layers[curr_layer - 1] = placed_line
 
     def count_deltas(self, fixed_line: List[GoalId]) -> Dict[GoalId, int]:
         deltas: Dict[GoalId, List[int]] = defaultdict(list)
@@ -127,7 +129,7 @@ class Renderer:
 
     def update_graph(self) -> None:
         for row in sorted(self.layers.keys()):
-            real_col = 0
+            real_col: int = 0
             for col, goal_id in enumerate(self.layers[row]):
                 if goal_id is None:
                     continue
@@ -161,9 +163,9 @@ class Renderer:
             result_index[row][attrs["col"]] = goal_id
 
         for row_vals in result_index.values():
-            left = 0
+            left: int = 0
             edges: List[str] = []
-            phase = "goals"
+            phase: str = "goals"
 
             for _, new_goal_id in sorted(row_vals.items(), key=lambda x: x[0]):
                 if isinstance(new_goal_id, int):
