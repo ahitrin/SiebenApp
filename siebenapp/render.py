@@ -12,7 +12,7 @@ GoalId = Union[str, int]
 
 @dataclass(frozen=True)
 class RenderResult:
-    graph: Dict[int, Any]
+    graph: Dict[GoalId, Any]
     edge_opts: Dict[str, Tuple[int, int, int]]
 
 
@@ -24,7 +24,8 @@ class Renderer:
     WIDTH_LIMIT = 4
 
     def __init__(self, goals: Graph) -> None:
-        self.graph: Dict[int, Any] = goals.q(keys="name,edge,open,select,switchable")
+        original_graph: Dict[int, Any] = goals.q(keys="name,edge,open,select,switchable")
+        self.graph: Dict[GoalId, Any] = {k: v for k, v in original_graph.items()}
         self.edges: Dict[GoalId, List[Any]] = {
             key: [e[0] for e in values["edge"]] for key, values in self.graph.items()
         }
@@ -122,7 +123,7 @@ class Renderer:
                     deltas[e].append(self.positions[goal] - self.positions[e])
         return {k: safe_average(v) for k, v in deltas.items()}
 
-    def update_graph(self):
+    def update_graph(self) -> None:
         for row in sorted(self.layers.keys()):
             real_col = 0
             for col, goal_id in enumerate(self.layers[row]):
