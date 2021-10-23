@@ -24,7 +24,7 @@ class Renderer:
     WIDTH_LIMIT = 4
 
     def __init__(self, goals: Graph) -> None:
-        self.graph = goals.q(keys="name,edge,open,select,switchable")
+        self.graph: Dict[int, Any] = goals.q(keys="name,edge,open,select,switchable")
         self.edges: Dict[GoalId, List[Any]] = {
             key: [e[0] for e in values["edge"]] for key, values in self.graph.items()
         }
@@ -150,7 +150,7 @@ class Renderer:
                     }
                 )
 
-    def build_index(self):
+    def build_index(self) -> None:
         result_index: Dict[int, Dict[int, GoalId]] = {}
         for goal_id, attrs in self.graph.items():
             if (row := attrs["row"]) not in result_index:
@@ -162,19 +162,19 @@ class Renderer:
             edges: List[str] = []
             phase = "goals"
 
-            for _, goal_id in sorted(row_vals.items(), key=lambda x: x[0]):
-                if isinstance(goal_id, int):
+            for _, new_goal_id in sorted(row_vals.items(), key=lambda x: x[0]):
+                if isinstance(new_goal_id, int):
                     if phase == "edges":
                         self._write_edges(edges, left)
                         edges = []
                     phase = "goals"
-                    left = goal_id
+                    left = new_goal_id
                 else:
                     phase = "edges"
-                    edges.append(goal_id)
+                    edges.append(new_goal_id)
             self._write_edges(edges, left)
 
-    def _write_edges(self, edges: List[str], left: int):
+    def _write_edges(self, edges: List[str], left: int) -> None:
         self.result_edge_options.update(
             {e: (left, i + 1, len(edges) + 1) for i, e in enumerate(edges)}
         )
