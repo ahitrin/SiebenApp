@@ -1,6 +1,6 @@
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Dict, List, Tuple, Union, Any, Set
+from typing import Dict, List, Tuple, Union, Any, Set, Optional
 
 from siebenapp.domain import Graph, EdgeType
 
@@ -31,7 +31,7 @@ class Renderer:
         self.edges: Dict[GoalId, List[GoalId]] = {
             key: [e[0] for e in values["edge"]] for key, values in self.graph.items()
         }
-        self.layers: Dict[int, List[GoalId]] = defaultdict(list)
+        self.layers: Dict[int, List[Optional[GoalId]]] = defaultdict(list)
         self.positions: Dict[GoalId, int] = {}
         self.edge_types: Dict[Tuple[GoalId, GoalId], EdgeType] = {
             (parent, child): edge_type
@@ -54,7 +54,7 @@ class Renderer:
         outgoing_edges: List[GoalId] = []
         current_layer: int = 0
         while unsorted_goals:
-            new_layer: List[GoalId] = []
+            new_layer: List[Optional[GoalId]] = []
             for goal, edges_len in self.candidates_for_new_layer(
                 sorted_goals, unsorted_goals
             ):
@@ -91,7 +91,10 @@ class Renderer:
             incoming_edges.update(outgoing_edges)
             outgoing_edges.clear()
         self.positions = {
-            g: idx for layer in self.layers.values() for idx, g in enumerate(layer)
+            g: idx
+            for layer in self.layers.values()
+            for idx, g in enumerate(layer)
+            if g is not None
         }
 
     @staticmethod
@@ -108,18 +111,22 @@ class Renderer:
 
     def reorder(self) -> None:
         for curr_layer in sorted(self.layers.keys(), reverse=True)[:-1]:
-            fixed_line: List[GoalId] = self.layers[curr_layer]
-            random_line: List[GoalId] = self.layers[curr_layer - 1]
+            fixed_line: List[Optional[GoalId]] = self.layers[curr_layer]
+            random_line: List[Optional[GoalId]] = self.layers[curr_layer - 1]
             deltas: Dict[GoalId, int] = self.count_deltas(fixed_line)
             new_positions: Dict[GoalId, int] = {
-                g: int(self.positions[g] + deltas.get(g, 0)) for g in random_line
+                g: int(self.positions[g] + deltas.get(g, 0))
+                for g in random_line
+                if g is not None
             }
 
-            placed_line: List[GoalId] = place(new_positions)
-            self.positions.update({g: idx for idx, g in enumerate(placed_line)})
+            placed_line: List[Optional[GoalId]] = place(new_positions)
+            self.positions.update(
+                {g: idx for idx, g in enumerate(placed_line) if g is not None}
+            )
             self.layers[curr_layer - 1] = placed_line
 
-    def count_deltas(self, fixed_line: List[GoalId]) -> Dict[GoalId, int]:
+    def count_deltas(self, fixed_line: List[Optional[GoalId]]) -> Dict[GoalId, int]:
         deltas: Dict[GoalId, List[int]] = defaultdict(list)
         for goal in fixed_line:
             if goal is not None:
@@ -185,9 +192,9 @@ class Renderer:
         )
 
 
-def place(source):
-    result = []
-    unsorted = sorted(list(source.items()), key=goal_key)
+def place(source: Dict[GoalId, int]) -> List[Optional[GoalId]]:
+    result: List[Optional[GoalId]] = []
+    unsorted: List[Tuple[GoalId, int]] = sorted(list(source.items()), key=goal_key)
     while unsorted:
         value, index = unsorted.pop(0)
         if len(result) < index + 1:
