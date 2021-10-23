@@ -211,7 +211,7 @@ def place(source: Dict[GoalId, int]) -> Layer:
     return result
 
 
-def goal_key(tup: Tuple[GoalId, int]) -> Tuple[int, GoalId]:
+def goal_key(tup: Tuple[GoalId, int]) -> Tuple[int, int]:
     """Sort goals by position first and by id second (transform str ids into ints)"""
     goal_id, goal_pos = tup
     if isinstance(goal_id, str):
