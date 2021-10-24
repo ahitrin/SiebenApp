@@ -15,9 +15,6 @@ class Edge:
     target: int
     type: EdgeType
 
-    def __repr__(self):
-        return f"{self.source}--{self.type.name}--{self.target}"
-
 
 class Command:
     pass
