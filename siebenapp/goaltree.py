@@ -303,6 +303,18 @@ class Goals(Graph):
             not self._forward_edges(n) for n in deleted_nodes
         ), "Deleted goals must have no dependencies"
 
+        fwd_edges = set(
+            (g1, g2, et) for g1, e in self.edges_forward.items() for g2, et in e.items()
+        )
+        bwd_edges = set(
+            (g1, g2, et)
+            for g2, e in self.edges_backward.items()
+            for g1, et in e.items()
+        )
+        assert (
+            fwd_edges == bwd_edges
+        ), "Forward and backward edges must always match each other"
+
         parent_edges = [k for k, v in self.edges.items() if v == EdgeType.PARENT]
         edges_with_parent = {child for parent, child in parent_edges}
         assert len(parent_edges) == len(
