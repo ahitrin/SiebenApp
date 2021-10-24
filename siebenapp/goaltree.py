@@ -31,6 +31,9 @@ class Goals(Graph):
         self.edges_forward: Dict[int, Dict[int, EdgeType]] = defaultdict(
             lambda: defaultdict(lambda: EdgeType.BLOCKER)
         )
+        self.edges_backward: Dict[int, Dict[int, EdgeType]] = defaultdict(
+            lambda: defaultdict(lambda: EdgeType.BLOCKER)
+        )
         self.closed: Set[int] = set()
         self.selection = Goals.ROOT_ID
         self.previous_selection = Goals.ROOT_ID
@@ -49,7 +52,7 @@ class Goals(Graph):
         return [Edge(goal, k, v) for k, v in self.edges_forward[goal].items()]
 
     def _back_edges(self, goal: int) -> List[Edge]:
-        return [Edge(k[0], goal, v) for k, v in self.edges.items() if k[1] == goal]
+        return [Edge(k, goal, v) for k, v in self.edges_backward[goal].items()]
 
     def _parent(self, goal: int) -> int:
         parents = {e for e in self._back_edges(goal) if e.type == EdgeType.PARENT}
@@ -192,6 +195,9 @@ class Goals(Graph):
         for back_edge in self._back_edges(goal_id):
             self.edges_forward[back_edge.source].pop(goal_id)
         self.edges_forward[goal_id].clear()
+        for forward_edge in forward_edges:
+            self.edges_backward[forward_edge.target].pop(goal_id)
+        self.edges_backward[goal_id].clear()
         self.edges = {k: v for k, v in self.edges.items() if goal_id not in k}
         for old_blocker in blockers:
             if not self._back_edges(old_blocker.target):
@@ -222,6 +228,7 @@ class Goals(Graph):
         old_edge_type = self.edges_forward[lower][upper]
         self.edges[(lower, upper)] = edge_type
         self.edges_forward[lower][upper] = edge_type
+        self.edges_backward[upper][lower] = edge_type
         self._events.append(("link", lower, upper, edge_type))
         self._events.append(("unlink", lower, upper, old_edge_type))
 
@@ -231,6 +238,7 @@ class Goals(Graph):
         if len(self._back_edges(upper)) > 1:
             self.edges.pop((lower, upper))
             self.edges_forward[lower].pop(upper)
+            self.edges_backward[upper].pop(lower)
             self._events.append(("unlink", lower, upper, edge_type))
         else:
             self._msg("Can't remove the last link")
@@ -246,6 +254,7 @@ class Goals(Graph):
             self._transform_old_parents_into_blocked(lower, upper)
         self.edges[lower, upper] = edge_type
         self.edges_forward[lower][upper] = edge_type
+        self.edges_backward[upper][lower] = edge_type
         self._events.append(("link", lower, upper, edge_type))
 
     def _transform_old_parents_into_blocked(self, lower, upper):
@@ -319,6 +328,7 @@ class Goals(Graph):
         for parent, child, link_type in edges:
             result.edges[parent, child] = EdgeType(link_type)
             result.edges_forward[parent][child] = EdgeType(link_type)
+            result.edges_backward[child][parent] = EdgeType(link_type)
         selection_dict = dict(settings)
         result.selection = selection_dict.get("selection", result.selection)
         result.previous_selection = selection_dict.get(
