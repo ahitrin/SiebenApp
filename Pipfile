@@ -15,7 +15,7 @@ approvaltests = "==3.0.0"
 py-spy = "==0.3.10"
 
 [packages]
-PyQt5 = "==5.15.4"
+PyQt5 = "==5.15.5"
 
 [requires]
 python_version = "3.8"
