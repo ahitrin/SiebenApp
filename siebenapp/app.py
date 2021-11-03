@@ -132,20 +132,16 @@ class CentralWidget(QWidget):
                     start = top_center(self.itemAt(attrs["row"], attrs["col1"]))
                 else:
                     left_id, p, q = self.render_result.edge_opts[goal_id]
-                    if left_id > 0:
-                        left = self.render_result.graph[left_id]["col1"]
-                        left_widget = self.itemAt(attrs["row"], left)
-                        right_widget = self.itemAt(attrs["row"], left + 1)
-                        x1 = top_right(left_widget)
-                        if right_widget is not None:
-                            x2 = top_left(right_widget)
-                        else:
-                            x2 = x1 + QPoint(10 * q, 0)
-                    else:
-                        left_widget = self.itemAt(attrs["row"], -1)
-                        right_widget = self.itemAt(attrs["row"], 0)
-                        x1 = top_right(left_widget)
+                    left = (
+                        self.render_result.graph[left_id]["col1"] if left_id > 0 else -1
+                    )
+                    left_widget = self.itemAt(attrs["row"], left)
+                    right_widget = self.itemAt(attrs["row"], left + 1)
+                    x1 = top_right(left_widget)
+                    if right_widget is not None:
                         x2 = top_left(right_widget)
+                    else:
+                        x2 = x1 + QPoint(10 * q, 0)
                     start = x1 + (x2 - x1) / q * p
 
                     if goal_id not in edges:
@@ -159,20 +155,16 @@ class CentralWidget(QWidget):
                     )
                 else:
                     left_id, p, q = self.render_result.edge_opts[e_target]
-                    if left_id > 0:
-                        left = self.render_result.graph[left_id]["col1"]
-                        left_widget = self.itemAt(target_attrs["row"], left)
-                        right_widget = self.itemAt(target_attrs["row"], left + 1)
-                        x1 = bottom_right(left_widget)
-                        if right_widget is not None:
-                            x2 = bottom_left(right_widget)
-                        else:
-                            x2 = x1 + QPoint(10 * q, 0)
-                    else:
-                        left_widget = self.itemAt(target_attrs["row"], -1)
-                        right_widget = self.itemAt(target_attrs["row"], 0)
-                        x1 = bottom_right(left_widget)
+                    left = (
+                        self.render_result.graph[left_id]["col1"] if left_id > 0 else -1
+                    )
+                    left_widget = self.itemAt(target_attrs["row"], left)
+                    right_widget = self.itemAt(target_attrs["row"], left + 1)
+                    x1 = bottom_right(left_widget)
+                    if right_widget is not None:
                         x2 = bottom_left(right_widget)
+                    else:
+                        x2 = x1 + QPoint(10 * q, 0)
                     end = x1 + (x2 - x1) / q * p
 
                     if e_target not in edges:
