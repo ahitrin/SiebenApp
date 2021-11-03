@@ -177,13 +177,13 @@ class CentralWidget(QWidget):
                         edges[e_target]["style"] = max(edges[e_target]["style"], e_type)
                 lines[e_type].append((start, end))
 
+        for e in edges.values():
+            lines[e["style"]].append((e["bottom"], e["top"]))
+
         for edge_type in lines:
             painter.setPen(self.EDGE_PENS[edge_type])
             for start, end in lines[edge_type]:
                 painter.drawLine(start, end)
-        for e in edges.values():
-            painter.setPen(self.EDGE_PENS[e["style"]])
-            painter.drawLine(e["bottom"], e["top"])
 
 
 class SiebenApp(QMainWindow):
