@@ -72,14 +72,28 @@ class GoalWidget(QWidget, Ui_GoalBody):
         self._click_in_progress = False
 
 
+def top_left(w):
+    return w.geometry().topLeft()
+
+
+def top_right(w):
+    return w.geometry().topRight()
+
+
 def top_center(w):
-    rect = w.geometry()
-    return (rect.topLeft() + rect.topRight()) / 2
+    return (top_left(w) + top_right(w)) / 2
+
+
+def bottom_left(w):
+    return w.geometry().bottomLeft()
+
+
+def bottom_right(w):
+    return w.geometry().bottomRight()
 
 
 def bottom_center(w):
-    rect = w.geometry()
-    return (rect.bottomLeft() + rect.bottomRight()) / 2
+    return (bottom_left(w) + bottom_right(w)) / 2
 
 
 class CentralWidget(QWidget):
@@ -119,16 +133,14 @@ class CentralWidget(QWidget):
                         left_widget = self.itemAt(attrs["row"], left)
                         right_widget = self.itemAt(attrs["row"], left + 1)
                         if right_widget is not None:
-                            x1 = left_widget.geometry().topRight()
-                            x2 = right_widget.geometry().topLeft()
+                            x1 = top_right(left_widget)
+                            x2 = top_left(right_widget)
                             start = x1 + (x2 - x1) / q * p
                         else:
-                            start = left_widget.geometry().topRight() + QPoint(
-                                10 * p, 0
-                            )
+                            start = top_right(left_widget) + QPoint(10 * p, 0)
                     else:
                         right_widget = self.itemAt(attrs["row"], 0)
-                        x2 = right_widget.geometry().topLeft()
+                        x2 = top_left(right_widget)
                         x1 = QPoint(0, x2.y())
                         start = x1 + (x2 - x1) / q * p
                     if goal_id not in edges:
@@ -147,16 +159,14 @@ class CentralWidget(QWidget):
                         left_widget = self.itemAt(target_attrs["row"], left)
                         right_widget = self.itemAt(target_attrs["row"], left + 1)
                         if right_widget is not None:
-                            x1 = left_widget.geometry().bottomRight()
-                            x2 = right_widget.geometry().bottomLeft()
+                            x1 = bottom_right(left_widget)
+                            x2 = bottom_left(right_widget)
                             end = x1 + (x2 - x1) / q * p
                         else:
-                            end = left_widget.geometry().bottomRight() + QPoint(
-                                10 * p, 0
-                            )
+                            end = bottom_right(left_widget) + QPoint(10 * p, 0)
                     else:
                         right_widget = self.itemAt(target_attrs["row"], 0)
-                        x2 = right_widget.geometry().bottomLeft()
+                        x2 = bottom_left(right_widget)
                         x1 = QPoint(0, x2.y())
                         end = x1 + (x2 - x1) / q * p
                     if e_target not in edges:
