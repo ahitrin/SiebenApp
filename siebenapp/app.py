@@ -132,12 +132,12 @@ class CentralWidget(QWidget):
                         left = self.render_result.graph[left_id]["col1"]
                         left_widget = self.itemAt(attrs["row"], left)
                         right_widget = self.itemAt(attrs["row"], left + 1)
+                        x1 = top_right(left_widget)
                         if right_widget is not None:
-                            x1 = top_right(left_widget)
                             x2 = top_left(right_widget)
-                            start = x1 + (x2 - x1) / q * p
                         else:
-                            start = top_right(left_widget) + QPoint(10 * p, 0)
+                            x2 = x1 + QPoint(10 * q, 0)
+                        start = x1 + (x2 - x1) / q * p
                     else:
                         right_widget = self.itemAt(attrs["row"], 0)
                         x2 = top_left(right_widget)
@@ -158,12 +158,12 @@ class CentralWidget(QWidget):
                         left = self.render_result.graph[left_id]["col1"]
                         left_widget = self.itemAt(target_attrs["row"], left)
                         right_widget = self.itemAt(target_attrs["row"], left + 1)
+                        x1 = bottom_right(left_widget)
                         if right_widget is not None:
-                            x1 = bottom_right(left_widget)
                             x2 = bottom_left(right_widget)
-                            end = x1 + (x2 - x1) / q * p
                         else:
-                            end = bottom_right(left_widget) + QPoint(10 * p, 0)
+                            x2 = x1 + QPoint(10 * q, 0)
+                        end = x1 + (x2 - x1) / q * p
                     else:
                         right_widget = self.itemAt(target_attrs["row"], 0)
                         x2 = bottom_left(right_widget)
