@@ -138,12 +138,12 @@ class CentralWidget(QWidget):
                             x2 = top_left(right_widget)
                         else:
                             x2 = x1 + QPoint(10 * q, 0)
-                        start = x1 + (x2 - x1) / q * p
                     else:
                         right_widget = self.itemAt(attrs["row"], 0)
                         x2 = top_left(right_widget)
                         x1 = QPoint(0, x2.y())
-                        start = x1 + (x2 - x1) / q * p
+                    start = x1 + (x2 - x1) / q * p
+
                     if goal_id not in edges:
                         edges[goal_id] = {"bottom": start, "style": e_type}
                     else:
@@ -164,12 +164,12 @@ class CentralWidget(QWidget):
                             x2 = bottom_left(right_widget)
                         else:
                             x2 = x1 + QPoint(10 * q, 0)
-                        end = x1 + (x2 - x1) / q * p
                     else:
                         right_widget = self.itemAt(target_attrs["row"], 0)
                         x2 = bottom_left(right_widget)
                         x1 = QPoint(0, x2.y())
-                        end = x1 + (x2 - x1) / q * p
+                    end = x1 + (x2 - x1) / q * p
+
                     if e_target not in edges:
                         edges[e_target] = {"top": end, "style": e_type}
                     else:
