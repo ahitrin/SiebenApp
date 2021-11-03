@@ -100,6 +100,9 @@ class CentralWidget(QWidget):
     def setupData(self, render_result):
         self.render_result = render_result
 
+    def itemAt(self, row, col):
+        return self.layout().itemAtPosition(row, col)
+
     def paintEvent(self, event):
         painter = QPainter(self)
         edges = {}
@@ -108,17 +111,13 @@ class CentralWidget(QWidget):
             for e_target, e_type in attrs["edge"]:
                 target_attrs = self.render_result.graph[e_target]
                 if isinstance(goal_id, int):
-                    start = top_center(
-                        self.layout().itemAtPosition(attrs["row"], attrs["col1"])
-                    )
+                    start = top_center(self.itemAt(attrs["row"], attrs["col1"]))
                 else:
                     left_id, p, q = self.render_result.edge_opts[goal_id]
                     if left_id > 0:
                         left = self.render_result.graph[left_id]["col1"]
-                        left_widget = self.layout().itemAtPosition(attrs["row"], left)
-                        right_widget = self.layout().itemAtPosition(
-                            attrs["row"], left + 1
-                        )
+                        left_widget = self.itemAt(attrs["row"], left)
+                        right_widget = self.itemAt(attrs["row"], left + 1)
                         if right_widget is not None:
                             x1 = left_widget.geometry().topRight()
                             x2 = right_widget.geometry().topLeft()
@@ -128,7 +127,7 @@ class CentralWidget(QWidget):
                                 10 * p, 0
                             )
                     else:
-                        right_widget = self.layout().itemAtPosition(attrs["row"], 0)
+                        right_widget = self.itemAt(attrs["row"], 0)
                         x2 = right_widget.geometry().topLeft()
                         x1 = QPoint(0, x2.y())
                         start = x1 + (x2 - x1) / q * p
@@ -139,20 +138,14 @@ class CentralWidget(QWidget):
                         edges[goal_id]["style"] = max(edges[goal_id]["style"], e_type)
                 if isinstance(e_target, int):
                     end = bottom_center(
-                        self.layout().itemAtPosition(
-                            target_attrs["row"], target_attrs["col1"]
-                        )
+                        self.itemAt(target_attrs["row"], target_attrs["col1"])
                     )
                 else:
                     left_id, p, q = self.render_result.edge_opts[e_target]
                     if left_id > 0:
                         left = self.render_result.graph[left_id]["col1"]
-                        left_widget = self.layout().itemAtPosition(
-                            target_attrs["row"], left
-                        )
-                        right_widget = self.layout().itemAtPosition(
-                            target_attrs["row"], left + 1
-                        )
+                        left_widget = self.itemAt(target_attrs["row"], left)
+                        right_widget = self.itemAt(target_attrs["row"], left + 1)
                         if right_widget is not None:
                             x1 = left_widget.geometry().bottomRight()
                             x2 = right_widget.geometry().bottomLeft()
@@ -162,9 +155,7 @@ class CentralWidget(QWidget):
                                 10 * p, 0
                             )
                     else:
-                        right_widget = self.layout().itemAtPosition(
-                            target_attrs["row"], 0
-                        )
+                        right_widget = self.itemAt(target_attrs["row"], 0)
                         x2 = right_widget.geometry().bottomLeft()
                         x1 = QPoint(0, x2.y())
                         end = x1 + (x2 - x1) / q * p
