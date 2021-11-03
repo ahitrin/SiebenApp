@@ -73,11 +73,11 @@ class GoalWidget(QWidget, Ui_GoalBody):
 
 
 def top_left(w):
-    return w.geometry().topLeft()
+    return w.topLeft() if isinstance(w, QRect) else w.geometry().topLeft()
 
 
 def top_right(w):
-    return w.geometry().topRight()
+    return w.topRight() if isinstance(w, QRect) else w.geometry().topRight()
 
 
 def top_center(w):
@@ -85,11 +85,11 @@ def top_center(w):
 
 
 def bottom_left(w):
-    return w.geometry().bottomLeft()
+    return w.bottomLeft() if isinstance(w, QRect) else w.geometry().bottomLeft()
 
 
 def bottom_right(w):
-    return w.geometry().bottomRight()
+    return w.bottomRight() if isinstance(w, QRect) else w.geometry().bottomRight()
 
 
 def bottom_center(w):
@@ -115,6 +115,9 @@ class CentralWidget(QWidget):
         self.render_result = render_result
 
     def itemAt(self, row, col):
+        if col < 0:
+            g = self.itemAt(row, 0).geometry()
+            return QRect(0, g.topLeft().y(), 0, g.height())
         return self.layout().itemAtPosition(row, col)
 
     def paintEvent(self, event):
@@ -139,9 +142,10 @@ class CentralWidget(QWidget):
                         else:
                             x2 = x1 + QPoint(10 * q, 0)
                     else:
+                        left_widget = self.itemAt(attrs["row"], -1)
                         right_widget = self.itemAt(attrs["row"], 0)
+                        x1 = top_right(left_widget)
                         x2 = top_left(right_widget)
-                        x1 = QPoint(0, x2.y())
                     start = x1 + (x2 - x1) / q * p
 
                     if goal_id not in edges:
@@ -165,9 +169,10 @@ class CentralWidget(QWidget):
                         else:
                             x2 = x1 + QPoint(10 * q, 0)
                     else:
+                        left_widget = self.itemAt(target_attrs["row"], -1)
                         right_widget = self.itemAt(target_attrs["row"], 0)
+                        x1 = bottom_right(left_widget)
                         x2 = bottom_left(right_widget)
-                        x1 = QPoint(0, x2.y())
                     end = x1 + (x2 - x1) / q * p
 
                     if e_target not in edges:
