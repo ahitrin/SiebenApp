@@ -120,6 +120,7 @@ class CentralWidget(QWidget):
     def paintEvent(self, event):
         painter = QPainter(self)
         edges = {}
+        lines = {EdgeType.BLOCKER: [], EdgeType.PARENT: []}
 
         for goal_id, attrs in self.render_result.graph.items():
             for e_target, e_type in attrs["edge"]:
@@ -174,9 +175,12 @@ class CentralWidget(QWidget):
                     else:
                         edges[e_target]["top"] = end
                         edges[e_target]["style"] = max(edges[e_target]["style"], e_type)
-                painter.setPen(self.EDGE_PENS[e_type])
-                painter.drawLine(start, end)
+                lines[e_type].append((start, end))
 
+        for edge_type in lines:
+            painter.setPen(self.EDGE_PENS[edge_type])
+            for start, end in lines[edge_type]:
+                painter.drawLine(start, end)
         for e in edges.values():
             painter.setPen(self.EDGE_PENS[e["style"]])
             painter.drawLine(e["bottom"], e["top"])
