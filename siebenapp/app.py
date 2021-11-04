@@ -29,7 +29,7 @@ from siebenapp.domain import (
 )
 from siebenapp.switchable_view import ToggleSwitchableView
 from siebenapp.open_view import ToggleOpenView
-from siebenapp.render import Renderer, RenderResult
+from siebenapp.render import Renderer, RenderResult, GeometryProvider
 from siebenapp.system import save, load, split_long
 from siebenapp.ui.goalwidget import Ui_GoalBody  # type: ignore
 from siebenapp.zoom import ToggleZoom
@@ -78,6 +78,8 @@ def middle_point(left, right, numerator, denominator):
 
 
 class CentralWidget(QWidget):
+    __metaclass__ = GeometryProvider
+
     EDGE_PENS = {
         EdgeType.BLOCKER: QPen(Qt.black, 1, Qt.DashLine),  # type: ignore
         EdgeType.PARENT: QPen(Qt.black, 1, Qt.SolidLine),  # type: ignore
@@ -128,7 +130,7 @@ class CentralWidget(QWidget):
         return (self.bottom_left(row, col) + self.bottom_right(row, col)) / 2
 
     def render_lines(
-        self, render_result: RenderResult
+        self, gp: GeometryProvider, render_result: RenderResult
     ) -> Dict[EdgeType, List[Tuple[int, int]]]:
         edges = {}
         lines: Dict[EdgeType, List[Tuple[int, int]]] = {
@@ -176,7 +178,7 @@ class CentralWidget(QWidget):
 
     def paintEvent(self, event):
         painter = QPainter(self)
-        lines = self.render_lines(self.render_result)
+        lines = self.render_lines(self, self.render_result)
 
         for edge_type in lines:
             painter.setPen(self.EDGE_PENS[edge_type])
