@@ -124,8 +124,7 @@ class CentralWidget(QWidget):
         g = self.itemAt(row, col - 1).geometry()
         return QRect(g.topRight().x() + 100, g.topRight().y(), 0, g.height())
 
-    def paintEvent(self, event):
-        painter = QPainter(self)
+    def render_lines(self):
         edges = {}
         lines = {EdgeType.BLOCKER: [], EdgeType.PARENT: []}
 
@@ -174,6 +173,12 @@ class CentralWidget(QWidget):
 
         for e in edges.values():
             lines[e["style"]].append((e["bottom"], e["top"]))
+
+        return lines
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        lines = self.render_lines()
 
         for edge_type in lines:
             painter.setPen(self.EDGE_PENS[edge_type])
