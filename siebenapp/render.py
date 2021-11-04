@@ -26,9 +26,6 @@ class GeometryProvider(Protocol):
     def top_right(self, row, col):
         raise NotImplementedError
 
-    def top_center(self, row, col):
-        raise NotImplementedError
-
     def bottom_left(self, row, col):
         raise NotImplementedError
 
@@ -256,7 +253,10 @@ def render_lines(
         for e_target, e_type in attrs["edge"]:
             target_attrs = render_result.graph[e_target]
             if isinstance(goal_id, int):
-                start = gp.top_center(attrs["row"], attrs["col1"])
+                row, col1 = attrs["row"], attrs["col1"]
+                start = middle_point(
+                    gp.top_left(row, col1), gp.top_right(row, col1), 1, 2
+                )
             else:
                 left_id, p, q = render_result.edge_opts[goal_id]
                 left = render_result.graph[left_id]["col1"] if left_id > 0 else -1

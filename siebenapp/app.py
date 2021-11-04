@@ -110,9 +110,6 @@ class CentralWidget(QWidget):
         w = self.itemAt(row, col)
         return w.topRight() if isinstance(w, QRect) else w.geometry().topRight()
 
-    def top_center(self, row, col):
-        return (self.top_left(row, col) + self.top_right(row, col)) / 2
-
     def bottom_left(self, row, col):
         w = self.itemAt(row, col)
         return w.bottomLeft() if isinstance(w, QRect) else w.geometry().bottomLeft()
