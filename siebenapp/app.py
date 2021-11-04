@@ -114,7 +114,6 @@ class CentralWidget(QWidget):
         return w.topRight() if isinstance(w, QRect) else w.geometry().topRight()
 
     def top_center(self, row, col):
-        w = self.itemAt(row, col)
         return (self.top_left(row, col) + self.top_right(row, col)) / 2
 
     def bottom_left(self, row, col):
@@ -126,7 +125,6 @@ class CentralWidget(QWidget):
         return w.bottomRight() if isinstance(w, QRect) else w.geometry().bottomRight()
 
     def bottom_center(self, row, col):
-        w = self.itemAt(row, col)
         return (self.bottom_left(row, col) + self.bottom_right(row, col)) / 2
 
     def render_lines(
