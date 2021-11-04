@@ -234,7 +234,7 @@ def goal_key(tup: Tuple[GoalId, int]) -> Tuple[int, int]:
 
 
 def middle_point(left, right, numerator, denominator):
-    return left + numerator * (right - left) / denominator
+    return left + (right - left) * numerator / denominator
 
 
 def render_lines(
