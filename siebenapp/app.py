@@ -29,7 +29,7 @@ from siebenapp.domain import (
 )
 from siebenapp.switchable_view import ToggleSwitchableView
 from siebenapp.open_view import ToggleOpenView
-from siebenapp.render import Renderer, RenderResult, GeometryProvider
+from siebenapp.render import Renderer, RenderResult
 from siebenapp.system import save, load, split_long
 from siebenapp.ui.goalwidget import Ui_GoalBody  # type: ignore
 from siebenapp.zoom import ToggleZoom
@@ -77,7 +77,7 @@ def middle_point(left, right, numerator, denominator):
     return left + numerator * (right - left) / denominator
 
 
-class CentralWidget(QWidget, GeometryProvider):
+class CentralWidget(QWidget):
     EDGE_PENS = {
         EdgeType.BLOCKER: QPen(Qt.black, 1, Qt.DashLine),  # type: ignore
         EdgeType.PARENT: QPen(Qt.black, 1, Qt.SolidLine),  # type: ignore
