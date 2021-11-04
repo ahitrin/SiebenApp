@@ -118,9 +118,6 @@ class CentralWidget(QWidget):
         w = self.itemAt(row, col)
         return w.bottomRight() if isinstance(w, QRect) else w.geometry().bottomRight()
 
-    def bottom_center(self, row, col):
-        return (self.bottom_left(row, col) + self.bottom_right(row, col)) / 2
-
     def paintEvent(self, event):
         painter = QPainter(self)
         lines = render_lines(self, self.render_result)

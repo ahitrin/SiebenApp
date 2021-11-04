@@ -32,9 +32,6 @@ class GeometryProvider(Protocol):
     def bottom_right(self, row, col):
         raise NotImplementedError
 
-    def bottom_center(self, row, col):
-        raise NotImplementedError
-
 
 def safe_average(items: List[int]) -> int:
     return int(sum(items) / len(items)) if items else 0
@@ -270,7 +267,10 @@ def render_lines(
                     edges[goal_id]["bottom"] = start
                     edges[goal_id]["style"] = max(edges[goal_id]["style"], e_type)
             if isinstance(e_target, int):
-                end = gp.bottom_center(target_attrs["row"], target_attrs["col1"])
+                row, col1 = target_attrs["row"], target_attrs["col1"]
+                end = middle_point(
+                    gp.bottom_left(row, col1), gp.bottom_right(row, col1), 1, 2
+                )
             else:
                 left_id, p, q = render_result.edge_opts[e_target]
                 left = render_result.graph[left_id]["col1"] if left_id > 0 else -1
