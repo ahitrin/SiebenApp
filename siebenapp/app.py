@@ -104,23 +104,29 @@ class CentralWidget(QWidget):
         g = self.itemAt(row, col - 1).geometry()
         return QRect(g.topRight().x() + 100, g.topRight().y(), 0, g.height())
 
-    def top_left(self, w):
+    def top_left(self, row, col):
+        w = self.itemAt(row, col)
         return w.topLeft() if isinstance(w, QRect) else w.geometry().topLeft()
 
-    def top_right(self, w):
+    def top_right(self, row, col):
+        w = self.itemAt(row, col)
         return w.topRight() if isinstance(w, QRect) else w.geometry().topRight()
 
-    def top_center(self, w):
-        return (self.top_left(w) + self.top_right(w)) / 2
+    def top_center(self, row, col):
+        w = self.itemAt(row, col)
+        return (self.top_left(row, col) + self.top_right(row, col)) / 2
 
-    def bottom_left(self, w):
+    def bottom_left(self, row, col):
+        w = self.itemAt(row, col)
         return w.bottomLeft() if isinstance(w, QRect) else w.geometry().bottomLeft()
 
-    def bottom_right(self, w):
+    def bottom_right(self, row, col):
+        w = self.itemAt(row, col)
         return w.bottomRight() if isinstance(w, QRect) else w.geometry().bottomRight()
 
-    def bottom_center(self, w):
-        return (self.bottom_left(w) + self.bottom_right(w)) / 2
+    def bottom_center(self, row, col):
+        w = self.itemAt(row, col)
+        return (self.bottom_left(row, col) + self.bottom_right(row, col)) / 2
 
     def render_lines(self, render_result: RenderResult):
         edges = {}
@@ -130,12 +136,12 @@ class CentralWidget(QWidget):
             for e_target, e_type in attrs["edge"]:
                 target_attrs = render_result.graph[e_target]
                 if isinstance(goal_id, int):
-                    start = self.top_center(self.itemAt(attrs["row"], attrs["col1"]))
+                    start = self.top_center(attrs["row"], attrs["col1"])
                 else:
                     left_id, p, q = render_result.edge_opts[goal_id]
                     left = render_result.graph[left_id]["col1"] if left_id > 0 else -1
-                    x1 = self.top_right(self.itemAt(attrs["row"], left))
-                    x2 = self.top_left(self.itemAt(attrs["row"], left + 1))
+                    x1 = self.top_right(attrs["row"], left)
+                    x2 = self.top_left(attrs["row"], left + 1)
                     start = middle_point(x1, x2, p, q)
 
                     if goal_id not in edges:
@@ -144,14 +150,12 @@ class CentralWidget(QWidget):
                         edges[goal_id]["bottom"] = start
                         edges[goal_id]["style"] = max(edges[goal_id]["style"], e_type)
                 if isinstance(e_target, int):
-                    end = self.bottom_center(
-                        self.itemAt(target_attrs["row"], target_attrs["col1"])
-                    )
+                    end = self.bottom_center(target_attrs["row"], target_attrs["col1"])
                 else:
                     left_id, p, q = render_result.edge_opts[e_target]
                     left = render_result.graph[left_id]["col1"] if left_id > 0 else -1
-                    x1 = self.bottom_right(self.itemAt(target_attrs["row"], left))
-                    x2 = self.bottom_left(self.itemAt(target_attrs["row"], left + 1))
+                    x1 = self.bottom_right(target_attrs["row"], left)
+                    x2 = self.bottom_left(target_attrs["row"], left + 1)
                     end = middle_point(x1, x2, p, q)
 
                     if e_target not in edges:
