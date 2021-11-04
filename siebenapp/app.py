@@ -118,7 +118,11 @@ class CentralWidget(QWidget):
         if col < 0:
             g = self.itemAt(row, 0).geometry()
             return QRect(0, g.topLeft().y(), 0, g.height())
-        return self.layout().itemAtPosition(row, col)
+        item = self.layout().itemAtPosition(row, col)
+        if item is not None:
+            return item
+        g = self.itemAt(row, col - 1).geometry()
+        return QRect(g.topRight().x() + 100, g.topRight().y(), 0, g.height())
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -138,10 +142,7 @@ class CentralWidget(QWidget):
                     left_widget = self.itemAt(attrs["row"], left)
                     right_widget = self.itemAt(attrs["row"], left + 1)
                     x1 = top_right(left_widget)
-                    if right_widget is not None:
-                        x2 = top_left(right_widget)
-                    else:
-                        x2 = x1 + QPoint(10 * q, 0)
+                    x2 = top_left(right_widget)
                     start = x1 + (x2 - x1) / q * p
 
                     if goal_id not in edges:
@@ -161,10 +162,7 @@ class CentralWidget(QWidget):
                     left_widget = self.itemAt(target_attrs["row"], left)
                     right_widget = self.itemAt(target_attrs["row"], left + 1)
                     x1 = bottom_right(left_widget)
-                    if right_widget is not None:
-                        x2 = bottom_left(right_widget)
-                    else:
-                        x2 = x1 + QPoint(10 * q, 0)
+                    x2 = bottom_left(right_widget)
                     end = x1 + (x2 - x1) / q * p
 
                     if e_target not in edges:
