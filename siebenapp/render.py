@@ -20,7 +20,23 @@ class RenderResult:
 
 
 class GeometryProvider(Protocol):
-    pass
+    def top_left(self, row, col):
+        pass
+
+    def top_right(self, row, col):
+        pass
+
+    def top_center(self, row, col):
+        pass
+
+    def bottom_left(self, row, col):
+        pass
+
+    def bottom_right(self, row, col):
+        pass
+
+    def bottom_center(self, row, col):
+        pass
 
 
 def safe_average(items: List[int]) -> int:
