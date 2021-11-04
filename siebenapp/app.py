@@ -3,6 +3,7 @@
 import sys
 from argparse import ArgumentParser
 from os.path import dirname, join, realpath
+from typing import Dict, List, Tuple
 
 from PyQt5.QtCore import pyqtSignal, Qt, QRect, QPoint  # type: ignore
 from PyQt5.QtGui import QPainter, QPen  # type: ignore
@@ -128,9 +129,14 @@ class CentralWidget(QWidget, GeometryProvider):
         w = self.itemAt(row, col)
         return (self.bottom_left(row, col) + self.bottom_right(row, col)) / 2
 
-    def render_lines(self, render_result: RenderResult):
+    def render_lines(
+        self, render_result: RenderResult
+    ) -> Dict[EdgeType, List[Tuple[int, int]]]:
         edges = {}
-        lines = {EdgeType.BLOCKER: [], EdgeType.PARENT: []}
+        lines: Dict[EdgeType, List[Tuple[int, int]]] = {
+            EdgeType.BLOCKER: [],
+            EdgeType.PARENT: [],
+        }
 
         for goal_id, attrs in render_result.graph.items():
             for e_target, e_type in attrs["edge"]:
