@@ -21,22 +21,22 @@ class RenderResult:
 
 class GeometryProvider(Protocol):
     def top_left(self, row, col):
-        pass
+        raise NotImplementedError
 
     def top_right(self, row, col):
-        pass
+        raise NotImplementedError
 
     def top_center(self, row, col):
-        pass
+        raise NotImplementedError
 
     def bottom_left(self, row, col):
-        pass
+        raise NotImplementedError
 
     def bottom_right(self, row, col):
-        pass
+        raise NotImplementedError
 
     def bottom_center(self, row, col):
-        pass
+        raise NotImplementedError
 
 
 def safe_average(items: List[int]) -> int:
