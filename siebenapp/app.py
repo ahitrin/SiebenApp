@@ -138,10 +138,8 @@ class CentralWidget(QWidget):
                     left = (
                         self.render_result.graph[left_id]["col1"] if left_id > 0 else -1
                     )
-                    left_widget = self.itemAt(attrs["row"], left)
-                    right_widget = self.itemAt(attrs["row"], left + 1)
-                    x1 = top_right(left_widget)
-                    x2 = top_left(right_widget)
+                    x1 = top_right(self.itemAt(attrs["row"], left))
+                    x2 = top_left(self.itemAt(attrs["row"], left + 1))
                     start = x1 + (x2 - x1) / q * p
 
                     if goal_id not in edges:
@@ -158,10 +156,8 @@ class CentralWidget(QWidget):
                     left = (
                         self.render_result.graph[left_id]["col1"] if left_id > 0 else -1
                     )
-                    left_widget = self.itemAt(target_attrs["row"], left)
-                    right_widget = self.itemAt(target_attrs["row"], left + 1)
-                    x1 = bottom_right(left_widget)
-                    x2 = bottom_left(right_widget)
+                    x1 = bottom_right(self.itemAt(target_attrs["row"], left))
+                    x2 = bottom_left(self.itemAt(target_attrs["row"], left + 1))
                     end = x1 + (x2 - x1) / q * p
 
                     if e_target not in edges:
