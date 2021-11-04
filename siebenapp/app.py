@@ -28,7 +28,7 @@ from siebenapp.domain import (
 )
 from siebenapp.switchable_view import ToggleSwitchableView
 from siebenapp.open_view import ToggleOpenView
-from siebenapp.render import Renderer
+from siebenapp.render import Renderer, RenderResult
 from siebenapp.system import save, load, split_long
 from siebenapp.ui.goalwidget import Ui_GoalBody  # type: ignore
 from siebenapp.zoom import ToggleZoom
@@ -128,20 +128,18 @@ class CentralWidget(QWidget):
         g = self.itemAt(row, col - 1).geometry()
         return QRect(g.topRight().x() + 100, g.topRight().y(), 0, g.height())
 
-    def render_lines(self):
+    def render_lines(self, render_result: RenderResult):
         edges = {}
         lines = {EdgeType.BLOCKER: [], EdgeType.PARENT: []}
 
-        for goal_id, attrs in self.render_result.graph.items():
+        for goal_id, attrs in render_result.graph.items():
             for e_target, e_type in attrs["edge"]:
-                target_attrs = self.render_result.graph[e_target]
+                target_attrs = render_result.graph[e_target]
                 if isinstance(goal_id, int):
                     start = top_center(self.itemAt(attrs["row"], attrs["col1"]))
                 else:
-                    left_id, p, q = self.render_result.edge_opts[goal_id]
-                    left = (
-                        self.render_result.graph[left_id]["col1"] if left_id > 0 else -1
-                    )
+                    left_id, p, q = render_result.edge_opts[goal_id]
+                    left = render_result.graph[left_id]["col1"] if left_id > 0 else -1
                     x1 = top_right(self.itemAt(attrs["row"], left))
                     x2 = top_left(self.itemAt(attrs["row"], left + 1))
                     start = middle_point(x1, x2, p, q)
@@ -156,10 +154,8 @@ class CentralWidget(QWidget):
                         self.itemAt(target_attrs["row"], target_attrs["col1"])
                     )
                 else:
-                    left_id, p, q = self.render_result.edge_opts[e_target]
-                    left = (
-                        self.render_result.graph[left_id]["col1"] if left_id > 0 else -1
-                    )
+                    left_id, p, q = render_result.edge_opts[e_target]
+                    left = render_result.graph[left_id]["col1"] if left_id > 0 else -1
                     x1 = bottom_right(self.itemAt(target_attrs["row"], left))
                     x2 = bottom_left(self.itemAt(target_attrs["row"], left + 1))
                     end = middle_point(x1, x2, p, q)
@@ -178,7 +174,7 @@ class CentralWidget(QWidget):
 
     def paintEvent(self, event):
         painter = QPainter(self)
-        lines = self.render_lines()
+        lines = self.render_lines(self.render_result)
 
         for edge_type in lines:
             painter.setPen(self.EDGE_PENS[edge_type])
