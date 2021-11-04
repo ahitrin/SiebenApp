@@ -96,6 +96,10 @@ def bottom_center(w):
     return (bottom_left(w) + bottom_right(w)) / 2
 
 
+def middle_point(left, right, numerator, denominator):
+    return left + numerator * (right - left) / denominator
+
+
 class CentralWidget(QWidget):
     EDGE_PENS = {
         EdgeType.BLOCKER: QPen(Qt.black, 1, Qt.DashLine),  # type: ignore
@@ -140,7 +144,7 @@ class CentralWidget(QWidget):
                     )
                     x1 = top_right(self.itemAt(attrs["row"], left))
                     x2 = top_left(self.itemAt(attrs["row"], left + 1))
-                    start = x1 + (x2 - x1) / q * p
+                    start = middle_point(x1, x2, p, q)
 
                     if goal_id not in edges:
                         edges[goal_id] = {"bottom": start, "style": e_type}
@@ -158,7 +162,7 @@ class CentralWidget(QWidget):
                     )
                     x1 = bottom_right(self.itemAt(target_attrs["row"], left))
                     x2 = bottom_left(self.itemAt(target_attrs["row"], left + 1))
-                    end = x1 + (x2 - x1) / q * p
+                    end = middle_point(x1, x2, p, q)
 
                     if e_target not in edges:
                         edges[e_target] = {"top": end, "style": e_type}
