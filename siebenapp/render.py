@@ -1,6 +1,6 @@
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Dict, List, Tuple, Union, Any, Set, Optional
+from typing import Dict, List, Tuple, Union, Any, Set, Optional, Protocol
 
 from siebenapp.domain import Graph, EdgeType
 
@@ -17,6 +17,10 @@ Layer = List[Optional[GoalId]]
 class RenderResult:
     graph: Dict[GoalId, Any]
     edge_opts: Dict[str, Tuple[int, int, int]]
+
+
+class GeometryProvider(Protocol):
+    pass
 
 
 def safe_average(items: List[int]) -> int:
