@@ -237,3 +237,55 @@ def goal_key(tup: Tuple[GoalId, int]) -> Tuple[int, int]:
     if isinstance(goal_id, str):
         return goal_pos, int(goal_id.split("_")[0])
     return goal_pos, goal_id
+
+
+def middle_point(left, right, numerator, denominator):
+    return left + numerator * (right - left) / denominator
+
+
+def render_lines(
+    gp: GeometryProvider, render_result: RenderResult
+) -> Dict[EdgeType, List[Tuple[int, int]]]:
+    edges = {}
+    lines: Dict[EdgeType, List[Tuple[int, int]]] = {
+        EdgeType.BLOCKER: [],
+        EdgeType.PARENT: [],
+    }
+
+    for goal_id, attrs in render_result.graph.items():
+        for e_target, e_type in attrs["edge"]:
+            target_attrs = render_result.graph[e_target]
+            if isinstance(goal_id, int):
+                start = gp.top_center(attrs["row"], attrs["col1"])
+            else:
+                left_id, p, q = render_result.edge_opts[goal_id]
+                left = render_result.graph[left_id]["col1"] if left_id > 0 else -1
+                x1 = gp.top_right(attrs["row"], left)
+                x2 = gp.top_left(attrs["row"], left + 1)
+                start = middle_point(x1, x2, p, q)
+
+                if goal_id not in edges:
+                    edges[goal_id] = {"bottom": start, "style": e_type}
+                else:
+                    edges[goal_id]["bottom"] = start
+                    edges[goal_id]["style"] = max(edges[goal_id]["style"], e_type)
+            if isinstance(e_target, int):
+                end = gp.bottom_center(target_attrs["row"], target_attrs["col1"])
+            else:
+                left_id, p, q = render_result.edge_opts[e_target]
+                left = render_result.graph[left_id]["col1"] if left_id > 0 else -1
+                x1 = gp.bottom_right(target_attrs["row"], left)
+                x2 = gp.bottom_left(target_attrs["row"], left + 1)
+                end = middle_point(x1, x2, p, q)
+
+                if e_target not in edges:
+                    edges[e_target] = {"top": end, "style": e_type}
+                else:
+                    edges[e_target]["top"] = end
+                    edges[e_target]["style"] = max(edges[e_target]["style"], e_type)
+            lines[e_type].append((start, end))
+
+    for e in edges.values():
+        lines[e["style"]].append((e["bottom"], e["top"]))
+
+    return lines

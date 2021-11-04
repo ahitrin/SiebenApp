@@ -3,7 +3,6 @@
 import sys
 from argparse import ArgumentParser
 from os.path import dirname, join, realpath
-from typing import Dict, List, Tuple
 
 from PyQt5.QtCore import pyqtSignal, Qt, QRect, QPoint  # type: ignore
 from PyQt5.QtGui import QPainter, QPen  # type: ignore
@@ -29,7 +28,7 @@ from siebenapp.domain import (
 )
 from siebenapp.switchable_view import ToggleSwitchableView
 from siebenapp.open_view import ToggleOpenView
-from siebenapp.render import Renderer, RenderResult, GeometryProvider
+from siebenapp.render import Renderer, GeometryProvider, render_lines
 from siebenapp.system import save, load, split_long
 from siebenapp.ui.goalwidget import Ui_GoalBody  # type: ignore
 from siebenapp.zoom import ToggleZoom
@@ -71,10 +70,6 @@ class GoalWidget(QWidget, Ui_GoalBody):
         if self._click_in_progress:
             self.clicked.emit()
         self._click_in_progress = False
-
-
-def middle_point(left, right, numerator, denominator):
-    return left + numerator * (right - left) / denominator
 
 
 class CentralWidget(QWidget):
@@ -129,56 +124,9 @@ class CentralWidget(QWidget):
     def bottom_center(self, row, col):
         return (self.bottom_left(row, col) + self.bottom_right(row, col)) / 2
 
-    def render_lines(
-        self, gp: GeometryProvider, render_result: RenderResult
-    ) -> Dict[EdgeType, List[Tuple[int, int]]]:
-        edges = {}
-        lines: Dict[EdgeType, List[Tuple[int, int]]] = {
-            EdgeType.BLOCKER: [],
-            EdgeType.PARENT: [],
-        }
-
-        for goal_id, attrs in render_result.graph.items():
-            for e_target, e_type in attrs["edge"]:
-                target_attrs = render_result.graph[e_target]
-                if isinstance(goal_id, int):
-                    start = gp.top_center(attrs["row"], attrs["col1"])
-                else:
-                    left_id, p, q = render_result.edge_opts[goal_id]
-                    left = render_result.graph[left_id]["col1"] if left_id > 0 else -1
-                    x1 = gp.top_right(attrs["row"], left)
-                    x2 = gp.top_left(attrs["row"], left + 1)
-                    start = middle_point(x1, x2, p, q)
-
-                    if goal_id not in edges:
-                        edges[goal_id] = {"bottom": start, "style": e_type}
-                    else:
-                        edges[goal_id]["bottom"] = start
-                        edges[goal_id]["style"] = max(edges[goal_id]["style"], e_type)
-                if isinstance(e_target, int):
-                    end = gp.bottom_center(target_attrs["row"], target_attrs["col1"])
-                else:
-                    left_id, p, q = render_result.edge_opts[e_target]
-                    left = render_result.graph[left_id]["col1"] if left_id > 0 else -1
-                    x1 = gp.bottom_right(target_attrs["row"], left)
-                    x2 = gp.bottom_left(target_attrs["row"], left + 1)
-                    end = middle_point(x1, x2, p, q)
-
-                    if e_target not in edges:
-                        edges[e_target] = {"top": end, "style": e_type}
-                    else:
-                        edges[e_target]["top"] = end
-                        edges[e_target]["style"] = max(edges[e_target]["style"], e_type)
-                lines[e_type].append((start, end))
-
-        for e in edges.values():
-            lines[e["style"]].append((e["bottom"], e["top"]))
-
-        return lines
-
     def paintEvent(self, event):
         painter = QPainter(self)
-        lines = self.render_lines(self, self.render_result)
+        lines = render_lines(self, self.render_result)
 
         for edge_type in lines:
             painter.setPen(self.EDGE_PENS[edge_type])
