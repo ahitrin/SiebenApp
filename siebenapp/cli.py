@@ -1,6 +1,8 @@
 import sys
 from argparse import ArgumentParser
+from operator import itemgetter
 
+from siebenapp.render import Renderer
 from siebenapp.domain import (
     ToggleClose,
     Delete,
@@ -92,8 +94,20 @@ def build_actions(command):
 def loop(io: IO, goals: Graph, db_name: str):
     cmd = ""
     while cmd != "q":
-        x = goals.q("name,edge,open,select,switchable")
-        for goal_id, goal_vars in x.items():
+        render_result = Renderer(goals).build()
+        rows = render_result.graph
+        index = sorted(
+            [
+                (goal_id, goal_vars["row"], goal_vars["col"])
+                for goal_id, goal_vars in rows.items()
+                if isinstance(goal_id, int)
+            ],
+            key=itemgetter(1, 2),
+            reverse=True,
+        )
+        for item in index:
+            goal_id = item[0]
+            goal_vars = rows[goal_id]
             io.write(fmt(goal_id, goal_vars))
         if USER_MESSAGE:
             io.write(USER_MESSAGE)
