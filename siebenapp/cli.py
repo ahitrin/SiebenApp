@@ -94,7 +94,7 @@ def build_actions(command):
 def loop(io: IO, goals: Graph, db_name: str):
     cmd = ""
     while cmd != "q":
-        render_result = Renderer(goals).build()
+        render_result = Renderer(goals, 100).build()
         rows = render_result.graph
         index = sorted(
             [

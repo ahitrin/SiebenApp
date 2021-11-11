@@ -3,7 +3,7 @@ import pytest
 from siebenapp.enumeration import Enumeration
 from siebenapp.switchable_view import ToggleSwitchableView, SwitchableView
 from siebenapp.domain import EdgeType
-from siebenapp.render import Renderer, place
+from siebenapp.render import Renderer
 from siebenapp.tests.dsl import build_goaltree, open_, selected
 
 
@@ -182,4 +182,7 @@ def test_render_in_switchable_view():
     ],
 )
 def test_place(before, after):
-    assert after == place(before)
+    r = Renderer(build_goaltree(open_(1, "Root", select=selected)), 4)
+    # NB: do we still need to test internal implementation of Renderer?
+    # Not sure
+    assert after == r.place(before)

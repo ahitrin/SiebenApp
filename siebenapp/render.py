@@ -40,7 +40,8 @@ def safe_average(items: List[int]) -> int:
 class Renderer:
     WIDTH_LIMIT = 4
 
-    def __init__(self, goals: Graph) -> None:
+    def __init__(self, goals: Graph, width_limit=WIDTH_LIMIT) -> None:
+        self.width_limit = width_limit
         original_graph: Dict[int, Any] = goals.q(
             keys="name,edge,open,select,switchable"
         )
@@ -82,8 +83,8 @@ class Renderer:
                     k for k, vs in self.edges.items() if goal in vs
                 ]
                 outgoing_edges.extend(iter(back_edges))
-                if (len(new_layer) >= self.WIDTH_LIMIT and edges_len < 1) or (
-                    len(outgoing_edges) >= self.WIDTH_LIMIT
+                if (len(new_layer) >= self.width_limit and edges_len < 1) or (
+                    len(outgoing_edges) >= self.width_limit
                 ):
                     break
             incoming_edges = incoming_edges.difference(set(new_layer))
@@ -137,7 +138,7 @@ class Renderer:
                 if g is not None
             }
 
-            placed_line: Layer = place(new_positions)
+            placed_line: Layer = self.place(new_positions)
             self.positions.update(
                 {g: idx for idx, g in enumerate(placed_line) if g is not None}
             )
@@ -208,21 +209,20 @@ class Renderer:
             {e: (left, i + 1, len(edges) + 1) for i, e in enumerate(edges)}
         )
 
-
-def place(source: Dict[GoalId, int]) -> Layer:
-    result: Layer = []
-    unplaced: List[Tuple[GoalId, int]] = sorted(list(source.items()), key=goal_key)
-    while unplaced:
-        value, index = unplaced.pop(0)
-        if len(result) < index + 1:
-            result.extend([None] * (index + 1 - len(result)))
-        if result[index] is None:
-            result[index] = value
-        else:
-            unplaced.insert(0, (value, index + 1))
-    while len(result) > Renderer.WIDTH_LIMIT and None in result:
-        result.remove(None)
-    return result
+    def place(self, source: Dict[GoalId, int]) -> Layer:
+        result: Layer = []
+        unplaced: List[Tuple[GoalId, int]] = sorted(list(source.items()), key=goal_key)
+        while unplaced:
+            value, index = unplaced.pop(0)
+            if len(result) < index + 1:
+                result.extend([None] * (index + 1 - len(result)))
+            if result[index] is None:
+                result[index] = value
+            else:
+                unplaced.insert(0, (value, index + 1))
+        while len(result) > self.width_limit and None in result:
+            result.remove(None)
+        return result
 
 
 def goal_key(tup: Tuple[GoalId, int]) -> Tuple[int, int]:
