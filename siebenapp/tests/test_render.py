@@ -182,7 +182,7 @@ def test_render_in_switchable_view():
     ],
 )
 def test_place(before, after):
-    r = Renderer(build_goaltree(open_(1, "Root", select=selected)), 4)
+    r = Renderer(build_goaltree(open_(1, "Root", select=selected)))
     # NB: do we still need to test internal implementation of Renderer?
     # Not sure
     assert after == r.place(before)

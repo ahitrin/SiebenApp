@@ -38,9 +38,9 @@ def safe_average(items: List[int]) -> int:
 
 
 class Renderer:
-    WIDTH_LIMIT = 4
+    DEFAULT_WIDTH = 4
 
-    def __init__(self, goals: Graph, width_limit=WIDTH_LIMIT) -> None:
+    def __init__(self, goals: Graph, width_limit=DEFAULT_WIDTH) -> None:
         self.width_limit = width_limit
         original_graph: Dict[int, Any] = goals.q(
             keys="name,edge,open,select,switchable"
