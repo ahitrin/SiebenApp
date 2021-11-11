@@ -139,6 +139,7 @@ class SiebenApp(QMainWindow):
         self.db = db
         self.goals = load(db, self.show_user_message)
         self.force_refresh = True
+        self.columns = Renderer.DEFAULT_WIDTH
 
     def setup(self):
         self.action_New.triggered.connect(self.show_new_dialog)
@@ -177,7 +178,7 @@ class SiebenApp(QMainWindow):
         for child in self.scrollAreaWidgetContents.children():
             if isinstance(child, GoalWidget):
                 child.deleteLater()
-        render_result = Renderer(self.goals).build()
+        render_result = Renderer(self.goals, self.columns).build()
         if "setupData" in dir(self.scrollAreaWidgetContents):
             self.scrollAreaWidgetContents.setupData(render_result)
         for goal_id, attributes in render_result.graph.items():
@@ -220,8 +221,10 @@ class SiebenApp(QMainWindow):
             Qt.Key_T: self.with_refresh(self.toggle_switchable_view, True),
             Qt.Key_Z: self.toggle_zoom,
             Qt.Key_Escape: self.cancel_edit,
-            Qt.Key_Space: self.with_refresh(self.goals.accept, HoldSelect()),
+            Qt.Key_Minus: self.with_refresh(self.change_columns, -1),
+            Qt.Key_Plus: self.with_refresh(self.change_columns, 1),
             Qt.Key_Slash: self.show_keys_help,
+            Qt.Key_Space: self.with_refresh(self.goals.accept, HoldSelect()),
         }
         if event.key() in key_handlers:
             key_handlers[event.key()]()
@@ -336,6 +339,12 @@ class SiebenApp(QMainWindow):
 
     def show_user_message(self, message):
         self.statusBar().showMessage(message, 10000)
+
+    def change_columns(self, delta):
+        self.force_refresh = True
+        new_columns = self.columns + delta
+        if 1 <= new_columns:
+            self.columns = new_columns
 
 
 def main(root_script):
