@@ -15,6 +15,7 @@ from siebenapp.domain import (
     Rename,
     Graph,
 )
+from siebenapp.filter import FilterBy
 from siebenapp.open_view import ToggleOpenView
 from siebenapp.switchable_view import ToggleSwitchableView
 from siebenapp.system import save, load
@@ -88,6 +89,8 @@ def build_actions(command):
         return [Insert(command[2:])]
     if command.startswith("r "):
         return [Rename(command[2:])]
+    if command.startswith("f"):
+        return [FilterBy(command[1:].lstrip())]
     if command in simple_commands:
         return [simple_commands[command]]
     return []

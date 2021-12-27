@@ -15,6 +15,7 @@ from PyQt5.QtWidgets import (  # type: ignore
 )
 from PyQt5.uic import loadUi  # type: ignore
 
+from siebenapp.filter import FilterBy
 from siebenapp.domain import (
     EdgeType,
     HoldSelect,
@@ -207,6 +208,10 @@ class SiebenApp(QMainWindow):
             Qt.Key_A: self.start_edit("Add new goal", self.emit_add),
             Qt.Key_C: self.with_refresh(self.goals.accept, ToggleClose()),
             Qt.Key_D: self.with_refresh(self.goals.accept, Delete()),
+            Qt.Key_F: self.start_edit(
+                "Filter by substring (leave empty to reset filtration)",
+                self.emit_filter,
+            ),
             Qt.Key_I: self.start_edit("Insert new goal", self.emit_insert),
             Qt.Key_K: self.with_refresh(
                 self.goals.accept, ToggleLink(edge_type=EdgeType.PARENT)
@@ -296,6 +301,10 @@ class SiebenApp(QMainWindow):
 
     def emit_rename(self, text):
         self.goals.accept(Rename(text))
+
+    def emit_filter(self, text):
+        self.force_refresh = True
+        self.goals.accept(FilterBy(text))
 
     def _current_goal_label(self):
         data = self.goals.q(keys="name,select").values()

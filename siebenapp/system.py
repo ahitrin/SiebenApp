@@ -4,6 +4,7 @@ from html import escape
 from os import path
 from typing import Callable, List, Dict
 
+from siebenapp.filter import FilterView
 from siebenapp.domain import EdgeType, Graph
 from siebenapp.goaltree import Goals
 from siebenapp.enumeration import Enumeration
@@ -180,7 +181,7 @@ def load(filename: str, message_fn: Callable[[str], None] = None) -> Enumeration
     else:
         goals = Goals("Rename me", message_fn)
         zoom = Zoom(goals)
-    return Enumeration(SwitchableView(OpenView(zoom)))
+    return Enumeration(FilterView(SwitchableView(OpenView(zoom))))
 
 
 def run_migrations(
