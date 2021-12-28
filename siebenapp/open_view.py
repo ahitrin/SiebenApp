@@ -17,9 +17,6 @@ class OpenView(Graph):
         super().__init__(goaltree)
         self._open: bool = True
 
-    def verify(self) -> bool:
-        return self.goaltree.verify()
-
     def accept_ToggleOpenView(self, command: ToggleOpenView):
         self._open = not self._open
 

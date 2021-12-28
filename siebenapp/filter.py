@@ -16,9 +16,6 @@ class FilterView(Graph):
         super().__init__(goaltree)
         self.pattern = ""
 
-    def verify(self) -> bool:
-        return self.goaltree.verify()
-
     def settings(self, key: str) -> int:
         return self.goaltree.settings(key)
 

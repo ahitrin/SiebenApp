@@ -68,6 +68,8 @@ class Graph:
 
     def verify(self) -> bool:
         """Check all inner data for correctness"""
+        if self.goaltree is not None:
+            return self.goaltree.verify()
         return False
 
 

@@ -17,9 +17,6 @@ class SwitchableView(Graph):
         super().__init__(goaltree)
         self._only_switchable: bool = False
 
-    def verify(self) -> bool:
-        return self.goaltree.verify()
-
     def accept_ToggleSwitchableView(self, command: ToggleSwitchableView):
         self._only_switchable = not self._only_switchable
 
