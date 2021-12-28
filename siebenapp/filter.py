@@ -30,15 +30,10 @@ class FilterView(Graph):
         self.pattern = event.pattern.lower()
 
     @with_key("name")
+    @with_key("select")
     def q(self, keys: str = "name") -> Dict[int, Any]:
-        if skip_select := "select" not in keys:
-            keys = ",".join([keys, "select"])
         unfiltered = self.goaltree.q(keys)
-        result = self._filter(unfiltered, keys) if self.pattern else unfiltered
-        if skip_select:
-            for v in result.values():
-                v.pop("select")
-        return result
+        return self._filter(unfiltered, keys) if self.pattern else unfiltered
 
     def _filter(self, unfiltered, keys):
         accepted_nodes = [
