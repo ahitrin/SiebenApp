@@ -27,19 +27,11 @@ class OpenView(Graph):
 
     @with_key("open")
     def q(self, keys: str = "name") -> Dict[int, Any]:
-        pass_through = [
-            k
-            for k in [
-                self.goaltree.settings("selection"),
-                self.goaltree.settings("previous_selection"),
-            ]
-            if k is not None
-        ]
         goals = self.goaltree.q(keys)
         result: Dict[int, Any] = {
             k: {}
             for k, v in goals.items()
-            if not self._open or v["open"] or k in pass_through
+            if not self._open or v["open"] or k in self.selections()
         }
         for goal_id in result:
             val = goals[goal_id]

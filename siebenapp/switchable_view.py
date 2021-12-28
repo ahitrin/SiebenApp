@@ -27,18 +27,12 @@ class SwitchableView(Graph):
 
     @with_key("switchable")
     def q(self, keys: str = "name") -> Dict[int, Any]:
-        pass_through = [
-            k
-            for k in [
-                self.goaltree.settings("selection"),
-                self.goaltree.settings("previous_selection"),
-            ]
-            if k is not None
-        ]
         goals = self.goaltree.q(keys)
         if self._only_switchable:
             goals = {
-                k: v for k, v in goals.items() if v["switchable"] or k in pass_through
+                k: v
+                for k, v in goals.items()
+                if v["switchable"] or k in self.selections()
             }
             for v in goals.values():
                 if "edge" in v:

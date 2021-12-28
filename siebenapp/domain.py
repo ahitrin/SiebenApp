@@ -2,7 +2,7 @@ from collections import deque
 from dataclasses import dataclass
 from enum import IntEnum
 from functools import wraps
-from typing import Dict, Any
+from typing import Dict, Any, Set
 
 
 class EdgeType(IntEnum):
@@ -55,6 +55,18 @@ class Graph:
         if self.goaltree is not None:
             return self.goaltree.settings(key)
         return Graph.NO_VALUE
+
+    def selections(self) -> Set[int]:
+        """Return ids of special 'selection' goals"""
+        # Doesn't look clean nevertheless
+        return set(
+            k
+            for k in [
+                self.settings("selection"),
+                self.settings("previous_selection"),
+            ]
+            if k is not None
+        )
 
     def events(self) -> deque:
         """Returns queue of applied actions.

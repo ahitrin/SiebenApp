@@ -20,7 +20,6 @@ class FilterView(Graph):
         self.pattern = event.pattern.lower()
 
     @with_key("name")
-    @with_key("select")
     def q(self, keys: str = "name") -> Dict[int, Any]:
         unfiltered = self.goaltree.q(keys)
         return self._filter(unfiltered, keys) if self.pattern else unfiltered
@@ -29,8 +28,7 @@ class FilterView(Graph):
         accepted_nodes = [
             goal_id
             for goal_id, attrs in unfiltered.items()
-            if self.pattern in attrs["name"].lower()
-            or attrs.get("select", None) is not None
+            if self.pattern in attrs["name"].lower() or goal_id in self.selections()
         ]
         filtered: Dict[int, Any] = {}
         for goal_id, attrs in unfiltered.items():
