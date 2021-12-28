@@ -50,10 +50,7 @@ class OpenView(Graph):
         }
         for goal_id in result:
             val = goals[goal_id]
-            result[goal_id] = {
-                k: v for k, v in val.items() if k not in ["edge", "open"]
-            }
-            result[goal_id]["open"] = val["open"]
+            result[goal_id] = {k: v for k, v in val.items() if k != "edge"}
             if "edge" in val:
                 result[goal_id]["edge"] = [
                     (edge[0], edge[1]) for edge in val["edge"] if edge[0] in result
