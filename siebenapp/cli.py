@@ -15,7 +15,7 @@ from siebenapp.domain import (
     Rename,
     Graph,
 )
-from siebenapp.filter import FilterBy
+from siebenapp.filter_view import FilterBy
 from siebenapp.open_view import ToggleOpenView
 from siebenapp.switchable_view import ToggleSwitchableView
 from siebenapp.system import save, load

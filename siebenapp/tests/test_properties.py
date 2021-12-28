@@ -26,7 +26,7 @@ from siebenapp.domain import (
     Command,
 )
 from siebenapp.goaltree import Goals
-from siebenapp.filter import FilterView, FilterBy
+from siebenapp.filter_view import FilterView, FilterBy
 from siebenapp.open_view import OpenView, ToggleOpenView
 from siebenapp.switchable_view import SwitchableView, ToggleSwitchableView
 from siebenapp.system import run_migrations, save_updates

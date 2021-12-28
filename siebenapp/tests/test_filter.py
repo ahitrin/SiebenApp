@@ -1,7 +1,7 @@
 from _pytest.fixtures import fixture
 
 from siebenapp.domain import EdgeType, Select, HoldSelect
-from siebenapp.filter import FilterBy, FilterView
+from siebenapp.filter_view import FilterBy, FilterView
 from siebenapp.tests.dsl import build_goaltree, open_, selected
 
 

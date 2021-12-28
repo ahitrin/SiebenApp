@@ -4,7 +4,7 @@ from html import escape
 from os import path
 from typing import Callable, List, Dict
 
-from siebenapp.filter import FilterView
+from siebenapp.filter_view import FilterView
 from siebenapp.domain import EdgeType, Graph
 from siebenapp.goaltree import Goals
 from siebenapp.enumeration import Enumeration

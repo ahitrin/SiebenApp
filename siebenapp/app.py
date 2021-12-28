@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import (  # type: ignore
 )
 from PyQt5.uic import loadUi  # type: ignore
 
-from siebenapp.filter import FilterBy
+from siebenapp.filter_view import FilterBy
 from siebenapp.domain import (
     EdgeType,
     HoldSelect,
