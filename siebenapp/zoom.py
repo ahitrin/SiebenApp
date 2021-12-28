@@ -12,6 +12,7 @@ from siebenapp.domain import (
     ToggleLink,
     Select,
     Insert,
+    with_key,
 )
 from siebenapp.goaltree import Goals
 
@@ -50,29 +51,20 @@ class Zoom(Graph):
     def events(self) -> collections.deque:
         return self.goaltree.events()
 
+    @with_key("edge")
     def q(self, keys: str = "name") -> Dict[int, Any]:
-        has_edge_key = "edge" in keys
-        origin_goals = self.goaltree.q(keys if has_edge_key else keys + ",edge")
+        origin_goals = self.goaltree.q(keys)
         if self.zoom_root == [1]:
-            return Zoom._filter_edges(origin_goals, has_edge_key)
+            return origin_goals
         visible_goals = self._build_visible_goals(origin_goals)
         zoomed_goals = {k: v for k, v in origin_goals.items() if k in visible_goals}
         zoomed_goals[-1] = origin_goals[1]
-        if has_edge_key:
-            for goal in zoomed_goals:
-                zoomed_goals[goal]["edge"] = [
-                    g for g in zoomed_goals[goal]["edge"] if g[0] in visible_goals
-                ]
-            zoomed_goals[-1]["edge"] = [(self.zoom_root[-1], EdgeType.BLOCKER)]
-        return Zoom._filter_edges(zoomed_goals, has_edge_key)
-
-    @staticmethod
-    def _filter_edges(goals, has_edge_key):
-        if has_edge_key:
-            return goals
-        return {
-            k: {a: b for a, b in v.items() if a != "edge"} for k, v in goals.items()
-        }
+        for goal in zoomed_goals:
+            zoomed_goals[goal]["edge"] = [
+                g for g in zoomed_goals[goal]["edge"] if g[0] in visible_goals
+            ]
+        zoomed_goals[-1]["edge"] = [(self.zoom_root[-1], EdgeType.BLOCKER)]
+        return zoomed_goals
 
     def accept_ToggleClose(self, command: ToggleClose):
         if self.settings("selection") == self.zoom_root[-1]:
