@@ -2,7 +2,7 @@ import collections
 from dataclasses import dataclass
 from typing import Dict, Any
 
-from siebenapp.domain import Command, Graph
+from siebenapp.domain import Command, Graph, with_key
 
 
 @dataclass(frozen=True)
@@ -32,9 +32,8 @@ class OpenView(Graph):
             return self._open
         return self.goaltree.settings(key)
 
+    @with_key("open")
     def q(self, keys: str = "name") -> Dict[int, Any]:
-        if skip_open := "open" not in keys:
-            keys = ",".join([keys, "open"])
         pass_through = [
             k
             for k in [
@@ -54,8 +53,7 @@ class OpenView(Graph):
             result[goal_id] = {
                 k: v for k, v in val.items() if k not in ["edge", "open"]
             }
-            if not skip_open:
-                result[goal_id]["open"] = val["open"]
+            result[goal_id]["open"] = val["open"]
             if "edge" in val:
                 result[goal_id]["edge"] = [
                     (edge[0], edge[1]) for edge in val["edge"] if edge[0] in result
