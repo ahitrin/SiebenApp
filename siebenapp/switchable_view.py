@@ -2,7 +2,7 @@ import collections
 from dataclasses import dataclass
 from typing import Dict, Any
 
-from siebenapp.domain import Command, Graph
+from siebenapp.domain import Command, Graph, with_key
 
 
 @dataclass(frozen=True)
@@ -32,9 +32,8 @@ class SwitchableView(Graph):
             return self._only_switchable
         return self.goaltree.settings(key)
 
+    @with_key("switchable")
     def q(self, keys: str = "name") -> Dict[int, Any]:
-        if skip_switchable := "switchable" not in keys:
-            keys = ",".join([keys, "switchable"])
         pass_through = [
             k
             for k in [
@@ -51,7 +50,4 @@ class SwitchableView(Graph):
             for v in goals.values():
                 if "edge" in v:
                     v["edge"] = []
-        if skip_switchable:
-            for v in goals.values():
-                v.pop("switchable")
         return goals
