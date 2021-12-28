@@ -26,7 +26,7 @@ from siebenapp.domain import (
     Command,
 )
 from siebenapp.goaltree import Goals
-from siebenapp.filter import FilterView
+from siebenapp.filter import FilterView, FilterBy
 from siebenapp.open_view import OpenView, ToggleOpenView
 from siebenapp.switchable_view import SwitchableView, ToggleSwitchableView
 from siebenapp.system import run_migrations, save_updates
@@ -147,6 +147,16 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         event("open_view")
         self._accept(ToggleOpenView())
 
+    @rule()
+    def filter_by_text(self):
+        event("filter x")
+        self._accept(FilterBy("x"))
+
+    @rule()
+    def reset_filter(self):
+        event("reset filter")
+        self._accept(FilterBy(""))
+
     #
     # Verifiers
     #
@@ -177,6 +187,9 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
             ng.accept(ToggleSwitchableView())
         if not self.goaltree.settings("filter_open"):
             ng.accept(ToggleOpenView())
+        # Even more dirtier hack
+        if self.goaltree.pattern:
+            ng.accept(FilterBy(self.goaltree.pattern))
         # End of dirty hack
         keys = "name,open,edge,select,switchable"
         q1 = self.goaltree.q(keys)

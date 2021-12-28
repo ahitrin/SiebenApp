@@ -30,21 +30,31 @@ class FilterView(Graph):
         self.pattern = event.pattern.lower()
 
     def q(self, keys: str = "name") -> Dict[int, Any]:
+        if skip_select := "select" not in keys:
+            keys = ",".join([keys, "select"])
+        if skip_name := "name" not in keys:
+            keys = ",".join([keys, "name"])
         unfiltered = self.goaltree.q(keys)
-        if self.pattern:
-            accepted_nodes = [
-                goal_id
-                for goal_id, attrs in unfiltered.items()
-                if self.pattern in attrs["name"].lower()
-                or attrs.get("select", None) is not None
-            ]
-            filtered: Dict[int, Any] = {}
-            for goal_id, attrs in unfiltered.items():
-                if goal_id in accepted_nodes:
-                    if "edge" in keys:
-                        attrs["edge"] = [
-                            e for e in attrs["edge"] if e[0] in accepted_nodes
-                        ]
-                    filtered[goal_id] = attrs
-            return filtered
-        return unfiltered
+        result = self._filter(unfiltered, keys) if self.pattern else unfiltered
+        if skip_select:
+            for v in result.values():
+                v.pop("select")
+        if skip_name:
+            for v in result.values():
+                v.pop("name")
+        return result
+
+    def _filter(self, unfiltered, keys):
+        accepted_nodes = [
+            goal_id
+            for goal_id, attrs in unfiltered.items()
+            if self.pattern in attrs["name"].lower()
+            or attrs.get("select", None) is not None
+        ]
+        filtered: Dict[int, Any] = {}
+        for goal_id, attrs in unfiltered.items():
+            if goal_id in accepted_nodes:
+                if "edge" in keys:
+                    attrs["edge"] = [e for e in attrs["edge"] if e[0] in accepted_nodes]
+                filtered[goal_id] = attrs
+        return filtered
