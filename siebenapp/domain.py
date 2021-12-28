@@ -27,7 +27,7 @@ class Graph:
     NO_VALUE = -1
 
     def __init__(self, goaltree=None):
-        self.goaltree: Graph = goaltree or self
+        self.goaltree: Graph = goaltree
 
     def __getattr__(self, item):
         """When method is not found, ask nested goaltree for it"""
@@ -58,6 +58,8 @@ class Graph:
         """Returns queue of applied actions.
         Note: this queue is modifiable -- you may push new events into it. But this
         behavior may be changed in future."""
+        if self.goaltree is not None:
+            return self.goaltree.events()
         raise NotImplementedError
 
     def q(self, keys: str = "name") -> Dict[int, Any]:

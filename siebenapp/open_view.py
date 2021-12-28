@@ -1,4 +1,3 @@
-import collections
 from dataclasses import dataclass
 from typing import Dict, Any
 
@@ -23,9 +22,6 @@ class OpenView(Graph):
 
     def accept_ToggleOpenView(self, command: ToggleOpenView):
         self._open = not self._open
-
-    def events(self) -> collections.deque:
-        return self.goaltree.events()
 
     def settings(self, key: str) -> int:
         if key == "filter_open":

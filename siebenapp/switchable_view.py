@@ -1,4 +1,3 @@
-import collections
 from dataclasses import dataclass
 from typing import Dict, Any
 
@@ -23,9 +22,6 @@ class SwitchableView(Graph):
 
     def accept_ToggleSwitchableView(self, command: ToggleSwitchableView):
         self._only_switchable = not self._only_switchable
-
-    def events(self) -> collections.deque:
-        return self.goaltree.events()
 
     def settings(self, key: str) -> int:
         if key == "filter_switchable":

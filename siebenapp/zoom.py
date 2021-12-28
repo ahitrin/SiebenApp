@@ -48,9 +48,6 @@ class Zoom(Graph):
         if self.settings("previous_selection") not in visible_goals:
             self.accept(HoldSelect())
 
-    def events(self) -> collections.deque:
-        return self.goaltree.events()
-
     @with_key("edge")
     def q(self, keys: str = "name") -> Dict[int, Any]:
         origin_goals = self.goaltree.q(keys)

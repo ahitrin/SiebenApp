@@ -1,4 +1,3 @@
-import collections
 import math
 from typing import List, Dict, Tuple, Any, Set, Iterable
 
@@ -54,9 +53,6 @@ class Enumeration(Graph):
 
     def settings(self, key: str) -> int:
         return self.goaltree.settings(key)
-
-    def events(self) -> collections.deque:
-        return self.goaltree.events()
 
     def q(self, keys: str = "name") -> Dict[int, Any]:
         self._update_mapping()

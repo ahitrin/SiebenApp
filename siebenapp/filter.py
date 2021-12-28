@@ -1,4 +1,3 @@
-import collections
 from dataclasses import dataclass
 from typing import Dict, Any
 
@@ -16,9 +15,6 @@ class FilterView(Graph):
     def __init__(self, goaltree: Graph):
         super().__init__(goaltree)
         self.pattern = ""
-
-    def events(self) -> collections.deque:
-        return self.goaltree.events()
 
     def verify(self) -> bool:
         return self.goaltree.verify()
