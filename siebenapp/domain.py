@@ -52,6 +52,8 @@ class Graph:
 
     def settings(self, key: str) -> int:
         """Returns given inner value by the key"""
+        if self.goaltree is not None:
+            return self.goaltree.settings(key)
         return Graph.NO_VALUE
 
     def events(self) -> deque:

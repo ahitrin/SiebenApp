@@ -51,9 +51,6 @@ class Enumeration(Graph):
         goals = {k: v for k, v in goals.items() if k in self._goal_filter}
         return goals, BidirectionalIndex(goals)
 
-    def settings(self, key: str) -> int:
-        return self.goaltree.settings(key)
-
     def q(self, keys: str = "name") -> Dict[int, Any]:
         self._update_mapping()
         result: Dict[int, Any] = dict()

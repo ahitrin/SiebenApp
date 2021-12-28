@@ -30,9 +30,6 @@ class Zoom(Graph):
         super().__init__(goaltree)
         self.zoom_root = [1]
 
-    def settings(self, key: str) -> int:
-        return self.goaltree.settings(key)
-
     def accept_ToggleZoom(self, command: ToggleZoom):
         selection = self.settings("selection")
         if selection == self.zoom_root[-1] and len(self.zoom_root) > 1:
