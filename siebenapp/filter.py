@@ -2,7 +2,7 @@ import collections
 from dataclasses import dataclass
 from typing import Dict, Any
 
-from siebenapp.domain import Graph, Command
+from siebenapp.domain import Graph, Command, with_key
 
 
 @dataclass(frozen=True)
@@ -29,19 +29,15 @@ class FilterView(Graph):
     def accept_FilterBy(self, event: FilterBy):
         self.pattern = event.pattern.lower()
 
+    @with_key("name")
     def q(self, keys: str = "name") -> Dict[int, Any]:
         if skip_select := "select" not in keys:
             keys = ",".join([keys, "select"])
-        if skip_name := "name" not in keys:
-            keys = ",".join([keys, "name"])
         unfiltered = self.goaltree.q(keys)
         result = self._filter(unfiltered, keys) if self.pattern else unfiltered
         if skip_select:
             for v in result.values():
                 v.pop("select")
-        if skip_name:
-            for v in result.values():
-                v.pop("name")
         return result
 
     def _filter(self, unfiltered, keys):

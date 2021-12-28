@@ -1,6 +1,7 @@
 from collections import deque
 from dataclasses import dataclass
 from enum import IntEnum
+from functools import wraps
 from typing import Dict, Any
 
 
@@ -66,6 +67,25 @@ class Graph:
     def verify(self) -> bool:
         """Check all inner data for correctness"""
         return False
+
+
+def with_key(key):
+    """Wraps around Graph.q, adding given key to the request"""
+
+    def inner(q):
+        @wraps(q)
+        def wrapper(self, keys="name"):
+            if no_key := key not in keys:
+                keys = ",".join([keys, key])
+            result = q(self, keys)
+            if no_key:
+                for v in result.values():
+                    v.pop(key)
+            return result
+
+        return wrapper
+
+    return inner
 
 
 # == Command implementations ==
