@@ -20,6 +20,12 @@ class FilterView(Graph):
     def events(self) -> collections.deque:
         return self.goaltree.events()
 
+    def verify(self) -> bool:
+        return self.goaltree.verify()
+
+    def settings(self, key: str) -> int:
+        return self.goaltree.settings(key)
+
     def accept_FilterBy(self, event: FilterBy):
         self.pattern = event.pattern.lower()
 
