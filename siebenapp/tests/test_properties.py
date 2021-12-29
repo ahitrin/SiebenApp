@@ -109,9 +109,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     @precondition(lambda self: len(self.goaltree.q()) > 1)
     def toggle_link(self, b, d):
         event("toggle link")
-        goal_keys = sorted(list(self.goaltree.q().keys()))
-        if -1 in goal_keys:
-            goal_keys.remove(-1)
+        goal_keys = sorted(list(k for k in self.goaltree.q().keys() if k > 0))
         assume(len(goal_keys) > 1)
         selection = d.draw(sampled_from(goal_keys))
         goal_keys.remove(selection)

@@ -28,6 +28,7 @@ def test_empty_string_means_no_filter(goaltree):
 def test_filter_by_substring(goaltree):
     goaltree.accept(FilterBy("ph"))
     assert goaltree.q("name,edge,select") == {
+        -2: {"name": "Filter by 'ph'", "edge": [(1, EdgeType.BLOCKER)], "select": None},
         1: {"name": "Alpha", "edge": [], "select": "select"},
     }
 
@@ -35,6 +36,11 @@ def test_filter_by_substring(goaltree):
 def test_selected_goal_must_not_be_filtered_out(goaltree):
     goaltree.accept_all(Select(3), HoldSelect(), FilterBy("Be"))
     assert goaltree.q("name,edge,select") == {
+        -2: {
+            "name": "Filter by 'be'",
+            "edge": [(2, EdgeType.BLOCKER), (3, EdgeType.BLOCKER)],
+            "select": None,
+        },
         2: {"name": "Beta", "edge": [(3, EdgeType.PARENT)], "select": None},
         3: {"name": "Gamma", "edge": [], "select": "select"},
     }
@@ -43,6 +49,11 @@ def test_selected_goal_must_not_be_filtered_out(goaltree):
 def test_previously_selected_goal_must_not_be_filtered_out(goaltree):
     goaltree.accept_all(Select(3), FilterBy("matching no one"))
     assert goaltree.q("name,edge,select") == {
+        -2: {
+            "name": "Filter by 'matching no one'",
+            "edge": [(1, EdgeType.BLOCKER), (3, EdgeType.BLOCKER)],
+            "select": None,
+        },
         1: {"name": "Alpha", "edge": [], "select": "prev"},
         3: {"name": "Gamma", "edge": [], "select": "select"},
     }
@@ -60,6 +71,11 @@ def test_empty_filter_string_means_resetting(goaltree):
 def test_filter_is_case_insensitive(goaltree):
     goaltree.accept(FilterBy("ETA"))
     assert goaltree.q("name,edge,select") == {
+        -2: {
+            "name": "Filter by 'eta'",
+            "edge": [(1, EdgeType.BLOCKER), (2, EdgeType.BLOCKER)],
+            "select": None,
+        },
         1: {"name": "Alpha", "edge": [(2, EdgeType.PARENT)], "select": "select"},
         2: {"name": "Beta", "edge": [], "select": None},
     }

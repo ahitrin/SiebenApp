@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Dict, Any
 
-from siebenapp.domain import Graph, Command, with_key
+from siebenapp.domain import Graph, Command, with_key, EdgeType
 
 
 @dataclass(frozen=True)
@@ -30,10 +30,25 @@ class FilterView(Graph):
             for goal_id, attrs in unfiltered.items()
             if self.pattern in attrs["name"].lower() or goal_id in self.selections()
         ]
-        filtered: Dict[int, Any] = {}
+        filtered: Dict[int, Any] = {
+            -2: self._fake_goal(keys),
+        }
         for goal_id, attrs in unfiltered.items():
             if goal_id in accepted_nodes:
                 if "edge" in keys:
                     attrs["edge"] = [e for e in attrs["edge"] if e[0] in accepted_nodes]
+                    filtered[-2]["edge"].append((goal_id, EdgeType.BLOCKER))
                 filtered[goal_id] = attrs
         return filtered
+
+    def _fake_goal(self, keys: str) -> Dict[str, Any]:
+        goal: Dict[str, Any] = {"name": f"Filter by '{self.pattern}'"}
+        if "edge" in keys:
+            goal["edge"] = []
+        if "select" in keys:
+            goal["select"] = None
+        if "switchable" in keys:
+            goal["switchable"] = False
+        if "open" in keys:
+            goal["open"] = True
+        return goal
