@@ -20,10 +20,15 @@ class SwitchableView(Graph):
     def accept_ToggleSwitchableView(self, command: ToggleSwitchableView):
         self._only_switchable = not self._only_switchable
 
-    def settings(self, key: str) -> int:
+    def settings(self, key: str) -> Any:
         if key == "filter_switchable":
             return self._only_switchable
         return self.goaltree.settings(key)
+
+    def reconfigure_from(self, origin: "Graph") -> None:
+        super().reconfigure_from(origin)
+        if origin.settings("filter_switchable"):
+            self.accept(ToggleSwitchableView())
 
     @with_key("switchable")
     def q(self, keys: str = "name") -> Dict[int, Any]:

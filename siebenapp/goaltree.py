@@ -58,7 +58,7 @@ class Goals(Graph):
         parents = {e for e in self._back_edges(goal) if e.type == EdgeType.PARENT}
         return parents.pop().source if parents else Goals.ROOT_ID
 
-    def settings(self, key: str) -> int:
+    def settings(self, key: str) -> Any:
         return {
             "selection": self.selection,
             "previous_selection": self.previous_selection,

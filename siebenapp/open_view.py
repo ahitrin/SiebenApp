@@ -20,10 +20,15 @@ class OpenView(Graph):
     def accept_ToggleOpenView(self, command: ToggleOpenView):
         self._open = not self._open
 
-    def settings(self, key: str) -> int:
+    def settings(self, key: str) -> Any:
         if key == "filter_open":
             return self._open
         return self.goaltree.settings(key)
+
+    def reconfigure_from(self, origin: "Graph") -> None:
+        super().reconfigure_from(origin)
+        if not origin.settings("filter_open"):
+            self.accept(ToggleOpenView())
 
     @with_key("open")
     def q(self, keys: str = "name") -> Dict[int, Any]:

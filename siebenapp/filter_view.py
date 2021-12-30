@@ -19,6 +19,15 @@ class FilterView(Graph):
     def accept_FilterBy(self, event: FilterBy):
         self.pattern = event.pattern.lower()
 
+    def settings(self, key: str) -> Any:
+        if key == "filter_pattern":
+            return self.pattern
+        return self.goaltree.settings(key)
+
+    def reconfigure_from(self, origin: "Graph") -> None:
+        super().reconfigure_from(origin)
+        self.pattern = origin.settings("filter_pattern")
+
     @with_key("name")
     def q(self, keys: str = "name") -> Dict[int, Any]:
         unfiltered = self.goaltree.q(keys)

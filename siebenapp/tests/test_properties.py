@@ -180,15 +180,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         save_updates(self.goaltree, self.database)
         assert not self.goaltree.events()
         ng = build_goals(self.database)
-        # Dirty hack: sync non-persistent view states
-        if self.goaltree.settings("filter_switchable"):
-            ng.accept(ToggleSwitchableView())
-        if not self.goaltree.settings("filter_open"):
-            ng.accept(ToggleOpenView())
-        # Even more dirtier hack
-        if self.goaltree.pattern:
-            ng.accept(FilterBy(self.goaltree.pattern))
-        # End of dirty hack
+        ng.reconfigure_from(self.goaltree)
         keys = "name,open,edge,select,switchable"
         q1 = self.goaltree.q(keys)
         q2 = ng.q(keys)

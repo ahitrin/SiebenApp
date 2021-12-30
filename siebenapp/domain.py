@@ -50,11 +50,16 @@ class Graph:
         for command in commands:
             self.accept(command)
 
-    def settings(self, key: str) -> int:
+    def settings(self, key: str) -> Any:
         """Returns given inner value by the key"""
         if self.goaltree is not None:
             return self.goaltree.settings(key)
         return Graph.NO_VALUE
+
+    def reconfigure_from(self, origin: "Graph") -> None:
+        """Synchronize *non-persistent* settings from the given origin"""
+        if self.goaltree:
+            self.goaltree.reconfigure_from(origin)
 
     def selections(self) -> Set[int]:
         """Return ids of special 'selection' goals"""
