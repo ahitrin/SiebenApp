@@ -37,7 +37,10 @@ class FilterView(Graph):
             if goal_id in accepted_nodes:
                 if "edge" in keys:
                     attrs["edge"] = [e for e in attrs["edge"] if e[0] in accepted_nodes]
-                    filtered[-2]["edge"].append((goal_id, EdgeType.BLOCKER))
+                    if goal_id > 1:
+                        filtered[-2]["edge"].append((goal_id, EdgeType.BLOCKER))
+                    else:
+                        attrs["edge"].insert(0, (-2, EdgeType.BLOCKER))
                 filtered[goal_id] = attrs
         return filtered
 
