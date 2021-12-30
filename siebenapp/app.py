@@ -60,7 +60,8 @@ class GoalWidget(QWidget, Ui_GoalBody):
             self.frame.setStyleSheet(
                 f".QFrame{{ border: {border}px solid {frame_color} }}"
             )
-            self.label_number.setText(str(number))
+            if number > 0:
+                self.label_number.setText(str(number))
         else:
             self.setStyleSheet("color: #EEEEEE; border: #EEEEEE")
 
