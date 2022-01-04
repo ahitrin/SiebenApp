@@ -15,6 +15,7 @@ from siebenapp.domain import (
     Rename,
     Graph,
 )
+from siebenapp.progress_view import ToggleProgress
 from siebenapp.filter_view import FilterBy
 from siebenapp.open_view import ToggleOpenView
 from siebenapp.switchable_view import ToggleSwitchableView
@@ -78,6 +79,7 @@ def build_actions(command):
         "k": ToggleLink(edge_type=EdgeType.PARENT),
         "l": ToggleLink(),
         "n": ToggleOpenView(),
+        "p": ToggleProgress(),
         "t": ToggleSwitchableView(),
         "z": ToggleZoom(),
     }

@@ -15,6 +15,7 @@ from PyQt5.QtWidgets import (  # type: ignore
 )
 from PyQt5.uic import loadUi  # type: ignore
 
+from siebenapp.progress_view import ToggleProgress
 from siebenapp.filter_view import FilterBy
 from siebenapp.domain import (
     EdgeType,
@@ -152,6 +153,7 @@ class SiebenApp(QMainWindow):
         self.toggleSwitchable.clicked.connect(
             self.with_refresh(self.toggle_switchable_view, False)
         )
+        self.toggleProgress.clicked.connect(self.with_refresh(self.toggle_progress_view, False))
         # Re-creation of scrollAreaWidgetContents looks like dirty hack,
         # but at the current moment I haven't found a better solution.
         # Widget creation in __init__ does not work: lines disappear.
@@ -220,6 +222,7 @@ class SiebenApp(QMainWindow):
             Qt.Key_L: self.with_refresh(self.goals.accept, ToggleLink()),
             Qt.Key_N: self.with_refresh(self.toggle_open_view, True),
             Qt.Key_O: self.show_open_dialog,
+            Qt.Key_P: self.with_refresh(self.toggle_progress_view, True),
             Qt.Key_Q: self.quit_app.emit,
             Qt.Key_R: self.start_edit(
                 "Rename goal", self.emit_rename, self._current_goal_label
@@ -338,6 +341,12 @@ class SiebenApp(QMainWindow):
         if update_ui:
             self.toggleSwitchable.setChecked(self.goals.settings("filter_switchable"))
         self._update_title()
+
+    def toggle_progress_view(self, update_ui):
+        self.force_refresh = True
+        self.goals.accept(ToggleProgress())
+        if update_ui:
+            self.toggleProgress.setChecked(self.goals.settings("filter_progress"))
 
     def toggle_zoom(self):
         self.force_refresh = True
