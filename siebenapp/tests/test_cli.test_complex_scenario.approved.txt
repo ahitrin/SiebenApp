@@ -74,17 +74,17 @@
 3[ ] Toggle show open/closed goals
 > z
 
--1    Cover all current features [1]
+     Cover all current features [1]
 1   >Filter view [2]
 2[ ] Toggle zoom and unzoom
 > 2
 
--1    Cover all current features [1]
+     Cover all current features [1]
 1   _Filter view [2]
 2[ ]>Toggle zoom and unzoom
 > c
 
--1    Cover all current features [1]
+     Cover all current features [1]
 1[ ]>Filter view
 > z
 
@@ -95,14 +95,14 @@
 2[ ]>Filter view
 > f Toggle
 
--2    Filter by 'toggle' [1,2,3,4]
+     Filter by 'toggle' [1,2,3,4]
 4[ ] Toggle show switchable goals
 3[ ] Toggle show goal progress
 2[ ] Toggle show open/closed goals
 1[ ]>Filter view
 > n
 
--2    Filter by 'toggle' [1,2,3,4,5]
+     Filter by 'toggle' [1,2,3,4,5]
 1[ ]>Filter view [5]
 5[x] Toggle zoom and unzoom
 4[ ] Toggle show switchable goals
@@ -110,7 +110,7 @@
 2[ ] Toggle show open/closed goals
 > 2
 
--2    Filter by 'toggle' [1,2,3,4,5]
+     Filter by 'toggle' [1,2,3,4,5]
 1[ ]_Filter view [5]
 5[x] Toggle zoom and unzoom
 4[ ] Toggle show switchable goals
@@ -118,7 +118,7 @@
 2[ ]>Toggle show open/closed goals
 > c
 
--2    Filter by 'toggle' [1,2,3,4,5]
+     Filter by 'toggle' [1,2,3,4,5]
 1[ ]>Filter view [5]
 5[x] Toggle zoom and unzoom
 4[ ] Toggle show switchable goals

@@ -53,7 +53,9 @@ def update_message(message=""):
     USER_MESSAGE = message
 
 
-def fmt(goal_id, goal_vars):
+def fmt(goal_id, goal_vars, id_width):
+    if goal_id <= 0:
+        goal_id = " " * id_width
     name = goal_vars["name"]
     op = " " if goal_vars["open"] else "x"
     status = f"[{op}]" if goal_vars["switchable"] else f" {op} "
@@ -110,10 +112,11 @@ def loop(io: IO, goals: Graph, db_name: str):
             key=itemgetter(1, 2),
             reverse=True,
         )
+        id_width = len(str(max(g for g in rows.keys() if isinstance(g, int))))
         for item in index:
             goal_id = item[0]
             goal_vars = rows[goal_id]
-            io.write(fmt(goal_id, goal_vars))
+            io.write(fmt(goal_id, goal_vars, id_width))
         if USER_MESSAGE:
             io.write(USER_MESSAGE)
         update_message()
