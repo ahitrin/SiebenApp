@@ -1,6 +1,7 @@
 from typing import List
 
 from approvaltests import verify, Options  # type: ignore
+from approvaltests.reporters import GenericDiffReporterFactory  # type: ignore
 from approvaltests.reporters.generic_diff_reporter import GenericDiffReporter  # type: ignore
 
 from siebenapp.cli import IO, update_message, loop
@@ -39,7 +40,4 @@ def test_simple_scenario():
     db_name = ":memory:"
     goals = load(db_name, update_message)
     loop(io, goals, db_name)
-    verify(
-        "\n".join(log),
-        options=Options().with_reporter(GenericDiffReporter.create("/usr/bin/diff")),
-    )
+    verify("\n".join(log), reporter=GenericDiffReporterFactory().get_first_working())

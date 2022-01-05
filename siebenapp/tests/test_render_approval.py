@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from pprint import pprint
 
 from approvaltests import verify  # type: ignore
+from approvaltests.reporters import GenericDiffReporterFactory  # type: ignore
 
 from siebenapp.render import Renderer, GeometryProvider, render_lines
 from siebenapp.tests.dsl import build_goaltree, open_, clos_, selected, previous
@@ -64,4 +65,6 @@ def test_render_bug_example():
         pprint(result.edge_opts, out)
         print("\n== Lines", file=out)
         pprint(lines, out)
-        verify(out.getvalue())
+        verify(
+            out.getvalue(), reporter=GenericDiffReporterFactory().get_first_working()
+        )

@@ -1,6 +1,7 @@
 # coding: utf-8
 import pytest
 from approvaltests import verify  # type: ignore
+from approvaltests.reporters import GenericDiffReporterFactory  # type: ignore
 
 from siebenapp.system import split_long, dot_export
 from siebenapp.tests.dsl import build_goaltree, open_, clos_, selected, previous
@@ -39,4 +40,4 @@ def test_dot_export():
         clos_(6, "!@#$%^&*()\\/,.?"),
         open_(7, ";:[{}]<>", select=previous),
     )
-    verify(dot_export(goals))
+    verify(dot_export(goals), reporter=GenericDiffReporterFactory().get_first_working())
