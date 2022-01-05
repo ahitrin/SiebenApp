@@ -41,3 +41,46 @@ def test_simple_scenario():
     goals = load(db_name, update_message)
     loop(io, goals, db_name)
     verify("\n".join(log), reporter=GenericDiffReporterFactory().get_first_working())
+
+
+def test_complex_scenario():
+    log = []
+    commands = [
+        "r Cover all current features",
+        "a Filter view",
+        "a Toggle show open/closed goals",
+        "a Toggle show goal progress",
+        "a Toggle show switchable goals",
+        "a Toggle zoom and unzoom",
+        "2",
+        "h",
+        "6",
+        "l",
+        "2",
+        "z",
+        "2",
+        "c",
+        "z",
+        "f Toggle",
+        "n",
+        "2",
+        "c",
+        "f",
+        "p",
+        "t",
+        "n",
+        "t",
+        "4",
+        "c",
+        "2",
+        "c",
+        "p",
+        "c",
+        # exit
+        "q",
+    ]
+    io = DummyIO(commands, log)
+    db_name = ":memory:"
+    goals = load(db_name, update_message)
+    loop(io, goals, db_name)
+    verify("\n".join(log), reporter=GenericDiffReporterFactory().get_first_working())
