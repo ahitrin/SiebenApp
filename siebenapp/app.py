@@ -153,7 +153,9 @@ class SiebenApp(QMainWindow):
         self.toggleSwitchable.clicked.connect(
             self.with_refresh(self.toggle_switchable_view, False)
         )
-        self.toggleProgress.clicked.connect(self.with_refresh(self.toggle_progress_view, False))
+        self.toggleProgress.clicked.connect(
+            self.with_refresh(self.toggle_progress_view, False)
+        )
         # Re-creation of scrollAreaWidgetContents looks like dirty hack,
         # but at the current moment I haven't found a better solution.
         # Widget creation in __init__ does not work: lines disappear.
