@@ -174,10 +174,6 @@ class Renderer:
                     {
                         "row": row,
                         "col": col,
-                        "edge": [
-                            (child, self.edge_types[goal_id, child])
-                            for child in self.edges[goal_id]
-                        ],
                         "edge_render": [
                             (child, self.edge_types[goal_id, child])
                             for child in self.edges[goal_id]

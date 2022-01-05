@@ -113,7 +113,7 @@ def test_split_long_edges_using_fake_goals():
         open_(5, "top"),
     )
     result = Renderer(goals).build().graph
-    assert get_in(result, "edge") == {
+    assert get_in(result, "edge_render") == {
         5: [],
         4: [(5, EdgeType.PARENT)],
         "1_1": [(5, EdgeType.BLOCKER)],
@@ -132,7 +132,7 @@ def test_use_different_long_edge_types():
         open_(3, "B", []),
     )
     result = Renderer(goals).build().graph
-    assert get_in(result, "edge") == {
+    assert get_in(result, "edge_render") == {
         3: [],
         2: [(3, EdgeType.PARENT)],
         "1_1": [(3, EdgeType.BLOCKER)],
