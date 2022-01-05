@@ -20,6 +20,7 @@ def test_render_simplest_goal_tree():
             "col": 0,
             "col1": 0,
             "edge": [],
+            "edge_render": [],
             "name": "Alone",
             "open": True,
             "select": "select",

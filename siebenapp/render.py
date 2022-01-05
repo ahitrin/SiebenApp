@@ -165,6 +165,7 @@ class Renderer:
                     self.graph[goal_id] = {
                         "name": "",
                         "edge": [],
+                        "edge_render": [],
                         "switchable": False,
                         "select": None,
                         "open": True,
@@ -174,6 +175,10 @@ class Renderer:
                         "row": row,
                         "col": col,
                         "edge": [
+                            (child, self.edge_types[goal_id, child])
+                            for child in self.edges[goal_id]
+                        ],
+                        "edge_render": [
                             (child, self.edge_types[goal_id, child])
                             for child in self.edges[goal_id]
                         ],
@@ -247,7 +252,7 @@ def render_lines(
     }
 
     for goal_id, attrs in render_result.graph.items():
-        for e_target, e_type in attrs["edge"]:
+        for e_target, e_type in attrs["edge_render"]:
             target_attrs = render_result.graph[e_target]
             if isinstance(goal_id, int):
                 row, col1 = attrs["row"], attrs["col1"]
