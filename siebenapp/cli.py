@@ -64,9 +64,7 @@ def fmt(goal_id, goal_vars):
         selection = "_"
     children = ""
     if goal_vars["edge"]:
-        child_list = ",".join(
-            str(e[0]) for e in goal_vars["edge"] if isinstance(e[0], int)
-        )
+        child_list = ",".join(str(e[0]) for e in goal_vars["edge"])
         children = f" [{child_list}]"
     return f"{goal_id}{status}{selection}{name}{children}"
 
