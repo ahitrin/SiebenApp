@@ -51,7 +51,7 @@ For more examples, please visit `doc/examples` folder.
 Please take into consideration that here you see the very early Alpha release of the app. It means that a lot of compromises have taken place during its development. Among them there are following ones:
 
 1. **No packaging/installation yet** ([#1](https://github.com/ahitrin/SiebenApp/issues/1)). In order to run app, clone or download the code, and then use `make` to check/install dependencies and `make run` or `./sieben` to run.
-2. **Really simple UI**. There is a lack of buttons, icons and something like that. Most of actions are available by hotkeys only.
+2. **Really simple UI**. There is a lack of buttons, icons and something like that. Most of the actions are available by hotkeys only (see [tutorial](tutorial.md) for examples).
 
 All these points are planned to be fixed while moving from Alpha to Beta version.
 
