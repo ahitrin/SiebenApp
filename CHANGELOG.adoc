@@ -1,5 +1,44 @@
 = Changelog
 
+== Alpha version 0.9
+2022-01-09
+
+New/done deatures:
+
+* Filter goals https://github.com/ahitrin/SiebenApp/issues/136[#136]
+* Progress view https://github.com/ahitrin/SiebenApp/issues/177[#177]
+* Sort goals in CLI mode https://github.com/ahitrin/SiebenApp/issues/178[#178]
+* Adjust column count with +/- buttons
+* Do not show negative goal ids
+
+Bug fixes:
+
+* CLI: do not show links to pseudo-goals
+* Improve rendering speed (thx to py-spy!)
+
+Refactoring/cleanup:
+
+* Use Python 3.8+ syntax (walrus operator et al)
+* Use Python 3.10 on CI
+* Move rendering geometry logic from app.py to render.py and make it framework-agnostic, and cover it with tests
+* Use type aliases in render.py (WIP)
+* Move some common logic into the base Graph class in order to simplify all its children
+* Introduce @with_key decorator in order to simplify logic in all views
+
+Other improvements:
+
+* Cover CLI with tests
+* Add py-spy development dependency (for easier profiling)
+* Migrate from Travis CI to Github Actions
+* Update dependencies: pytest, pytest-cov, hypothesis, approvaltests, mypy, pyqt5, black (thx to @dependabot)
+* Update blog Jekyll dependencies
+* Update copyright @ 2022
+
+Compatibility breaks:
+
+* Drop support for Python 3.7
+* Get rid of pyilnt (mypy+black should be enough)
+
 == Alpha version 0.8
 2021-05-02
 
