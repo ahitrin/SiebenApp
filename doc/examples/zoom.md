@@ -1,6 +1,6 @@
 # Zoom / Unzoom
 
-Suppose you work on a large goal that could be separated into several separate steps (like most of goals do).
+Suppose you work on a large goal that could be separated into several steps (like most of the goals do).
 
 ![pic1](zoom/1-full-tree.png)
 
@@ -18,7 +18,7 @@ You may notice following things:
 
 1. All sub-goals that don't block the selected one have become invisible. Visible goal tree becomes much simpler than the original one!
 2. Goals enumeration is also changed. While original tree have more than 20 items, after zoom you only have 5 of them. So it's possible to use the simplest goal enumeration. Now you need to press only one number button to switch between sub-goals.
-3. Your main goal is still displayed below but it have no number and cannot be selected anyway. This is visual _hint_ that reminds you that your goal tree is zoomed.
+3. Your main goal is still displayed below, but it has no number and cannot be selected anyway. This is visual _hint_ that reminds you that your goal tree is zoomed.
 
 You may try to press `z` on another sub-goal. This causes further zooming.
 
@@ -30,7 +30,7 @@ When you change _view_ (using `v` button), zooming still remains here.
 
 As you can see, in _top view_ there are still 2 sub-goals like on the previous image.
 
-Your current zoom status is stored between application restarts so you don't have to be bothered about other sub-goals each time you have to restart the application. But when you need to see them again just select your lowest sub-goal in a tree ("zoom root") and press `z` again.
+Your current zoom status is stored between application restarts, so you don't have to be bothered about other sub-goals each time you have to restart the application. But when you need to see them again just select your lowest sub-goal in a tree ("zoom root") and press `z` again.
 
 ![pic2](zoom/6-unzoomed.png)
 
