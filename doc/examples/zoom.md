@@ -26,7 +26,7 @@ You may try to select another sub-goal (say, number `2`) and press `z` again. Th
 
 Your current zoom status is stored between application restarts, so you don't have to be bothered about other sub-goals each time you have to restart the application. But when you need to see them again just select your lowest sub-goal in a tree ("zoom root") and press `z` again as many times as you've pressed it before.
 
-![pic2](zoom/6-unzoomed.png)
+![pic2](zoom/5-unzoomed.png)
 
 Ta-dam! There are all of them again! Now you may grow and groom you goal tree or choose another sub-goal to work on.
 
