@@ -13,6 +13,7 @@ black = "==21.12b0"
 pytest-approvaltests = "==0.2.3"
 approvaltests = "==3.3.2"
 py-spy = "==0.3.11"
+dearpygui = "==1.2.3"
 
 [packages]
 PyQt5 = "==5.15.6"
