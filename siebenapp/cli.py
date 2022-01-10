@@ -54,7 +54,7 @@ def update_message(message=""):
 
 
 def fmt(goal_id, goal_vars, id_width):
-    if goal_id <= 0:
+    if goal_id < 0:
         goal_id = " " * id_width
     name = goal_vars["name"]
     op = " " if goal_vars["open"] else "x"
