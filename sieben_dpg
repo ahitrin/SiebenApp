@@ -28,16 +28,14 @@ goaltree = load(args.db)
 render_result = Renderer(goaltree).build()
 
 with dpg.window(tag="primary"):
-    with dpg.node_editor(callback=lambda x, y: None, delink_callback=lambda x, y: None):
-        for goal_id, attrs in render_result.graph.items():
-            if isinstance(goal_id, str):
-                continue
-            label = split_long(attrs["name"])
-            pos = [100 + attrs["col1"] * 300, attrs["row"] * 120]
-            with dpg.node(label=label, pos=pos):
-                pass
-
     dpg.bind_font(default_font)
+
+    for goal_id, attrs in render_result.graph.items():
+        if isinstance(goal_id, str):
+            continue
+        label = split_long(attrs["name"])
+        pos = [100 + attrs["col1"] * 300, attrs["row"] * 120]
+        dpg.draw_text(pos, label)
 
 dpg.show_viewport()
 dpg.set_primary_window("primary", True)
