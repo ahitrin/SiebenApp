@@ -33,9 +33,12 @@ with dpg.window(tag="primary"):
     for goal_id, attrs in render_result.graph.items():
         if isinstance(goal_id, str):
             continue
-        label = split_long(attrs["name"])
+        goal_text = split_long(attrs["name"])
         pos = [100 + attrs["col1"] * 300, attrs["row"] * 120]
-        dpg.draw_text(pos, label)
+        with dpg.group(horizontal=True, pos=pos):
+            if attrs["switchable"]:
+                dpg.add_checkbox()
+            dpg.add_text(goal_text)
 
 
 is_running = True
