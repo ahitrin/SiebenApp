@@ -3,9 +3,8 @@ from argparse import ArgumentParser
 
 import dearpygui.dearpygui as dpg
 
-from siebenapp.render import Renderer
-from siebenapp.switchable_view import ToggleSwitchableView
 from siebenapp.system import load, split_long
+from siebenapp.render import Renderer
 
 dpg.create_context()
 
@@ -32,17 +31,30 @@ render_result = Renderer(goaltree).build()
 with dpg.window(tag="primary"):
     dpg.bind_font(default_font)
 
+    for goal_id, attrs in render_result.graph.items():
+        if isinstance(goal_id, str):
+            continue
+        label = split_long(attrs["name"])
+        pos = [100 + attrs["col1"] * 300, attrs["row"] * 120]
+        dpg.draw_text(pos, label, size=15)
+        points = [
+            pos,
+            [pos[0] + 100, pos[1]],
+            [pos[0] + 100, pos[1] + 50],
+            [pos[0], pos[1] + 50],
+            pos,
+        ]
+        color = (255, 0, 0, 255) if attrs["open"] else (0, 255, 0, 255)
+        dpg.draw_polygon(points, color=color)
+
+
 is_running = True
 
 
 def key_handler(sender, app_data):
     global is_running
-    global render_result
     if app_data == 81:  # q
         is_running = False
-    elif app_data == 84:  # t
-        goaltree.accept(ToggleSwitchableView())
-        render_result = Renderer(goaltree).build()
     else:
         print(app_data)
 
@@ -54,27 +66,6 @@ dpg.show_viewport()
 dpg.set_primary_window("primary", True)
 
 while dpg.is_dearpygui_running() and is_running:
-    dpg.draw_polygon(
-        [[0, 0], [2000, 0], [2000, 2000], [0, 2000], [0, 0]],
-        fill=(127, 127, 127, 255),
-        parent="primary",
-    )
-    for goal_id, attrs in render_result.graph.items():
-        if isinstance(goal_id, str):
-            continue
-        label = split_long(attrs["name"])
-        pos = [100 + attrs["col1"] * 300, attrs["row"] * 120]
-        dpg.draw_text(pos, label, size=15, parent="primary")
-        points = [
-            pos,
-            [pos[0] + 100, pos[1]],
-            [pos[0] + 100, pos[1] + 50],
-            [pos[0], pos[1] + 50],
-            pos,
-        ]
-        color = (255, 0, 0, 255) if attrs["open"] else (0, 255, 0, 255)
-        dpg.draw_polygon(points, color=color, parent="primary")
-
     dpg.render_dearpygui_frame()
 
 dpg.destroy_context()
