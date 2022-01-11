@@ -2,6 +2,7 @@
 from argparse import ArgumentParser
 
 import dearpygui.dearpygui as dpg
+from dearpygui.demo import show_demo
 
 from siebenapp.system import load, split_long
 from siebenapp.render import Renderer
@@ -56,6 +57,8 @@ def key_handler(sender, app_data):
 
 with dpg.handler_registry():
     dpg.add_key_press_handler(callback=key_handler)
+
+show_demo()
 
 dpg.show_viewport()
 dpg.set_primary_window("primary", True)
