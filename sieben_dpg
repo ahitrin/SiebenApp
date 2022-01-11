@@ -27,6 +27,7 @@ args = parser.parse_args()
 goaltree = load(args.db)
 render_result = Renderer(goaltree).build()
 
+
 with dpg.window(tag="primary"):
     dpg.bind_font(default_font)
 
@@ -35,7 +36,16 @@ with dpg.window(tag="primary"):
             continue
         label = split_long(attrs["name"])
         pos = [100 + attrs["col1"] * 300, attrs["row"] * 120]
-        dpg.draw_text(pos, label)
+        dpg.draw_text(pos, label, size=15)
+        points = [
+            pos,
+            [pos[0] + 100, pos[1]],
+            [pos[0] + 100, pos[1] + 50],
+            [pos[0], pos[1] + 50],
+            pos,
+        ]
+        color = (255, 0, 0, 255) if attrs["open"] else (0, 255, 0, 255)
+        dpg.draw_polygon(points, color=color)
 
 dpg.show_viewport()
 dpg.set_primary_window("primary", True)
