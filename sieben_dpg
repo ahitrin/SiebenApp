@@ -7,6 +7,12 @@ from siebenapp.system import load, split_long
 from siebenapp.render import Renderer
 
 dpg.create_context()
+
+with dpg.font_registry():
+    with dpg.font("Ubuntu-R.ttf", 14) as f1:
+        dpg.add_font_range_hint(dpg.mvFontRangeHint_Cyrillic)
+        default_font = f1
+
 dpg.create_viewport(title="SiebenApp")
 dpg.setup_dearpygui()
 
@@ -30,6 +36,8 @@ with dpg.window(tag="primary"):
             pos = [100 + attrs["col1"] * 300, attrs["row"] * 120]
             with dpg.node(label=label, pos=pos):
                 pass
+
+    dpg.bind_font(default_font)
 
 dpg.show_viewport()
 dpg.set_primary_window("primary", True)
