@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+import dearpygui.dearpygui as dpg
+
+dpg.create_context()
+dpg.create_viewport(title="SiebenApp")
+dpg.setup_dearpygui()
+
+with dpg.window(tag="primary"):
+    dpg.add_text("primary window")
+    dpg.add_button(label="le button")
+
+dpg.show_viewport()
+dpg.set_primary_window("primary", True)
+dpg.start_dearpygui()
+dpg.destroy_context()

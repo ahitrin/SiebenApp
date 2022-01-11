@@ -23,7 +23,7 @@ install:
 	pipenv run python3 setup.py install
 
 format:
-	pipenv run black sieben siebenapp clieben
+	pipenv run black sieben siebenapp clieben sieben_dpg
 
 mypy:
 	pipenv run mypy --pretty -p siebenapp
