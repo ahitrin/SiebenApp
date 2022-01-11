@@ -35,7 +35,9 @@ with dpg.window(tag="primary"):
             continue
         goal_text = split_long(attrs["name"])
         pos = [100 + attrs["col1"] * 300, attrs["row"] * 120]
+        status_color = (255, 0, 0, 255) if attrs["open"] else (0, 255, 0, 255)
         with dpg.group(horizontal=True, pos=pos):
+            dpg.add_text(str(goal_id), color=status_color)
             if attrs["switchable"]:
                 dpg.add_checkbox()
             dpg.add_text(goal_text)
