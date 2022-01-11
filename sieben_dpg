@@ -33,16 +33,19 @@ with dpg.window(tag="primary"):
     dpg.bind_font(default_font)
 
 is_running = True
+updated = True
 
 
 def key_handler(sender, app_data):
     global is_running
     global render_result
+    global updated
     if app_data == 81:  # q
         is_running = False
     elif app_data == 84:  # t
         goaltree.accept(ToggleSwitchableView())
         render_result = Renderer(goaltree).build()
+        updated = True
     else:
         print(app_data)
 
@@ -54,26 +57,28 @@ dpg.show_viewport()
 dpg.set_primary_window("primary", True)
 
 while dpg.is_dearpygui_running() and is_running:
-    dpg.draw_polygon(
-        [[0, 0], [2000, 0], [2000, 2000], [0, 2000], [0, 0]],
-        fill=(127, 127, 127, 255),
-        parent="primary",
-    )
-    for goal_id, attrs in render_result.graph.items():
-        if isinstance(goal_id, str):
-            continue
-        label = split_long(attrs["name"])
-        pos = [100 + attrs["col1"] * 300, attrs["row"] * 120]
-        dpg.draw_text(pos, label, size=15, parent="primary")
-        points = [
-            pos,
-            [pos[0] + 100, pos[1]],
-            [pos[0] + 100, pos[1] + 50],
-            [pos[0], pos[1] + 50],
-            pos,
-        ]
-        color = (255, 0, 0, 255) if attrs["open"] else (0, 255, 0, 255)
-        dpg.draw_polygon(points, color=color, parent="primary")
+    if updated:
+        dpg.draw_polygon(
+            [[0, 0], [2000, 0], [2000, 2000], [0, 2000], [0, 0]],
+            fill=(127, 127, 127, 255),
+            parent="primary",
+        )
+        for goal_id, attrs in render_result.graph.items():
+            if isinstance(goal_id, str):
+                continue
+            label = split_long(attrs["name"])
+            pos = [100 + attrs["col1"] * 300, attrs["row"] * 120]
+            dpg.draw_text(pos, label, size=15, parent="primary")
+            points = [
+                pos,
+                [pos[0] + 100, pos[1]],
+                [pos[0] + 100, pos[1] + 50],
+                [pos[0], pos[1] + 50],
+                pos,
+            ]
+            color = (255, 0, 0, 255) if attrs["open"] else (0, 255, 0, 255)
+            dpg.draw_polygon(points, color=color, parent="primary")
+        updated = False
 
     dpg.render_dearpygui_frame()
 
