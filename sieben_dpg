@@ -50,7 +50,7 @@ def do_update():
             ) as table_id:
                 dpg.add_table_column()
                 with dpg.table_row():
-                    with dpg.group(horizontal=True) as inner_group:
+                    with dpg.group(horizontal=True):
                         if attrs["switchable"]:
                             dpg.add_checkbox()
                         dpg.add_text(str(goal_id), color=status_color)
