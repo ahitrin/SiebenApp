@@ -6,6 +6,7 @@ from dearpygui.demo import show_demo
 
 from siebenapp.system import load, split_long
 from siebenapp.render import Renderer
+from siebenapp.switchable_view import ToggleSwitchableView
 
 dpg.create_context()
 
@@ -27,17 +28,23 @@ parser.add_argument(
 args = parser.parse_args()
 goaltree = load(args.db)
 need_update = True
+drawn_items = []
 
 
 def do_update():
     render_result = Renderer(goaltree).build()
+    while drawn_items:
+        previous_tag = drawn_items.pop()
+        dpg.delete_item(previous_tag)
     for goal_id, attrs in render_result.graph.items():
         if isinstance(goal_id, str):
             continue
         goal_text = split_long(attrs["name"])
         pos = [100 + attrs["col1"] * 300, 50 + attrs["row"] * 120]
         status_color = (255, 0, 0, 255) if attrs["open"] else (0, 255, 0, 255)
-        with dpg.group(pos=pos, parent="primary"):
+        widget_tag = f"goal_{goal_id}"
+        drawn_items.append(widget_tag)
+        with dpg.group(pos=pos, parent="primary", tag=widget_tag):
             with dpg.table(
                 header_row=False, borders_outerV=True, borders_outerH=True, width=250
             ) as table_id:
@@ -59,8 +66,12 @@ is_running = True
 
 def key_handler(sender, app_data):
     global is_running
+    global need_update
     if app_data == 81:  # q
         is_running = False
+    elif app_data == 84:  # t
+        goaltree.accept(ToggleSwitchableView())
+        need_update = True
     else:
         print(app_data)
 
