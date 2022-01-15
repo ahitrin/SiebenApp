@@ -72,7 +72,7 @@ def close_dialog(*args):
 def show_filter_dialog():
     global is_dialog
     is_dialog = True
-    with dpg.window(label="Filter goals", id="dialog", modal=True):
+    with dpg.window(id="dialog", modal=True, no_title_bar=True):
         dpg.add_text("Filter by substring (leave empty to reset filtration)")
         dpg.add_input_text()
         with dpg.group(horizontal=True):
@@ -84,6 +84,8 @@ def key_handler(sender, app_data):
     global is_running
     global need_update
     if is_dialog:
+        if app_data == 256:  # Esc
+            close_dialog()
         return
     if app_data == 81:  # q
         is_running = False
