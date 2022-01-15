@@ -26,18 +26,18 @@ parser.add_argument(
 )
 args = parser.parse_args()
 goaltree = load(args.db)
-render_result = Renderer(goaltree).build()
+need_update = True
 
-with dpg.window(tag="primary"):
-    dpg.bind_font(default_font)
 
+def do_update():
+    render_result = Renderer(goaltree).build()
     for goal_id, attrs in render_result.graph.items():
         if isinstance(goal_id, str):
             continue
         goal_text = split_long(attrs["name"])
         pos = [100 + attrs["col1"] * 300, 50 + attrs["row"] * 120]
         status_color = (255, 0, 0, 255) if attrs["open"] else (0, 255, 0, 255)
-        with dpg.group(pos=pos):
+        with dpg.group(pos=pos, parent="primary"):
             with dpg.table(
                 header_row=False, borders_outerV=True, borders_outerH=True, width=250
             ) as table_id:
@@ -65,6 +65,9 @@ def key_handler(sender, app_data):
         print(app_data)
 
 
+with dpg.window(tag="primary"):
+    dpg.bind_font(default_font)
+
 with dpg.handler_registry():
     dpg.add_key_press_handler(callback=key_handler)
 
@@ -74,6 +77,9 @@ dpg.show_viewport()
 dpg.set_primary_window("primary", True)
 
 while dpg.is_dearpygui_running() and is_running:
+    if need_update:
+        do_update()
+        need_update = False
     dpg.render_dearpygui_frame()
 
 dpg.destroy_context()
