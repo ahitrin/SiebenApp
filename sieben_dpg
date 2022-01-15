@@ -3,6 +3,7 @@ from argparse import ArgumentParser
 
 import dearpygui.dearpygui as dpg
 
+from siebenapp.filter_view import FilterBy
 from siebenapp.open_view import ToggleOpenView
 from siebenapp.render import Renderer
 from siebenapp.switchable_view import ToggleSwitchableView
@@ -65,7 +66,11 @@ def do_update():
 
 def submit_dialog(sender, app_data, user_data):
     global is_dialog
+    global need_update
     is_dialog = False
+    user_input = dpg.get_value("dialog_input")
+    goaltree.accept(FilterBy(user_input))
+    need_update = True
     dpg.delete_item("dialog")
 
 
@@ -80,7 +85,7 @@ def show_filter_dialog():
     is_dialog = True
     with dpg.window(id="dialog", modal=True, no_title_bar=True):
         dpg.add_text("Filter by substring (leave empty to reset filtration)")
-        dpg.add_input_text()
+        dpg.add_input_text(tag="dialog_input")
         with dpg.group(horizontal=True):
             dpg.add_button(label="OK", width=75, callback=submit_dialog)
             dpg.add_button(label="Cancel", width=75, callback=close_dialog)
