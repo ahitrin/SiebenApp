@@ -2,7 +2,6 @@
 from argparse import ArgumentParser
 
 import dearpygui.dearpygui as dpg
-from dearpygui.demo import show_demo
 
 from siebenapp.open_view import ToggleOpenView
 from siebenapp.render import Renderer
@@ -85,8 +84,6 @@ with dpg.window(tag="primary"):
 
 with dpg.handler_registry():
     dpg.add_key_press_handler(callback=key_handler)
-
-show_demo()
 
 dpg.show_viewport()
 dpg.set_primary_window("primary", True)
