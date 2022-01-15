@@ -27,6 +27,8 @@ parser.add_argument(
 )
 args = parser.parse_args()
 goaltree = load(args.db)
+is_running = True
+is_dialog = False
 need_update = True
 drawn_items = []
 
@@ -61,14 +63,32 @@ def do_update():
                     dpg.highlight_table_row(table_id, 0, (192, 192, 192, 255))
 
 
-is_running = True
+def close_dialog(*args):
+    global is_dialog
+    is_dialog = False
+    dpg.configure_item("dialog", show=False)
+
+
+def show_filter_dialog():
+    global is_dialog
+    is_dialog = True
+    with dpg.window(label="Filter goals", id="dialog", modal=True):
+        dpg.add_text("Filter by substring (leave empty to reset filtration)")
+        dpg.add_input_text()
+        with dpg.group(horizontal=True):
+            dpg.add_button(label="OK", width=75, callback=lambda x: None)
+            dpg.add_button(label="Cancel", width=75, callback=close_dialog)
 
 
 def key_handler(sender, app_data):
     global is_running
     global need_update
+    if is_dialog:
+        return
     if app_data == 81:  # q
         is_running = False
+    elif app_data == 70:  # f
+        show_filter_dialog()
     elif app_data == 78:  # n
         goaltree.accept(ToggleOpenView())
         need_update = True
