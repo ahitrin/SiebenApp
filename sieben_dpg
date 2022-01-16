@@ -31,11 +31,12 @@ args = parser.parse_args()
 goaltree = load(args.db)
 is_running = True
 is_dialog = False
-need_update = True
+phase = "goals"  # no_update -> goals -> edges -> no_update
 drawn_items = []
 
 
-def do_update():
+def rebuild_goals():
+    global phase
     save(goaltree, args.db)
     render_result = Renderer(goaltree).build()
     while drawn_items:
@@ -64,15 +65,26 @@ def do_update():
                     dpg.highlight_table_row(table_id, 0, (128, 128, 128, 255))
                 elif attrs["select"] == "prev":
                     dpg.highlight_table_row(table_id, 0, (192, 192, 192, 255))
+    phase = "edges"
+
+
+def rebuild_edges():
+    global phase
+    for tag in drawn_items:
+        pos = dpg.get_item_pos(tag)
+        size = dpg.get_item_rect_size(tag)
+        print(f"{tag}: pos {pos} size {size}")
+
+    phase = "no_update"
 
 
 def submit_dialog(sender, app_data, user_data):
     global is_dialog
-    global need_update
+    global phase
     is_dialog = False
     user_input = dpg.get_value("dialog_input")
     goaltree.accept(user_data(user_input))
-    need_update = True
+    phase = "goals"
     dpg.delete_item("dialog")
 
 
@@ -97,7 +109,7 @@ def show_dialog(text, event_factory):
 
 def key_handler(sender, app_data):
     global is_running
-    global need_update
+    global phase
     if is_dialog:
         return
     if app_data == 81:  # q
@@ -108,10 +120,10 @@ def key_handler(sender, app_data):
         show_dialog("Filter by substring (leave empty to reset filtration)", FilterBy)
     elif app_data == 78:  # n
         goaltree.accept(ToggleOpenView())
-        need_update = True
+        phase = "goals"
     elif app_data == 84:  # t
         goaltree.accept(ToggleSwitchableView())
-        need_update = True
+        phase = "goals"
     else:
         print(app_data)
 
@@ -126,9 +138,10 @@ dpg.show_viewport()
 dpg.set_primary_window("primary", True)
 
 while dpg.is_dearpygui_running() and is_running:
-    if need_update:
-        do_update()
-        need_update = False
+    if phase == "goals":
+        rebuild_goals()
+    elif phase == "edges":
+        rebuild_edges()
     dpg.render_dearpygui_frame()
 
 dpg.destroy_context()
