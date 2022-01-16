@@ -3,7 +3,7 @@ from argparse import ArgumentParser
 
 import dearpygui.dearpygui as dpg
 
-from siebenapp.domain import Add
+from siebenapp.domain import Add, EdgeType
 from siebenapp.filter_view import FilterBy
 from siebenapp.open_view import ToggleOpenView
 from siebenapp.render import (
@@ -110,6 +110,10 @@ class DPGGeometry(GeometryProvider):
 
 def rebuild_edges():
     global phase
+    line_width = {
+        EdgeType.BLOCKER: 0.7,
+        EdgeType.PARENT: 2.5,
+    }
     lines = render_lines(DPGGeometry(), render_result)
     for edge_type in lines:
         for start, end in lines[edge_type]:
@@ -121,6 +125,7 @@ def rebuild_edges():
                 start.as_tuple(),
                 end.as_tuple(),
                 color=(127, 127, 127, 127, 255),
+                thickness=line_width[edge_type],
                 tag=tag,
                 parent="primary",
             )
