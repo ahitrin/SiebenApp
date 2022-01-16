@@ -264,9 +264,9 @@ def middle_point(left, right, numerator, denominator):
 
 def render_lines(
     gp: GeometryProvider, render_result: RenderResult
-) -> Dict[EdgeType, List[Tuple[int, int]]]:
+) -> Dict[EdgeType, List[Tuple[EdgeType, int, int]]]:
     edges = {}
-    lines: Dict[EdgeType, List[Tuple[int, int]]] = {
+    lines: Dict[EdgeType, List[Tuple[EdgeType, int, int]]] = {
         EdgeType.BLOCKER: [],
         EdgeType.PARENT: [],
     }
@@ -308,9 +308,9 @@ def render_lines(
                 else:
                     edges[e_target]["top"] = end
                     edges[e_target]["style"] = max(edges[e_target]["style"], e_type)
-            lines[e_type].append((start, end))
+            lines[e_type].append((e_type, start, end))
 
     for e in edges.values():
-        lines[e["style"]].append((e["bottom"], e["top"]))
+        lines[e["style"]].append((e["style"], e["bottom"], e["top"]))
 
     return lines

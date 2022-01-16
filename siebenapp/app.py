@@ -127,7 +127,7 @@ class CentralWidget(QWidget):
 
         for edge_type in lines:
             painter.setPen(self.EDGE_PENS[edge_type])
-            for start, end in lines[edge_type]:
+            for e_type, start, end in lines[edge_type]:
                 painter.drawLine(start, end)
 
 

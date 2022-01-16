@@ -116,7 +116,7 @@ def rebuild_edges():
     }
     lines = render_lines(DPGGeometry(), render_result)
     for edge_type in lines:
-        for start, end in lines[edge_type]:
+        for e_type, start, end in lines[edge_type]:
             tag = f"line {edge_type} {start}, {end}"
             if tag in drawn_items:
                 # looks like a bug in rendering: lines may duplicate
