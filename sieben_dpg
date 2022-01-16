@@ -69,7 +69,7 @@ def submit_dialog(sender, app_data, user_data):
     global need_update
     is_dialog = False
     user_input = dpg.get_value("dialog_input")
-    goaltree.accept(FilterBy(user_input))
+    goaltree.accept(user_data(user_input))
     need_update = True
     dpg.delete_item("dialog")
 
@@ -80,14 +80,16 @@ def close_dialog(sender, app_data, user_data):
     dpg.delete_item("dialog")
 
 
-def show_filter_dialog():
+def show_dialog(text, event_factory):
     global is_dialog
     is_dialog = True
     with dpg.window(id="dialog", modal=True, no_title_bar=True):
-        dpg.add_text("Filter by substring (leave empty to reset filtration)")
+        dpg.add_text(text)
         dpg.add_input_text(tag="dialog_input")
         with dpg.group(horizontal=True):
-            dpg.add_button(label="OK", width=75, callback=submit_dialog)
+            dpg.add_button(
+                label="OK", width=75, callback=submit_dialog, user_data=event_factory
+            )
             dpg.add_button(label="Cancel", width=75, callback=close_dialog)
 
 
@@ -99,7 +101,7 @@ def key_handler(sender, app_data):
     if app_data == 81:  # q
         is_running = False
     elif app_data == 70:  # f
-        show_filter_dialog()
+        show_dialog("Filter by substring (leave empty to reset filtration)", FilterBy)
     elif app_data == 78:  # n
         goaltree.accept(ToggleOpenView())
         need_update = True
