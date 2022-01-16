@@ -3,11 +3,12 @@ from argparse import ArgumentParser
 
 import dearpygui.dearpygui as dpg
 
+from siebenapp.domain import Add
 from siebenapp.filter_view import FilterBy
 from siebenapp.open_view import ToggleOpenView
 from siebenapp.render import Renderer
 from siebenapp.switchable_view import ToggleSwitchableView
-from siebenapp.system import load, split_long
+from siebenapp.system import load, split_long, save
 
 dpg.create_context()
 
@@ -35,6 +36,7 @@ drawn_items = []
 
 
 def do_update():
+    save(goaltree, args.db)
     render_result = Renderer(goaltree).build()
     while drawn_items:
         previous_tag = drawn_items.pop()
@@ -100,6 +102,8 @@ def key_handler(sender, app_data):
         return
     if app_data == 81:  # q
         is_running = False
+    elif app_data == 65:  # a
+        show_dialog("Add new goal", Add)
     elif app_data == 70:  # f
         show_dialog("Filter by substring (leave empty to reset filtration)", FilterBy)
     elif app_data == 78:  # n
