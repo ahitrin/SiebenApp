@@ -79,17 +79,19 @@ def rebuild_goals():
 
 
 class DPGGeometry(GeometryProvider):
-    @staticmethod
-    def _pos(row, col):
+    def _pos(self, row, col):
+        if col < 0:
+            return 0, self._pos(row, 0)[1]
         if (row, col) in nodes:
             return dpg.get_item_pos(nodes[(row, col)])
         return 100 + col * 300, 50 + row * 120
 
-    @staticmethod
-    def _size(row, col):
+    def _size(self, row, col):
+        if col < 0:
+            return 0, self._size(row, 0)[1]
         if (row, col) in nodes:
             return dpg.get_item_rect_size(nodes[(row, col)])
-        return 250, 60
+        return 250, 70
 
     def top_left(self, row, col):
         pos = self._pos(row, col)
