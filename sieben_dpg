@@ -95,10 +95,6 @@ def key_handler(sender, app_data):
     global is_running
     global need_update
     if is_dialog:
-        if app_data == 256:  # Esc
-            close_dialog(None, None, None)
-        elif app_data == 257:  # Enter
-            submit_dialog(None, None, None)
         return
     if app_data == 81:  # q
         is_running = False
