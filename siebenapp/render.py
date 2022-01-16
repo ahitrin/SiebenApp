@@ -19,6 +19,27 @@ class RenderResult:
     edge_opts: Dict[str, Tuple[int, int, int]]
 
 
+@dataclass(frozen=True)
+class Point:
+    x: int
+    y: int
+
+    def __add__(self, other: "Point") -> "Point":
+        return Point(self.x + other.x, self.y + other.y)
+
+    def __sub__(self, other: "Point") -> "Point":
+        return Point(self.x - other.x, self.y - other.y)
+
+    def __mul__(self, multiplier: float) -> "Point":
+        return Point(int(self.x * multiplier), int(self.y * multiplier))
+
+    def __truediv__(self, divisor: float) -> "Point":
+        return Point(int(self.x / divisor), int(self.y / divisor))
+
+    def __repr__(self):
+        return f"<{self.x}, {self.y}>"
+
+
 class GeometryProvider(Protocol):
     def top_left(self, row, col):
         raise NotImplementedError

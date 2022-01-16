@@ -1,33 +1,11 @@
 import io
-from dataclasses import dataclass
 from pprint import pprint
 
 from approvaltests import verify  # type: ignore
 from approvaltests.reporters import GenericDiffReporterFactory  # type: ignore
 
-from siebenapp.render import Renderer, GeometryProvider, render_lines
+from siebenapp.render import Renderer, GeometryProvider, render_lines, Point
 from siebenapp.tests.dsl import build_goaltree, open_, clos_, selected, previous
-
-
-@dataclass(frozen=True)
-class Point:
-    x: int
-    y: int
-
-    def __add__(self, other: "Point") -> "Point":
-        return Point(self.x + other.x, self.y + other.y)
-
-    def __sub__(self, other: "Point") -> "Point":
-        return Point(self.x - other.x, self.y - other.y)
-
-    def __mul__(self, multiplier: float) -> "Point":
-        return Point(int(self.x * multiplier), int(self.y * multiplier))
-
-    def __truediv__(self, divisor: float) -> "Point":
-        return Point(int(self.x / divisor), int(self.y / divisor))
-
-    def __repr__(self):
-        return f"<{self.x}, {self.y}>"
 
 
 class FakeGeometry(GeometryProvider):
