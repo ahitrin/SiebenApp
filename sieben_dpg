@@ -117,7 +117,6 @@ def rebuild_edges():
             if tag in drawn_items:
                 # looks like a bug in rendering: lines may duplicate
                 continue
-            print(f"draw {tag}")
             dpg.draw_line(
                 start.as_tuple(),
                 end.as_tuple(),
