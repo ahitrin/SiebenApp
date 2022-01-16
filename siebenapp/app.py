@@ -125,10 +125,9 @@ class CentralWidget(QWidget):
         painter = QPainter(self)
         lines = render_lines(self, self.render_result)
 
-        for edge_type in lines:
+        for edge_type, start, end in lines:
             painter.setPen(self.EDGE_PENS[edge_type])
-            for e_type, start, end in lines[edge_type]:
-                painter.drawLine(start, end)
+            painter.drawLine(start, end)
 
 
 class SiebenApp(QMainWindow):
