@@ -6,7 +6,13 @@ import dearpygui.dearpygui as dpg
 from siebenapp.domain import Add
 from siebenapp.filter_view import FilterBy
 from siebenapp.open_view import ToggleOpenView
-from siebenapp.render import Renderer
+from siebenapp.render import (
+    Renderer,
+    render_lines,
+    GeometryProvider,
+    Point,
+    RenderResult,
+)
 from siebenapp.switchable_view import ToggleSwitchableView
 from siebenapp.system import load, split_long, save
 
@@ -32,11 +38,14 @@ goaltree = load(args.db)
 is_running = True
 is_dialog = False
 phase = "goals"  # no_update -> goals -> edges -> no_update
+render_result = RenderResult({}, {})
 drawn_items = []
+nodes = {}
 
 
 def rebuild_goals():
     global phase
+    global render_result
     save(goaltree, args.db)
     render_result = Renderer(goaltree).build()
     while drawn_items:
@@ -50,6 +59,7 @@ def rebuild_goals():
         status_color = (255, 0, 0, 255) if attrs["open"] else (0, 255, 0, 255)
         widget_tag = f"goal_{goal_id}"
         drawn_items.append(widget_tag)
+        nodes[(attrs["row"], attrs["col"])] = widget_tag
         with dpg.group(pos=pos, parent="primary", tag=widget_tag):
             with dpg.table(
                 header_row=False, borders_outerV=True, borders_outerH=True, width=250
@@ -68,12 +78,54 @@ def rebuild_goals():
     phase = "edges"
 
 
+class DPGGeometry(GeometryProvider):
+    @staticmethod
+    def _pos(row, col):
+        if (row, col) in nodes:
+            return dpg.get_item_pos(nodes[(row, col)])
+        return 100 + col * 300, 50 + row * 120
+
+    @staticmethod
+    def _size(row, col):
+        if (row, col) in nodes:
+            return dpg.get_item_rect_size(nodes[(row, col)])
+        return 250, 60
+
+    def top_left(self, row, col):
+        pos = self._pos(row, col)
+        return Point(pos[0], pos[1])
+
+    def top_right(self, row, col):
+        size = self._size(row, col)
+        return self.top_left(row, col) + Point(size[0], 0)
+
+    def bottom_left(self, row, col):
+        size = self._size(row, col)
+        return self.top_left(row, col) + Point(0, size[1])
+
+    def bottom_right(self, row, col):
+        size = self._size(row, col)
+        return self.top_left(row, col) + Point(size[0], size[1])
+
+
 def rebuild_edges():
     global phase
-    for tag in drawn_items:
-        pos = dpg.get_item_pos(tag)
-        size = dpg.get_item_rect_size(tag)
-        print(f"{tag}: pos {pos} size {size}")
+    lines = render_lines(DPGGeometry(), render_result)
+    for edge_type in lines:
+        for start, end in lines[edge_type]:
+            tag = f"line {edge_type} {start}, {end}"
+            if tag in drawn_items:
+                # looks like a bug in rendering: lines may duplicate
+                continue
+            print(f"draw {tag}")
+            dpg.draw_line(
+                start.as_tuple(),
+                end.as_tuple(),
+                color=(127, 127, 127, 127, 255),
+                tag=tag,
+                parent="primary",
+            )
+            drawn_items.append(tag)
 
     phase = "no_update"
 
