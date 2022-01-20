@@ -1,0 +1,129 @@
+---
+layout: post
+title:  "Version 0.9 is released"
+date:   2022-01-20
+tags: news
+---
+
+Hello there!
+I've recently added few pretty features to SiebenApp, and it deserves a new release.
+Let's take a look what's happened (the most important only).
+
+## New features
+
+### Filter goals [#136](https://github.com/ahitrin/SiebenApp/issues/136)
+
+Let's imagine we have some kind of goal tree:
+
+![goal tree example](/SiebenApp/images/2022-01-20-release/filter-1.jpeg)
+
+A new hotkey, `f` provides a possibility to find goals by substring.
+When it's pressed, type any substring you need (finished with `Enter`):
+
+![filter by substring](/SiebenApp/images/2022-01-20-release/filter-2.jpeg)
+
+And then a new pseudo-goal appears as a reminder you're in a filter mode.
+All goals that do not have given substring become hidden.
+The only exception is selected goal - it's always shown without any change.
+Now, you could easily spot a subgoal you've looking for.
+
+![filtered tree](/SiebenApp/images/2022-01-20-release/filter-3.jpeg)
+
+To reset filtration, press `f` again and then `Enter`.
+Your tree should return to the previous state.
+
+This feature is most useful when working with large and complex goal trees.
+It may be difficult to find goals by eye.
+With filtering, it's much simpler now.
+
+### Progress view [#177](https://github.com/ahitrin/SiebenApp/issues/177)
+
+Again, a feature for large and complex goal trees.
+Time after time, I'd like to know how many steps are already closed for a given goal.
+A feeling of progress feeds motivation!
+
+A real example.
+Now I'm working on [#255](https://github.com/ahitrin/SiebenApp/issues/255).
+It's currently far from finish, and my goaltree in a moment looks following:
+
+![no progress](/SiebenApp/images/2022-01-20-release/progress-1.jpeg)
+
+How much work is actually done for the each step?
+Now, it could be detected with a single key press: `p`.
+Now we see a progress.
+
+![with progress](/SiebenApp/images/2022-01-20-release/progress-2.jpeg)
+
+Well, at least some work is already done (mostly within subgoal **4**).
+This feature is simple and far from completion, but it may already produce useful information for you.
+
+Few possible ways to improve it in the future:
+
+* Do not show progress for root goals during zoom ("[0/1]" for the whole goaltree is obviously incorrect)
+* Display ratio in percents
+* Use separate widget field for progress (instead of goal name)
+
+### Adjustable number of columns
+
+More, more new hotkeys!
+Now, let's take a look to `+` and `-` on your keyboard.
+
+I use different window sizes for SiebenApp, depending on my current workflow.
+Sometimes it may be used in a full-screen mode on a big monitor.
+Sometimes it may be used in a part-screen mode on a smaller laptop monitor.
+Fixed width of 4 columns is not suitable for all cases.
+
+![4 columns view](/SiebenApp/images/2022-01-20-release/width-1.jpeg)
+
+I don't like horizontal scrolling!
+Now I press `-`, and it's gone.
+
+![3 columns view](/SiebenApp/images/2022-01-20-release/width-2.jpeg)
+
+Here we have 3-columns rendering.
+
+![many columns view](/SiebenApp/images/2022-01-20-release/width-3.jpeg)
+
+For wide monitor, we could increase columns count using `+` hotkey.
+
+### Few CLI improvements
+
+CLI tool (`clieben`) is being develompent on the residual part of my spare time.
+How much is it?
+I guess, about few _minutes_ per month.
+With such little amount of investments, I simply try not to make it worse.
+
+So, here is a little sorting improvement.
+
+Before:
+![sorting before](/SiebenApp/images/2022-01-20-release/cli-1.jpeg)
+
+After:
+![sorting after](/SiebenApp/images/2022-01-20-release/cli-2.jpeg)
+
+For me, the second image looks slightly better.
+Open goals are groupped together so I don't need to scan the whole output for them.
+
+Of course, new features (filtering and progress) are also included, see [code](https://github.com/ahitrin/SiebenApp/blob/master/siebenapp/cli.py#L74).
+
+## Compatibility breaks
+
+The most important break is **dropped support for Python 3.7**.
+The minimal supported version is Python 3.8.
+
+## Future plans
+
+The most of my attention is currently focused on [moving out from Qt (#255)](https://github.com/ahitrin/SiebenApp/issues/255).
+I'm trying to build completely new UI using DearPyGui.
+For now, it's pretty ugly yet, but the work continues.
+
+![dpg look](/SiebenApp/images/2022-01-20-release/dpg.jpeg)
+
+The reason #1 is a desire to reduce a number of system-wide application dependencies: use only "Python + Py libraries" instead of "Python + Py libraries + Qt5".
+Nevertheless, this move could also significantly affect rendering algorythms.
+In Qt5 implementation, rendering have to bind each goal to the table cell.
+In DearPyGui, it could be free from such constraint.
+I hope to find better ways to draw complicated goal trees after leaving Qt.
+
+That's all for now.
+For more changes, please take a look at the [changelog](https://github.com/ahitrin/SiebenApp/blob/master/CHANGELOG.adoc#alpha-version-09).
