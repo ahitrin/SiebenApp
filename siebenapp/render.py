@@ -264,9 +264,9 @@ def middle_point(left, right, numerator, denominator):
 
 def render_lines(
     gp: GeometryProvider, render_result: RenderResult
-) -> List[Tuple[EdgeType, int, int]]:
+) -> List[Tuple[EdgeType, int, int, str]]:
     edges = {}
-    lines: List[Tuple[EdgeType, int, int]] = []
+    lines: List[Tuple[EdgeType, int, int, str]] = []
 
     for goal_id, attrs in render_result.graph.items():
         for e_target, e_type in attrs["edge_render"]:
@@ -305,9 +305,9 @@ def render_lines(
                 else:
                     edges[e_target]["top"] = end
                     edges[e_target]["style"] = max(edges[e_target]["style"], e_type)
-            lines.append((e_type, start, end))
+            lines.append((e_type, start, end, f"{goal_id}-{e_target}"))
 
     for e in edges.values():
-        lines.append((e["style"], e["bottom"], e["top"]))
+        lines.append((e["style"], e["bottom"], e["top"], ""))
 
     return lines
