@@ -81,7 +81,7 @@ def rebuild_goals():
     global nodes
     save(goaltree, args.db)
     render_result = Renderer(goaltree).build()
-    nodes = nodes[:]
+    nodes.clear()
     gp = DPGGeometry()
     while drawn_items:
         previous_tag = drawn_items.pop()
