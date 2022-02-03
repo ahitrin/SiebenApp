@@ -10,16 +10,16 @@ from siebenapp.tests.dsl import build_goaltree, open_, clos_, selected, previous
 
 class FakeGeometry(GeometryProvider):
     def top_left(self, row, col):
-        return Point(max(0, col * 100), row * 30 + 20)
+        return Point(col * 100, row * 100)
 
     def top_right(self, row, col):
-        return Point(max(0, col * 100 + 80), row * 30 + 20)
+        return Point(col * 100 + 50, row * 100)
 
     def bottom_left(self, row, col):
-        return Point(max(0, col * 100), row * 30)
+        return Point(col * 100, row * 100 + 50)
 
     def bottom_right(self, row, col):
-        return Point(max(0, col * 100 + 80), row * 30)
+        return Point(col * 100 + 50, row * 100 + 50)
 
 
 def test_render_bug_example():
