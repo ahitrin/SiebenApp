@@ -78,8 +78,10 @@ class DPGGeometry(GeometryProvider):
 def rebuild_goals():
     global phase
     global render_result
+    global nodes
     save(goaltree, args.db)
     render_result = Renderer(goaltree).build()
+    nodes = nodes[:]
     gp = DPGGeometry()
     while drawn_items:
         previous_tag = drawn_items.pop()
