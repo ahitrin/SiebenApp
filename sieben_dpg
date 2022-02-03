@@ -80,6 +80,7 @@ def rebuild_goals():
     global render_result
     save(goaltree, args.db)
     render_result = Renderer(goaltree).build()
+    gp = DPGGeometry()
     while drawn_items:
         previous_tag = drawn_items.pop()
         dpg.delete_item(previous_tag)
@@ -87,7 +88,8 @@ def rebuild_goals():
         if isinstance(goal_id, str):
             continue
         goal_text = split_long(attrs["name"])
-        pos = [100 + attrs["col1"] * 300, 50 + attrs["row"] * 120]
+        # pos = [100 + attrs["col1"] * 300, 50 + attrs["row"] * 120]
+        pos = gp.top_left(attrs["row"], attrs["col"]).as_tuple()
         status_color = (255, 0, 0, 255) if attrs["open"] else (0, 255, 0, 255)
         widget_tag = f"goal_{goal_id}"
         drawn_items.append(widget_tag)
