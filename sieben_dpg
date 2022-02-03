@@ -81,19 +81,22 @@ def rebuild_goals():
     global nodes
     save(goaltree, args.db)
     render_result = Renderer(goaltree).build()
+    gp = DPGGeometry()
     nodes.clear()
     while drawn_items:
         previous_tag = drawn_items.pop()
         dpg.delete_item(previous_tag)
+    add_to_nodes = {}
     for goal_id, attrs in render_result.graph.items():
         if isinstance(goal_id, str):
             continue
         goal_text = split_long(attrs["name"])
-        pos = [100 + attrs["col1"] * 300, 50 + attrs["row"] * 120]
+        row, col = attrs["row"], attrs["col1"]
+        pos = gp.top_left(row, col).as_tuple()
         status_color = (255, 0, 0, 255) if attrs["open"] else (0, 255, 0, 255)
         widget_tag = f"goal_{goal_id}"
         drawn_items.append(widget_tag)
-        nodes[(attrs["row"], attrs["col"])] = widget_tag
+        add_to_nodes[(row, col)] = widget_tag
         with dpg.group(pos=pos, parent="primary", tag=widget_tag):
             with dpg.table(
                 header_row=False, borders_outerV=True, borders_outerH=True, width=250
@@ -109,6 +112,7 @@ def rebuild_goals():
                     dpg.highlight_table_row(table_id, 0, (128, 128, 128, 255))
                 elif attrs["select"] == "prev":
                     dpg.highlight_table_row(table_id, 0, (192, 192, 192, 255))
+    nodes.update(add_to_nodes)
     phase = "edges"
 
 
