@@ -126,7 +126,8 @@ def rebuild_edges():
     for edge_type, start, end, _ in lines:
         tag = f"line {edge_type} {start}, {end}"
         if tag in drawn_items:
-            # looks like a bug in rendering: lines may duplicate
+            # lines may 'duplicate' when they're placed too close to each other
+            # tag duplication causes an error within draw_line
             continue
         dpg.draw_line(
             start.as_tuple(),
