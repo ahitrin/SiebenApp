@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from argparse import ArgumentParser
-
-from siebenapp.system import load, dot_export, save
+from os import path
+from siebenapp.system import load, dot_export, save, extract_subtree
 
 
 def print_dot(args):
@@ -15,7 +15,10 @@ def migrate(args):
 
 
 def extract(args):
-    print(f"Extract: {args.source_db} -> [{args.goal_id}] -> {args.target_db}")
+    tree = load(args.source_db).goaltree.goaltree
+    assert not path.exists(args.target_db), f"File {args.target_db} already exists!"
+    result = extract_subtree(tree, args.goal_id)
+    save(result, args.target_db)
 
 
 def main():
@@ -42,6 +45,7 @@ def main():
     )
     parser_extract.add_argument(
         "goal_id",
+        type=int,
         help="An id of the goal that should be set as a root goal of a new goaltree. "
         "All of its subgoals will be copied too (but not blockers). "
         "The simplest way to find a real id of a goal is to run `sieben-manage dot` on the source file.",

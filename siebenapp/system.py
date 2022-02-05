@@ -250,3 +250,7 @@ def dot_export(goals):
             lines.append(f"{edge[0]} -> {num} [{line_attrs}];")
     body = "\n".join(lines)
     return f"digraph g {{\nnode [shape=box];\n{body}\n}}"
+
+
+def extract_subtree(source_goals: Graph, goal_id: int) -> Graph:
+    pass
