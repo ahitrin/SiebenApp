@@ -190,8 +190,9 @@ def key_handler(sender, app_data):
         goaltree.accept(ToggleSwitchableView())
         phase = "goals"
     elif app_data in (61, 334):  # +
-        columns += 1
-        phase = "goals"
+        if columns < 100:
+            columns += 1
+            phase = "goals"
     elif app_data in (45, 333):  # -
         if columns > 1:
             columns -= 1

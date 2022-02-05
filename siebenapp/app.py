@@ -363,7 +363,7 @@ class SiebenApp(QMainWindow):
     def change_columns(self, delta):
         self.force_refresh = True
         new_columns = self.columns + delta
-        if 1 <= new_columns:
+        if 1 <= new_columns <= 100:
             self.columns = new_columns
 
 
