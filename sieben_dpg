@@ -118,9 +118,9 @@ def rebuild_goals():
 
 def rebuild_edges():
     global phase
-    line_width = {
-        EdgeType.BLOCKER: 0.7,
-        EdgeType.PARENT: 2.5,
+    line_color = {
+        EdgeType.BLOCKER: (70, 70, 70, 255),
+        EdgeType.PARENT: (180, 180, 180, 255),
     }
     lines = render_lines(DPGGeometry(), render_result)
     for edge_type, start, end, _ in lines:
@@ -132,8 +132,7 @@ def rebuild_edges():
         dpg.draw_line(
             start.as_tuple(),
             end.as_tuple(),
-            color=(127, 127, 127, 127, 255),
-            thickness=line_width[edge_type],
+            color=line_color[edge_type],
             tag=tag,
             parent="primary",
         )
