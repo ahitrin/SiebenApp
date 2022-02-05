@@ -196,7 +196,8 @@ def key_handler(sender, app_data):
         if columns > 1:
             columns -= 1
             phase = "goals"
-    else:
+    elif app_data not in (340, 341, 342, 343, 344, 345, 346):
+        # ignore mod keys
         print(app_data)
 
 
