@@ -41,6 +41,7 @@ phase = "goals"  # no_update -> goals -> edges -> no_update
 render_result = RenderResult({}, {})
 drawn_items = []
 nodes = {}
+columns = Renderer.DEFAULT_WIDTH
 
 
 class DPGGeometry(GeometryProvider):
@@ -80,7 +81,7 @@ def rebuild_goals():
     global render_result
     global nodes
     save(goaltree, args.db)
-    render_result = Renderer(goaltree).build()
+    render_result = Renderer(goaltree, columns).build()
     gp = DPGGeometry()
     nodes.clear()
     while drawn_items:
@@ -173,6 +174,7 @@ def show_dialog(text, event_factory):
 def key_handler(sender, app_data):
     global is_running
     global phase
+    global columns
     if is_dialog:
         return
     if app_data == 81:  # q
@@ -187,6 +189,13 @@ def key_handler(sender, app_data):
     elif app_data == 84:  # t
         goaltree.accept(ToggleSwitchableView())
         phase = "goals"
+    elif app_data in (61, 334):  # +
+        columns += 1
+        phase = "goals"
+    elif app_data in (45, 333):  # -
+        if columns > 1:
+            columns -= 1
+            phase = "goals"
     else:
         print(app_data)
 
