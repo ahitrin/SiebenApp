@@ -2,15 +2,15 @@
 import sqlite3
 from html import escape
 from os import path
-from typing import Callable, List, Dict
+from typing import Callable, List, Dict, Set
 
-from siebenapp.progress_view import ProgressView
-from siebenapp.filter_view import FilterView
 from siebenapp.domain import EdgeType, Graph
-from siebenapp.goaltree import Goals
 from siebenapp.enumeration import Enumeration
-from siebenapp.switchable_view import SwitchableView
+from siebenapp.filter_view import FilterView
+from siebenapp.goaltree import Goals, GoalsData, EdgesData, OptionsData
 from siebenapp.open_view import OpenView
+from siebenapp.progress_view import ProgressView
+from siebenapp.switchable_view import SwitchableView
 from siebenapp.zoom import Zoom
 
 MIGRATIONS = [
@@ -253,4 +253,32 @@ def dot_export(goals):
 
 
 def extract_subtree(source_goals: Graph, goal_id: int) -> Graph:
-    pass
+    source_data = source_goals.q(keys="name,edge,open")
+    assert goal_id in source_data.keys(), f"Cannot find goal with id {goal_id}"
+    target_goals: Set[int] = set()
+    goals_to_add: Set[int] = {goal_id}
+    goals_data: GoalsData = []
+    edges_data: EdgesData = []
+    options_data: OptionsData = []
+    while goals_to_add:
+        goal = goals_to_add.pop()
+        attrs = source_data[goal]
+        target_goals.add(goal)
+        goals_data.append((goal, attrs["name"], attrs["open"]))
+        edges_data.extend((goal, target_, type_) for target_, type_ in attrs["edge"])
+        goals_to_add.update(
+            set(
+                edge[0]
+                for edge in attrs["edge"]
+                if edge[1] == EdgeType.PARENT and edge[0] not in target_goals
+            )
+        )
+    edges_data = [edge for edge in edges_data if edge[1] in target_goals]
+    remap = {old: idx + 1 for idx, old in enumerate(sorted(target_goals))}
+    goals_data = [
+        (remap[goal_id], name, is_open) for goal_id, name, is_open in goals_data
+    ]
+    edges_data = [
+        (remap[source], remap[target], e_type) for source, target, e_type in edges_data
+    ]
+    return Goals.build(goals_data, edges_data, options_data)
