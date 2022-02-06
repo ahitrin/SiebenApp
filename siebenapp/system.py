@@ -253,6 +253,8 @@ def dot_export(goals):
 
 
 def extract_subtree(source_goals: Graph, goal_id: int) -> Graph:
+    while not isinstance(source_goals, Goals):
+        source_goals = source_goals.goaltree
     source_data = source_goals.q(keys="name,edge,open")
     assert goal_id in source_data.keys(), f"Cannot find goal with id {goal_id}"
     target_goals: Set[int] = set()
