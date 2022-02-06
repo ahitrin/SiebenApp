@@ -3,8 +3,10 @@ import pytest
 from approvaltests import verify  # type: ignore
 from approvaltests.reporters import GenericDiffReporterFactory  # type: ignore
 
+from siebenapp.domain import Select
 from siebenapp.system import split_long, dot_export, extract_subtree
 from siebenapp.tests.dsl import build_goaltree, open_, clos_, selected, previous
+from siebenapp.zoom import ToggleZoom, Zoom
 
 
 @pytest.mark.parametrize(
@@ -57,19 +59,34 @@ def extract_source():
     )
 
 
+@pytest.fixture()
+def extract_target():
+    return Zoom(
+        build_goaltree(
+            open_(1, "Extract root", [2, 3], select=selected),
+            open_(2, "Subgoal", blockers=[3]),
+            open_(3, "Selected subgoal (selection will be lost)", [4]),
+            clos_(4, "Closed subgoal"),
+        )
+    )
+
+
 def test_extract_wrong_goal_id(extract_source):
     with pytest.raises(AssertionError):
         extract_subtree(extract_source, 10)
 
 
-def test_extract_successful(extract_source):
-    target = extract_subtree(extract_source, 2)
-    expected = build_goaltree(
-        open_(1, "Extract root", [2, 3], select=selected),
-        open_(2, "Subgoal", blockers=[3]),
-        open_(3, "Selected subgoal (selection will be lost)", [4]),
-        clos_(4, "Closed subgoal"),
+def test_extract_successful(extract_source, extract_target):
+    result = extract_subtree(extract_source, 2)
+    assert extract_target.q(keys="name,edge,open,selection") == result.q(
+        keys="name,edge,open,selection"
     )
-    assert expected.q(keys="name,edge,open,selection") == target.q(
+
+
+def test_zoom_after_extract(extract_source, extract_target):
+    result = extract_subtree(extract_source, 2)
+    result.accept_all(Select(3), ToggleZoom())
+    extract_target.accept_all(Select(3), ToggleZoom())
+    assert extract_target.q(keys="name,edge,open,selection") == result.q(
         keys="name,edge,open,selection"
     )
