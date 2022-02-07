@@ -22,7 +22,7 @@ All of this seem undesirable.
 
 ## Decision
 
-We *should not* allow to enter user-defined regular expressions in Sieben.
+We *should not* allow entering user-defined regular expressions in Sieben.
 Only substring-based logic must be allowed.
 
 ## Consequences
