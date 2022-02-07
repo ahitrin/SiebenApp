@@ -27,6 +27,7 @@ from siebenapp.domain import (
 )
 from siebenapp.goaltree import Goals
 from siebenapp.filter_view import FilterView, FilterBy
+from siebenapp.layers import wrap_with_views
 from siebenapp.open_view import OpenView, ToggleOpenView
 from siebenapp.switchable_view import SwitchableView, ToggleSwitchableView
 from siebenapp.system import run_migrations, save_updates
@@ -42,7 +43,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 
     def __init__(self):
         super().__init__()
-        self.goaltree = FilterView(SwitchableView(OpenView(Zoom(Goals("Root")))))
+        self.goaltree = wrap_with_views(Zoom(Goals("Root")))
         self.database = sqlite3.connect(":memory:")
 
     @initialize()
@@ -200,4 +201,4 @@ def build_goals(conn):
             f"Goals: {goals}, Edges: {edges}, Settings: {db_settings}, Zoom: {zoom_data}"
         )
         goals = Goals.build(goals, edges, db_settings)
-        return FilterView(SwitchableView(OpenView(Zoom.build(goals, zoom_data))))
+        return wrap_with_views(Zoom.build(goals, zoom_data))

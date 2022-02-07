@@ -5,10 +5,7 @@ from approvaltests.reporters import GenericDiffReporterFactory  # type: ignore
 
 from siebenapp.domain import Select
 from siebenapp.enumeration import Enumeration
-from siebenapp.filter_view import FilterView
-from siebenapp.open_view import OpenView
-from siebenapp.progress_view import ProgressView
-from siebenapp.switchable_view import SwitchableView
+from siebenapp.layers import wrap_with_views
 from siebenapp.system import split_long, dot_export, extract_subtree
 from siebenapp.tests.dsl import build_goaltree, open_, clos_, selected, previous
 from siebenapp.zoom import ToggleZoom, Zoom
@@ -54,27 +51,21 @@ def test_dot_export():
 def extract_source():
     # Legend: goals marked with 'NX' must not be extracted
     return Enumeration(
-        FilterView(
-            SwitchableView(
-                OpenView(
-                    ProgressView(
-                        Zoom(
-                            build_goaltree(
-                                open_(1, "Root NX", [2, 3], select=selected),
-                                open_(2, "Extract root", [4, 5], blockers=[3]),
-                                open_(3, "External blocker NX", [7]),
-                                open_(4, "Subgoal", blockers=[5]),
-                                open_(
-                                    5,
-                                    "Selected subgoal (selection will be lost)",
-                                    [6],
-                                    select=previous,
-                                ),
-                                clos_(6, "Closed subgoal", blockers=[7]),
-                                clos_(7, "Another external blocker NX"),
-                            )
-                        )
-                    )
+        wrap_with_views(
+            Zoom(
+                build_goaltree(
+                    open_(1, "Root NX", [2, 3], select=selected),
+                    open_(2, "Extract root", [4, 5], blockers=[3]),
+                    open_(3, "External blocker NX", [7]),
+                    open_(4, "Subgoal", blockers=[5]),
+                    open_(
+                        5,
+                        "Selected subgoal (selection will be lost)",
+                        [6],
+                        select=previous,
+                    ),
+                    clos_(6, "Closed subgoal", blockers=[7]),
+                    clos_(7, "Another external blocker NX"),
                 )
             )
         )

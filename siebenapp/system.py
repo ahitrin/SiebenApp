@@ -6,11 +6,8 @@ from typing import Callable, List, Dict, Set
 
 from siebenapp.domain import EdgeType, Graph
 from siebenapp.enumeration import Enumeration
-from siebenapp.filter_view import FilterView
 from siebenapp.goaltree import Goals, GoalsData, EdgesData, OptionsData
-from siebenapp.open_view import OpenView
-from siebenapp.progress_view import ProgressView
-from siebenapp.switchable_view import SwitchableView
+from siebenapp.layers import wrap_with_views
 from siebenapp.zoom import Zoom
 
 MIGRATIONS = [
@@ -182,7 +179,7 @@ def load(filename: str, message_fn: Callable[[str], None] = None) -> Enumeration
     else:
         goals = Goals("Rename me", message_fn)
         zoom = Zoom(goals)
-    return Enumeration(FilterView(SwitchableView(OpenView(ProgressView(zoom)))))
+    return Enumeration(wrap_with_views(zoom))
 
 
 def run_migrations(
