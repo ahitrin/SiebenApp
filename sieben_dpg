@@ -37,7 +37,7 @@ args = parser.parse_args()
 goaltree = load(args.db)
 is_running = True
 is_dialog = False
-phase = "goals"  # no_update -> goals -> edges -> no_update
+phase = "zero"  # zero -> loop [ goals -> edges -> no_update -> ... ]
 render_result = RenderResult({}, {})
 drawn_items = []
 nodes = {}
@@ -216,6 +216,8 @@ while dpg.is_dearpygui_running() and is_running:
         rebuild_goals()
     elif phase == "edges":
         rebuild_edges()
+    elif phase == "zero":
+        phase = "goals"
     dpg.render_dearpygui_frame()
 
 dpg.destroy_context()
