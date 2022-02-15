@@ -77,7 +77,7 @@ class DPGGeometry(GeometryProvider):
 
 
 def text_width(text: str) -> int:
-    size = dpg.get_text_size(text,font=default_font)
+    size = dpg.get_text_size(text, font=default_font)
     return size[0] if size is not None else 0
 
 
@@ -109,7 +109,10 @@ def rebuild_goals():
                 widget_width += 50
             print(f"width {widget_width}")
             with dpg.table(
-                header_row=False, borders_outerV=True, borders_outerH=True, width=widget_width
+                header_row=False,
+                borders_outerV=True,
+                borders_outerH=True,
+                width=widget_width,
             ) as table_id:
                 dpg.add_table_column()
                 with dpg.table_row():
