@@ -181,7 +181,7 @@ def close_dialog(sender=None, app_data=None, user_data=None):
     dpg.delete_item("dialog")
 
 
-def show_dialog(text, event_factory, default_value=None):
+def show_dialog(text, event_factory, default_value=""):
     global dialog_event_factory
     dialog_event_factory = event_factory
     vp_width = dpg.get_viewport_width()
