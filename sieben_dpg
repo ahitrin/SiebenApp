@@ -15,6 +15,7 @@ from siebenapp.domain import (
 )
 from siebenapp.filter_view import FilterBy
 from siebenapp.open_view import ToggleOpenView
+from siebenapp.progress_view import ToggleProgress
 from siebenapp.render import (
     Renderer,
     render_lines,
@@ -240,6 +241,9 @@ def key_handler(sender, app_data):
         phase = "goals"
     elif app_data == 78:  # n
         goaltree.accept(ToggleOpenView())
+        phase = "goals"
+    elif app_data == 80:  # p
+        goaltree.accept(ToggleProgress())
         phase = "goals"
     elif app_data == 84:  # t
         goaltree.accept(ToggleSwitchableView())
