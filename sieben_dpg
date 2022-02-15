@@ -26,6 +26,7 @@ from siebenapp.render import (
 )
 from siebenapp.switchable_view import ToggleSwitchableView
 from siebenapp.system import load, split_long, save
+from siebenapp.zoom import ToggleZoom
 
 dpg.create_context()
 
@@ -252,6 +253,9 @@ def key_handler(sender, app_data):
         show_dialog("Rename goal", Rename, selected_text)
     elif app_data == 84:  # t
         goaltree.accept(ToggleSwitchableView())
+        phase = "goals"
+    elif app_data == 90:  # z
+        goaltree.accept(ToggleZoom())
         phase = "goals"
     elif app_data == 32:  # space
         goaltree.accept(HoldSelect())
