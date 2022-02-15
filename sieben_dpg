@@ -12,6 +12,7 @@ from siebenapp.domain import (
     Insert,
     ToggleLink,
     HoldSelect,
+    Rename,
 )
 from siebenapp.filter_view import FilterBy
 from siebenapp.open_view import ToggleOpenView
@@ -179,7 +180,7 @@ def close_dialog(sender=None, app_data=None, user_data=None):
     dpg.delete_item("dialog")
 
 
-def show_dialog(text, event_factory):
+def show_dialog(text, event_factory, default_value=None):
     global dialog_event_factory
     dialog_event_factory = event_factory
     vp_width = dpg.get_viewport_width()
@@ -194,7 +195,7 @@ def show_dialog(text, event_factory):
     ):
         with dpg.group(horizontal=True):
             dpg.add_text(text)
-            dpg.add_input_text(tag="dialog_input")
+            dpg.add_input_text(tag="dialog_input", default_value=default_value)
             dpg.focus_item("dialog_input")
             with dpg.group():
                 dpg.add_button(
@@ -245,6 +246,10 @@ def key_handler(sender, app_data):
     elif app_data == 80:  # p
         goaltree.accept(ToggleProgress())
         phase = "goals"
+    elif app_data == 82:  # r
+        data = goaltree.q(keys="name,select").values()
+        selected_text = [x["name"] for x in data if x["select"] == "select"].pop()
+        show_dialog("Rename goal", Rename, selected_text)
     elif app_data == 84:  # t
         goaltree.accept(ToggleSwitchableView())
         phase = "goals"
