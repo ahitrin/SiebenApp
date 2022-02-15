@@ -76,6 +76,11 @@ class DPGGeometry(GeometryProvider):
         return self.top_left(row, col) + Point(size[0], size[1])
 
 
+def text_width(text: str) -> int:
+    size = dpg.get_text_size(text,font=default_font)
+    return size[0] if size is not None else 0
+
+
 def rebuild_goals():
     global phase
     global render_result
@@ -99,8 +104,12 @@ def rebuild_goals():
         drawn_items.append(widget_tag)
         add_to_nodes[(row, col)] = widget_tag
         with dpg.group(pos=pos, parent="primary", tag=widget_tag):
+            widget_width = text_width(goal_text) + text_width(str(goal_id)) + 20
+            if attrs["switchable"]:
+                widget_width += 50
+            print(f"width {widget_width}")
             with dpg.table(
-                header_row=False, borders_outerV=True, borders_outerH=True, width=250
+                header_row=False, borders_outerV=True, borders_outerH=True, width=widget_width
             ) as table_id:
                 dpg.add_table_column()
                 with dpg.table_row():
