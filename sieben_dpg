@@ -3,7 +3,15 @@ from argparse import ArgumentParser
 
 import dearpygui.dearpygui as dpg
 
-from siebenapp.domain import Add, EdgeType, Select, ToggleClose, Delete, Insert
+from siebenapp.domain import (
+    Add,
+    EdgeType,
+    Select,
+    ToggleClose,
+    Delete,
+    Insert,
+    ToggleLink,
+)
 from siebenapp.filter_view import FilterBy
 from siebenapp.open_view import ToggleOpenView
 from siebenapp.render import (
@@ -223,6 +231,12 @@ def key_handler(sender, app_data):
         show_dialog("Filter by substring (leave empty to reset filtration)", FilterBy)
     elif app_data == 73:  # i
         show_dialog("Insert new goal", Insert)
+    elif app_data == 75:  # k
+        goaltree.accept(ToggleLink(edge_type=EdgeType.PARENT))
+        phase = "goals"
+    elif app_data == 76:  # l
+        goaltree.accept(ToggleLink())
+        phase = "goals"
     elif app_data == 78:  # n
         goaltree.accept(ToggleOpenView())
         phase = "goals"
