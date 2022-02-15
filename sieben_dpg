@@ -3,7 +3,7 @@ from argparse import ArgumentParser
 
 import dearpygui.dearpygui as dpg
 
-from siebenapp.domain import Add, EdgeType
+from siebenapp.domain import Add, EdgeType, Select
 from siebenapp.filter_view import FilterBy
 from siebenapp.open_view import ToggleOpenView
 from siebenapp.render import (
@@ -208,6 +208,9 @@ def key_handler(sender, app_data):
         return
     if app_data == 81:  # q
         is_running = False
+    elif 48 <= app_data <= 57:  # 0-9
+        goaltree.accept(Select(app_data - 48))
+        phase = "goals"
     elif app_data == 65:  # a
         show_dialog("Add new goal", Add)
     elif app_data == 70:  # f
