@@ -107,7 +107,6 @@ def rebuild_goals():
             widget_width = text_width(goal_text) + text_width(str(goal_id)) + 20
             if attrs["switchable"]:
                 widget_width += 50
-            print(f"width {widget_width}")
             with dpg.table(
                 header_row=False,
                 borders_outerV=True,
