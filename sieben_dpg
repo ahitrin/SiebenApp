@@ -172,14 +172,28 @@ def close_dialog(sender, app_data, user_data):
 def show_dialog(text, event_factory):
     global is_dialog
     is_dialog = True
-    with dpg.window(id="dialog", modal=True, no_title_bar=True):
-        dpg.add_text(text)
-        dpg.add_input_text(tag="dialog_input")
+    vp_width = dpg.get_viewport_width()
+    vp_height = dpg.get_viewport_height()
+    dialog_pos = (0, vp_height // 2)
+    with dpg.window(
+        id="dialog",
+        modal=True,
+        no_title_bar=True,
+        pos=dialog_pos,
+        width=vp_width - 10,
+    ):
         with dpg.group(horizontal=True):
-            dpg.add_button(
-                label="OK", width=75, callback=submit_dialog, user_data=event_factory
-            )
-            dpg.add_button(label="Cancel", width=75, callback=close_dialog)
+            dpg.add_text(text)
+            dpg.add_input_text(tag="dialog_input")
+            with dpg.group():
+                dpg.add_button(
+                    label="OK",
+                    width=75,
+                    callback=submit_dialog,
+                    user_data=event_factory,
+                )
+                dpg.add_spacer(height=15)
+                dpg.add_button(label="Cancel", width=75, callback=close_dialog)
 
 
 def key_handler(sender, app_data):
