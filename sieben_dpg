@@ -11,6 +11,7 @@ from siebenapp.domain import (
     Delete,
     Insert,
     ToggleLink,
+    HoldSelect,
 )
 from siebenapp.filter_view import FilterBy
 from siebenapp.open_view import ToggleOpenView
@@ -242,6 +243,9 @@ def key_handler(sender, app_data):
         phase = "goals"
     elif app_data == 84:  # t
         goaltree.accept(ToggleSwitchableView())
+        phase = "goals"
+    elif app_data == 32:  # space
+        goaltree.accept(HoldSelect())
         phase = "goals"
     elif app_data in (61, 334):  # +
         if columns < 100:
