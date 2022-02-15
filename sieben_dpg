@@ -3,7 +3,7 @@ from argparse import ArgumentParser
 
 import dearpygui.dearpygui as dpg
 
-from siebenapp.domain import Add, EdgeType, Select
+from siebenapp.domain import Add, EdgeType, Select, ToggleClose
 from siebenapp.filter_view import FilterBy
 from siebenapp.open_view import ToggleOpenView
 from siebenapp.render import (
@@ -213,6 +213,9 @@ def key_handler(sender, app_data):
         phase = "goals"
     elif app_data == 65:  # a
         show_dialog("Add new goal", Add)
+    elif app_data == 67:  # c
+        goaltree.accept(ToggleClose())
+        phase = "goals"
     elif app_data == 70:  # f
         show_dialog("Filter by substring (leave empty to reset filtration)", FilterBy)
     elif app_data == 78:  # n
