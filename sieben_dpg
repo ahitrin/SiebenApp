@@ -129,7 +129,7 @@ def rebuild_goals():
                 with dpg.table_row():
                     with dpg.group(horizontal=True):
                         if attrs["switchable"]:
-                            dpg.add_checkbox()
+                            dpg.add_checkbox(default_value=not attrs["open"])
                         dpg.add_text(str(goal_id), color=status_color)
                         dpg.add_text(goal_text)
                 if attrs["select"] == "select":
