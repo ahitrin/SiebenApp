@@ -219,6 +219,7 @@ with dpg.window(tag="primary"):
 with dpg.handler_registry():
     dpg.add_key_press_handler(callback=key_handler)
 
+dpg.maximize_viewport()
 dpg.show_viewport()
 dpg.set_primary_window("primary", True)
 
