@@ -185,6 +185,7 @@ def show_dialog(text, event_factory):
         with dpg.group(horizontal=True):
             dpg.add_text(text)
             dpg.add_input_text(tag="dialog_input")
+            dpg.focus_item("dialog_input")
             with dpg.group():
                 dpg.add_button(
                     label="OK",
