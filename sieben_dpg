@@ -62,7 +62,7 @@ class DPGGeometry(GeometryProvider):
             return 0, self._pos(row, 0)[1]
         if (row, col) in nodes:
             return dpg.get_item_pos(nodes[(row, col)])
-        return 100 + col * 300, 50 + row * 120
+        return 20 + col * 270, 10 + row * 100
 
     def _size(self, row, col):
         if col < 0:
