@@ -153,17 +153,17 @@ def rebuild_edges():
     phase = "no_update"
 
 
-def submit_dialog(sender, app_data, user_data):
+def submit_dialog(sender=None, app_data=None, user_data=None):
     global dialog_event_factory
     global phase
-    dialog_event_factory = None
     user_input = dpg.get_value("dialog_input")
-    goaltree.accept(user_data(user_input))
+    goaltree.accept(dialog_event_factory(user_input))
+    dialog_event_factory = None
     phase = "goals"
     dpg.delete_item("dialog")
 
 
-def close_dialog(sender, app_data, user_data):
+def close_dialog(sender=None, app_data=None, user_data=None):
     global dialog_event_factory
     dialog_event_factory = None
     dpg.delete_item("dialog")
@@ -191,7 +191,6 @@ def show_dialog(text, event_factory):
                     label="OK",
                     width=75,
                     callback=submit_dialog,
-                    user_data=event_factory,
                 )
                 dpg.add_spacer(height=15)
                 dpg.add_button(label="Cancel", width=75, callback=close_dialog)
@@ -203,9 +202,9 @@ def key_handler(sender, app_data):
     global columns
     if dialog_event_factory is not None:
         if app_data == 256:  # Esc
-            close_dialog(None, None, None)
+            close_dialog()
         elif app_data == 257:  # Enter
-            submit_dialog(None, None, dialog_event_factory)
+            submit_dialog()
         return
     if app_data == 81:  # q
         is_running = False
