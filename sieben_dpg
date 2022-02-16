@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 from argparse import ArgumentParser
-from typing import Dict, Tuple, Any
 
 import dearpygui.dearpygui as dpg
 
@@ -58,52 +57,19 @@ columns = Renderer.DEFAULT_WIDTH
 
 
 class DPGGeometry(GeometryProvider):
-    def __init__(self):
-        self.widths: Dict[int, int] = {}
-        self.heights: Dict[int, int] = {}
-        self.id_width: int = 0
-        self.lefts: Dict[int, int] = {}
-        self.tops: Dict[int, int] = {}
-        self.sizes: Dict[Tuple[int, int], Tuple[int, int]] = {}
-
-    def add(self, goal_id: int, attrs: Dict[str, Any]) -> None:
-        assert isinstance(goal_id, int)
-        row, col = attrs["row"], attrs["col1"]
-        if self.id_width == 0:
-            self.id_width = int(dpg.get_text_size(str(goal_id))[0])
-        text_size = dpg.get_text_size(split_long(attrs["name"]))
-        self.widths[col] = max([self.widths.get(col, 0), text_size[0]])
-        self.heights[row] = max([self.heights.get(row, 0), text_size[1]])
-        self.sizes[(row, col)] = (
-            int(text_size[0]) + self.id_width + 50,
-            int(text_size[1]),
-        )
-
-    def _width(self, col):
-        return self.widths.get(col, 250)
-
-    def _height(self, row):
-        return self.heights.get(row, 30)
-
     def _pos(self, row, col):
         if col < 0:
             return 0, self._pos(row, 0)[1]
         if (row, col) in nodes:
             return dpg.get_item_pos(nodes[(row, col)])
-        if row not in self.tops:
-            self.tops[row] = sum(self._height(r) + 40 for r in range(row)) + 10
-        if col not in self.lefts:
-            self.lefts[col] = sum(self._width(c) + 30 for c in range(col)) + 20
-        return self.lefts[col], self.tops[row]
+        return 20 + col * 270, 10 + row * 100
 
     def _size(self, row, col):
         if col < 0:
             return 0, self._size(row, 0)[1]
         if (row, col) in nodes:
             return dpg.get_item_rect_size(nodes[(row, col)])
-        if (row, col) in self.sizes:
-            return self.sizes[(row, col)]
-        return self._width(col), self._height(row)
+        return 250, 70
 
     def top_left(self, row, col):
         pos = self._pos(row, col)
@@ -139,11 +105,6 @@ def rebuild_goals():
         previous_tag = drawn_items.pop()
         dpg.delete_item(previous_tag)
     add_to_nodes = {}
-    for goal_id, attrs in render_result.graph.items():
-        if isinstance(goal_id, int):
-            gp.add(goal_id, attrs)
-    print(f"widths: {gp.widths}")
-    print(f"heights: {gp.heights}")
     for goal_id, attrs in render_result.graph.items():
         if isinstance(goal_id, str):
             continue
