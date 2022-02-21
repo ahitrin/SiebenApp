@@ -11,7 +11,7 @@ pytest = "==7.0.1"
 pytest-cov = "==3.0.0"
 black = "==22.1.0"
 pytest-approvaltests = "==0.2.3"
-approvaltests = "==3.6.0"
+approvaltests = "==3.7.0"
 py-spy = "==0.3.11"
 dearpygui = "==1.3.1"
 
