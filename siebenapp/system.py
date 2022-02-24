@@ -273,7 +273,11 @@ def extract_subtree(source_goals: Graph, goal_id: int) -> Graph:
             )
         )
     edges_data = [edge for edge in edges_data if edge[1] in target_goals]
-    remap = {old: idx + 1 for idx, old in enumerate(sorted(target_goals))}
+    remap = {
+        old: idx + 2
+        for idx, old in enumerate(g for g in sorted(target_goals) if g != goal_id)
+    }
+    remap[goal_id] = Goals.ROOT_ID
     goals_data = [
         (remap[goal_id], name, is_open) for goal_id, name, is_open in goals_data
     ]

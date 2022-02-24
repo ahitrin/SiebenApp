@@ -3,7 +3,7 @@ import pytest
 from approvaltests import verify  # type: ignore
 from approvaltests.reporters import GenericDiffReporterFactory  # type: ignore
 
-from siebenapp.domain import Select
+from siebenapp.domain import Select, EdgeType
 from siebenapp.enumeration import Enumeration
 from siebenapp.layers import wrap_with_views
 from siebenapp.system import split_long, dot_export, extract_subtree
@@ -103,3 +103,22 @@ def test_zoom_after_extract(extract_source, extract_target):
     assert extract_target.q(keys="name,edge,open,selection") == result.q(
         keys="name,edge,open,selection"
     )
+
+
+def test_extract_misordered():
+    source = Enumeration(
+        wrap_with_views(
+            Zoom(
+                build_goaltree(
+                    open_(1, "Global root", [3], select=selected),
+                    open_(2, "Top"),
+                    open_(3, "Extraction root", [2]),
+                )
+            )
+        )
+    )
+    result = extract_subtree(source, 3)
+    assert result.q("name,edge") == {
+        1: {"name": "Extraction root", "edge": [(2, EdgeType.PARENT)]},
+        2: {"name": "Top", "edge": []},
+    }
