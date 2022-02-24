@@ -66,8 +66,13 @@ def fmt(goal_id, goal_vars, id_width):
         selection = "_"
     children = ""
     if goal_vars["edge"]:
-        child_list = ",".join(str(e[0]) for e in goal_vars["edge"])
-        children = f" [{child_list}]"
+        child_list = ",".join(
+            str(e[0]) for e in goal_vars["edge"] if e[1] == EdgeType.PARENT
+        )
+        blocker_list = ",".join(
+            str(e[0]) for e in goal_vars["edge"] if e[1] == EdgeType.BLOCKER
+        )
+        children = f" [{child_list} / {blocker_list}]"
     return f"{goal_id}{status}{selection}{name}{children}"
 
 
