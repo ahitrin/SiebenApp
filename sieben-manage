@@ -53,7 +53,10 @@ def main():
     parser_extract.set_defaults(func=extract)
 
     args = parser.parse_args()
-    args.func(args)
+    if 'func' in dir(args):
+        args.func(args)
+    else:
+        parser.print_help()
 
 
 if __name__ == "__main__":
