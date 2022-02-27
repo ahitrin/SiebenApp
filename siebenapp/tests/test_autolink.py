@@ -35,7 +35,7 @@ def test_show_new_pseudogoal_on_autolink_event():
         1: {"name": "Root", "edge": [(2, EdgeType.PARENT)], "select": None},
         2: {"name": "Should be autolinked", "edge": [], "select": "select"},
     }
-    goals.accept(ToggleAutoLink("hello"))
+    goals.accept(ToggleAutoLink("heLLO"))
     assert goals.q("edge") == {
         1: {"edge": [(-12, EdgeType.PARENT)]},
         -12: {"edge": [(2, EdgeType.PARENT)]},

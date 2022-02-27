@@ -32,14 +32,15 @@ class AutoLink(Graph):
         if selected_id == Goals.ROOT_ID:
             self.goaltree._msg("Autolink cannot be set for the root goal")
             return
+        keyword = command.keyword.lower()
         if selected_id in self.back_kw:
-            if not command.keyword:
+            if not keyword:
                 # remove
                 self.keywords.pop(self.back_kw[selected_id])
                 self.back_kw.pop(selected_id)
                 return
-        self.keywords[command.keyword] = selected_id
-        self.back_kw[selected_id] = command.keyword
+        self.keywords[keyword] = selected_id
+        self.back_kw[selected_id] = keyword
 
     def accept_ToggleClose(self, command: ToggleClose):
         selected_id = self.settings("selection")
