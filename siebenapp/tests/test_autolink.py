@@ -3,7 +3,7 @@ Autolink layer test cases TBD
 
 * ✓ add autolink -> show a new pseudogoal
 * ✓ add autolink1, add autolink 2 -> replace autolink1 with autolink2
-* add autolink, add empty autolink -> remove a pseudogoal
+* ✓ add autolink, add empty autolink -> remove a pseudogoal
 * add autolink on closed goal -> do not add, show error
 * add autolink on root goal -> ?
 * add autolink, close goal -> remove autolink
@@ -57,5 +57,18 @@ def test_replace_old_autolink_with_new_one():
     assert goals.q("name,edge") == {
         1: {"name": "Root", "edge": [(-12, EdgeType.PARENT)]},
         -12: {"name": "Autolink: 'second'", "edge": [(2, EdgeType.PARENT)]},
+        2: {"name": "Should be autolinked", "edge": []},
+    }
+
+
+def test_remove_autolink_by_sending_empty_keyword():
+    goals = AutoLink(
+        build_goaltree(
+            open_(1, "Root", [2]), open_(2, "Should be autolinked", select=selected)
+        )
+    )
+    goals.accept_all(ToggleAutoLink("lalala"), ToggleAutoLink(""))
+    assert goals.q("name,edge") == {
+        1: {"name": "Root", "edge": [(2, EdgeType.PARENT)]},
         2: {"name": "Should be autolinked", "edge": []},
     }

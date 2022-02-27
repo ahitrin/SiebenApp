@@ -13,9 +13,18 @@ class AutoLink(Graph):
     def __init__(self, goals: Graph):
         super(AutoLink, self).__init__(goals)
         self.keywords: Dict[str, int] = {}
+        self.back_kw: Dict[int, str] = {}
 
     def accept_ToggleAutoLink(self, command: ToggleAutoLink):
-        self.keywords[command.keyword] = self.settings("selection")
+        selected_id = self.settings("selection")
+        if selected_id in self.back_kw:
+            if not command.keyword:
+                # remove
+                self.keywords.pop(self.back_kw[selected_id])
+                self.back_kw.pop(selected_id)
+                return
+        self.keywords[command.keyword] = selected_id
+        self.back_kw[selected_id] = command.keyword
 
     @with_key("edge")
     def q(self, keys: str = "name") -> Dict[int, Any]:
