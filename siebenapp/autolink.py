@@ -34,10 +34,10 @@ class AutoLink(Graph):
             return
         keyword = command.keyword.lower()
         if selected_id in self.back_kw:
+            self.keywords.pop(self.back_kw[selected_id])
+            self.back_kw.pop(selected_id)
             if not keyword:
-                # remove
-                self.keywords.pop(self.back_kw[selected_id])
-                self.back_kw.pop(selected_id)
+                # empty keyword? exit right now
                 return
         self.keywords[keyword] = selected_id
         self.back_kw[selected_id] = keyword
