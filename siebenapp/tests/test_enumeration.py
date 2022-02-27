@@ -2,9 +2,10 @@ import pytest
 
 from siebenapp.domain import EdgeType, Add, Select
 from siebenapp.enumeration import Enumeration, BidirectionalIndex
+from siebenapp.layers import persistent_layers
 from siebenapp.switchable_view import ToggleSwitchableView, SwitchableView
 from siebenapp.tests.dsl import build_goaltree, open_, previous, selected
-from siebenapp.zoom import Zoom, ToggleZoom
+from siebenapp.zoom import ToggleZoom
 
 
 @pytest.fixture
@@ -244,7 +245,7 @@ def test_selection_cache_should_avoid_overflow(goal_chain_11):
 
 
 def test_do_not_enumerate_goals_with_negative_id():
-    g = Zoom(
+    g = persistent_layers(
         build_goaltree(
             open_(1, "Root", [2]),
             open_(2, "Zoomed", [3], select=selected),

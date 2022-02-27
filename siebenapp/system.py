@@ -7,7 +7,7 @@ from typing import Callable, List, Dict, Set
 from siebenapp.domain import EdgeType, Graph
 from siebenapp.enumeration import Enumeration
 from siebenapp.goaltree import Goals, GoalsData, EdgesData, OptionsData
-from siebenapp.layers import view_layers
+from siebenapp.layers import view_layers, persistent_layers
 from siebenapp.zoom import Zoom, ZoomData
 
 MIGRATIONS = [
@@ -178,7 +178,7 @@ def load(filename: str, message_fn: Callable[[str], None] = None) -> Enumeration
         goals = Goals.build(names, edges, settings, message_fn)
     else:
         goals = Goals("Rename me", message_fn)
-    return Enumeration(view_layers(Zoom(goals, zoom_data)))
+    return Enumeration(view_layers(persistent_layers(goals, zoom_data)))
 
 
 def run_migrations(
@@ -283,4 +283,4 @@ def extract_subtree(source_goals: Graph, goal_id: int) -> Graph:
     edges_data = [
         (remap[source], remap[target], e_type) for source, target, e_type in edges_data
     ]
-    return Zoom(Goals.build(goals_data, edges_data, options_data))
+    return persistent_layers(Goals.build(goals_data, edges_data, options_data))

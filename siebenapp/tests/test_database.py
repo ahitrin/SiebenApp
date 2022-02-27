@@ -1,6 +1,5 @@
 # coding: utf-8
 import sqlite3
-
 from contextlib import closing
 from tempfile import NamedTemporaryFile
 
@@ -14,11 +13,12 @@ from siebenapp.domain import (
     Select,
 )
 from siebenapp.enumeration import Enumeration
-from siebenapp.open_view import ToggleOpenView, OpenView
 from siebenapp.goaltree import Goals
-from siebenapp.system import MIGRATIONS, run_migrations, load, save
-from siebenapp.zoom import Zoom, ToggleZoom
+from siebenapp.layers import persistent_layers
+from siebenapp.open_view import ToggleOpenView, OpenView
 from siebenapp.switchable_view import SwitchableView
+from siebenapp.system import MIGRATIONS, run_migrations, load, save
+from siebenapp.zoom import ToggleZoom
 
 
 def test_initial_migration_on_empty_db():
@@ -97,7 +97,7 @@ def test_load_from_missing_file():
 
 def test_save_into_sqlite3_database():
     file_name = NamedTemporaryFile().name
-    goals = Zoom(Goals("Sample"))
+    goals = persistent_layers(Goals("Sample"))
     save(goals, file_name)
     with sqlite3.connect(file_name) as conn:
         with closing(conn.cursor()) as cur:
@@ -107,7 +107,7 @@ def test_save_into_sqlite3_database():
 
 def test_migration_must_run_on_load_from_existing_db():
     file_name = NamedTemporaryFile().name
-    goals = Zoom(Goals("Just a simple goal tree"))
+    goals = persistent_layers(Goals("Just a simple goal tree"))
     save(goals, file_name)
     MIGRATIONS.append(
         [
@@ -128,7 +128,7 @@ def test_migration_must_run_on_load_from_existing_db():
 
 def test_save_and_load():
     file_name = NamedTemporaryFile().name
-    goals = Enumeration(SwitchableView(OpenView(Zoom(Goals("Root")))))
+    goals = Enumeration(SwitchableView(OpenView(persistent_layers(Goals("Root")))))
     goals.accept_all(
         Add("Top"),
         Add("Middle"),
@@ -153,7 +153,7 @@ def test_save_and_load():
 
 def test_multiple_saves_works_fine():
     file_name = NamedTemporaryFile().name
-    goals = Zoom(Goals("Root"))
+    goals = persistent_layers(Goals("Root"))
     save(goals, file_name)
     goals.accept(Add("Next"))
     save(goals, file_name)

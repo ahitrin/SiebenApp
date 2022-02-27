@@ -1,8 +1,9 @@
 from siebenapp.domain import Add, Select, HoldSelect
 from siebenapp.goaltree import Goals
+from siebenapp.layers import persistent_layers
 from siebenapp.switchable_view import ToggleSwitchableView, SwitchableView
 from siebenapp.tests.dsl import build_goaltree, open_, selected, previous
-from siebenapp.zoom import ToggleZoom, Zoom
+from siebenapp.zoom import ToggleZoom
 
 
 def test_toggle_hide_non_switchable_goals():
@@ -67,7 +68,7 @@ def test_how_should_we_deal_with_zooming():
         open_(2, "Zoomed", blockers=[3], select=selected),
         open_(3, "Ex-top"),
     )
-    v = SwitchableView(Zoom(g))
+    v = SwitchableView(persistent_layers(g))
     v.accept_all(ToggleZoom(), ToggleSwitchableView())
     assert v.q("name,select") == {
         2: {"name": "Zoomed", "select": "select"},
