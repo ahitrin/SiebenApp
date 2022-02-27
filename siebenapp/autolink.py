@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Dict, Any
 
-from siebenapp.domain import Graph, Command, with_key, EdgeType
+from siebenapp.domain import Graph, Command, with_key, EdgeType, ToggleClose
 
 
 @dataclass(frozen=True)
@@ -28,6 +28,12 @@ class AutoLink(Graph):
                 return
         self.keywords[command.keyword] = selected_id
         self.back_kw[selected_id] = command.keyword
+
+    def accept_ToggleClose(self, command: ToggleClose):
+        selected_id = self.settings("selection")
+        if selected_id in self.back_kw:
+            self.keywords.pop(self.back_kw[selected_id])
+            self.back_kw.pop(selected_id)
 
     @with_key("edge")
     def q(self, keys: str = "name") -> Dict[int, Any]:

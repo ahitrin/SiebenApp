@@ -6,7 +6,7 @@ Autolink layer test cases TBD
 * ✓ add autolink, add empty autolink -> remove a pseudogoal
 * ✓ add autolink on closed goal -> do not add, show error
 * add autolink on root goal -> ?
-* add autolink, close goal -> remove autolink
+* ✓ add autolink, close goal -> remove autolink
 * matching goal already exists, add autolink -> show new pseudogoal, do not link
 * add autolink, add non-matching goal -> pass as is
 * add autolink, add matching goal -> make a link
@@ -21,7 +21,7 @@ Autolink layer test cases TBD
 from typing import List
 
 from siebenapp.autolink import AutoLink, ToggleAutoLink
-from siebenapp.domain import EdgeType
+from siebenapp.domain import EdgeType, ToggleClose
 from siebenapp.tests.dsl import build_goaltree, open_, selected, clos_
 
 
@@ -91,3 +91,22 @@ def test_do_not_add_autolink_to_closed_goals():
         2: {"name": "Well, it's closed", "edge": []},
     }
     assert messages == ["Autolink cannot be set for closed goals"]
+
+
+def test_remove_autolink_on_close():
+    goals = AutoLink(
+        build_goaltree(
+            open_(1, "Root", [2]), open_(2, "Should be autolinked", select=selected)
+        )
+    )
+    goals.accept(ToggleAutoLink("test"))
+    assert goals.q("edge") == {
+        1: {"edge": [(-12, EdgeType.PARENT)]},
+        -12: {"edge": [(2, EdgeType.PARENT)]},
+        2: {"edge": []},
+    }
+    goals.accept(ToggleClose())
+    assert goals.q("edge") == {
+        1: {"edge": [(2, EdgeType.PARENT)]},
+        2: {"edge": []},
+    }
