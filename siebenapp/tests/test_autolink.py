@@ -9,7 +9,7 @@ Autolink layer test cases TBD
 * ✓ add autolink, close goal -> remove autolink
 * matching goal already exists, add autolink -> show new pseudogoal, do not link
 * add autolink, add non-matching goal -> pass as is
-* add autolink, add matching goal -> make a link
+* ✓ add autolink, add matching goal -> make a link
 * add autolink1, add autolink2, add matching1 goal -> do not make a link
 * add autolink, insert matching goal -> make a link
 * add autolink, rename existing goal -> make a link
@@ -21,7 +21,7 @@ Autolink layer test cases TBD
 from typing import List
 
 from siebenapp.autolink import AutoLink, ToggleAutoLink
-from siebenapp.domain import EdgeType, ToggleClose
+from siebenapp.domain import EdgeType, ToggleClose, Select, Add
 from siebenapp.tests.dsl import build_goaltree, open_, selected, clos_
 
 
@@ -121,4 +121,22 @@ def test_remove_autolink_on_close():
     assert goals.q("edge") == {
         1: {"edge": [(2, EdgeType.PARENT)]},
         2: {"edge": []},
+    }
+
+
+def test_make_a_link_on_matching_add():
+    goals = AutoLink(
+        build_goaltree(
+            open_(1, "Root", [2]),
+            open_(2, "Autolink on me", select=selected),
+        )
+    )
+    goals.accept(ToggleAutoLink("me"))
+    # Add a goal to the root
+    goals.accept_all(Select(1), Add("Link me please"))
+    assert goals.q("name,edge") == {
+        1: {"name": "Root", "edge": [(-12, EdgeType.PARENT), (3, EdgeType.PARENT)]},
+        -12: {"name": "Autolink: 'me'", "edge": [(2, EdgeType.PARENT)]},
+        2: {"name": "Autolink on me", "edge": [(3, EdgeType.BLOCKER)]},
+        3: {"name": "Link me please", "edge": []},
     }
