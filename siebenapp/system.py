@@ -8,7 +8,7 @@ from siebenapp.domain import EdgeType, Graph
 from siebenapp.enumeration import Enumeration
 from siebenapp.goaltree import Goals, GoalsData, EdgesData, OptionsData
 from siebenapp.layers import wrap_with_views
-from siebenapp.zoom import Zoom
+from siebenapp.zoom import Zoom, ZoomData
 
 MIGRATIONS = [
     # 0
@@ -165,6 +165,7 @@ def save_updates(goals: Graph, connection: sqlite3.Connection) -> None:
 
 
 def load(filename: str, message_fn: Callable[[str], None] = None) -> Enumeration:
+    zoom_data: ZoomData = []
     if path.isfile(filename):
         connection = sqlite3.connect(filename)
         run_migrations(connection)
@@ -175,11 +176,9 @@ def load(filename: str, message_fn: Callable[[str], None] = None) -> Enumeration
         zoom_data = list(cur.execute("select * from zoom"))
         cur.close()
         goals = Goals.build(names, edges, settings, message_fn)
-        zoom = Zoom(goals, zoom_data)
     else:
         goals = Goals("Rename me", message_fn)
-        zoom = Zoom(goals)
-    return Enumeration(wrap_with_views(zoom))
+    return Enumeration(wrap_with_views(Zoom(goals, zoom_data)))
 
 
 def run_migrations(
