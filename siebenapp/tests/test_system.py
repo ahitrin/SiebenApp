@@ -5,7 +5,7 @@ from approvaltests.reporters import GenericDiffReporterFactory  # type: ignore
 
 from siebenapp.domain import Select, EdgeType
 from siebenapp.enumeration import Enumeration
-from siebenapp.layers import wrap_with_views
+from siebenapp.layers import view_layers
 from siebenapp.system import split_long, dot_export, extract_subtree
 from siebenapp.tests.dsl import build_goaltree, open_, clos_, selected, previous
 from siebenapp.zoom import ToggleZoom, Zoom
@@ -51,7 +51,7 @@ def test_dot_export():
 def extract_source():
     # Legend: goals marked with 'NX' must not be extracted
     return Enumeration(
-        wrap_with_views(
+        view_layers(
             Zoom(
                 build_goaltree(
                     open_(1, "Root NX", [2, 3], select=selected),
@@ -107,7 +107,7 @@ def test_zoom_after_extract(extract_source, extract_target):
 
 def test_extract_misordered():
     source = Enumeration(
-        wrap_with_views(
+        view_layers(
             Zoom(
                 build_goaltree(
                     open_(1, "Global root", [3], select=selected),

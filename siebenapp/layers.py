@@ -5,5 +5,6 @@ from siebenapp.progress_view import ProgressView
 from siebenapp.switchable_view import SwitchableView
 
 
-def wrap_with_views(graph: Graph) -> Graph:
+def view_layers(graph: Graph) -> Graph:
+    """Wrap given graph with all standard non-persistent (view) logic layers"""
     return FilterView(SwitchableView(OpenView(ProgressView(graph))))
