@@ -7,7 +7,7 @@ from typing import Callable, List, Dict, Set
 from siebenapp.domain import EdgeType, Graph
 from siebenapp.enumeration import Enumeration
 from siebenapp.goaltree import Goals, GoalsData, EdgesData, OptionsData
-from siebenapp.layers import persistent_layers, all_layers
+from siebenapp.layers import persistent_layers, all_layers, get_root
 from siebenapp.zoom import Zoom, ZoomData
 
 MIGRATIONS = [
@@ -110,9 +110,7 @@ def save(goals: Graph, filename: str) -> None:
     else:
         connection = sqlite3.connect(filename)
         run_migrations(connection)
-        root_goals = goals
-        while not isinstance(root_goals, Goals):
-            root_goals = root_goals.goaltree
+        root_goals: Goals = get_root(goals)
         goals_export, edges_export, select_export = Goals.export(root_goals)
         zoom_goals = goals
         while not isinstance(zoom_goals, Zoom):
@@ -249,9 +247,8 @@ def dot_export(goals):
 
 
 def extract_subtree(source_goals: Graph, goal_id: int) -> Graph:
-    while not isinstance(source_goals, Goals):
-        source_goals = source_goals.goaltree
-    source_data = source_goals.q(keys="name,edge,open")
+    root_goaltree: Goals = get_root(source_goals)
+    source_data = root_goaltree.q(keys="name,edge,open")
     assert goal_id in source_data.keys(), f"Cannot find goal with id {goal_id}"
     target_goals: Set[int] = set()
     goals_to_add: Set[int] = {goal_id}
