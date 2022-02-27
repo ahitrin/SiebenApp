@@ -201,4 +201,4 @@ def build_goals(conn):
             f"Goals: {goals}, Edges: {edges}, Settings: {db_settings}, Zoom: {zoom_data}"
         )
         goals = Goals.build(goals, edges, db_settings)
-        return wrap_with_views(Zoom.build(goals, zoom_data))
+        return wrap_with_views(Zoom(goals, zoom_data))

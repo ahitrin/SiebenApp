@@ -175,7 +175,7 @@ def load(filename: str, message_fn: Callable[[str], None] = None) -> Enumeration
         zoom_data = list(cur.execute("select * from zoom"))
         cur.close()
         goals = Goals.build(names, edges, settings, message_fn)
-        zoom = Zoom.build(goals, zoom_data)
+        zoom = Zoom(goals, zoom_data)
     else:
         goals = Goals("Rename me", message_fn)
         zoom = Zoom(goals)
@@ -284,4 +284,4 @@ def extract_subtree(source_goals: Graph, goal_id: int) -> Graph:
     edges_data = [
         (remap[source], remap[target], e_type) for source, target, e_type in edges_data
     ]
-    return Zoom.build(Goals.build(goals_data, edges_data, options_data), [])
+    return Zoom(Goals.build(goals_data, edges_data, options_data))

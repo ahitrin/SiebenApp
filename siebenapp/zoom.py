@@ -1,6 +1,6 @@
 import collections
 from dataclasses import dataclass
-from typing import Dict, Any, Set, List, Tuple
+from typing import Dict, Any, Set, List, Tuple, Optional
 
 from siebenapp.domain import (
     Graph,
@@ -26,9 +26,9 @@ ZoomData = List[Tuple[int, int]]
 
 
 class Zoom(Graph):
-    def __init__(self, goaltree: Goals) -> None:
+    def __init__(self, goaltree: Goals, zoom_data: Optional[ZoomData] = None) -> None:
         super().__init__(goaltree)
-        self.zoom_root = [1]
+        self.zoom_root = [x[1] for x in zoom_data] if zoom_data else [1]
 
     def accept_ToggleZoom(self, command: ToggleZoom):
         selection = self.settings("selection")
@@ -114,13 +114,6 @@ class Zoom(Graph):
             if edge_type == EdgeType.PARENT:
                 edges_to_visit.update(edges[edge_id]["edge"])
         return visible_goals
-
-    @staticmethod
-    def build(goals, data):
-        # type: (Goals, ZoomData) -> Zoom
-        result = Zoom(goals)
-        result.zoom_root = [x[1] for x in data] if data else [1]
-        return result
 
     @staticmethod
     def export(goals):
