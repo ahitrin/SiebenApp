@@ -17,3 +17,8 @@ def persistent_layers(graph: Goals, zoom_data: Optional[ZoomData] = None) -> Gra
 def view_layers(graph: Graph) -> Graph:
     """Wrap given graph with all standard non-persistent (view) logic layers"""
     return FilterView(SwitchableView(OpenView(ProgressView(graph))))
+
+
+def all_layers(graph: Goals, zoom_data: Optional[ZoomData] = None) -> Graph:
+    """Wrap given Goals instance with all default logic layers"""
+    return view_layers(persistent_layers(graph, zoom_data))

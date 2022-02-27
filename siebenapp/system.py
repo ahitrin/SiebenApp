@@ -7,7 +7,7 @@ from typing import Callable, List, Dict, Set
 from siebenapp.domain import EdgeType, Graph
 from siebenapp.enumeration import Enumeration
 from siebenapp.goaltree import Goals, GoalsData, EdgesData, OptionsData
-from siebenapp.layers import view_layers, persistent_layers
+from siebenapp.layers import persistent_layers, all_layers
 from siebenapp.zoom import Zoom, ZoomData
 
 MIGRATIONS = [
@@ -178,7 +178,7 @@ def load(filename: str, message_fn: Callable[[str], None] = None) -> Enumeration
         goals = Goals.build(names, edges, settings, message_fn)
     else:
         goals = Goals("Rename me", message_fn)
-    return Enumeration(view_layers(persistent_layers(goals, zoom_data)))
+    return Enumeration(all_layers(goals, zoom_data))
 
 
 def run_migrations(

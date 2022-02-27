@@ -27,7 +27,7 @@ from siebenapp.domain import (
 )
 from siebenapp.filter_view import FilterBy
 from siebenapp.goaltree import Goals
-from siebenapp.layers import view_layers, persistent_layers
+from siebenapp.layers import view_layers, persistent_layers, all_layers
 from siebenapp.open_view import ToggleOpenView
 from siebenapp.switchable_view import ToggleSwitchableView
 from siebenapp.system import run_migrations, save_updates
@@ -201,4 +201,4 @@ def build_goals(conn):
             f"Goals: {goals}, Edges: {edges}, Settings: {db_settings}, Zoom: {zoom_data}"
         )
         goals = Goals.build(goals, edges, db_settings)
-        return view_layers(persistent_layers(goals, zoom_data))
+        return all_layers(goals, zoom_data)

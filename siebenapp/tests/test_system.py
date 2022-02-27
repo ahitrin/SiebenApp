@@ -5,7 +5,7 @@ from approvaltests.reporters import GenericDiffReporterFactory  # type: ignore
 
 from siebenapp.domain import Select, EdgeType
 from siebenapp.enumeration import Enumeration
-from siebenapp.layers import view_layers, persistent_layers
+from siebenapp.layers import persistent_layers, all_layers
 from siebenapp.system import split_long, dot_export, extract_subtree
 from siebenapp.tests.dsl import build_goaltree, open_, clos_, selected, previous
 from siebenapp.zoom import ToggleZoom
@@ -51,22 +51,20 @@ def test_dot_export():
 def extract_source():
     # Legend: goals marked with 'NX' must not be extracted
     return Enumeration(
-        view_layers(
-            persistent_layers(
-                build_goaltree(
-                    open_(1, "Root NX", [2, 3], select=selected),
-                    open_(2, "Extract root", [4, 5], blockers=[3]),
-                    open_(3, "External blocker NX", [7]),
-                    open_(4, "Subgoal", blockers=[5]),
-                    open_(
-                        5,
-                        "Selected subgoal (selection will be lost)",
-                        [6],
-                        select=previous,
-                    ),
-                    clos_(6, "Closed subgoal", blockers=[7]),
-                    clos_(7, "Another external blocker NX"),
-                )
+        all_layers(
+            build_goaltree(
+                open_(1, "Root NX", [2, 3], select=selected),
+                open_(2, "Extract root", [4, 5], blockers=[3]),
+                open_(3, "External blocker NX", [7]),
+                open_(4, "Subgoal", blockers=[5]),
+                open_(
+                    5,
+                    "Selected subgoal (selection will be lost)",
+                    [6],
+                    select=previous,
+                ),
+                clos_(6, "Closed subgoal", blockers=[7]),
+                clos_(7, "Another external blocker NX"),
             )
         )
     )
@@ -107,13 +105,11 @@ def test_zoom_after_extract(extract_source, extract_target):
 
 def test_extract_misordered():
     source = Enumeration(
-        view_layers(
-            persistent_layers(
-                build_goaltree(
-                    open_(1, "Global root", [3], select=selected),
-                    open_(2, "Top"),
-                    open_(3, "Extraction root", [2]),
-                )
+        all_layers(
+            build_goaltree(
+                open_(1, "Global root", [3], select=selected),
+                open_(2, "Top"),
+                open_(3, "Extraction root", [2]),
             )
         )
     )

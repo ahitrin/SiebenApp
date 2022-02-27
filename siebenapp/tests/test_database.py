@@ -14,9 +14,8 @@ from siebenapp.domain import (
 )
 from siebenapp.enumeration import Enumeration
 from siebenapp.goaltree import Goals
-from siebenapp.layers import persistent_layers
-from siebenapp.open_view import ToggleOpenView, OpenView
-from siebenapp.switchable_view import SwitchableView
+from siebenapp.layers import persistent_layers, all_layers
+from siebenapp.open_view import ToggleOpenView
 from siebenapp.system import MIGRATIONS, run_migrations, load, save
 from siebenapp.zoom import ToggleZoom
 
@@ -128,7 +127,7 @@ def test_migration_must_run_on_load_from_existing_db():
 
 def test_save_and_load():
     file_name = NamedTemporaryFile().name
-    goals = Enumeration(SwitchableView(OpenView(persistent_layers(Goals("Root")))))
+    goals = Enumeration(all_layers(Goals("Root")))
     goals.accept_all(
         Add("Top"),
         Add("Middle"),
