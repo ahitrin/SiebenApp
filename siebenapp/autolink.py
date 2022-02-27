@@ -50,7 +50,9 @@ class AutoLink(Graph):
 
     def accept_Add(self, command: Add):
         matching = [
-            goal_id for kw, goal_id in self.keywords.items() if kw in command.name
+            goal_id
+            for kw, goal_id in self.keywords.items()
+            if kw in command.name.lower()
         ]
         ids_before = set(self.goaltree.goals.keys())
         self.goaltree.accept(command)

@@ -133,10 +133,10 @@ def test_make_a_link_on_matching_add():
     )
     goals.accept(ToggleAutoLink("me"))
     # Add a goal to the root
-    goals.accept_all(Select(1), Add("Link me please"))
+    goals.accept_all(Select(1), Add("Link ME please"))
     assert goals.q("name,edge") == {
         1: {"name": "Root", "edge": [(-12, EdgeType.PARENT), (3, EdgeType.PARENT)]},
         -12: {"name": "Autolink: 'me'", "edge": [(2, EdgeType.PARENT)]},
         2: {"name": "Autolink on me", "edge": [(3, EdgeType.BLOCKER)]},
-        3: {"name": "Link me please", "edge": []},
+        3: {"name": "Link ME please", "edge": []},
     }
