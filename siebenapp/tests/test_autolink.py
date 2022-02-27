@@ -5,7 +5,7 @@ Autolink layer test cases TBD
 * ✓ add autolink1, add autolink 2 -> replace autolink1 with autolink2
 * ✓ add autolink, add empty autolink -> remove a pseudogoal
 * ✓ add autolink on closed goal -> do not add, show error
-* add autolink on root goal -> ?
+* ✓ add autolink on root goal -> do not add, show error
 * ✓ add autolink, close goal -> remove autolink
 * matching goal already exists, add autolink -> show new pseudogoal, do not link
 * add autolink, add non-matching goal -> pass as is
@@ -91,6 +91,18 @@ def test_do_not_add_autolink_to_closed_goals():
         2: {"name": "Well, it's closed", "edge": []},
     }
     assert messages == ["Autolink cannot be set for closed goals"]
+
+
+def test_do_not_add_autolink_to_root_goal():
+    messages: List[str] = []
+    goals = AutoLink(
+        build_goaltree(open_(1, "Root", select=selected), message_fn=messages.append)
+    )
+    goals.accept(ToggleAutoLink("misused"))
+    assert goals.q("name,edge") == {
+        1: {"name": "Root", "edge": []},
+    }
+    assert messages == ["Autolink cannot be set for the root goal"]
 
 
 def test_remove_autolink_on_close():

@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Dict, Any
 
 from siebenapp.domain import Graph, Command, with_key, EdgeType, ToggleClose
+from siebenapp.goaltree import Goals
 
 
 @dataclass(frozen=True)
@@ -19,6 +20,9 @@ class AutoLink(Graph):
         selected_id = self.settings("selection")
         if selected_id in self.goaltree.closed:
             self.goaltree._msg("Autolink cannot be set for closed goals")
+            return
+        if selected_id == Goals.ROOT_ID:
+            self.goaltree._msg("Autolink cannot be set for the root goal")
             return
         if selected_id in self.back_kw:
             if not command.keyword:
