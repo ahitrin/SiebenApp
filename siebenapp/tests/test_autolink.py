@@ -4,7 +4,7 @@ Autolink layer test cases TBD
 * ✓ add autolink -> show a new pseudogoal
 * ✓ add autolink1, add autolink 2 -> replace autolink1 with autolink2
 * ✓ add autolink, add empty autolink -> remove a pseudogoal
-* add autolink on closed goal -> do not add, show error
+* ✓ add autolink on closed goal -> do not add, show error
 * add autolink on root goal -> ?
 * add autolink, close goal -> remove autolink
 * matching goal already exists, add autolink -> show new pseudogoal, do not link
@@ -18,9 +18,11 @@ Autolink layer test cases TBD
 * add 2 autolinks, add 1-matching goal -> make 1 link
 * add 2 autolinks, add 2-matching goal -> make 2 links
 """
+from typing import List
+
 from siebenapp.autolink import AutoLink, ToggleAutoLink
 from siebenapp.domain import EdgeType
-from siebenapp.tests.dsl import build_goaltree, open_, selected
+from siebenapp.tests.dsl import build_goaltree, open_, selected, clos_
 
 
 def test_show_new_pseudogoal_on_autolink_event():
@@ -72,3 +74,20 @@ def test_remove_autolink_by_sending_empty_keyword():
         1: {"name": "Root", "edge": [(2, EdgeType.PARENT)]},
         2: {"name": "Should be autolinked", "edge": []},
     }
+
+
+def test_do_not_add_autolink_to_closed_goals():
+    messages: List[str] = []
+    goals = AutoLink(
+        build_goaltree(
+            open_(1, "Root", [2]),
+            clos_(2, "Well, it's closed", select=selected),
+            message_fn=messages.append,
+        )
+    )
+    goals.accept(ToggleAutoLink("Failed"))
+    assert goals.q("name,edge") == {
+        1: {"name": "Root", "edge": [(2, EdgeType.PARENT)]},
+        2: {"name": "Well, it's closed", "edge": []},
+    }
+    assert messages == ["Autolink cannot be set for closed goals"]

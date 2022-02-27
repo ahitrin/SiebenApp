@@ -17,6 +17,9 @@ class AutoLink(Graph):
 
     def accept_ToggleAutoLink(self, command: ToggleAutoLink):
         selected_id = self.settings("selection")
+        if selected_id in self.goaltree.closed:
+            self.goaltree._msg("Autolink cannot be set for closed goals")
+            return
         if selected_id in self.back_kw:
             if not command.keyword:
                 # remove
