@@ -10,6 +10,7 @@ from siebenapp.domain import (
     Add,
     ToggleLink,
     Insert,
+    Rename,
 )
 from siebenapp.goaltree import Goals
 
@@ -80,6 +81,19 @@ class AutoLink(Graph):
         added_id = ids_diff.pop()
         add_to = matching.pop(0)
         self.goaltree.accept(ToggleLink(add_to, added_id, EdgeType.BLOCKER))
+
+    def accept_Rename(self, command: Rename):
+        matching = [
+            goal_id
+            for kw, goal_id in self.keywords.items()
+            if kw in command.new_name.lower()
+        ]
+        self.goaltree.accept(command)
+        if not matching:
+            return
+        selected_id = command.goal_id or self.settings("selection")
+        add_to = matching.pop(0)
+        self.goaltree.accept(ToggleLink(add_to, selected_id, EdgeType.BLOCKER))
 
     @with_key("edge")
     def q(self, keys: str = "name") -> Dict[int, Any]:
