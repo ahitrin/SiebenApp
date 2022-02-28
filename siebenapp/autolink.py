@@ -64,18 +64,18 @@ class AutoLink(Graph):
         ids_diff = ids_after.difference(ids_before)
         if ids_diff:
             added_id = ids_diff.pop()
-            self._make_link(matching, added_id)
+            self._make_links(matching, added_id)
 
     def accept_Rename(self, command: Rename):
         matching = self._find_matching_goals(command.new_name)
         self.goaltree.accept(command)
         selected_id = command.goal_id or self.settings("selection")
-        self._make_link(matching, selected_id)
+        self._make_links(matching, selected_id)
 
     def _find_matching_goals(self, text: str) -> List[int]:
         return [goal_id for kw, goal_id in self.keywords.items() if kw in text.lower()]
 
-    def _make_link(self, matching_goals: List[int], target_goal: int) -> None:
+    def _make_links(self, matching_goals: List[int], target_goal: int) -> None:
         if not matching_goals:
             return
         self_children: Dict[int, List[int]] = {
