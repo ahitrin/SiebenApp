@@ -60,24 +60,24 @@ class AutoLink(Graph):
         matching = self._find_matching_goals(command.name)
         ids_before = set(self.goaltree.goals.keys())
         self.goaltree.accept(command)
-        if matching:
-            ids_after = set(self.goaltree.goals.keys())
-            ids_diff = ids_after.difference(ids_before)
-            if ids_diff:
-                added_id = ids_diff.pop()
-                self._make_link(matching, added_id)
+        ids_after = set(self.goaltree.goals.keys())
+        ids_diff = ids_after.difference(ids_before)
+        if ids_diff:
+            added_id = ids_diff.pop()
+            self._make_link(matching, added_id)
 
     def accept_Rename(self, command: Rename):
         matching = self._find_matching_goals(command.new_name)
         self.goaltree.accept(command)
-        if matching:
-            selected_id = command.goal_id or self.settings("selection")
-            self._make_link(matching, selected_id)
+        selected_id = command.goal_id or self.settings("selection")
+        self._make_link(matching, selected_id)
 
     def _find_matching_goals(self, text: str) -> List[int]:
         return [goal_id for kw, goal_id in self.keywords.items() if kw in text.lower()]
 
     def _make_link(self, matching_goals: List[int], target_goal: int) -> None:
+        if not matching_goals:
+            return
         self_children: Dict[int, List[int]] = {
             goal_id: [e[0] for e in attrs["edge"]]
             for goal_id, attrs in self.goaltree.q("edge").items()
