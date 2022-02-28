@@ -20,6 +20,8 @@ Autolink layer test cases TBD
 """
 from typing import List
 
+import pytest
+
 from siebenapp.autolink import AutoLink, ToggleAutoLink
 from siebenapp.domain import (
     EdgeType,
@@ -33,15 +35,21 @@ from siebenapp.domain import (
 from siebenapp.tests.dsl import build_goaltree, open_, selected, clos_
 
 
-def test_show_new_pseudogoal_on_autolink_event():
-    goals = AutoLink(
+@pytest.fixture()
+def tree_2_goals():
+    return AutoLink(
         build_goaltree(
-            open_(1, "Root", [2]), open_(2, "Should be autolinked", select=selected)
+            open_(1, "Root", [2]),
+            open_(2, "Autolink on me", select=selected),
         )
     )
+
+
+def test_show_new_pseudogoal_on_autolink_event(tree_2_goals):
+    goals = tree_2_goals
     assert goals.q("name,edge,select") == {
         1: {"name": "Root", "edge": [(2, EdgeType.PARENT)], "select": None},
-        2: {"name": "Should be autolinked", "edge": [], "select": "select"},
+        2: {"name": "Autolink on me", "edge": [], "select": "select"},
     }
     goals.accept(ToggleAutoLink("heLLO"))
     assert goals.q("edge") == {
@@ -57,30 +65,22 @@ def test_show_new_pseudogoal_on_autolink_event():
     }
 
 
-def test_replace_old_autolink_with_new_one():
-    goals = AutoLink(
-        build_goaltree(
-            open_(1, "Root", [2]), open_(2, "Should be autolinked", select=selected)
-        )
-    )
+def test_replace_old_autolink_with_new_one(tree_2_goals):
+    goals = tree_2_goals
     goals.accept_all(ToggleAutoLink("first"), ToggleAutoLink("second"))
     assert goals.q("name,edge") == {
         1: {"name": "Root", "edge": [(-12, EdgeType.PARENT)]},
         -12: {"name": "Autolink: 'second'", "edge": [(2, EdgeType.PARENT)]},
-        2: {"name": "Should be autolinked", "edge": []},
+        2: {"name": "Autolink on me", "edge": []},
     }
 
 
-def test_remove_autolink_by_sending_empty_keyword():
-    goals = AutoLink(
-        build_goaltree(
-            open_(1, "Root", [2]), open_(2, "Should be autolinked", select=selected)
-        )
-    )
+def test_remove_autolink_by_sending_empty_keyword(tree_2_goals):
+    goals = tree_2_goals
     goals.accept_all(ToggleAutoLink("lalala"), ToggleAutoLink(""))
     assert goals.q("name,edge") == {
         1: {"name": "Root", "edge": [(2, EdgeType.PARENT)]},
-        2: {"name": "Should be autolinked", "edge": []},
+        2: {"name": "Autolink on me", "edge": []},
     }
 
 
@@ -113,12 +113,8 @@ def test_do_not_add_autolink_to_root_goal():
     assert messages == ["Autolink cannot be set for the root goal"]
 
 
-def test_remove_autolink_on_close():
-    goals = AutoLink(
-        build_goaltree(
-            open_(1, "Root", [2]), open_(2, "Should be autolinked", select=selected)
-        )
-    )
+def test_remove_autolink_on_close(tree_2_goals):
+    goals = tree_2_goals
     goals.accept(ToggleAutoLink("test"))
     assert goals.q("edge") == {
         1: {"edge": [(-12, EdgeType.PARENT)]},
@@ -132,13 +128,8 @@ def test_remove_autolink_on_close():
     }
 
 
-def test_do_not_make_a_link_on_not_matching_add():
-    goals = AutoLink(
-        build_goaltree(
-            open_(1, "Root", [2]),
-            open_(2, "Autolink on me", select=selected),
-        )
-    )
+def test_do_not_make_a_link_on_not_matching_add(tree_2_goals):
+    goals = tree_2_goals
     goals.accept(ToggleAutoLink("hello"))
     # Add a goal to the root
     goals.accept_all(Select(1), Add("Goodbye"))
@@ -150,13 +141,8 @@ def test_do_not_make_a_link_on_not_matching_add():
     }
 
 
-def test_make_a_link_on_matching_add():
-    goals = AutoLink(
-        build_goaltree(
-            open_(1, "Root", [2]),
-            open_(2, "Autolink on me", select=selected),
-        )
-    )
+def test_make_a_link_on_matching_add(tree_2_goals):
+    goals = tree_2_goals
     goals.accept(ToggleAutoLink("me"))
     # Add a goal to the root
     goals.accept_all(Select(1), Add("Link ME please"))
@@ -168,13 +154,8 @@ def test_make_a_link_on_matching_add():
     }
 
 
-def test_do_not_make_a_link_on_not_old_matching_add():
-    goals = AutoLink(
-        build_goaltree(
-            open_(1, "Root", [2]),
-            open_(2, "Autolink on me", select=selected),
-        )
-    )
+def test_do_not_make_a_link_on_not_old_matching_add(tree_2_goals):
+    goals = tree_2_goals
     goals.accept_all(ToggleAutoLink("old"), ToggleAutoLink("new"))
     # Add a goal to the root
     goals.accept_all(Select(1), Add("This is old subgoal"))
@@ -224,13 +205,8 @@ def test_make_a_link_on_matching_rename():
     }
 
 
-def test_do_not_make_a_link_on_matching_subgoal_add():
-    goals = AutoLink(
-        build_goaltree(
-            open_(1, "Root", [2]),
-            open_(2, "Autolink on me", select=selected),
-        )
-    )
+def test_do_not_make_a_link_on_matching_subgoal_add(tree_2_goals):
+    goals = tree_2_goals
     goals.accept(ToggleAutoLink("me"))
     # Add a sub goal to the same subgoal
     goals.accept_all(Add("Do NOT link me please"))
