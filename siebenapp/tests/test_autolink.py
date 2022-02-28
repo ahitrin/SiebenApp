@@ -1,23 +1,3 @@
-"""
-Autolink layer test cases TBD
-
-* ✓ add autolink -> show a new pseudogoal
-* ✓ add autolink1, add autolink 2 -> replace autolink1 with autolink2
-* ✓ add autolink, add empty autolink -> remove a pseudogoal
-* ✓ add autolink on closed goal -> do not add, show error
-* ✓ add autolink on root goal -> do not add, show error
-* ✓ add autolink, close goal -> remove autolink
-* ✓ add autolink, add non-matching goal -> pass as is
-* ✓ add autolink, add matching goal -> make a link
-* ✓ add autolink1, add autolink2, add matching1 goal -> do not make a link
-* ✓ add autolink, insert matching goal -> make a link
-* ✓ add autolink, rename existing goal -> make a link
-* ✓ add autolink, add matching subgoal -> do nothing
-* ✓ add autolink, insert matching  subgoal -> do nothing
-* ✓ add autolink, rename existing subgoal -> do nothing
-* add 2 autolinks, add 1-matching goal -> make 1 link
-* ✓ add 2 autolinks, add 2-matching goal -> make 2 links
-"""
 from typing import List
 
 import pytest
