@@ -215,7 +215,6 @@ def test_make_a_link_on_matching_rename():
         )
     )
     goals.accept(ToggleAutoLink("me"))
-    # Add a goal to the root
     goals.accept_all(Select(3), Rename("Link ME please"))
     assert goals.q("name,edge") == {
         1: {"name": "Root", "edge": [(-12, EdgeType.PARENT), (3, EdgeType.PARENT)]},
@@ -272,7 +271,6 @@ def test_do_not_make_a_link_on_matching_subbbgoal_rename():
         )
     )
     goals.accept(ToggleAutoLink("me"))
-    # Add a goal to the root
     goals.accept_all(Select(3), Rename("Do NOT link me please"))
     assert goals.q("name,edge") == {
         1: {"name": "Root", "edge": [(-12, EdgeType.PARENT)]},
