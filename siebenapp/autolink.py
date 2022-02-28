@@ -64,7 +64,9 @@ class AutoLink(Graph):
             return
         added_id = ids_diff.pop()
         add_to = matching.pop(0)
-        self.goaltree.accept(ToggleLink(add_to, added_id, EdgeType.BLOCKER))
+        self_children = [e[0] for e in self.goaltree.q("edge")[add_to]["edge"]]
+        if added_id not in self_children:
+            self.goaltree.accept(ToggleLink(add_to, added_id, EdgeType.BLOCKER))
 
     def accept_Insert(self, command: Insert):
         matching = [
