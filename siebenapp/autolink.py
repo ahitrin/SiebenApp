@@ -95,7 +95,9 @@ class AutoLink(Graph):
             return
         selected_id = command.goal_id or self.settings("selection")
         add_to = matching.pop(0)
-        self.goaltree.accept(ToggleLink(add_to, selected_id, EdgeType.BLOCKER))
+        self_children = [e[0] for e in self.goaltree.q("edge")[add_to]["edge"]]
+        if selected_id not in self_children:
+            self.goaltree.accept(ToggleLink(add_to, selected_id, EdgeType.BLOCKER))
 
     @with_key("edge")
     def q(self, keys: str = "name") -> Dict[int, Any]:
