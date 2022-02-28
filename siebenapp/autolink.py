@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 from siebenapp.domain import (
     Graph,
@@ -63,10 +63,7 @@ class AutoLink(Graph):
         if not matching or not ids_diff:
             return
         added_id = ids_diff.pop()
-        add_to = matching.pop(0)
-        self_children = [e[0] for e in self.goaltree.q("edge")[add_to]["edge"]]
-        if added_id not in self_children:
-            self.goaltree.accept(ToggleLink(add_to, added_id, EdgeType.BLOCKER))
+        self._make_link(matching, added_id)
 
     def accept_Insert(self, command: Insert):
         matching = [
@@ -81,10 +78,7 @@ class AutoLink(Graph):
         if not matching or not ids_diff:
             return
         added_id = ids_diff.pop()
-        add_to = matching.pop(0)
-        self_children = [e[0] for e in self.goaltree.q("edge")[add_to]["edge"]]
-        if added_id not in self_children:
-            self.goaltree.accept(ToggleLink(add_to, added_id, EdgeType.BLOCKER))
+        self._make_link(matching, added_id)
 
     def accept_Rename(self, command: Rename):
         matching = [
@@ -96,10 +90,13 @@ class AutoLink(Graph):
         if not matching:
             return
         selected_id = command.goal_id or self.settings("selection")
-        add_to = matching.pop(0)
+        self._make_link(matching, selected_id)
+
+    def _make_link(self, matching_goals: List[int], target_goal: int) -> None:
+        add_to = matching_goals.pop(0)
         self_children = [e[0] for e in self.goaltree.q("edge")[add_to]["edge"]]
-        if selected_id not in self_children:
-            self.goaltree.accept(ToggleLink(add_to, selected_id, EdgeType.BLOCKER))
+        if target_goal not in self_children:
+            self.goaltree.accept(ToggleLink(add_to, target_goal, EdgeType.BLOCKER))
 
     @with_key("edge")
     def q(self, keys: str = "name") -> Dict[int, Any]:
