@@ -56,6 +56,17 @@ def tree_3v_goals():
     )
 
 
+@pytest.fixture()
+def tree_3i_goals():
+    return AutoLink(
+        build_goaltree(
+            open_(1, "Root", [2]),
+            open_(2, "Autolink on me", [3], select=selected),
+            open_(3, "Another subgoal"),
+        )
+    )
+
+
 def test_show_new_pseudogoal_on_autolink_event(tree_2_goals):
     goals = tree_2_goals
     assert goals.q("name,edge,select") == {
@@ -217,14 +228,8 @@ def test_do_not_make_a_link_on_matching_subgoal_add(tree_2_goals):
     }
 
 
-def test_do_not_make_a_link_on_matching_subgoal_insert():
-    goals = AutoLink(
-        build_goaltree(
-            open_(1, "Root", [2]),
-            open_(2, "Autolink on me", [3], select=selected),
-            open_(3, "Another subgoal"),
-        )
-    )
+def test_do_not_make_a_link_on_matching_subgoal_insert(tree_3i_goals):
+    goals = tree_3i_goals
     goals.accept(ToggleAutoLink("me"))
     # Add a sub goal to the same subgoal
     goals.accept_all(HoldSelect(), Select(3), Insert("Do NOT link me please"))
@@ -237,14 +242,8 @@ def test_do_not_make_a_link_on_matching_subgoal_insert():
     }
 
 
-def test_do_not_make_a_link_on_matching_subbbgoal_rename():
-    goals = AutoLink(
-        build_goaltree(
-            open_(1, "Root", [2]),
-            open_(2, "Autolink on me", [3], select=selected),
-            open_(3, "Another subgoal"),
-        )
-    )
+def test_do_not_make_a_link_on_matching_subbbgoal_rename(tree_3i_goals):
+    goals = tree_3i_goals
     goals.accept(ToggleAutoLink("me"))
     goals.accept_all(Select(3), Rename("Do NOT link me please"))
     assert goals.q("name,edge") == {
