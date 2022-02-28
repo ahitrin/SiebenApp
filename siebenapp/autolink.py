@@ -26,7 +26,7 @@ class AutoLink(Graph):
         self.keywords: Dict[str, int] = {}
         self.back_kw: Dict[int, str] = {}
 
-    def accept_ToggleAutoLink(self, command: ToggleAutoLink):
+    def accept_ToggleAutoLink(self, command: ToggleAutoLink) -> None:
         selected_id = self.settings("selection")
         if selected_id in self.goaltree.closed:
             self.error("Autolink cannot be set for closed goals")
@@ -44,19 +44,19 @@ class AutoLink(Graph):
         self.keywords[keyword] = selected_id
         self.back_kw[selected_id] = keyword
 
-    def accept_ToggleClose(self, command: ToggleClose):
+    def accept_ToggleClose(self, command: ToggleClose) -> None:
         selected_id = self.settings("selection")
         if selected_id in self.back_kw:
             self.keywords.pop(self.back_kw[selected_id])
             self.back_kw.pop(selected_id)
 
-    def accept_Add(self, command: Add):
+    def accept_Add(self, command: Add) -> None:
         self._autolink_new_goal(command)
 
-    def accept_Insert(self, command: Insert):
+    def accept_Insert(self, command: Insert) -> None:
         self._autolink_new_goal(command)
 
-    def _autolink_new_goal(self, command: Union[Add, Insert]):
+    def _autolink_new_goal(self, command: Union[Add, Insert]) -> None:
         matching = self._find_matching_goals(command.name)
         ids_before = set(self.goaltree.goals.keys())
         self.goaltree.accept(command)
@@ -66,7 +66,7 @@ class AutoLink(Graph):
             added_id = ids_diff.pop()
             self._make_links(matching, added_id)
 
-    def accept_Rename(self, command: Rename):
+    def accept_Rename(self, command: Rename) -> None:
         matching = self._find_matching_goals(command.new_name)
         self.goaltree.accept(command)
         selected_id = command.goal_id or self.settings("selection")
