@@ -13,6 +13,7 @@ Autolink layer test cases TBD
 * ✓ add autolink, insert matching goal -> make a link
 * ✓ add autolink, rename existing goal -> make a link
 * ✓ add autolink, add matching subgoal -> do nothing
+* ✓ add autolink, insert matching  subgoal -> do nothing
 * ✓ add autolink, rename existing subgoal -> do nothing
 * add 2 autolinks, add 1-matching goal -> make 1 link
 * add 2 autolinks, add 2-matching goal -> make 2 links
@@ -239,6 +240,26 @@ def test_do_not_make_a_link_on_matching_subgoal_add():
         -12: {"name": "Autolink: 'me'", "edge": [(2, EdgeType.PARENT)]},
         2: {"name": "Autolink on me", "edge": [(3, EdgeType.PARENT)]},
         3: {"name": "Do NOT link me please", "edge": []},
+    }
+
+
+def test_do_not_make_a_link_on_matching_subgoal_insert():
+    goals = AutoLink(
+        build_goaltree(
+            open_(1, "Root", [2]),
+            open_(2, "Autolink on me", [3], select=selected),
+            open_(3, "Another subgoal"),
+        )
+    )
+    goals.accept(ToggleAutoLink("me"))
+    # Add a sub goal to the same subgoal
+    goals.accept_all(HoldSelect(), Select(3), Insert("Do NOT link me please"))
+    assert goals.q("name,edge") == {
+        1: {"name": "Root", "edge": [(-12, EdgeType.PARENT)]},
+        -12: {"name": "Autolink: 'me'", "edge": [(2, EdgeType.PARENT)]},
+        2: {"name": "Autolink on me", "edge": [(4, EdgeType.PARENT)]},
+        4: {"name": "Do NOT link me please", "edge": [(3, EdgeType.PARENT)]},
+        3: {"name": "Another subgoal", "edge": []},
     }
 
 
