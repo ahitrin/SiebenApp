@@ -51,11 +51,7 @@ class AutoLink(Graph):
             self.back_kw.pop(selected_id)
 
     def accept_Add(self, command: Add):
-        matching = [
-            goal_id
-            for kw, goal_id in self.keywords.items()
-            if kw in command.name.lower()
-        ]
+        matching = self._find_matching_goals(command.name)
         ids_before = set(self.goaltree.goals.keys())
         self.goaltree.accept(command)
         if matching:
@@ -66,11 +62,7 @@ class AutoLink(Graph):
                 self._make_link(matching, added_id)
 
     def accept_Insert(self, command: Insert):
-        matching = [
-            goal_id
-            for kw, goal_id in self.keywords.items()
-            if kw in command.name.lower()
-        ]
+        matching = self._find_matching_goals(command.name)
         ids_before = set(self.goaltree.goals.keys())
         self.goaltree.accept(command)
         if matching:
@@ -81,15 +73,14 @@ class AutoLink(Graph):
                 self._make_link(matching, added_id)
 
     def accept_Rename(self, command: Rename):
-        matching = [
-            goal_id
-            for kw, goal_id in self.keywords.items()
-            if kw in command.new_name.lower()
-        ]
+        matching = self._find_matching_goals(command.new_name)
         self.goaltree.accept(command)
         if matching:
             selected_id = command.goal_id or self.settings("selection")
             self._make_link(matching, selected_id)
+
+    def _find_matching_goals(self, text: str) -> List[int]:
+        return [goal_id for kw, goal_id in self.keywords.items() if kw in text.lower()]
 
     def _make_link(self, matching_goals: List[int], target_goal: int) -> None:
         add_to = matching_goals.pop(0)
