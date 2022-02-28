@@ -41,7 +41,7 @@ class Goals(Graph):
         self.message_fn = message_fn
         self._add_no_link(name)
 
-    def _msg(self, message: str) -> None:
+    def error(self, message: str) -> None:
         if self.message_fn:
             self.message_fn(message)
 
@@ -70,7 +70,7 @@ class Goals(Graph):
     def accept_Add(self, command: Add) -> bool:
         add_to = command.add_to or self.selection
         if add_to in self.closed:
-            self._msg("A new subgoal cannot be added to the closed one")
+            self.error("A new subgoal cannot be added to the closed one")
             return False
         next_id = self._add_no_link(command.name)
         self.accept_ToggleLink(ToggleLink(add_to, next_id, command.edge_type))
@@ -122,7 +122,7 @@ class Goals(Graph):
 
     def accept_Insert(self, command: Insert):
         if (lower := self.previous_selection) == (upper := self.selection):
-            self._msg("A new goal can be inserted only between two different goals")
+            self.error("A new goal can be inserted only between two different goals")
             return
         edge_type = self.edges_forward[lower].get(upper, EdgeType.BLOCKER)
         if self.accept_Add(Add(command.name, lower, edge_type)):
@@ -142,7 +142,9 @@ class Goals(Graph):
                 self.closed.remove(self.selection)
                 self._events.append(("toggle_close", True, self.selection))
             else:
-                self._msg("This goal can't be reopened because other subgoals block it")
+                self.error(
+                    "This goal can't be reopened because other subgoals block it"
+                )
         else:
             if self._may_be_closed():
                 self.closed.add(self.selection)
@@ -152,7 +154,7 @@ class Goals(Graph):
                 )
                 self.accept(HoldSelect())
             else:
-                self._msg("This goal can't be closed because it have open subgoals")
+                self.error("This goal can't be closed because it have open subgoals")
 
     def _may_be_closed(self) -> bool:
         return all(g.target in self.closed for g in self._forward_edges(self.selection))
@@ -178,7 +180,7 @@ class Goals(Graph):
 
     def accept_Delete(self, command: Delete) -> None:
         if (goal_id := command.goal_id or self.selection) == Goals.ROOT_ID:
-            self._msg("Root goal can't be deleted")
+            self.error("Root goal can't be deleted")
             return
         parent = self._parent(goal_id)
         self._delete_subtree(goal_id)
@@ -211,7 +213,7 @@ class Goals(Graph):
         if (lower := command.lower or self.previous_selection) == (
             upper := command.upper or self.selection
         ):
-            self._msg("Goal can't be linked to itself")
+            self.error("Goal can't be linked to itself")
             return
         if self._has_link(lower, upper):
             if (
@@ -241,14 +243,14 @@ class Goals(Graph):
             self.edges_backward[upper].pop(lower)
             self._events.append(("unlink", lower, upper, edge_type))
         else:
-            self._msg("Can't remove the last link")
+            self.error("Can't remove the last link")
 
     def _create_new_link(self, lower: int, upper: int, edge_type: EdgeType) -> None:
         if lower in self.closed and upper not in self.closed:
-            self._msg("An open goal can't block already closed one")
+            self.error("An open goal can't block already closed one")
             return
         if self._has_circular_dependency(lower, upper):
-            self._msg("Circular dependencies between goals are not allowed")
+            self.error("Circular dependencies between goals are not allowed")
             return
         if edge_type == EdgeType.PARENT:
             self._transform_old_parents_into_blocked(lower, upper)

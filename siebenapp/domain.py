@@ -85,6 +85,11 @@ class Graph:
         """Run search query against content"""
         raise NotImplementedError
 
+    def error(self, message: str) -> None:
+        """Show error message"""
+        if self.goaltree is not None:
+            self.goaltree.error(message)
+
     def verify(self) -> bool:
         """Check all inner data for correctness"""
         if self.goaltree is not None:

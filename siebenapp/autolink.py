@@ -29,10 +29,10 @@ class AutoLink(Graph):
     def accept_ToggleAutoLink(self, command: ToggleAutoLink):
         selected_id = self.settings("selection")
         if selected_id in self.goaltree.closed:
-            self.goaltree._msg("Autolink cannot be set for closed goals")
+            self.error("Autolink cannot be set for closed goals")
             return
         if selected_id == Goals.ROOT_ID:
-            self.goaltree._msg("Autolink cannot be set for the root goal")
+            self.error("Autolink cannot be set for the root goal")
             return
         keyword = command.keyword.lower()
         if selected_id in self.back_kw:
