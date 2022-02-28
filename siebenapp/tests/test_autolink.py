@@ -16,7 +16,7 @@ Autolink layer test cases TBD
 * ✓ add autolink, insert matching  subgoal -> do nothing
 * ✓ add autolink, rename existing subgoal -> do nothing
 * add 2 autolinks, add 1-matching goal -> make 1 link
-* add 2 autolinks, add 2-matching goal -> make 2 links
+* ✓ add 2 autolinks, add 2-matching goal -> make 2 links
 """
 from typing import List
 
@@ -251,4 +251,34 @@ def test_do_not_make_a_link_on_matching_subbbgoal_rename(tree_3i_goals):
         -12: {"name": "Autolink: 'me'", "edge": [(2, EdgeType.PARENT)]},
         2: {"name": "Autolink on me", "edge": [(3, EdgeType.PARENT)]},
         3: {"name": "Do NOT link me please", "edge": []},
+    }
+
+
+def test_autolink_on_all_matching_goals(tree_3v_goals):
+    goals = tree_3v_goals
+    # make 2 autolinks
+    goals.accept_all(ToggleAutoLink("me"), Select(3), ToggleAutoLink("plea"))
+    assert goals.q("name,edge") == {
+        1: {"name": "Root", "edge": [(-12, EdgeType.PARENT), (-13, EdgeType.PARENT)]},
+        -12: {"name": "Autolink: 'me'", "edge": [(2, EdgeType.PARENT)]},
+        -13: {"name": "Autolink: 'plea'", "edge": [(3, EdgeType.PARENT)]},
+        2: {"name": "Autolink on me", "edge": []},
+        3: {"name": "Another subgoal", "edge": []},
+    }
+    # add 2-mathing goal
+    goals.accept_all(Select(1), Add("Link me to both please"))
+    assert goals.q("name,edge") == {
+        1: {
+            "name": "Root",
+            "edge": [
+                (-12, EdgeType.PARENT),
+                (-13, EdgeType.PARENT),
+                (4, EdgeType.PARENT),
+            ],
+        },
+        -12: {"name": "Autolink: 'me'", "edge": [(2, EdgeType.PARENT)]},
+        -13: {"name": "Autolink: 'plea'", "edge": [(3, EdgeType.PARENT)]},
+        2: {"name": "Autolink on me", "edge": [(4, EdgeType.BLOCKER)]},
+        3: {"name": "Another subgoal", "edge": [(4, EdgeType.BLOCKER)]},
+        4: {"name": "Link me to both please", "edge": []},
     }

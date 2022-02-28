@@ -78,10 +78,13 @@ class AutoLink(Graph):
         return [goal_id for kw, goal_id in self.keywords.items() if kw in text.lower()]
 
     def _make_link(self, matching_goals: List[int], target_goal: int) -> None:
-        add_to = matching_goals.pop(0)
-        self_children = [e[0] for e in self.goaltree.q("edge")[add_to]["edge"]]
-        if target_goal not in self_children:
-            self.goaltree.accept(ToggleLink(add_to, target_goal, EdgeType.BLOCKER))
+        self_children: Dict[int, List[int]] = {
+            goal_id: [e[0] for e in attrs["edge"]]
+            for goal_id, attrs in self.goaltree.q("edge").items()
+        }
+        for add_to in matching_goals:
+            if target_goal not in self_children[add_to]:
+                self.goaltree.accept(ToggleLink(add_to, target_goal, EdgeType.BLOCKER))
 
     @with_key("edge")
     def q(self, keys: str = "name") -> Dict[int, Any]:
