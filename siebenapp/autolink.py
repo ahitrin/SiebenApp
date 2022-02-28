@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Union
 
 from siebenapp.domain import (
     Graph,
@@ -51,17 +51,12 @@ class AutoLink(Graph):
             self.back_kw.pop(selected_id)
 
     def accept_Add(self, command: Add):
-        matching = self._find_matching_goals(command.name)
-        ids_before = set(self.goaltree.goals.keys())
-        self.goaltree.accept(command)
-        if matching:
-            ids_after = set(self.goaltree.goals.keys())
-            ids_diff = ids_after.difference(ids_before)
-            if ids_diff:
-                added_id = ids_diff.pop()
-                self._make_link(matching, added_id)
+        self._autolink_new_goal(command)
 
     def accept_Insert(self, command: Insert):
+        self._autolink_new_goal(command)
+
+    def _autolink_new_goal(self, command: Union[Add, Insert]):
         matching = self._find_matching_goals(command.name)
         ids_before = set(self.goaltree.goals.keys())
         self.goaltree.accept(command)
