@@ -9,6 +9,7 @@ from siebenapp.domain import (
     ToggleClose,
     Add,
     ToggleLink,
+    Insert,
 )
 from siebenapp.goaltree import Goals
 
@@ -49,6 +50,22 @@ class AutoLink(Graph):
             self.back_kw.pop(selected_id)
 
     def accept_Add(self, command: Add):
+        matching = [
+            goal_id
+            for kw, goal_id in self.keywords.items()
+            if kw in command.name.lower()
+        ]
+        ids_before = set(self.goaltree.goals.keys())
+        self.goaltree.accept(command)
+        ids_after = set(self.goaltree.goals.keys())
+        ids_diff = ids_after.difference(ids_before)
+        if not matching or not ids_diff:
+            return
+        added_id = ids_diff.pop()
+        add_to = matching.pop(0)
+        self.goaltree.accept(ToggleLink(add_to, added_id, EdgeType.BLOCKER))
+
+    def accept_Insert(self, command: Insert):
         matching = [
             goal_id
             for kw, goal_id in self.keywords.items()
