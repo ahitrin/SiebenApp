@@ -1,4 +1,3 @@
-import collections
 from dataclasses import dataclass
 from typing import Dict, Any, Set, List, Tuple, Optional
 
