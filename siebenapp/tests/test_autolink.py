@@ -118,15 +118,15 @@ def test_do_not_add_autolink_to_root_goal():
 def test_remove_autolink_on_close(tree_2_goals):
     goals = tree_2_goals
     goals.accept(ToggleAutoLink("test"))
-    assert goals.q("edge") == {
-        1: {"edge": [(-12, EdgeType.PARENT)]},
-        -12: {"edge": [(2, EdgeType.PARENT)]},
-        2: {"edge": []},
+    assert goals.q("edge,open") == {
+        1: {"edge": [(-12, EdgeType.PARENT)], "open": True},
+        -12: {"edge": [(2, EdgeType.PARENT)], "open": True},
+        2: {"edge": [], "open": True},
     }
     goals.accept(ToggleClose())
-    assert goals.q("edge") == {
-        1: {"edge": [(2, EdgeType.PARENT)]},
-        2: {"edge": []},
+    assert goals.q("edge,open") == {
+        1: {"edge": [(2, EdgeType.PARENT)], "open": True},
+        2: {"edge": [], "open": False},
     }
 
 

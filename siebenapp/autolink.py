@@ -49,6 +49,7 @@ class AutoLink(Graph):
         if selected_id in self.back_kw:
             self.keywords.pop(self.back_kw[selected_id])
             self.back_kw.pop(selected_id)
+        self.goaltree.accept(command)
 
     def accept_Add(self, command: Add) -> None:
         self._autolink_new_goal(command)
