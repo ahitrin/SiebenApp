@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List
 
 import pytest
 
@@ -11,8 +11,6 @@ from siebenapp.domain import (
     HoldSelect,
     Insert,
     Rename,
-    Graph,
-    Delete,
 )
 from siebenapp.tests.dsl import build_goaltree, open_, selected, clos_
 
@@ -49,10 +47,6 @@ def tree_3i_goals():
     )
 
 
-def _autolink_events(goals: Graph) -> List[Tuple]:
-    return [e for e in goals.events() if "autolink" in e[0]]
-
-
 def test_show_new_pseudogoal_on_autolink_event(tree_2_goals):
     goals = tree_2_goals
     assert goals.q("name,edge,select") == {
@@ -71,7 +65,6 @@ def test_show_new_pseudogoal_on_autolink_event(tree_2_goals):
         "select": None,
         "switchable": False,
     }
-    assert _autolink_events(goals) == [("add_autolink", 2, "hello")]
 
 
 def test_replace_old_autolink_with_new_one(tree_2_goals):
@@ -82,11 +75,6 @@ def test_replace_old_autolink_with_new_one(tree_2_goals):
         -12: {"name": "Autolink: 'second'", "edge": [(2, EdgeType.PARENT)]},
         2: {"name": "Autolink on me", "edge": []},
     }
-    assert _autolink_events(goals) == [
-        ("add_autolink", 2, "first"),
-        ("remove_autolink", 2),
-        ("add_autolink", 2, "second"),
-    ]
 
 
 def test_remove_autolink_by_sending_empty_keyword(tree_2_goals):
@@ -96,33 +84,6 @@ def test_remove_autolink_by_sending_empty_keyword(tree_2_goals):
         1: {"name": "Root", "edge": [(2, EdgeType.PARENT)]},
         2: {"name": "Autolink on me", "edge": []},
     }
-    assert _autolink_events(goals) == [
-        ("add_autolink", 2, "lalala"),
-        ("remove_autolink", 2),
-    ]
-
-
-def test_remove_autolink_by_sending_whitespace(tree_2_goals):
-    goals = tree_2_goals
-    goals.accept_all(ToggleAutoLink("lalala"), ToggleAutoLink(" "))
-    assert goals.q("name,edge") == {
-        1: {"name": "Root", "edge": [(2, EdgeType.PARENT)]},
-        2: {"name": "Autolink on me", "edge": []},
-    }
-    assert _autolink_events(goals) == [
-        ("add_autolink", 2, "lalala"),
-        ("remove_autolink", 2),
-    ]
-
-
-def test_do_not_add_autolink_on_whitespace(tree_2_goals):
-    goals = tree_2_goals
-    goals.accept_all(ToggleAutoLink(" "))
-    assert goals.q("name,edge") == {
-        1: {"name": "Root", "edge": [(2, EdgeType.PARENT)]},
-        2: {"name": "Autolink on me", "edge": []},
-    }
-    assert _autolink_events(goals) == []
 
 
 def test_do_not_add_autolink_to_closed_goals():
@@ -140,7 +101,6 @@ def test_do_not_add_autolink_to_closed_goals():
         2: {"name": "Well, it's closed", "edge": []},
     }
     assert messages == ["Autolink cannot be set for closed goals"]
-    assert _autolink_events(goals) == []
 
 
 def test_do_not_add_autolink_to_root_goal():
@@ -153,7 +113,6 @@ def test_do_not_add_autolink_to_root_goal():
         1: {"name": "Root", "edge": []},
     }
     assert messages == ["Autolink cannot be set for the root goal"]
-    assert _autolink_events(goals) == []
 
 
 def test_remove_autolink_on_close(tree_2_goals):
@@ -169,44 +128,6 @@ def test_remove_autolink_on_close(tree_2_goals):
         1: {"edge": [(2, EdgeType.PARENT)], "open": True},
         2: {"edge": [], "open": False},
     }
-    assert _autolink_events(goals) == [
-        ("add_autolink", 2, "test"),
-        ("remove_autolink", 2),
-    ]
-
-
-def test_remove_autolink_on_delete(tree_2_goals):
-    goals = tree_2_goals
-    goals.accept(ToggleAutoLink("test"))
-    assert goals.q("edge,open") == {
-        1: {"edge": [(-12, EdgeType.PARENT)], "open": True},
-        -12: {"edge": [(2, EdgeType.PARENT)], "open": True},
-        2: {"edge": [], "open": True},
-    }
-    goals.accept(Delete())
-    assert goals.q("edge,open") == {
-        1: {"edge": [], "open": True},
-    }
-    assert _autolink_events(goals) == [
-        ("add_autolink", 2, "test"),
-        ("remove_autolink", 2),
-    ]
-
-
-def test_replace_same_autolink(tree_3v_goals):
-    goals = tree_3v_goals
-    goals.accept_all(ToggleAutoLink("same"), Select(3), ToggleAutoLink("same"))
-    assert goals.q("name,edge") == {
-        1: {"name": "Root", "edge": [(2, EdgeType.PARENT), (-13, EdgeType.PARENT)]},
-        2: {"name": "Autolink on me", "edge": []},
-        -13: {"name": "Autolink: 'same'", "edge": [(3, EdgeType.PARENT)]},
-        3: {"name": "Another subgoal", "edge": []},
-    }
-    assert _autolink_events(goals) == [
-        ("add_autolink", 2, "same"),
-        ("remove_autolink", 2),
-        ("add_autolink", 3, "same"),
-    ]
 
 
 def test_do_not_make_a_link_on_not_matching_add(tree_2_goals):
@@ -220,9 +141,6 @@ def test_do_not_make_a_link_on_not_matching_add(tree_2_goals):
         2: {"name": "Autolink on me", "edge": []},
         3: {"name": "Goodbye", "edge": []},
     }
-    assert _autolink_events(goals) == [
-        ("add_autolink", 2, "hello"),
-    ]
 
 
 def test_make_a_link_on_matching_add(tree_2_goals):
@@ -236,9 +154,6 @@ def test_make_a_link_on_matching_add(tree_2_goals):
         2: {"name": "Autolink on me", "edge": [(3, EdgeType.BLOCKER)]},
         3: {"name": "Link ME please", "edge": []},
     }
-    assert _autolink_events(goals) == [
-        ("add_autolink", 2, "me"),
-    ]
 
 
 def test_do_not_make_a_link_on_not_old_matching_add(tree_2_goals):
@@ -252,11 +167,6 @@ def test_do_not_make_a_link_on_not_old_matching_add(tree_2_goals):
         2: {"name": "Autolink on me", "edge": []},
         3: {"name": "This is old subgoal", "edge": []},
     }
-    assert _autolink_events(goals) == [
-        ("add_autolink", 2, "old"),
-        ("remove_autolink", 2),
-        ("add_autolink", 2, "new"),
-    ]
 
 
 def test_make_a_link_on_matching_insert(tree_3v_goals):
