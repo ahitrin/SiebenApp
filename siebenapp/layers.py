@@ -16,7 +16,7 @@ def persistent_layers(
     autolink_data: Optional[AutoLinkData] = None,
 ) -> Graph:
     """Wrap given graph with all standard persistent logic layers"""
-    return Zoom(AutoLink(graph, autolink_data), zoom_data)
+    return Zoom(AutoLink(graph), zoom_data)
 
 
 def view_layers(graph: Graph) -> Graph:

@@ -13,7 +13,6 @@ from hypothesis.stateful import (
 )
 from hypothesis.strategies import data, integers, booleans, text, sampled_from
 
-from siebenapp.autolink import ToggleAutoLink
 from siebenapp.domain import (
     EdgeType,
     HoldSelect,
@@ -122,14 +121,6 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
             ToggleLink(lower=prev_selection, upper=selection, edge_type=edge_type)
         )
 
-    @rule(c=sampled_from(" abcit"))
-    # Ignore trivial trees (without any subgoal)
-    @precondition(lambda self: len(self.goaltree.q()) > 1)
-    def add_autolink(self, c):
-        event("autolink")
-        event("valid autolink")
-        self._accept(ToggleAutoLink(c))
-
     @rule()
     def close_or_open(self):
         event("close/open")
@@ -206,9 +197,8 @@ def build_goals(conn):
         edges = list(cur.execute("select parent, child, reltype from edges"))
         db_settings = list(cur.execute("select * from settings"))
         zoom_data = list(cur.execute("select * from zoom"))
-        autolink_data = list(cur.execute("select * from autolink"))
         note(
-            f"Goals: {goals}, Edges: {edges}, Settings: {db_settings}, Zoom: {zoom_data}, Autolink: {autolink_data}"
+            f"Goals: {goals}, Edges: {edges}, Settings: {db_settings}, Zoom: {zoom_data}"
         )
         goals = Goals.build(goals, edges, db_settings)
-        return all_layers(goals, zoom_data, autolink_data)
+        return all_layers(goals, zoom_data)
