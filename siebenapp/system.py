@@ -4,6 +4,7 @@ from html import escape
 from os import path
 from typing import Callable, List, Dict, Set
 
+from siebenapp.autolink import AutoLink, AutoLinkData
 from siebenapp.domain import EdgeType, Graph
 from siebenapp.enumeration import Enumeration
 from siebenapp.goaltree import Goals, GoalsData, EdgesData, OptionsData
@@ -124,11 +125,16 @@ def save(goals: Graph, filename: str) -> None:
         while not isinstance(zoom_goals, Zoom):
             zoom_goals = zoom_goals.goaltree
         zoom_export = Zoom.export(zoom_goals)
+        autolink_goals = goals
+        while not isinstance(autolink_goals, AutoLink):
+            autolink_goals = autolink_goals.goaltree
+        autolink_export = AutoLink.export(autolink_goals)
         cur = connection.cursor()
         cur.executemany("insert into goals values (?,?,?)", goals_export)
         cur.executemany("insert into edges values (?,?,?)", edges_export)
         cur.executemany("insert into settings values (?,?)", select_export)
         cur.executemany("insert into zoom values (?, ?)", zoom_export)
+        cur.executemany("insert into autolink values(?, ?)", autolink_export)
         root_goals._events.clear()
         connection.commit()
 
@@ -157,6 +163,8 @@ def save_updates(goals: Graph, connection: sqlite3.Connection) -> None:
         ],
         "zoom": ["insert into zoom values (?, ?)"],
         "unzoom": ["delete from zoom where goal=?"],
+        "add_autolink": ["insert into autolink values (?, ?)"],
+        "remove_autolink": ["delete from autolink where goal=?"],
     }
     cur = connection.cursor()
     while goals.events():
@@ -172,6 +180,7 @@ def save_updates(goals: Graph, connection: sqlite3.Connection) -> None:
 
 def load(filename: str, message_fn: Callable[[str], None] = None) -> Enumeration:
     zoom_data: ZoomData = []
+    autolink_data: AutoLinkData = []
     if path.isfile(filename):
         connection = sqlite3.connect(filename)
         run_migrations(connection)
@@ -180,11 +189,12 @@ def load(filename: str, message_fn: Callable[[str], None] = None) -> Enumeration
         edges = list(cur.execute("select parent, child, reltype from edges"))
         settings = list(cur.execute("select * from settings"))
         zoom_data = list(cur.execute("select * from zoom"))
+        autolink_data = list(cur.execute("select * from autolink"))
         cur.close()
         goals = Goals.build(names, edges, settings, message_fn)
     else:
         goals = Goals("Rename me", message_fn)
-    return Enumeration(all_layers(goals, zoom_data))
+    return Enumeration(all_layers(goals, zoom_data, autolink_data))
 
 
 def run_migrations(

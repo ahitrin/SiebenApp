@@ -1,6 +1,6 @@
 from typing import Optional
 
-from siebenapp.autolink import AutoLink
+from siebenapp.autolink import AutoLink, AutoLinkData
 from siebenapp.domain import Graph
 from siebenapp.filter_view import FilterView
 from siebenapp.goaltree import Goals
@@ -10,7 +10,11 @@ from siebenapp.switchable_view import SwitchableView
 from siebenapp.zoom import Zoom, ZoomData
 
 
-def persistent_layers(graph: Goals, zoom_data: Optional[ZoomData] = None) -> Graph:
+def persistent_layers(
+    graph: Goals,
+    zoom_data: Optional[ZoomData] = None,
+    autolink_data: Optional[AutoLinkData] = None,
+) -> Graph:
     """Wrap given graph with all standard persistent logic layers"""
     return Zoom(AutoLink(graph), zoom_data)
 
@@ -20,9 +24,13 @@ def view_layers(graph: Graph) -> Graph:
     return FilterView(SwitchableView(OpenView(ProgressView(graph))))
 
 
-def all_layers(graph: Goals, zoom_data: Optional[ZoomData] = None) -> Graph:
+def all_layers(
+    graph: Goals,
+    zoom_data: Optional[ZoomData] = None,
+    autolink_data: Optional[AutoLinkData] = None,
+) -> Graph:
     """Wrap given Goals instance with all default logic layers"""
-    return view_layers(persistent_layers(graph, zoom_data))
+    return view_layers(persistent_layers(graph, zoom_data, autolink_data))
 
 
 def get_root(graph: Graph) -> Goals:

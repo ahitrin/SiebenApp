@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, Any, List, Union
+from typing import Dict, Any, List, Union, Tuple, Optional
 
 from siebenapp.domain import (
     Graph,
@@ -20,11 +20,18 @@ class ToggleAutoLink(Command):
     keyword: str
 
 
+AutoLinkData = List[Tuple[int, str]]
+
+
 class AutoLink(Graph):
-    def __init__(self, goals: Graph):
+    def __init__(self, goals: Graph, data: Optional[AutoLinkData] = None):
         super(AutoLink, self).__init__(goals)
         self.keywords: Dict[str, int] = {}
         self.back_kw: Dict[int, str] = {}
+        if data:
+            for goal_id, keyword in data:
+                self.keywords[keyword] = goal_id
+                self.back_kw[goal_id] = keyword
 
     def accept_ToggleAutoLink(self, command: ToggleAutoLink) -> None:
         selected_id = self.settings("selection")
@@ -38,11 +45,13 @@ class AutoLink(Graph):
         if selected_id in self.back_kw:
             self.keywords.pop(self.back_kw[selected_id])
             self.back_kw.pop(selected_id)
+            self.events().append(("remove_autolink", selected_id))
             if not keyword:
                 # empty keyword? exit right now
                 return
         self.keywords[keyword] = selected_id
         self.back_kw[selected_id] = keyword
+        self.events().append(("add_autolink", selected_id, keyword))
 
     def accept_ToggleClose(self, command: ToggleClose) -> None:
         selected_id = self.settings("selection")
@@ -111,3 +120,7 @@ class AutoLink(Graph):
                 pseudo_goal["switchable"] = False
             new_goals[pseudo_id] = pseudo_goal
         return new_goals
+
+    @staticmethod
+    def export(goals: "AutoLink") -> AutoLinkData:
+        return [(goal_id, kw) for goal_id, kw in goals.back_kw.items()]
