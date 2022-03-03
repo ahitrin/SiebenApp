@@ -99,6 +99,14 @@ MIGRATIONS = [
     [
         "drop table new_edges",
     ],
+    # 8
+    [
+        """create table autolink (
+            goal integer primary key,
+            keyword text not null,
+            foreign key (goal) references goals(goal_id)
+        )""",
+    ],
 ]
 
 
