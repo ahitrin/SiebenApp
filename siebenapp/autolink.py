@@ -11,6 +11,7 @@ from siebenapp.domain import (
     ToggleLink,
     Insert,
     Rename,
+    Delete,
 )
 from siebenapp.goaltree import Goals
 
@@ -41,14 +42,18 @@ class AutoLink(Graph):
         if selected_id == Goals.ROOT_ID:
             self.error("Autolink cannot be set for the root goal")
             return
-        keyword = command.keyword.lower()
+        keyword = command.keyword.lower().strip()
         if selected_id in self.back_kw:
             self.keywords.pop(self.back_kw[selected_id])
             self.back_kw.pop(selected_id)
             self.events().append(("remove_autolink", selected_id))
-            if not keyword:
-                # empty keyword? exit right now
-                return
+        elif keyword in self.keywords:
+            old_id = self.keywords.pop(keyword)
+            self.back_kw.pop(old_id)
+            self.events().append(("remove_autolink", old_id))
+        if not keyword:
+            # empty keyword? exit right now
+            return
         self.keywords[keyword] = selected_id
         self.back_kw[selected_id] = keyword
         self.events().append(("add_autolink", selected_id, keyword))
@@ -58,6 +63,7 @@ class AutoLink(Graph):
         if selected_id in self.back_kw:
             self.keywords.pop(self.back_kw[selected_id])
             self.back_kw.pop(selected_id)
+            self.events().append(("remove_autolink", selected_id))
         self.goaltree.accept(command)
 
     def accept_Add(self, command: Add) -> None:
@@ -81,6 +87,14 @@ class AutoLink(Graph):
         self.goaltree.accept(command)
         selected_id = command.goal_id or self.settings("selection")
         self._make_links(matching, selected_id)
+
+    def accept_Delete(self, command: Delete) -> None:
+        selected_id = command.goal_id or self.settings("selection")
+        self.goaltree.accept(command)
+        if selected_id in self.back_kw:
+            added_kw = self.back_kw.pop(selected_id)
+            self.keywords.pop(added_kw)
+            self.events().append(("remove_autolink", selected_id))
 
     def _find_matching_goals(self, text: str) -> List[int]:
         return [goal_id for kw, goal_id in self.keywords.items() if kw in text.lower()]
