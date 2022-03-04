@@ -19,6 +19,10 @@ test:
 test-cov:
 	pipenv run py.test --cov=siebenapp --cov-report=html
 
+test-prop-ci: export HYPOTHESIS_PROFILE=ci
+test-prop-ci:
+	pipenv run py.test -k test_properties
+
 install:
 	pipenv run python3 setup.py install
 
