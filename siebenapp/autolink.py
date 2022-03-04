@@ -47,7 +47,7 @@ class AutoLink(Graph):
             self.keywords.pop(self.back_kw[selected_id])
             self.back_kw.pop(selected_id)
             self.events().append(("remove_autolink", selected_id))
-        elif keyword in self.keywords:
+        if keyword in self.keywords:
             old_id = self.keywords.pop(keyword)
             self.back_kw.pop(old_id)
             self.events().append(("remove_autolink", old_id))
