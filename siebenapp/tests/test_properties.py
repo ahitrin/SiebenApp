@@ -187,6 +187,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     @invariant()
     @precondition(lambda self: self.db_is_ready)
     def full_export_and_streaming_export_must_be_the_same(self):
+        note(", ".join(str(e) for e in list(self.goaltree.events())[-5:]))
         save_updates(self.goaltree, self.database)
         assert not self.goaltree.events()
         ng = build_goals(self.database)
