@@ -90,11 +90,18 @@ class AutoLink(Graph):
 
     def accept_Delete(self, command: Delete) -> None:
         selected_id = command.goal_id or self.settings("selection")
+        edges = self.goaltree.q("edge")
+        goals_to_check = [selected_id]
+        while goals_to_check:
+            goal_id = goals_to_check.pop()
+            goals_to_check.extend(
+                e[0] for e in edges[goal_id]["edge"] if e[1] == EdgeType.PARENT
+            )
+            if goal_id in self.back_kw:
+                added_kw = self.back_kw.pop(goal_id)
+                self.keywords.pop(added_kw)
+                self.events().append(("remove_autolink", goal_id))
         self.goaltree.accept(command)
-        if selected_id in self.back_kw:
-            added_kw = self.back_kw.pop(selected_id)
-            self.keywords.pop(added_kw)
-            self.events().append(("remove_autolink", selected_id))
 
     def _find_matching_goals(self, text: str) -> List[int]:
         return [goal_id for kw, goal_id in self.keywords.items() if kw in text.lower()]

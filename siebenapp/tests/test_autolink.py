@@ -193,6 +193,23 @@ def test_remove_autolink_on_delete(tree_2_goals):
     ]
 
 
+def test_remove_autolink_on_parent_delete(tree_3i_goals):
+    goals = tree_3i_goals
+    goals.accept_all(Select(3), ToggleAutoLink("test"))
+    assert goals.q("edge") == {
+        1: {"edge": [(2, EdgeType.PARENT)]},
+        2: {"edge": [(-13, EdgeType.PARENT)]},
+        -13: {"edge": [(3, EdgeType.PARENT)]},
+        3: {"edge": []},
+    }
+    goals.accept_all(Select(2), Delete())
+    assert goals.q("edge") == {1: {"edge": []}}
+    assert _autolink_events(goals) == [
+        ("add_autolink", 3, "test"),
+        ("remove_autolink", 3),
+    ]
+
+
 def test_replace_same_autolink(tree_3v_goals):
     goals = tree_3v_goals
     goals.accept_all(ToggleAutoLink("same"), Select(3), ToggleAutoLink("same"))
@@ -312,7 +329,7 @@ def test_do_not_make_a_link_on_matching_subgoal_insert(tree_3i_goals):
     }
 
 
-def test_do_not_make_a_link_on_matching_subbbgoal_rename(tree_3i_goals):
+def test_do_not_make_a_link_on_matching_subgoal_rename(tree_3i_goals):
     goals = tree_3i_goals
     goals.accept(ToggleAutoLink("me"))
     goals.accept_all(Select(3), Rename("Do NOT link me please"))
