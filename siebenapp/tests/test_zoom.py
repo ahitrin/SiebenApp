@@ -154,7 +154,7 @@ def test_selection_should_not_be_changed_if_selected_goal_is_visible():
     }
 
 
-def test_selection_should_be_changed_if_selected_goal_is_sibling_to_zoom_root():
+def test_selection_should_not_be_changed_if_selected_goal_is_sibling_to_zoom_root():
     goals = Zoom(
         build_goaltree(
             open_(1, "Root", [2, 3]),
@@ -165,13 +165,17 @@ def test_selection_should_be_changed_if_selected_goal_is_sibling_to_zoom_root():
     goals.accept(ToggleZoom())
     assert goals.events()[-1] == ("zoom", 2, 3)
     assert goals.q("name,edge,select") == {
-        -1: {"name": "Root", "edge": [(3, EdgeType.BLOCKER),  (2, EdgeType.BLOCKER)], "select": None},
+        -1: {
+            "name": "Root",
+            "edge": [(3, EdgeType.BLOCKER), (2, EdgeType.BLOCKER)],
+            "select": None,
+        },
         2: {"name": "Previous selected", "edge": [], "select": "prev"},
         3: {"name": "Zoomed", "edge": [], "select": "select"},
     }
 
 
-def test_selection_should_be_changed_if_selected_goal_is_not_a_child_of_zoom_root():
+def test_selection_should_not_be_changed_if_selected_goal_is_not_a_child_of_zoom_root():
     goals = Zoom(
         build_goaltree(
             open_(1, "Root", [2, 4]),
@@ -183,14 +187,18 @@ def test_selection_should_be_changed_if_selected_goal_is_not_a_child_of_zoom_roo
     goals.accept(ToggleZoom())
     assert goals.events()[-1] == ("zoom", 2, 4)
     assert goals.q("name,edge,select") == {
-        -1: {"name": "Root", "edge": [(4, EdgeType.BLOCKER), (3, EdgeType.BLOCKER)], "select": None},
+        -1: {
+            "name": "Root",
+            "edge": [(4, EdgeType.BLOCKER), (3, EdgeType.BLOCKER)],
+            "select": None,
+        },
         2: {"name": "Blocker", "edge": [], "select": None},
         3: {"name": "Previous selected", "edge": [], "select": "prev"},
         4: {"name": "Zoomed", "edge": [(2, EdgeType.BLOCKER)], "select": "select"},
     }
 
 
-def test_previous_selection_should_be_changed_or_reset_after_zoom():
+def test_previous_selection_should_not_be_changed_or_reset_after_zoom():
     goals = Zoom(
         build_goaltree(
             open_(1, "", blockers=[2, 3]),
@@ -208,7 +216,7 @@ def test_previous_selection_should_be_changed_or_reset_after_zoom():
     assert goals.verify()
 
 
-def test_selection_should_be_changed_on_stacked_unzoom_a_long_chain_of_blockers():
+def test_selection_should_not_be_changed_on_stacked_unzoom_a_long_chain_of_blockers():
     goals = Zoom(
         build_goaltree(
             open_(1, "Root", blockers=[2]),
@@ -227,7 +235,11 @@ def test_selection_should_be_changed_on_stacked_unzoom_a_long_chain_of_blockers(
         ToggleZoom(),  # unzoom on 3/D (zoom root is on 2/A again))
     )
     assert goals.q("name,edge,select") == {
-        -1: {"name": "Root", "edge": [(2, EdgeType.BLOCKER), (4, EdgeType.BLOCKER)], "select": None},
+        -1: {
+            "name": "Root",
+            "edge": [(2, EdgeType.BLOCKER), (4, EdgeType.BLOCKER)],
+            "select": None,
+        },
         2: {"name": "A", "edge": [(3, EdgeType.BLOCKER)], "select": None},
         3: {"name": "D", "edge": [], "select": "select"},
         4: {"name": "E", "edge": [], "select": "prev"},
@@ -235,7 +247,7 @@ def test_selection_should_be_changed_on_stacked_unzoom_a_long_chain_of_blockers(
     assert goals.verify()
 
 
-def test_unlink_for_goal_outside_of_zoomed_tree_should_cause_selection_change():
+def test_unlink_for_goal_outside_of_zoomed_tree_should_not_cause_selection_change():
     goals = Zoom(
         build_goaltree(
             open_(1, "Root", [2, 3]),
@@ -250,7 +262,12 @@ def test_unlink_for_goal_outside_of_zoomed_tree_should_cause_selection_change():
         ToggleLink(),  # unlink 3 -> 2
     )
     assert goals.q("name,edge,select") == {
-        -1: {"name": "Root", "edge": [(3, EdgeType.BLOCKER)], "select": None},
+        -1: {
+            "name": "Root",
+            "edge": [(3, EdgeType.BLOCKER), (2, EdgeType.BLOCKER)],
+            "select": None,
+        },
+        2: {"name": "Out of zoom", "edge": [], "select": "select"},
         3: {"name": "Zoom root", "edge": [], "select": "prev"},
     }
 
