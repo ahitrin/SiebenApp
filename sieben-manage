@@ -41,7 +41,8 @@ def main():
     )
     parser_extract.add_argument(
         "target_db",
-        help="A new file to be created. It will contain a result of extraction.",
+        help="A new file to be created. It will contain a result of extraction. "
+        "Only subgoals and edges are extracted, no zoom and/or autolink data is inherited.",
     )
     parser_extract.add_argument(
         "goal_id",
