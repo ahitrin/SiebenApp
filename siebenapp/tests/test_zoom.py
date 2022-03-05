@@ -431,3 +431,17 @@ def test_zoom_events():
     assert goals.events()[-3] == ("toggle_close", False, 5)
     assert goals.events()[-2] == ("select", 4)
     assert goals.events()[-1] == ("hold_select", 4)
+
+
+def test_do_not_duplicate_parent_prev_selection():
+    goals = Zoom(
+        build_goaltree(
+            open_(1, "Root", [2], select=previous),
+            open_(2, "Zoom root", select=selected),
+        )
+    )
+    goals.accept(ToggleZoom())
+    assert goals.q("name,edge,select") == {
+        -1: {"name": "Root", "edge": [(2, EdgeType.BLOCKER)], "select": "prev"},
+        2: {"name": "Zoom root", "edge": [], "select": "select"},
+    }
