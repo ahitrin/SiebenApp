@@ -8,9 +8,7 @@ from siebenapp.domain import (
     HoldSelect,
     ToggleClose,
     Delete,
-    ToggleLink,
     Select,
-    Insert,
     with_key,
 )
 from siebenapp.goaltree import Goals
@@ -38,11 +36,6 @@ class Zoom(Graph):
         elif selection not in self.zoom_root:
             self.zoom_root.append(selection)
             self.events().append(("zoom", len(self.zoom_root), selection))
-        else:
-            return
-        visible_goals = self._build_visible_goals()
-        if self.settings("previous_selection") not in visible_goals:
-            self.accept(HoldSelect())
 
     @with_key("edge")
     def q(self, keys: str = "name") -> Dict[int, Any]:
@@ -65,39 +58,12 @@ class Zoom(Graph):
         # Note: zoom_root may be changed inside accept_ToggleZoom
         self.goaltree.accept(ToggleClose(self.zoom_root[-1]))
 
-    def accept_Insert(self, command: Insert):
-        self.goaltree.accept(command)
-        if self.settings("selection") not in self._build_visible_goals():
-            self.goaltree.accept_all(Select(self.zoom_root[-1]), HoldSelect())
-
-    def accept_ToggleLink(self, command: ToggleLink):
-        self.goaltree.accept(command)
-        visible_goals = self._build_visible_goals()
-        if (
-            self.settings("selection") not in visible_goals
-            or self.settings("previous_selection") not in visible_goals
-        ):
-            self.goaltree.accept_all(Select(self.zoom_root[-1]), HoldSelect())
-
     def accept_Delete(self, command: Delete) -> None:
         if self.settings("selection") == self.zoom_root[-1]:
             self.accept_ToggleZoom(ToggleZoom())
         self.goaltree.accept(command)
         if self.settings("selection") != self.zoom_root[-1]:
             self.goaltree.accept_all(Select(self.zoom_root[-1]), HoldSelect())
-
-    def verify(self) -> bool:
-        ok = self.goaltree.verify()
-        if len(self.zoom_root) == 1:
-            return ok
-        visible_goals = self._build_visible_goals()
-        assert (
-            self.settings("selection") in visible_goals
-        ), "Selected goal must be within visible area"
-        assert (
-            self.settings("previous_selection") in visible_goals
-        ), "Prev-selected goal must be within visible area"
-        return ok
 
     def _build_visible_goals(self, edges: Dict[int, Any] = None) -> Set[int]:
         if edges is None:

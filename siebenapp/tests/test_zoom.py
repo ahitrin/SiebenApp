@@ -162,7 +162,7 @@ def test_selection_should_be_changed_if_selected_goal_is_sibling_to_zoom_root():
         )
     )
     goals.accept(ToggleZoom())
-    assert goals.events()[-1] == ("hold_select", 3)
+    assert goals.events()[-1] == ("zoom", 2, 3)
     assert goals.q("name,edge,select") == {
         -1: {"name": "Root", "edge": [(3, EdgeType.BLOCKER)], "select": None},
         3: {"name": "Zoomed", "edge": [], "select": "select"},
@@ -179,7 +179,7 @@ def test_selection_should_be_changed_if_selected_goal_is_not_a_child_of_zoom_roo
         )
     )
     goals.accept(ToggleZoom())
-    assert goals.events()[-1] == ("hold_select", 4)
+    assert goals.events()[-1] == ("zoom", 2, 4)
     assert goals.q("name,edge,select") == {
         -1: {"name": "Root", "edge": [(4, EdgeType.BLOCKER)], "select": None},
         2: {"name": "Blocker", "edge": [], "select": None},
@@ -247,7 +247,7 @@ def test_unlink_for_goal_outside_of_zoomed_tree_should_cause_selection_change():
     )
     assert goals.q("name,edge,select") == {
         -1: {"name": "Root", "edge": [(3, EdgeType.BLOCKER)], "select": None},
-        3: {"name": "Zoom root", "edge": [], "select": "select"},
+        3: {"name": "Zoom root", "edge": [], "select": "prev"},
     }
 
 
