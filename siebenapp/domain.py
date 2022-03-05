@@ -108,7 +108,7 @@ def with_key(key):
             result = q(self, keys)
             if no_key:
                 for v in result.values():
-                    v.pop(key)
+                    v.pop(key, None)
             return result
 
         return wrapper
