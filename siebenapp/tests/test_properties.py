@@ -179,10 +179,10 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 
     @invariant()
     def there_is_always_one_selected_goal_and_at_most_one_previous(self):
-        selects = self.goaltree.q("select").values()
-        counter = Counter(s["select"] for s in selects)
+        selects = self.goaltree.q("select")
+        counter = Counter(s["select"] for s in selects.values())
         assert counter["select"] == 1
-        assert counter["prev"] <= 1
+        assert counter["prev"] <= 1, str(selects)
 
     @invariant()
     @precondition(lambda self: self.db_is_ready)
