@@ -55,7 +55,7 @@ class Zoom(Graph):
             zoomed_goals[prev_selection] = attrs
             zoomed_goals[-1]["edge"].append((prev_selection, EdgeType.BLOCKER))
         selection: int = self.settings("selection")
-        if selection not in visible_goals:
+        if selection not in visible_goals and selection != Goals.ROOT_ID:
             attrs = origin_goals[selection]
             attrs["edge"] = [e for e in attrs["edge"] if e[0] in visible_goals]
             zoomed_goals[selection] = attrs

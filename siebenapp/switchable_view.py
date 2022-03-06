@@ -31,14 +31,11 @@ class SwitchableView(Graph):
             self.accept(ToggleSwitchableView())
 
     @with_key("switchable")
+    @with_key("select")
     def q(self, keys: str = "name") -> Dict[int, Any]:
         goals = self.goaltree.q(keys)
         if self._only_switchable:
-            goals = {
-                k: v
-                for k, v in goals.items()
-                if v["switchable"] or k in self.selections()
-            }
+            goals = {k: v for k, v in goals.items() if v["switchable"] or v["select"]}
             for v in goals.values():
                 if "edge" in v:
                     v["edge"] = []
