@@ -1,3 +1,5 @@
+from typing import List, Tuple
+
 from siebenapp.domain import (
     EdgeType,
     HoldSelect,
@@ -6,10 +8,15 @@ from siebenapp.domain import (
     ToggleLink,
     Add,
     Select,
+    Graph,
 )
 from siebenapp.goaltree import Goals
 from siebenapp.tests.dsl import build_goaltree, open_, selected, previous
 from siebenapp.zoom import Zoom, ToggleZoom
+
+
+def _zoom_events(goals: Graph) -> List[Tuple]:
+    return [e for e in goals.events() if "zoom" in e[0]]
 
 
 def test_single_goal_could_not_be_zoomed():
@@ -399,11 +406,54 @@ def test_deleting_zoom_root_should_cause_unzoom():
         1: {
             "name": "Root",
             "edge": [(2, EdgeType.PARENT)],
-            "select": "select",
+            "select": None,
             "open": True,
         },
-        2: {"name": "Intermediate", "edge": [], "select": None, "open": True},
+        2: {"name": "Intermediate", "edge": [], "select": "select", "open": True},
     }
+
+
+def test_deleting_parent_goal_should_cause_unzoom():
+    goals = Zoom(
+        build_goaltree(
+            open_(1, "Root", [2]),
+            open_(2, "Intermediate", [3], select=previous),
+            open_(3, "Zoom here", [4], select=selected),
+            open_(4, "Next zoom", [5]),
+            open_(5, "Final zoom"),
+        )
+    )
+    goals.accept_all(ToggleZoom(), Select(4), ToggleZoom(), Select(5), ToggleZoom())
+    assert goals.q(keys="name,edge,select") == {
+        -1: {
+            "name": "Root",
+            "edge": [(5, EdgeType.BLOCKER), (2, EdgeType.BLOCKER)],
+            "select": None,
+        },
+        2: {"name": "Intermediate", "edge": [], "select": "prev"},
+        5: {"name": "Final zoom", "edge": [], "select": "select"},
+    }
+    assert _zoom_events(goals) == [
+        ("zoom", 2, 3),
+        ("zoom", 3, 4),
+        ("zoom", 4, 5),
+    ]
+    goals.accept_all(Select(2), Delete())
+    assert goals.q(keys="name,edge,select") == {
+        1: {
+            "name": "Root",
+            "edge": [],
+            "select": "select",
+        },
+    }
+    assert _zoom_events(goals) == [
+        ("zoom", 2, 3),
+        ("zoom", 3, 4),
+        ("zoom", 4, 5),
+        ("unzoom", 5),
+        ("unzoom", 4),
+        ("unzoom", 3),
+    ]
 
 
 def test_goal_deletion_must_not_cause_root_selection():
