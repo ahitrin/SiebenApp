@@ -100,10 +100,14 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     @precondition(lambda self: len(self.goaltree.q()) > 1)
     def insert(self, d):
         event("insert")
-        goal_keys = sorted(list(self.goaltree.q().keys()))
-        selection = self.goaltree.settings("selection")
-        goal_keys.remove(selection)
-        random_goal = d.draw(sampled_from(goal_keys))
+        candidates = sorted(
+            list(
+                goal_id
+                for goal_id, attrs in self.goaltree.q("select").items()
+                if attrs["select"] != "select"
+            )
+        )
+        random_goal = d.draw(sampled_from(candidates))
         self._accept_all(HoldSelect(), Select(random_goal), Insert("i"))
 
     @rule(b=booleans(), d=data())
