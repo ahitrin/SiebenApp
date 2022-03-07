@@ -11,7 +11,7 @@ from siebenapp.domain import (
     Graph,
 )
 from siebenapp.goaltree import Goals
-from siebenapp.tests.dsl import build_goaltree, open_, selected, previous
+from siebenapp.tests.dsl import build_goaltree, open_, selected, previous, clos_
 from siebenapp.zoom import Zoom, ToggleZoom
 
 
@@ -514,3 +514,21 @@ def test_do_not_duplicate_parent_prev_selection():
         2: {"name": "Zoom root", "edge": [], "select": "select"},
     }
     assert goals.selections() == {-1, 2}
+
+
+def test_zoom_root_must_not_be_switchable():
+    goals = Zoom(
+        build_goaltree(
+            open_(1, "Root", [2], select=previous),
+            clos_(2, "Closed", [], select=selected),
+        )
+    )
+    assert goals.q("switchable") == {
+        1: {"switchable": True},
+        2: {"switchable": True},
+    }
+    goals.accept(ToggleZoom())
+    assert goals.q("switchable") == {
+        -1: {"switchable": False},
+        2: {"switchable": True},
+    }

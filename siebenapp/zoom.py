@@ -57,6 +57,8 @@ class Zoom(Graph):
                 attrs["edge"] = [e for e in attrs["edge"] if e[0] in visible_goals]
                 zoomed_goals[goal_id] = attrs
                 zoomed_goals[-1]["edge"].append((goal_id, EdgeType.BLOCKER))
+        if "switchable" in keys:
+            zoomed_goals[-1]["switchable"] = False
         return zoomed_goals
 
     def accept_ToggleClose(self, command: ToggleClose):
