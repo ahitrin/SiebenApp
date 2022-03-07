@@ -30,7 +30,7 @@ from siebenapp.goaltree import Goals
 from siebenapp.layers import all_layers
 from siebenapp.open_view import ToggleOpenView
 from siebenapp.switchable_view import ToggleSwitchableView
-from siebenapp.system import run_migrations, save_updates
+from siebenapp.system import save_updates, save_connection
 from siebenapp.zoom import ToggleZoom
 
 settings.register_profile("ci", settings(max_examples=1000))
@@ -48,7 +48,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 
     @initialize()
     def open_db_connection(self):
-        run_migrations(self.database)
+        save_connection(self.goaltree, self.database)
         self.db_is_ready = True
 
     def teardown(self):

@@ -118,27 +118,31 @@ def save(goals: Graph, filename: str) -> None:
         save_updates(goals, connection)
     else:
         connection = sqlite3.connect(filename)
-        run_migrations(connection)
-        root_goals: Goals = get_root(goals)
-        goals_export, edges_export, select_export = Goals.export(root_goals)
-        zoom_goals = goals
-        while not isinstance(zoom_goals, Zoom):
-            zoom_goals = zoom_goals.goaltree
-        zoom_export = Zoom.export(zoom_goals)
-        autolink_goals = goals
-        while not isinstance(autolink_goals, AutoLink):
-            autolink_goals = autolink_goals.goaltree
-        autolink_export = AutoLink.export(autolink_goals)
-        cur = connection.cursor()
-        cur.executemany("insert into goals values (?,?,?)", goals_export)
-        cur.executemany("insert into edges values (?,?,?)", edges_export)
-        cur.executemany("insert into settings values (?,?)", select_export)
-        cur.executemany("insert into zoom values (?, ?)", zoom_export)
-        cur.executemany("insert into autolink values(?, ?)", autolink_export)
-        root_goals._events.clear()
-        connection.commit()
+        save_connection(goals, connection)
 
     connection.close()
+
+
+def save_connection(goals: Graph, connection) -> None:
+    run_migrations(connection)
+    root_goals: Goals = get_root(goals)
+    goals_export, edges_export, select_export = Goals.export(root_goals)
+    zoom_goals = goals
+    while not isinstance(zoom_goals, Zoom):
+        zoom_goals = zoom_goals.goaltree
+    zoom_export = Zoom.export(zoom_goals)
+    autolink_goals = goals
+    while not isinstance(autolink_goals, AutoLink):
+        autolink_goals = autolink_goals.goaltree
+    autolink_export = AutoLink.export(autolink_goals)
+    cur = connection.cursor()
+    cur.executemany("insert into goals values (?,?,?)", goals_export)
+    cur.executemany("insert into edges values (?,?,?)", edges_export)
+    cur.executemany("insert into settings values (?,?)", select_export)
+    cur.executemany("insert into zoom values (?, ?)", zoom_export)
+    cur.executemany("insert into autolink values(?, ?)", autolink_export)
+    root_goals._events.clear()
+    connection.commit()
 
 
 def save_updates(goals: Graph, connection: sqlite3.Connection) -> None:
