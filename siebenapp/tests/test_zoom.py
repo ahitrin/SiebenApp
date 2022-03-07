@@ -507,8 +507,10 @@ def test_do_not_duplicate_parent_prev_selection():
             open_(2, "Zoom root", select=selected),
         )
     )
+    assert goals.selections() == {1, 2}
     goals.accept(ToggleZoom())
     assert goals.q("name,edge,select") == {
         -1: {"name": "Root", "edge": [(2, EdgeType.BLOCKER)], "select": "prev"},
         2: {"name": "Zoom root", "edge": [], "select": "select"},
     }
+    assert goals.selections() == {-1, 2}

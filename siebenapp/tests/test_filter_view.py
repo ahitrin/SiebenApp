@@ -3,6 +3,7 @@ from _pytest.fixtures import fixture
 from siebenapp.domain import EdgeType, Select, HoldSelect
 from siebenapp.filter_view import FilterBy, FilterView
 from siebenapp.tests.dsl import build_goaltree, open_, selected
+from siebenapp.zoom import Zoom, ToggleZoom
 
 
 @fixture
@@ -12,6 +13,19 @@ def goaltree():
             open_(1, "Alpha", [2], [], selected),
             open_(2, "Beta", [3]),
             open_(3, "Gamma", []),
+        )
+    )
+
+
+@fixture
+def zoomed_goaltree():
+    return FilterView(
+        Zoom(
+            build_goaltree(
+                open_(1, "Alpha", [2], [], selected),
+                open_(2, "Beta", [3]),
+                open_(3, "Gamma", []),
+            )
         )
     )
 
@@ -68,6 +82,24 @@ def test_previously_selected_goal_must_not_be_filtered_out(goaltree):
             "select": None,
         },
         3: {"name": "Gamma", "edge": [], "select": "select"},
+    }
+
+
+def test_zoomed_parent_goal_must_not_be_filtered_out(zoomed_goaltree):
+    zoomed_goaltree.accept_all(HoldSelect(), Select(2), ToggleZoom(), FilterBy("mm"))
+    assert zoomed_goaltree.q("name,edge,select") == {
+        -1: {
+            "name": "Alpha",
+            "edge": [(-2, EdgeType.BLOCKER), (2, EdgeType.BLOCKER)],
+            "select": "prev",
+        },
+        -2: {
+            "name": "Filter by 'mm'",
+            "edge": [(2, EdgeType.BLOCKER), (3, EdgeType.BLOCKER)],
+            "select": None,
+        },
+        2: {"name": "Beta", "edge": [(3, EdgeType.PARENT)], "select": "select"},
+        3: {"name": "Gamma", "edge": [], "select": None},
     }
 
 
