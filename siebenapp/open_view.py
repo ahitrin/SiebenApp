@@ -31,13 +31,12 @@ class OpenView(Graph):
             self.accept(ToggleOpenView())
 
     @with_key("open")
-    @with_key("select")
     def q(self, keys: str = "name") -> Dict[int, Any]:
         goals = self.goaltree.q(keys)
         result: Dict[int, Any] = {
             k: {}
             for k, v in goals.items()
-            if not self._open or v["open"] or v["select"] is not None
+            if not self._open or v["open"] or k in self.selections()
         }
         for goal_id in result:
             val = goals[goal_id]
