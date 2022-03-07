@@ -191,6 +191,16 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         assert len(goals_without_parent) == 1
 
     @invariant()
+    def fake_goals_should_never_be_switchable(self):
+        fake_goals = [
+            (g, a["switchable"])
+            for g, a in self.goaltree.q("switchable").items()
+            if g < 0
+        ]
+        switchable_fakes = [g for g, sw in fake_goals if sw]
+        assert not switchable_fakes, f"Switchable fake goals: {switchable_fakes}"
+
+    @invariant()
     def goaltree_is_always_valid(self):
         assert self.goaltree.verify()
 
