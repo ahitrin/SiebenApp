@@ -63,15 +63,9 @@ class Graph:
 
     def selections(self) -> Set[int]:
         """Return ids of special 'selection' goals"""
-        # Doesn't look clean nevertheless
-        return set(
-            k
-            for k in [
-                self.settings("selection"),
-                self.settings("previous_selection"),
-            ]
-            if k is not None
-        )
+        if self.goaltree:
+            return self.goaltree.selections()
+        raise NotImplementedError
 
     def events(self) -> deque:
         """Returns queue of applied actions.

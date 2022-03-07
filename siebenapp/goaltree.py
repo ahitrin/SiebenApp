@@ -64,6 +64,16 @@ class Goals(Graph):
             "previous_selection": self.previous_selection,
         }.get(key, 0)
 
+    def selections(self) -> Set[int]:
+        return set(
+            k
+            for k in [
+                self.settings("selection"),
+                self.settings("previous_selection"),
+            ]
+            if k is not None
+        )
+
     def events(self) -> deque:
         return self._events
 
