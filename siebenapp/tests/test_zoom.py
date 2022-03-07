@@ -218,7 +218,7 @@ def test_previous_selection_should_not_be_changed_or_reset_after_zoom():
     assert goals.verify()
     goals.accept(ToggleZoom())
     assert goals.verify()
-    # Currently we cannot make such move via user interface because goal 3 is hidden
+    # Currently, we cannot make such move via user interface because goal 3 is hidden
     goals.accept(ToggleLink(3, 2, EdgeType.BLOCKER))
     assert goals.verify()
 

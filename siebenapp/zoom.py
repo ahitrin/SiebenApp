@@ -48,18 +48,15 @@ class Zoom(Graph):
                 g for g in zoomed_goals[goal]["edge"] if g[0] in visible_goals
             ]
         zoomed_goals[-1]["edge"] = [(self.zoom_root[-1], EdgeType.BLOCKER)]
-        prev_selection: int = self.settings("previous_selection")
-        if prev_selection not in visible_goals and prev_selection != Goals.ROOT_ID:
-            attrs = origin_goals[prev_selection]
-            attrs["edge"] = [e for e in attrs["edge"] if e[0] in visible_goals]
-            zoomed_goals[prev_selection] = attrs
-            zoomed_goals[-1]["edge"].append((prev_selection, EdgeType.BLOCKER))
-        selection: int = self.settings("selection")
-        if selection not in visible_goals and selection != Goals.ROOT_ID:
-            attrs = origin_goals[selection]
-            attrs["edge"] = [e for e in attrs["edge"] if e[0] in visible_goals]
-            zoomed_goals[selection] = attrs
-            zoomed_goals[-1]["edge"].append((selection, EdgeType.BLOCKER))
+        for goal_id in [
+            self.settings("selection"),
+            self.settings("previous_selection"),
+        ]:
+            if goal_id not in visible_goals and goal_id != Goals.ROOT_ID:
+                attrs = origin_goals[goal_id]
+                attrs["edge"] = [e for e in attrs["edge"] if e[0] in visible_goals]
+                zoomed_goals[goal_id] = attrs
+                zoomed_goals[-1]["edge"].append((goal_id, EdgeType.BLOCKER))
         return zoomed_goals
 
     def accept_ToggleClose(self, command: ToggleClose):
