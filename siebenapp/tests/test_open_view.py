@@ -106,3 +106,17 @@ def test_closed_goals_are_shown_when_selected():
         2: {"name": "closed", "open": False, "select": "prev"},
         3: {"name": "closed too", "open": False, "select": "select"},
     }
+
+
+def test_build_fake_links_to_far_closed_goals():
+    v = OpenView(
+        build_goaltree(
+            open_(1, "Root", blockers=[2], select=previous),
+            clos_(2, "Middle", blockers=[3]),
+            clos_(3, "Top", select=selected),
+        )
+    )
+    assert v.q("select,edge") == {
+        1: {"select": "prev", "edge": [(3, EdgeType.BLOCKER)]},
+        3: {"select": "select", "edge": []},
+    }

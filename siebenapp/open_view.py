@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-from typing import Dict, Any
+from typing import Dict, Any, Set, List, Tuple
 
-from siebenapp.domain import Command, Graph, with_key
+from siebenapp.domain import Command, Graph, with_key, EdgeType
 
 
 @dataclass(frozen=True)
@@ -38,11 +38,22 @@ class OpenView(Graph):
             for k, v in goals.items()
             if not self._open or v["open"] or k in self.selections()
         }
+        # goals without parents
+        not_linked: Set[int] = set(g for g in result.keys() if g > 1)
+        # here we know something about other layers (Zoom). I do not like it
+        root_goal: int = 1 if 1 in result.keys() else -1
         for goal_id in result:
             val = goals[goal_id]
             result[goal_id] = {k: v for k, v in val.items() if k != "edge"}
-            if "edge" in val:
-                result[goal_id]["edge"] = [
-                    (edge[0], edge[1]) for edge in val["edge"] if edge[0] in result
-                ]
+            if "edge" in keys:
+                filtered_edges: List[Tuple[int, EdgeType]] = []
+                for edge in val["edge"]:
+                    if edge[0] in result:
+                        filtered_edges.append(edge)
+                        if edge[0] > 1:
+                            not_linked.discard(edge[0])
+                result[goal_id]["edge"] = filtered_edges
+        if "edge" in keys:
+            for missing_goal in not_linked:
+                result[root_goal]["edge"].append((missing_goal, EdgeType.BLOCKER))
         return result
