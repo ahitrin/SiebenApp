@@ -13,7 +13,6 @@ from hypothesis.stateful import (
 )
 from hypothesis.strategies import data, integers, booleans, text, sampled_from
 
-from siebenapp.autolink import ToggleAutoLink
 from siebenapp.domain import (
     EdgeType,
     HoldSelect,
@@ -81,11 +80,12 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     @rule(d=data())
     def select_random_goal(self, d):
         event("select")
-        random_goal = d.draw(
-            integers(min_value=1, max_value=max(self.goaltree.q().keys()))
-        )
+        max_key = max(self.goaltree.q().keys())
+        assume(max_key >= 1)
+        event("valid select 1")
+        random_goal = d.draw(integers(min_value=1, max_value=max_key))
         assume(random_goal in self.goaltree.q())
-        event("valid select")
+        event("valid select 2")
         self._accept(Select(random_goal))
         # Any valid goal must be selectable
         assert self.goaltree.q("select")[random_goal]["select"] == "select"
