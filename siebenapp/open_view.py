@@ -40,8 +40,6 @@ class OpenView(Graph):
         }
         # goals without parents
         not_linked: Set[int] = set(g for g in result.keys() if g > 1)
-        # here we know something about other layers (Zoom). I do not like it
-        root_goal: int = 1 if 1 in result.keys() else -1
         for goal_id in result:
             val = goals[goal_id]
             result[goal_id] = {k: v for k, v in val.items() if k != "edge"}
@@ -54,6 +52,10 @@ class OpenView(Graph):
                             not_linked.discard(edge[0])
                 result[goal_id]["edge"] = filtered_edges
         if "edge" in keys:
-            for missing_goal in not_linked:
-                result[root_goal]["edge"].append((missing_goal, EdgeType.BLOCKER))
+            # here we know something about other layers (Zoom). I do not like it
+            root_goals: Set[int] = set(result.keys()).intersection({1, -1})
+            if root_goals:
+                root_goal: int = root_goals.pop()
+                for missing_goal in not_linked:
+                    result[root_goal]["edge"].append((missing_goal, EdgeType.BLOCKER))
         return result
