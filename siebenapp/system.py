@@ -194,7 +194,9 @@ def load(filename: str, message_fn: Callable[[str], None] = None) -> Enumeration
         goals = Goals.build(names, edges, settings, message_fn)
     else:
         goals = Goals("Rename me", message_fn)
-    return Enumeration(all_layers(goals, zoom_data, autolink_data))
+    result = Enumeration(all_layers(goals, zoom_data, autolink_data))
+    result.verify()
+    return result
 
 
 def run_migrations(
