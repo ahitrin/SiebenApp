@@ -2,6 +2,7 @@ import os
 import sqlite3
 from collections import Counter
 from contextlib import closing
+from typing import Set
 
 from hypothesis import settings, assume, note, event
 from hypothesis.stateful import (
@@ -176,6 +177,17 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     @invariant()
     def there_is_always_at_least_one_goal(self):
         assert self.goaltree.q()
+
+    @invariant()
+    def only_one_root_is_allowed_in_tree_mode(self):
+        assume(not self.goaltree.settings("filter_switchable"))
+        shown = self.goaltree.q("edge")
+        goals: Set[int] = set(shown.keys())
+        goals_with_parent: Set[int] = set(
+            e[0] for attrs in shown.values() for e in attrs["edge"]
+        )
+        goals_without_parent = goals.difference(goals_with_parent)
+        assert len(goals_without_parent) == 1
 
     @invariant()
     def goaltree_is_always_valid(self):
