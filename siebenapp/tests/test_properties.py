@@ -179,8 +179,8 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         assert self.goaltree.q()
 
     @invariant()
+    @precondition(lambda self: not self.goaltree.settings("filter_switchable"))
     def only_one_root_is_allowed_in_tree_mode(self):
-        assume(not self.goaltree.settings("filter_switchable"))
         shown = self.goaltree.q("edge")
         goals: Set[int] = set(shown.keys())
         goals_with_parent: Set[int] = set(
