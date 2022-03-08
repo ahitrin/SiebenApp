@@ -3,6 +3,7 @@ from argparse import ArgumentParser
 
 import dearpygui.dearpygui as dpg
 
+from siebenapp.autolink import ToggleAutoLink
 from siebenapp.domain import (
     Add,
     EdgeType,
@@ -268,6 +269,10 @@ def key_handler(sender, app_data):
         if columns > 1:
             columns -= 1
             phase = "goals"
+    elif app_data == 96:  # `
+        show_dialog(
+            "Auto link by keyword (leave empty to reset auto link)", ToggleAutoLink
+        )
     elif app_data not in (340, 341, 342, 343, 344, 345, 346):
         # ignore mod keys
         print(app_data)

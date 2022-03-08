@@ -2,6 +2,7 @@ import sys
 from argparse import ArgumentParser
 from operator import itemgetter
 
+from siebenapp.autolink import ToggleAutoLink
 from siebenapp.render import Renderer
 from siebenapp.domain import (
     ToggleClose,
@@ -54,7 +55,7 @@ def update_message(message=""):
 
 
 def fmt(goal_id, goal_vars, id_width):
-    if goal_id < 0:
+    if -10 <= goal_id < 0:
         goal_id = " " * id_width
     name = goal_vars["name"]
     op = " " if goal_vars["open"] else "x"
@@ -98,6 +99,8 @@ def build_actions(command):
         return [Rename(command[2:])]
     if command.startswith("f"):
         return [FilterBy(command[1:].lstrip())]
+    if command.startswith("` "):
+        return [ToggleAutoLink(command[2:])]
     if command in simple_commands:
         return [simple_commands[command]]
     return []

@@ -15,6 +15,7 @@ from PyQt5.QtWidgets import (  # type: ignore
 )
 from PyQt5.uic import loadUi  # type: ignore
 
+from siebenapp.autolink import ToggleAutoLink
 from siebenapp.progress_view import ToggleProgress
 from siebenapp.filter_view import FilterBy
 from siebenapp.domain import (
@@ -230,6 +231,10 @@ class SiebenApp(QMainWindow):
             ),
             Qt.Key_T: self.with_refresh(self.toggle_switchable_view, True),
             Qt.Key_Z: self.toggle_zoom,
+            Qt.Key_QuoteLeft: self.start_edit(
+                "Auto link by keyword (leave empty to reset auto link)",
+                self.emit_autolink,
+            ),
             Qt.Key_Escape: self.cancel_edit,
             Qt.Key_Minus: self.with_refresh(self.change_columns, -1),
             Qt.Key_Plus: self.with_refresh(self.change_columns, 1),
@@ -310,6 +315,10 @@ class SiebenApp(QMainWindow):
     def emit_filter(self, text):
         self.force_refresh = True
         self.goals.accept(FilterBy(text))
+
+    def emit_autolink(self, text):
+        self.force_refresh = True
+        self.goals.accept(ToggleAutoLink(text))
 
     def _current_goal_label(self):
         data = self.goals.q(keys="name,select").values()
