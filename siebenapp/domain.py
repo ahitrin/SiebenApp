@@ -24,7 +24,7 @@ class Command:
 class Graph:
     """Base interface definition"""
 
-    NO_VALUE = -1
+    NO_VALUE = "no value"
 
     def __init__(self, goaltree=None):
         self.goaltree: Graph = goaltree
