@@ -122,7 +122,7 @@ def test_build_fake_links_to_far_closed_goals():
     }
 
 
-def test_show_single_goal_when_root_is_closed_and_unselected():
+def test_still_show_root_when_it_is_closed_and_unselected():
     v = OpenView(
         build_goaltree(
             clos_(1, "Hidden root", [2]),
@@ -130,5 +130,6 @@ def test_show_single_goal_when_root_is_closed_and_unselected():
         )
     )
     assert v.q("select,open,edge") == {
+        1: {"select": None, "open": False, "edge": [(2, EdgeType.PARENT)]},
         2: {"select": "select", "open": False, "edge": []},
     }
