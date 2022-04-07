@@ -6,7 +6,3 @@ updates:
     interval: weekly
     time: "00:00"
   open-pull-requests-limit: 10
-  ignore:
-  - dependency-name: hypothesis
-    versions:
-    - 6.8.4
