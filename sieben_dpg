@@ -240,8 +240,11 @@ def key_handler(sender, app_data):
     if app_data == 81:  # q
         is_running = False
     elif 48 <= app_data <= 57:  # 0-9
+        old_selection = goaltree.settings("selection")
         goaltree.accept(Select(app_data - 48))
-        phase = "goals"
+        new_selection = goaltree.settings("selection")
+        if old_selection != new_selection:
+            phase = "goals"
     elif app_data == 65:  # a
         show_dialog("Add new goal", Add)
     elif app_data == 67:  # c
