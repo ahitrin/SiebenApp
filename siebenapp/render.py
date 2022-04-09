@@ -263,10 +263,12 @@ def middle_point(left, right, numerator, denominator):
 
 
 def adjust_graph(render_result: RenderResult, gp: GeometryProvider) -> None:
+    min_x: int = 100000
+    min_y: int = 100000
     max_col: int = 0
     max_row: int = 0
     max_width: Dict[int, int] = {}
-    coordinates: Set[Tuple[int, int]] = set()
+    max_height: Dict[int, int] = {}
 
     for goal_id, attrs in render_result.graph.items():
         if isinstance(goal_id, str):
@@ -274,19 +276,24 @@ def adjust_graph(render_result: RenderResult, gp: GeometryProvider) -> None:
         row, col = attrs["row"], attrs["col1"]
         max_row = max([max_row, row])
         max_col = max([max_col, col])
-        width = (gp.top_right(row, col) - gp.top_left(row, col)).x
+        tl = gp.top_left(row, col)
+        x, y = tl.x, tl.y
+        min_x = min([min_x, x])
+        min_y = min([min_y, y])
+        width = (gp.top_right(row, col) - tl).x
         max_width[col] = max([max_width.get(col, 0), width])
-        coordinates.add((row, col))
+        height = (gp.bottom_left(row, col) - tl).y
+        max_height[row] = max([max_height.get(row, 0), height])
 
     gap_x = max(max_width.values()) // 10
+    gap_y = max(max_height.values()) // 3
 
     for goal_id, attrs in render_result.graph.items():
         if isinstance(goal_id, str):
             continue
         row, col = attrs["row"], attrs["col1"]
-        point = gp.top_left(row, col)
-        attrs["x"] = sum(max_width[i] for i in range(col)) + (col * gap_x)
-        attrs["y"] = point.y
+        attrs["x"] = min_x + sum(max_width[i] for i in range(col)) + (col * gap_x)
+        attrs["y"] = min_y + sum(max_height[i] for i in range(row)) + (row * gap_y)
 
 
 def render_lines(
