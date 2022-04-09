@@ -263,12 +263,30 @@ def middle_point(left, right, numerator, denominator):
 
 
 def adjust_graph(render_result: RenderResult, gp: GeometryProvider) -> None:
+    max_col: int = 0
+    max_row: int = 0
+    max_width: Dict[int, int] = {}
+    coordinates: Set[Tuple[int, int]] = set()
+
+    for goal_id, attrs in render_result.graph.items():
+        if isinstance(goal_id, str):
+            continue
+        row, col = attrs["row"], attrs["col1"]
+        max_row = max([max_row, row])
+        max_col = max([max_col, col])
+        width = (gp.top_right(row, col) - gp.top_left(row, col)).x
+        max_width[col] = max([max_width.get(col, 0), width])
+        coordinates.add((row, col))
+
+    gap_x = max(max_width.values()) // 10
+
     for goal_id, attrs in render_result.graph.items():
         if isinstance(goal_id, str):
             continue
         row, col = attrs["row"], attrs["col1"]
         point = gp.top_left(row, col)
-        attrs["x"], attrs["y"] = point.x, point.y
+        attrs["x"] = sum(max_width[i] for i in range(col)) + (col * gap_x)
+        attrs["y"] = point.y
 
 
 def render_lines(
