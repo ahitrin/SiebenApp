@@ -286,7 +286,7 @@ def adjust_graph(render_result: RenderResult, gp: GeometryProvider) -> None:
         max_height[row] = max([max_height.get(row, 0), height])
 
     gap_x = max(max_width.values()) // 10
-    gap_y = max(max_height.values()) // 3
+    gap_y = max(max_height.values()) // 5
 
     for goal_id, attrs in render_result.graph.items():
         if isinstance(goal_id, str):
