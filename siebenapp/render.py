@@ -39,21 +39,21 @@ class Point:
     def __repr__(self):
         return f"<{self.x}, {self.y}>"
 
-    def as_tuple(self):
+    def as_tuple(self) -> Tuple[int, int]:
         return self.x, self.y
 
 
 class GeometryProvider(Protocol):
-    def top_left(self, row, col):
+    def top_left(self, row: int, col: int) -> Point:
         raise NotImplementedError
 
-    def top_right(self, row, col):
+    def top_right(self, row: int, col: int) -> Point:
         raise NotImplementedError
 
-    def bottom_left(self, row, col):
+    def bottom_left(self, row: int, col: int) -> Point:
         raise NotImplementedError
 
-    def bottom_right(self, row, col):
+    def bottom_right(self, row: int, col: int) -> Point:
         raise NotImplementedError
 
 
@@ -258,7 +258,7 @@ def goal_key(tup: Tuple[GoalId, int]) -> Tuple[int, int]:
     return goal_pos, goal_id
 
 
-def middle_point(left, right, numerator, denominator):
+def middle_point(left: Point, right: Point, numerator: int, denominator: int) -> Point:
     return left + (right - left) * numerator / denominator
 
 
@@ -298,9 +298,9 @@ def adjust_graph(render_result: RenderResult, gp: GeometryProvider) -> None:
 
 def render_lines(
     gp: GeometryProvider, render_result: RenderResult
-) -> List[Tuple[EdgeType, int, int, str]]:
+) -> List[Tuple[EdgeType, Point, Point, str]]:
     edges = {}
-    lines: List[Tuple[EdgeType, int, int, str]] = []
+    lines: List[Tuple[EdgeType, Point, Point, str]] = []
 
     for goal_id, attrs in render_result.graph.items():
         for e_target, e_type in attrs["edge_render"]:
