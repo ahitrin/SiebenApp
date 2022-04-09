@@ -1,5 +1,5 @@
 import math
-from typing import List, Dict, Tuple, Any, Set, Iterable
+from typing import List, Dict, Tuple, Any, Iterable
 
 from siebenapp.domain import Graph, Select
 
@@ -42,7 +42,6 @@ class Enumeration(Graph):
         self, keys: str = "name"
     ) -> Tuple[Dict[int, Any], BidirectionalIndex]:
         goals = self.goaltree.q(keys)
-        goals = {k: v for k, v in goals.items()}
         return goals, BidirectionalIndex(goals)
 
     def q(self, keys: str = "name") -> Dict[int, Any]:
