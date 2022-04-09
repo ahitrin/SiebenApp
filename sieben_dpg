@@ -138,6 +138,11 @@ def rebuild_goals():
                 elif attrs["select"] == "prev":
                     dpg.highlight_table_row(table_id, 0, (192, 192, 192, 255))
     nodes.update(add_to_nodes)
+    phase = "adjust"
+
+
+def adjust_goals():
+    global phase
     phase = "edges"
 
 
@@ -291,6 +296,8 @@ dpg.set_primary_window("primary", True)
 while dpg.is_dearpygui_running() and is_running:
     if phase == "goals":
         rebuild_goals()
+    elif phase == "adjust":
+        adjust_goals()
     elif phase == "edges":
         rebuild_edges()
     elif phase == "zero":
