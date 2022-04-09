@@ -24,6 +24,7 @@ from siebenapp.render import (
     GeometryProvider,
     Point,
     RenderResult,
+    adjust_graph,
 )
 from siebenapp.switchable_view import ToggleSwitchableView
 from siebenapp.system import load, split_long, save
@@ -143,6 +144,14 @@ def rebuild_goals():
 
 def adjust_goals():
     global phase
+    global render_result
+    gp = DPGGeometry()
+    adjust_graph(render_result, gp)
+    for goal_id, attrs in render_result.graph.items():
+        if isinstance(goal_id, str):
+            continue
+        widget_tag = f"goal_{goal_id}"
+        dpg.set_item_pos(widget_tag, (attrs["x"], attrs["y"]))
     phase = "edges"
 
 

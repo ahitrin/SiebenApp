@@ -262,6 +262,15 @@ def middle_point(left, right, numerator, denominator):
     return left + (right - left) * numerator / denominator
 
 
+def adjust_graph(render_result: RenderResult, gp: GeometryProvider) -> None:
+    for goal_id, attrs in render_result.graph.items():
+        if isinstance(goal_id, str):
+            continue
+        row, col = attrs["row"], attrs["col1"]
+        point = gp.top_left(row, col)
+        attrs["x"], attrs["y"] = point.x, point.y
+
+
 def render_lines(
     gp: GeometryProvider, render_result: RenderResult
 ) -> List[Tuple[EdgeType, int, int, str]]:
