@@ -37,22 +37,15 @@ class Enumeration(Graph):
     def __init__(self, goaltree: Graph) -> None:
         super().__init__(goaltree)
         self.selection_cache: List[int] = []
-        self._goal_filter: Set[int] = set()
-        self._update_mapping()
-
-    def _update_mapping(self) -> None:
-        original_mapping = self.goaltree.q().keys()
-        self._goal_filter = set(original_mapping)
 
     def _id_mapping(
         self, keys: str = "name"
     ) -> Tuple[Dict[int, Any], BidirectionalIndex]:
         goals = self.goaltree.q(keys)
-        goals = {k: v for k, v in goals.items() if k in self._goal_filter}
+        goals = {k: v for k, v in goals.items()}
         return goals, BidirectionalIndex(goals)
 
     def q(self, keys: str = "name") -> Dict[int, Any]:
-        self._update_mapping()
         result: Dict[int, Any] = dict()
         goals, index = self._id_mapping(keys)
         for old_id, val in goals.items():
@@ -65,7 +58,6 @@ class Enumeration(Graph):
         return result
 
     def accept_Select(self, command: Select):
-        self._update_mapping()
         goals, index = self._id_mapping()
         if (goal_id := command.goal_id) >= 10:
             self.selection_cache = []
