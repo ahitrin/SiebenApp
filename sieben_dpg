@@ -166,6 +166,7 @@ def rebuild_edges():
         EdgeType.PARENT: (180, 180, 180, 255),
     }
     lines = render_lines(DPGGeometry(), render_result)
+    fix = Point(0, -8)
     for edge_type, start, end, _ in lines:
         tag = f"line {edge_type} {start}, {end}"
         if tag in drawn_items:
@@ -173,8 +174,8 @@ def rebuild_edges():
             # tag duplication causes an error within draw_line
             continue
         dpg.draw_line(
-            start.as_tuple(),
-            end.as_tuple(),
+            (start + fix).as_tuple(),
+            (end + fix).as_tuple(),
             color=line_color[edge_type],
             tag=tag,
             parent="primary",
