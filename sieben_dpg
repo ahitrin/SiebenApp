@@ -75,7 +75,7 @@ class DPGGeometry(GeometryProvider):
             return 0, self._size(row, 0)[1]
         if (row, col) in nodes:
             return dpg.get_item_rect_size(nodes[(row, col)])
-        return 250, 70
+        return 250, 30
 
     def top_left(self, row, col):
         pos = self._pos(row, col)
