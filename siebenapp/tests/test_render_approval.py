@@ -4,7 +4,13 @@ from pprint import pprint
 from approvaltests import verify  # type: ignore
 from approvaltests.reporters import GenericDiffReporterFactory  # type: ignore
 
-from siebenapp.render import Renderer, GeometryProvider, render_lines, Point
+from siebenapp.render import (
+    Renderer,
+    GeometryProvider,
+    render_lines,
+    Point,
+    adjust_graph,
+)
 from siebenapp.tests.dsl import build_goaltree, open_, clos_, selected, previous
 
 
@@ -35,6 +41,7 @@ def test_render_bug_example():
     )
     r = Renderer(g)
     result = r.build()
+    adjust_graph(result, FakeGeometry())
     lines = render_lines(FakeGeometry(), result)
     with io.StringIO() as out:
         print("== Graph\n", file=out)
