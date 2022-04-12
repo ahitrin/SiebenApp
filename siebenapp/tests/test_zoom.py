@@ -535,18 +535,29 @@ def test_zoom_root_must_not_be_switchable():
 
 
 def test_zoom_attempt_out_of_stack():
+    messages = []
     goals = Zoom(
         build_goaltree(
             open_(1, "Root", [2, 3]),
             open_(2, "Selected and out of tree", select=previous),
             open_(3, "Zoom root", [4], select=selected),
             open_(4, "Top"),
+            message_fn=messages.append,
         )
     )
     goals.accept_all(ToggleZoom(), Select(2), HoldSelect())
-    assert goals.q("name,select,edge") == {
-        -1: {"name": "Root", "edge": [(2, EdgeType.BLOCKER), (3, EdgeType.BLOCKER)], "select": None},
+    expected = {
+        -1: {
+            "name": "Root",
+            "edge": [(2, EdgeType.BLOCKER), (3, EdgeType.BLOCKER)],
+            "select": None,
+        },
         2: {"name": "Selected and out of tree", "edge": [], "select": "select"},
         3: {"name": "Zoom root", "edge": [(4, EdgeType.PARENT)], "select": None},
         4: {"name": "Top", "edge": [], "select": None},
     }
+    assert goals.q("name,select,edge") == expected
+    # Try to zoom out of current stack should not be allowed!
+    goals.accept(ToggleZoom())
+    assert goals.q("name,select,edge") == expected
+    assert len(messages) == 1

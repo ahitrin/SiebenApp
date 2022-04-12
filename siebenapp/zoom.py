@@ -32,8 +32,14 @@ class Zoom(Graph):
             last_zoom = self.zoom_root.pop(-1)
             self.events().append(("unzoom", last_zoom))
         elif selection not in self.zoom_root:
-            self.zoom_root.append(selection)
-            self.events().append(("zoom", len(self.zoom_root), selection))
+            # try to zoom
+            origin_goals = self.goaltree.q("edge")
+            visible_goals = self._build_visible_goals(origin_goals)
+            if selection in visible_goals:
+                self.zoom_root.append(selection)
+                self.events().append(("zoom", len(self.zoom_root), selection))
+            else:
+                self.error("Zooming outside of current zoom root is not allowed!")
 
     @with_key("edge")
     def q(self, keys: str = "name") -> Dict[int, Any]:
@@ -47,7 +53,9 @@ class Zoom(Graph):
             zoomed_goals[goal]["edge"] = [
                 g for g in zoomed_goals[goal]["edge"] if g[0] in visible_goals
             ]
-        global_root_edges: Set[Tuple[int, EdgeType]] = {(self.zoom_root[-1], EdgeType.BLOCKER)}
+        global_root_edges: Set[Tuple[int, EdgeType]] = {
+            (self.zoom_root[-1], EdgeType.BLOCKER)
+        }
         for goal_id in [
             self.settings("selection"),
             self.settings("previous_selection"),
