@@ -155,7 +155,7 @@ def adjust_goals():
         if isinstance(goal_id, str):
             continue
         widget_tag = f"goal_{goal_id}"
-        dpg.set_item_pos(widget_tag, (attrs["x"], attrs["y"]))
+        dpg.set_item_pos(widget_tag, [attrs["x"], attrs["y"]])
     phase = "edges"
 
 
