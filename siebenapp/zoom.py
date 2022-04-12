@@ -47,7 +47,7 @@ class Zoom(Graph):
             zoomed_goals[goal]["edge"] = [
                 g for g in zoomed_goals[goal]["edge"] if g[0] in visible_goals
             ]
-        zoomed_goals[-1]["edge"] = [(self.zoom_root[-1], EdgeType.BLOCKER)]
+        global_root_edges: Set[Tuple[int, EdgeType]] = {(self.zoom_root[-1], EdgeType.BLOCKER)}
         for goal_id in [
             self.settings("selection"),
             self.settings("previous_selection"),
@@ -56,9 +56,10 @@ class Zoom(Graph):
                 attrs = origin_goals[goal_id]
                 attrs["edge"] = [e for e in attrs["edge"] if e[0] in visible_goals]
                 zoomed_goals[goal_id] = attrs
-                zoomed_goals[-1]["edge"].append((goal_id, EdgeType.BLOCKER))
+                global_root_edges.add((goal_id, EdgeType.BLOCKER))
         if "switchable" in keys:
             zoomed_goals[-1]["switchable"] = False
+        zoomed_goals[-1]["edge"] = sorted(list(global_root_edges))
         return zoomed_goals
 
     def accept_ToggleClose(self, command: ToggleClose):
