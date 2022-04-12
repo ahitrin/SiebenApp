@@ -267,6 +267,8 @@ def adjust_graph(render_result: RenderResult, gp: GeometryProvider) -> None:
     min_y: int = 100000
     max_col: int = 0
     max_row: int = 0
+    width: Dict[int, int] = {}
+    height: Dict[int, int] = {}
     max_width: Dict[int, int] = {}
     max_height: Dict[int, int] = {}
 
@@ -280,10 +282,10 @@ def adjust_graph(render_result: RenderResult, gp: GeometryProvider) -> None:
         x, y = tl.x, tl.y
         min_x = min([min_x, x])
         min_y = min([min_y, y])
-        width = (gp.top_right(row, col) - tl).x
-        max_width[col] = max([max_width.get(col, 0), width])
-        height = (gp.bottom_left(row, col) - tl).y
-        max_height[row] = max([max_height.get(row, 0), height])
+        width[goal_id] = (gp.top_right(row, col) - tl).x
+        max_width[col] = max([max_width.get(col, 0), width[goal_id]])
+        height[goal_id] = (gp.bottom_left(row, col) - tl).y
+        max_height[row] = max([max_height.get(row, 0), height[goal_id]])
 
     gap_x = max(max_width.values()) // 10
     gap_y = max(max_height.values()) // 5
@@ -292,8 +294,18 @@ def adjust_graph(render_result: RenderResult, gp: GeometryProvider) -> None:
         if isinstance(goal_id, str):
             continue
         row, col = attrs["row"], attrs["col1"]
-        attrs["x"] = min_x + sum(max_width[i] for i in range(col)) + (col * gap_x)
-        attrs["y"] = min_y + sum(max_height[i] for i in range(row)) + (row * gap_y)
+        attrs["x"] = (
+            min_x
+            + sum(max_width[i] for i in range(col))
+            + (col * gap_x)
+            + ((max_width[col] - width[goal_id]) // 2)
+        )
+        attrs["y"] = (
+            min_y
+            + sum(max_height[i] for i in range(row))
+            + (row * gap_y)
+            + ((max_height[row] - height[goal_id]) // 2)
+        )
 
 
 def render_lines(
