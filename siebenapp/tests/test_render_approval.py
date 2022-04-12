@@ -41,11 +41,22 @@ def test_render_bug_example():
     )
     r = Renderer(g)
     result = r.build()
-    adjust_graph(result, FakeGeometry())
-    lines = render_lines(FakeGeometry(), result)
+    gp = FakeGeometry()
+    adjust_graph(result, gp)
+    lines = render_lines(gp, result)
     with io.StringIO() as out:
         print("== Graph\n", file=out)
         pprint(result.graph, out)
+        print("\n== Geometry change after adjust\n", file=out)
+        total_delta = Point(0, 0)
+        for goal_id in g.goals:
+            goal = result.graph[goal_id]
+            delta = gp.top_left(goal["row"], goal["col1"]) - Point(goal["x"], goal["y"])
+            total_delta += delta
+            print(f"{goal_id}: dx={delta.x}, dy={delta.y}", file=out)
+        avg_dx = total_delta.x // len(g.goals)
+        avg_dy = total_delta.y // len(g.goals)
+        print(f"Avg: dx={avg_dx}, dy={avg_dy}", file=out)
         print("\n== Edge options\n", file=out)
         pprint(result.edge_opts, out)
         print("\n== Lines", file=out)

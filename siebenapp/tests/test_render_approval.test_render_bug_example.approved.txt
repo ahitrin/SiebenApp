@@ -188,6 +188,18 @@
          'select': None,
          'switchable': False}}
 
+== Geometry change after adjust
+
+1: dx=0, dy=200
+2: dx=0, dy=80
+3: dx=0, dy=160
+4: dx=45, dy=160
+5: dx=0, dy=120
+6: dx=45, dy=80
+7: dx=0, dy=40
+8: dx=0, dy=0
+Avg: dx=11, dy=105
+
 == Edge options
 
 {'1_1': (0, 1, 3),
