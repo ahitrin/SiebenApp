@@ -265,12 +265,13 @@ def middle_point(left: Point, right: Point, numerator: int, denominator: int) ->
 def adjust_graph(render_result: RenderResult, gp: GeometryProvider) -> None:
     min_x: int = 100000
     min_y: int = 100000
+    max_y: int = 0
     max_col: int = 0
     max_row: int = 0
-    width: Dict[int, int] = {}
-    height: Dict[int, int] = {}
-    max_width: Dict[int, int] = {}
-    max_height: Dict[int, int] = {}
+    width: Dict[int, int] = {}  # key=goal_id
+    height: Dict[int, int] = {}  # key=goal_id
+    max_width: Dict[int, int] = {}  # key=column
+    max_height: Dict[int, int] = {}  # key=row
 
     for goal_id, attrs in render_result.graph.items():
         if isinstance(goal_id, str):
@@ -282,13 +283,19 @@ def adjust_graph(render_result: RenderResult, gp: GeometryProvider) -> None:
         x, y = tl.x, tl.y
         min_x = min([min_x, x])
         min_y = min([min_y, y])
+        max_y = max([max_y, y])
         width[goal_id] = (gp.top_right(row, col) - tl).x
         max_width[col] = max([max_width.get(col, 0), width[goal_id]])
         height[goal_id] = (gp.bottom_left(row, col) - tl).y
         max_height[row] = max([max_height.get(row, 0), height[goal_id]])
 
     gap_x = max(max_width.values()) // 10
-    gap_y = max(max_height.values()) // 5
+    gap_y = int(
+        (max_height[max_row] + max_y - min_y - sum(max_height.values()))
+        / (len(max_height) - 1)
+        if len(max_height) > 1
+        else 30
+    )
 
     for goal_id, attrs in render_result.graph.items():
         if isinstance(goal_id, str):
