@@ -55,7 +55,7 @@
      'row': 4,
      'select': 'select',
      'switchable': False,
-     'x': 55,
+     'x': 100,
      'y': 400},
  5: {'col': 2,
      'col1': 0,
@@ -77,7 +77,7 @@
      'row': 2,
      'select': None,
      'switchable': True,
-     'x': 55,
+     'x': 100,
      'y': 200},
  7: {'col': 2,
      'col1': 0,
@@ -193,12 +193,12 @@
 1: dx=0, dy=0
 2: dx=0, dy=0
 3: dx=0, dy=0
-4: dx=45, dy=0
+4: dx=0, dy=0
 5: dx=0, dy=0
-6: dx=45, dy=0
+6: dx=0, dy=0
 7: dx=0, dy=0
 8: dx=0, dy=0
-Avg: dx=11, dy=0
+Avg: dx=0, dy=0
 
 == Edge options
 

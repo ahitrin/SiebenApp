@@ -264,6 +264,7 @@ def middle_point(left: Point, right: Point, numerator: int, denominator: int) ->
 
 def adjust_graph(render_result: RenderResult, gp: GeometryProvider) -> None:
     min_x: int = 100000
+    max_x: int = 0
     min_y: int = 100000
     max_y: int = 0
     max_col: int = 0
@@ -282,6 +283,7 @@ def adjust_graph(render_result: RenderResult, gp: GeometryProvider) -> None:
         tl = gp.top_left(row, col)
         x, y = tl.x, tl.y
         min_x = min([min_x, x])
+        max_x = max([max_x, x])
         min_y = min([min_y, y])
         max_y = max([max_y, y])
         width[goal_id] = (gp.top_right(row, col) - tl).x
@@ -289,7 +291,12 @@ def adjust_graph(render_result: RenderResult, gp: GeometryProvider) -> None:
         height[goal_id] = (gp.bottom_left(row, col) - tl).y
         max_height[row] = max([max_height.get(row, 0), height[goal_id]])
 
-    gap_x = max(max_width.values()) // 10
+    gap_x = int(
+        (max_width[max_col] + max_x - min_x - sum(max_width.values()))
+        / (len(max_width) - 1)
+        if len(max_width) > 1
+        else 50
+    )
     gap_y = int(
         (max_height[max_row] + max_y - min_y - sum(max_height.values()))
         / (len(max_height) - 1)
