@@ -99,6 +99,26 @@ def text_width(text: str) -> int:
     return size[0] if size is not None else 0
 
 
+def open_file(sender, app_data, user_data):
+    global goaltree
+    global phase
+    db_file = list(app_data.get("selections", {}).values())[:1]
+    if db_file:
+        goaltree = load(db_file[0])
+        phase = "goals"
+
+
+with dpg.file_dialog(
+    directory_selector=False,
+    show=False,
+    callback=open_file,
+    width=500,
+    height=300,
+    tag="open_dialog_id",
+):
+    dpg.add_file_extension(".db", color=(255, 0, 255, 255), custom_text="[Sieben]")
+
+
 def rebuild_goals():
     global phase
     global render_result
@@ -267,6 +287,8 @@ def key_handler(sender, app_data):
     elif app_data == 78:  # n
         goaltree.accept(ToggleOpenView())
         phase = "goals"
+    elif app_data == 79:  # o
+        dpg.show_item("open_dialog_id")
     elif app_data == 80:  # p
         goaltree.accept(ToggleProgress())
         phase = "goals"
