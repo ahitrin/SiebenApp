@@ -48,7 +48,8 @@ parser.add_argument(
     help="Path to the database file (default: sieben.db)",
 )
 args = parser.parse_args()
-goaltree = load(args.db)
+filename=args.db
+goaltree = load(filename)
 is_running = True
 dialog_event_factory = None
 phase = "zero"  # zero -> loop [ goals -> adjust -> edges -> no_update -> ... ]
@@ -100,11 +101,13 @@ def text_width(text: str) -> int:
 
 
 def open_file(sender, app_data, user_data):
+    global filename
     global goaltree
     global phase
     db_file = list(app_data.get("selections", {}).values())[:1]
     if db_file:
-        goaltree = load(db_file[0])
+        filename = db_file[0]
+        goaltree = load(filename)
         phase = "goals"
 
 
@@ -123,7 +126,7 @@ def rebuild_goals():
     global phase
     global render_result
     global nodes
-    save(goaltree, args.db)
+    save(goaltree, filename)
     render_result = Renderer(goaltree, columns).build()
     gp = DPGGeometry()
     nodes.clear()
