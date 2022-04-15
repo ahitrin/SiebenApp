@@ -48,7 +48,7 @@ parser.add_argument(
     help="Path to the database file (default: sieben.db)",
 )
 args = parser.parse_args()
-filename=args.db
+filename = args.db
 goaltree = load(filename)
 is_running = True
 dialog_event_factory = None
