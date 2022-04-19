@@ -134,9 +134,7 @@ def rebuild_goals():
         previous_tag = drawn_items.pop()
         dpg.delete_item(previous_tag)
     add_to_nodes = {}
-    for goal_id, attrs in render_result.graph.items():
-        if isinstance(goal_id, str):
-            continue
+    for goal_id, attrs in render_result.goals():
         goal_text = split_long(attrs["name"])
         row, col = attrs["row"], attrs["col1"]
         pos = gp.top_left(row, col).as_tuple()
@@ -174,9 +172,7 @@ def adjust_goals():
     global render_result
     gp = DPGGeometry()
     adjust_graph(render_result, gp)
-    for goal_id, attrs in render_result.graph.items():
-        if isinstance(goal_id, str):
-            continue
+    for goal_id, attrs in render_result.goals():
         widget_tag = f"goal_{goal_id}"
         dpg.set_item_pos(widget_tag, [attrs["x"], attrs["y"]])
     phase = "edges"

@@ -18,6 +18,13 @@ class RenderResult:
     graph: Dict[GoalId, Any]
     edge_opts: Dict[str, Tuple[int, int, int]]
 
+    def goals(self):
+        return [
+            (goal_id, attrs)
+            for goal_id, attrs in self.graph.items()
+            if isinstance(goal_id, int)
+        ]
+
 
 @dataclass(frozen=True)
 class Point:
@@ -274,9 +281,7 @@ def adjust_graph(render_result: RenderResult, gp: GeometryProvider) -> None:
     max_width: Dict[int, int] = {}  # key=column
     max_height: Dict[int, int] = {}  # key=row
 
-    for goal_id, attrs in render_result.graph.items():
-        if isinstance(goal_id, str):
-            continue
+    for goal_id, attrs in render_result.goals():
         row, col = attrs["row"], attrs["col1"]
         max_row = max([max_row, row])
         max_col = max([max_col, col])
@@ -304,9 +309,7 @@ def adjust_graph(render_result: RenderResult, gp: GeometryProvider) -> None:
         else 30
     )
 
-    for goal_id, attrs in render_result.graph.items():
-        if isinstance(goal_id, str):
-            continue
+    for goal_id, attrs in render_result.goals():
         row, col = attrs["row"], attrs["col1"]
         attrs["x"] = (
             min_x
