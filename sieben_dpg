@@ -40,6 +40,11 @@ with dpg.font_registry():
 dpg.create_viewport(title="SiebenApp")
 dpg.setup_dearpygui()
 
+
+def show_message(text):
+    dpg.set_value("message", text)
+
+
 parser = ArgumentParser()
 parser.add_argument(
     "db",
@@ -49,7 +54,7 @@ parser.add_argument(
 )
 args = parser.parse_args()
 filename = args.db
-goaltree = load(filename)
+goaltree = load(filename, show_message)
 is_running = True
 dialog_event_factory = None
 phase = "zero"  # zero -> loop [ goals -> adjust -> edges -> no_update -> ... ]
@@ -66,7 +71,7 @@ class DPGGeometry(GeometryProvider):
         if (row, col) in nodes:
             return dpg.get_item_pos(nodes[(row, col)])
         if col == 0:
-            return 20, 10 + row * 100
+            return 20, 50 + row * 100
         left_pos = self._pos(row, col - 1)
         left_size = self._size(row, col - 1)
         return left_pos[0] + left_size[0] + 50, left_pos[1]
@@ -107,7 +112,7 @@ def open_file(sender, app_data, user_data):
     db_file = list(app_data.get("selections", {}).values())[:1]
     if db_file:
         filename = db_file[0]
-        goaltree = load(filename)
+        goaltree = load(filename, show_message)
         phase = "goals"
 
 
@@ -251,6 +256,7 @@ def key_handler(sender, app_data):
     global is_running
     global phase
     global columns
+    show_message("")
     if dialog_event_factory is not None:
         if app_data == 256:  # Esc
             close_dialog()
@@ -323,6 +329,7 @@ def key_handler(sender, app_data):
 
 with dpg.window(tag="primary"):
     dpg.bind_font(default_font)
+    dpg.add_text(default_value="", tag="message", pos=[5, 5])
 
 with dpg.handler_registry():
     dpg.add_key_press_handler(callback=key_handler)
