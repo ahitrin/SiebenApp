@@ -154,6 +154,14 @@ class SiebenApp:
         self.nodes.update(add_to_nodes)
         self.phase = "adjust"
 
+    def adjust_goals(self):
+        gp = DPGGeometry(self.nodes)
+        adjust_graph(self.render_result, gp)
+        for goal_id, attrs in self.render_result.goals():
+            widget_tag = f"goal_{goal_id}"
+            dpg.set_item_pos(widget_tag, [attrs["x"], attrs["y"]])
+        self.phase = "edges"
+
 
 parser = ArgumentParser()
 parser.add_argument(
@@ -175,16 +183,6 @@ with dpg.file_dialog(
     tag="open_dialog_id",
 ):
     dpg.add_file_extension(".db", color=(255, 0, 255, 255), custom_text="[Sieben]")
-
-
-def adjust_goals():
-    global app
-    gp = DPGGeometry(app.nodes)
-    adjust_graph(app.render_result, gp)
-    for goal_id, attrs in app.render_result.goals():
-        widget_tag = f"goal_{goal_id}"
-        dpg.set_item_pos(widget_tag, [attrs["x"], attrs["y"]])
-    app.phase = "edges"
 
 
 def rebuild_edges():
@@ -354,7 +352,7 @@ while dpg.is_dearpygui_running() and app.is_running:
     if app.phase == "goals":
         app.rebuild_goals()
     elif app.phase == "adjust":
-        adjust_goals()
+        app.adjust_goals()
     elif app.phase == "edges":
         rebuild_edges()
     elif app.phase == "zero":
