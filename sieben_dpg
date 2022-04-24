@@ -58,6 +58,7 @@ class SiebenApp:
         self.render_result: RenderResult = RenderResult({}, {})
         self.drawn_items: List[str] = []
         self.nodes: Dict[Tuple[int, int], Any] = {}
+        self.columns: int = Renderer.DEFAULT_WIDTH
 
 
 parser = ArgumentParser()
@@ -69,7 +70,6 @@ parser.add_argument(
 )
 args = parser.parse_args()
 app = SiebenApp(args.db)
-columns = Renderer.DEFAULT_WIDTH
 
 
 class DPGGeometry(GeometryProvider):
@@ -139,7 +139,7 @@ with dpg.file_dialog(
 def rebuild_goals():
     global app
     save(app.goaltree, app.filename)
-    app.render_result = Renderer(app.goaltree, columns).build()
+    app.render_result = Renderer(app.goaltree, app.columns).build()
     gp = DPGGeometry(app.nodes)
     app.nodes.clear()
     while app.drawn_items:
@@ -269,7 +269,6 @@ def click_handler(sender, app_data):
 
 def key_handler(sender, app_data):
     global app
-    global columns
     show_message("")
     if app.dialog_event_factory is not None:
         if app_data == 256:  # Esc
@@ -325,12 +324,12 @@ def key_handler(sender, app_data):
         app.goaltree.accept(HoldSelect())
         app.phase = "goals"
     elif app_data in (61, 334):  # +
-        if columns < 100:
-            columns += 1
+        if app.columns < 100:
+            app.columns += 1
             app.phase = "goals"
     elif app_data in (45, 333):  # -
-        if columns > 1:
-            columns -= 1
+        if app.columns > 1:
+            app.columns -= 1
             app.phase = "goals"
     elif app_data == 96:  # `
         show_dialog(
