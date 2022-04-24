@@ -104,6 +104,13 @@ class SiebenApp:
         self.nodes: Dict[Tuple[int, int], Any] = {}
         self.columns: int = Renderer.DEFAULT_WIDTH
 
+    def open_file(self, sender, app_data, user_data):
+        db_file = list(app_data.get("selections", {}).values())[:1]
+        if db_file:
+            self.filename = db_file[0]
+            self.goaltree = load(self.filename, show_message)
+            self.phase = "goals"
+
 
 parser = ArgumentParser()
 parser.add_argument(
@@ -116,19 +123,10 @@ args = parser.parse_args()
 app = SiebenApp(args.db)
 
 
-def open_file(sender, app_data, user_data):
-    global app
-    db_file = list(app_data.get("selections", {}).values())[:1]
-    if db_file:
-        app.filename = db_file[0]
-        app.goaltree = load(app.filename, show_message)
-        app.phase = "goals"
-
-
 with dpg.file_dialog(
     directory_selector=False,
     show=False,
-    callback=open_file,
+    callback=app.open_file,
     width=500,
     height=300,
     tag="open_dialog_id",
