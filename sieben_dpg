@@ -111,6 +111,49 @@ class SiebenApp:
             self.goaltree = load(self.filename, show_message)
             self.phase = "goals"
 
+    def rebuild_goals(self):
+        save(self.goaltree, self.filename)
+        self.render_result = Renderer(self.goaltree, self.columns).build()
+        gp = DPGGeometry(self.nodes)
+        self.nodes.clear()
+        while self.drawn_items:
+            previous_tag = self.drawn_items.pop()
+            dpg.delete_item(previous_tag)
+        add_to_nodes = {}
+        for goal_id, attrs in self.render_result.goals():
+            goal_text = split_long(attrs["name"])
+            row, col = attrs["row"], attrs["col1"]
+            pos = gp.top_left(row, col).as_tuple()
+            status_color = (255, 0, 0, 255) if attrs["open"] else (0, 255, 0, 255)
+            widget_tag = f"goal_{goal_id}"
+            self.drawn_items.append(widget_tag)
+            add_to_nodes[(row, col)] = widget_tag
+            with dpg.group(pos=pos, parent="primary", tag=widget_tag):
+                widget_width = text_width(goal_text) + text_width(str(goal_id)) + 20
+                if attrs["switchable"]:
+                    widget_width += 50
+                with dpg.table(
+                    header_row=False,
+                    borders_outerV=True,
+                    borders_outerH=True,
+                    width=widget_width,
+                ) as table_id:
+                    dpg.add_table_column()
+                    with dpg.table_row():
+                        with dpg.group(horizontal=True):
+                            if attrs["switchable"]:
+                                dpg.add_checkbox(default_value=not attrs["open"])
+                            dpg.add_text(str(goal_id), color=status_color)
+                            dpg.add_text(goal_text)
+                    if attrs["select"] == "select":
+                        dpg.highlight_table_row(table_id, 0, (128, 128, 128, 255))
+                    elif attrs["select"] == "prev":
+                        dpg.highlight_table_row(table_id, 0, (192, 192, 192, 255))
+
+            dpg.bind_item_handler_registry(widget_tag, "goals_handler")
+        self.nodes.update(add_to_nodes)
+        self.phase = "adjust"
+
 
 parser = ArgumentParser()
 parser.add_argument(
@@ -132,51 +175,6 @@ with dpg.file_dialog(
     tag="open_dialog_id",
 ):
     dpg.add_file_extension(".db", color=(255, 0, 255, 255), custom_text="[Sieben]")
-
-
-def rebuild_goals():
-    global app
-    save(app.goaltree, app.filename)
-    app.render_result = Renderer(app.goaltree, app.columns).build()
-    gp = DPGGeometry(app.nodes)
-    app.nodes.clear()
-    while app.drawn_items:
-        previous_tag = app.drawn_items.pop()
-        dpg.delete_item(previous_tag)
-    add_to_nodes = {}
-    for goal_id, attrs in app.render_result.goals():
-        goal_text = split_long(attrs["name"])
-        row, col = attrs["row"], attrs["col1"]
-        pos = gp.top_left(row, col).as_tuple()
-        status_color = (255, 0, 0, 255) if attrs["open"] else (0, 255, 0, 255)
-        widget_tag = f"goal_{goal_id}"
-        app.drawn_items.append(widget_tag)
-        add_to_nodes[(row, col)] = widget_tag
-        with dpg.group(pos=pos, parent="primary", tag=widget_tag):
-            widget_width = text_width(goal_text) + text_width(str(goal_id)) + 20
-            if attrs["switchable"]:
-                widget_width += 50
-            with dpg.table(
-                header_row=False,
-                borders_outerV=True,
-                borders_outerH=True,
-                width=widget_width,
-            ) as table_id:
-                dpg.add_table_column()
-                with dpg.table_row():
-                    with dpg.group(horizontal=True):
-                        if attrs["switchable"]:
-                            dpg.add_checkbox(default_value=not attrs["open"])
-                        dpg.add_text(str(goal_id), color=status_color)
-                        dpg.add_text(goal_text)
-                if attrs["select"] == "select":
-                    dpg.highlight_table_row(table_id, 0, (128, 128, 128, 255))
-                elif attrs["select"] == "prev":
-                    dpg.highlight_table_row(table_id, 0, (192, 192, 192, 255))
-
-        dpg.bind_item_handler_registry(widget_tag, "goals_handler")
-    app.nodes.update(add_to_nodes)
-    app.phase = "adjust"
 
 
 def adjust_goals():
@@ -354,7 +352,7 @@ dpg.set_primary_window("primary", True)
 
 while dpg.is_dearpygui_running() and app.is_running:
     if app.phase == "goals":
-        rebuild_goals()
+        app.rebuild_goals()
     elif app.phase == "adjust":
         adjust_goals()
     elif app.phase == "edges":
