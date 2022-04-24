@@ -159,10 +159,13 @@ class Goals(Graph):
             if self._may_be_closed():
                 self.closed.add(self.selection)
                 self._events.append(("toggle_close", False, self.selection))
-                self.accept_Select(
-                    Select(self._first_open_and_switchable(command.root))
-                )
-                self.accept(HoldSelect())
+                if self.previous_selection != self.selection:
+                    self.accept_Select(Select(self.previous_selection))
+                else:
+                    self.accept_Select(
+                        Select(self._first_open_and_switchable(command.root))
+                    )
+                    self.accept(HoldSelect())
             else:
                 self.error("This goal can't be closed because it have open subgoals")
 

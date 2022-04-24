@@ -495,9 +495,8 @@ def test_zoom_events():
     goals.accept(ToggleZoom())
     assert goals.events()[-1] == ("unzoom", 4)
     goals.accept_all(Select(5), ToggleClose())
-    assert goals.events()[-3] == ("toggle_close", False, 5)
-    assert goals.events()[-2] == ("select", 4)
-    assert goals.events()[-1] == ("hold_select", 4)
+    assert goals.events()[-2] == ("toggle_close", False, 5)
+    assert goals.events()[-1] == ("select", 4)
 
 
 def test_do_not_duplicate_parent_prev_selection():

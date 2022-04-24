@@ -404,13 +404,32 @@ class GoalsTest(TestCase):
 
     def test_move_selection_to_another_open_goal_after_closing(self):
         self.goals = self.build(
-            open_(1, "Root", [2, 3]), open_(2, "A", select=selected), open_(3, "B")
+            open_(1, "Root", [2, 3, 4]),
+            open_(2, "A", select=selected),
+            open_(3, "B"),
+            open_(4, "C"),
         )
         self.goals.accept(ToggleClose())
         assert self.goals.q(keys="open,select") == {
             1: {"open": True, "select": None},
             2: {"open": False, "select": None},
             3: {"open": True, "select": "select"},
+            4: {"open": True, "select": None},
+        }
+
+    def test_move_selection_to_previously_selected_goal_after_closing(self):
+        self.goals = self.build(
+            open_(1, "Root", [2, 3, 4]),
+            open_(2, "A", select=selected),
+            open_(3, "B"),
+            open_(4, "C", select=previous),
+        )
+        self.goals.accept(ToggleClose())
+        assert self.goals.q(keys="open,select") == {
+            1: {"open": True, "select": None},
+            2: {"open": False, "select": None},
+            3: {"open": True, "select": None},
+            4: {"open": True, "select": "select"},
         }
 
     def test_move_selection_to_another_open_goal_with_given_root_after_closing(self):

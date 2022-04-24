@@ -22,6 +22,6 @@
 3[ ]>Build simple test
 > c
 
-1    Approval testing [2 / ]
-2[ ]>Measure coverage
+1   >Approval testing [2 / ]
+2[ ] Measure coverage
 *USER BREAK*
