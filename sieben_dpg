@@ -82,8 +82,8 @@ class DPGGeometry(GeometryProvider):
         return self.top_left(row, col) + Point(size[0], size[1])
 
 
-def text_width(text: str) -> int:
-    size = dpg.get_text_size(text, font=default_font)
+def text_width(text: str, font) -> int:
+    size = dpg.get_text_size(text, font=font)
     return size[0] if size is not None else 0
 
 
@@ -92,7 +92,7 @@ def show_message(text):
 
 
 class SiebenApp:
-    def __init__(self, filename: str):
+    def __init__(self, filename: str, font):
         self.filename: str = filename
         self.goaltree: Graph = load(self.filename, show_message)
         self.is_running: bool = True
@@ -103,6 +103,7 @@ class SiebenApp:
         self.drawn_items: List[str] = []
         self.nodes: Dict[Tuple[int, int], Any] = {}
         self.columns: int = Renderer.DEFAULT_WIDTH
+        self.font = font
 
     def open_file(self, sender, app_data, user_data):
         db_file = list(app_data.get("selections", {}).values())[:1]
@@ -129,7 +130,11 @@ class SiebenApp:
             self.drawn_items.append(widget_tag)
             add_to_nodes[(row, col)] = widget_tag
             with dpg.group(pos=pos, parent="primary", tag=widget_tag):
-                widget_width = text_width(goal_text) + text_width(str(goal_id)) + 20
+                widget_width = (
+                    text_width(goal_text, self.font)
+                    + text_width(str(goal_id), self.font)
+                    + 20
+                )
                 if attrs["switchable"]:
                     widget_width += 50
                 with dpg.table(
@@ -321,7 +326,7 @@ def main():
         help="Path to the database file (default: sieben.db)",
     )
     args = parser.parse_args()
-    app = SiebenApp(args.db)
+    app = SiebenApp(args.db, default_font)
 
     with dpg.file_dialog(
         directory_selector=False,
