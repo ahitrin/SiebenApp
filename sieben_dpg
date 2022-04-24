@@ -14,6 +14,7 @@ from siebenapp.domain import (
     ToggleLink,
     HoldSelect,
     Rename,
+    Graph,
 )
 from siebenapp.filter_view import FilterBy
 from siebenapp.open_view import ToggleOpenView
@@ -48,6 +49,7 @@ def show_message(text):
 class SiebenApp:
     def __init__(self, filename: str):
         self.filename: str = filename
+        self.goaltree: Graph = load(self.filename, show_message)
 
 
 parser = ArgumentParser()
@@ -59,7 +61,6 @@ parser.add_argument(
 )
 args = parser.parse_args()
 app = SiebenApp(args.db)
-goaltree = load(app.filename, show_message)
 is_running = True
 dialog_event_factory = None
 phase = "zero"  # zero -> loop [ goals -> adjust -> edges -> no_update -> ... ]
@@ -112,12 +113,11 @@ def text_width(text: str) -> int:
 
 def open_file(sender, app_data, user_data):
     global app
-    global goaltree
     global phase
     db_file = list(app_data.get("selections", {}).values())[:1]
     if db_file:
         app.filename = db_file[0]
-        goaltree = load(app.filename, show_message)
+        app.goaltree = load(app.filename, show_message)
         phase = "goals"
 
 
@@ -136,8 +136,8 @@ def rebuild_goals():
     global phase
     global render_result
     global nodes
-    save(goaltree, app.filename)
-    render_result = Renderer(goaltree, columns).build()
+    save(app.goaltree, app.filename)
+    render_result = Renderer(app.goaltree, columns).build()
     gp = DPGGeometry()
     nodes.clear()
     while drawn_items:
@@ -220,7 +220,7 @@ def submit_dialog(sender=None, app_data=None, user_data=None):
     global dialog_event_factory
     global phase
     user_input = dpg.get_value("dialog_input")
-    goaltree.accept(dialog_event_factory(user_input))
+    app.goaltree.accept(dialog_event_factory(user_input))
     dialog_event_factory = None
     phase = "goals"
     dpg.delete_item("dialog")
@@ -263,7 +263,7 @@ def click_handler(sender, app_data):
     global phase
     widget_id: str = app_data[1]
     goal_id = int(widget_id.split("_")[1])
-    goaltree.accept(Select(goal_id))
+    app.goaltree.accept(Select(goal_id))
     phase = "goals"
 
 
@@ -281,49 +281,49 @@ def key_handler(sender, app_data):
     if app_data == 81:  # q
         is_running = False
     elif 48 <= app_data <= 57:  # 0-9
-        old_selection = goaltree.settings("selection")
-        goaltree.accept(Select(app_data - 48))
-        new_selection = goaltree.settings("selection")
+        old_selection = app.goaltree.settings("selection")
+        app.goaltree.accept(Select(app_data - 48))
+        new_selection = app.goaltree.settings("selection")
         if old_selection != new_selection:
             phase = "goals"
     elif app_data == 65:  # a
         show_dialog("Add new goal", Add)
     elif app_data == 67:  # c
-        goaltree.accept(ToggleClose())
+        app.goaltree.accept(ToggleClose())
         phase = "goals"
     elif app_data == 68:  # d
-        goaltree.accept(Delete())
+        app.goaltree.accept(Delete())
         phase = "goals"
     elif app_data == 70:  # f
         show_dialog("Filter by substring (leave empty to reset filtration)", FilterBy)
     elif app_data == 73:  # i
         show_dialog("Insert new goal", Insert)
     elif app_data == 75:  # k
-        goaltree.accept(ToggleLink(edge_type=EdgeType.PARENT))
+        app.goaltree.accept(ToggleLink(edge_type=EdgeType.PARENT))
         phase = "goals"
     elif app_data == 76:  # l
-        goaltree.accept(ToggleLink())
+        app.goaltree.accept(ToggleLink())
         phase = "goals"
     elif app_data == 78:  # n
-        goaltree.accept(ToggleOpenView())
+        app.goaltree.accept(ToggleOpenView())
         phase = "goals"
     elif app_data == 79:  # o
         dpg.show_item("open_dialog_id")
     elif app_data == 80:  # p
-        goaltree.accept(ToggleProgress())
+        app.goaltree.accept(ToggleProgress())
         phase = "goals"
     elif app_data == 82:  # r
-        data = goaltree.q(keys="name,select").values()
+        data = app.goaltree.q(keys="name,select").values()
         selected_text = [x["name"] for x in data if x["select"] == "select"].pop()
         show_dialog("Rename goal", Rename, selected_text)
     elif app_data == 84:  # t
-        goaltree.accept(ToggleSwitchableView())
+        app.goaltree.accept(ToggleSwitchableView())
         phase = "goals"
     elif app_data == 90:  # z
-        goaltree.accept(ToggleZoom())
+        app.goaltree.accept(ToggleZoom())
         phase = "goals"
     elif app_data == 32:  # space
-        goaltree.accept(HoldSelect())
+        app.goaltree.accept(HoldSelect())
         phase = "goals"
     elif app_data in (61, 334):  # +
         if columns < 100:
