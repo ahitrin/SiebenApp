@@ -52,6 +52,8 @@ class SiebenApp:
         self.goaltree: Graph = load(self.filename, show_message)
         self.is_running: bool = True
         self.dialog_event_factory = None
+        # zero -> loop [ goals -> adjust -> edges -> no_update -> ... ]
+        self.phase: str = "zero"
 
 
 parser = ArgumentParser()
@@ -63,7 +65,6 @@ parser.add_argument(
 )
 args = parser.parse_args()
 app = SiebenApp(args.db)
-phase = "zero"  # zero -> loop [ goals -> adjust -> edges -> no_update -> ... ]
 render_result = RenderResult({}, {})
 drawn_items = []
 nodes = {}
@@ -113,12 +114,11 @@ def text_width(text: str) -> int:
 
 def open_file(sender, app_data, user_data):
     global app
-    global phase
     db_file = list(app_data.get("selections", {}).values())[:1]
     if db_file:
         app.filename = db_file[0]
         app.goaltree = load(app.filename, show_message)
-        phase = "goals"
+        app.phase = "goals"
 
 
 with dpg.file_dialog(
@@ -133,7 +133,7 @@ with dpg.file_dialog(
 
 
 def rebuild_goals():
-    global phase
+    global app
     global render_result
     global nodes
     save(app.goaltree, app.filename)
@@ -176,22 +176,22 @@ def rebuild_goals():
 
         dpg.bind_item_handler_registry(widget_tag, "goals_handler")
     nodes.update(add_to_nodes)
-    phase = "adjust"
+    app.phase = "adjust"
 
 
 def adjust_goals():
-    global phase
+    global app
     global render_result
     gp = DPGGeometry()
     adjust_graph(render_result, gp)
     for goal_id, attrs in render_result.goals():
         widget_tag = f"goal_{goal_id}"
         dpg.set_item_pos(widget_tag, [attrs["x"], attrs["y"]])
-    phase = "edges"
+    app.phase = "edges"
 
 
 def rebuild_edges():
-    global phase
+    global app
     line_color = {
         EdgeType.BLOCKER: (70, 70, 70, 255),
         EdgeType.PARENT: (180, 180, 180, 255),
@@ -213,16 +213,15 @@ def rebuild_edges():
         )
         drawn_items.append(tag)
 
-    phase = "no_update"
+    app.phase = "no_update"
 
 
 def submit_dialog(sender=None, app_data=None, user_data=None):
     global app
-    global phase
     user_input = dpg.get_value("dialog_input")
     app.goaltree.accept(app.dialog_event_factory(user_input))
     app.dialog_event_factory = None
-    phase = "goals"
+    app.phase = "goals"
     dpg.delete_item("dialog")
 
 
@@ -260,15 +259,15 @@ def show_dialog(text, event_factory, default_value=""):
 
 
 def click_handler(sender, app_data):
-    global phase
+    global app
     widget_id: str = app_data[1]
     goal_id = int(widget_id.split("_")[1])
     app.goaltree.accept(Select(goal_id))
-    phase = "goals"
+    app.phase = "goals"
 
 
 def key_handler(sender, app_data):
-    global phase
+    global app
     global columns
     show_message("")
     if app.dialog_event_factory is not None:
@@ -284,54 +283,54 @@ def key_handler(sender, app_data):
         app.goaltree.accept(Select(app_data - 48))
         new_selection = app.goaltree.settings("selection")
         if old_selection != new_selection:
-            phase = "goals"
+            app.phase = "goals"
     elif app_data == 65:  # a
         show_dialog("Add new goal", Add)
     elif app_data == 67:  # c
         app.goaltree.accept(ToggleClose())
-        phase = "goals"
+        app.phase = "goals"
     elif app_data == 68:  # d
         app.goaltree.accept(Delete())
-        phase = "goals"
+        app.phase = "goals"
     elif app_data == 70:  # f
         show_dialog("Filter by substring (leave empty to reset filtration)", FilterBy)
     elif app_data == 73:  # i
         show_dialog("Insert new goal", Insert)
     elif app_data == 75:  # k
         app.goaltree.accept(ToggleLink(edge_type=EdgeType.PARENT))
-        phase = "goals"
+        app.phase = "goals"
     elif app_data == 76:  # l
         app.goaltree.accept(ToggleLink())
-        phase = "goals"
+        app.phase = "goals"
     elif app_data == 78:  # n
         app.goaltree.accept(ToggleOpenView())
-        phase = "goals"
+        app.phase = "goals"
     elif app_data == 79:  # o
         dpg.show_item("open_dialog_id")
     elif app_data == 80:  # p
         app.goaltree.accept(ToggleProgress())
-        phase = "goals"
+        app.phase = "goals"
     elif app_data == 82:  # r
         data = app.goaltree.q(keys="name,select").values()
         selected_text = [x["name"] for x in data if x["select"] == "select"].pop()
         show_dialog("Rename goal", Rename, selected_text)
     elif app_data == 84:  # t
         app.goaltree.accept(ToggleSwitchableView())
-        phase = "goals"
+        app.phase = "goals"
     elif app_data == 90:  # z
         app.goaltree.accept(ToggleZoom())
-        phase = "goals"
+        app.phase = "goals"
     elif app_data == 32:  # space
         app.goaltree.accept(HoldSelect())
-        phase = "goals"
+        app.phase = "goals"
     elif app_data in (61, 334):  # +
         if columns < 100:
             columns += 1
-            phase = "goals"
+            app.phase = "goals"
     elif app_data in (45, 333):  # -
         if columns > 1:
             columns -= 1
-            phase = "goals"
+            app.phase = "goals"
     elif app_data == 96:  # `
         show_dialog(
             "Auto link by keyword (leave empty to reset auto link)", ToggleAutoLink
@@ -356,14 +355,14 @@ dpg.show_viewport()
 dpg.set_primary_window("primary", True)
 
 while dpg.is_dearpygui_running() and app.is_running:
-    if phase == "goals":
+    if app.phase == "goals":
         rebuild_goals()
-    elif phase == "adjust":
+    elif app.phase == "adjust":
         adjust_goals()
-    elif phase == "edges":
+    elif app.phase == "edges":
         rebuild_edges()
-    elif phase == "zero":
-        phase = "goals"
+    elif app.phase == "zero":
+        app.phase = "goals"
     dpg.render_dearpygui_frame()
 
 dpg.destroy_context()
