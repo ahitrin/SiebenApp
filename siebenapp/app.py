@@ -191,7 +191,7 @@ class SiebenApp(QMainWindow):
             if isinstance(goal_id, int):
                 widget = GoalWidget()
                 self.scrollAreaWidgetContents.layout().addWidget(
-                    widget, attributes["row"], attributes["col1"]
+                    widget, attributes["row"], attributes["col"]
                 )
                 widget.setup_data(goal_id, attributes)
                 widget.clicked.connect(self.select_number(goal_id))

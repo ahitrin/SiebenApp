@@ -112,7 +112,7 @@ class SiebenApp:
         add_to_nodes = {}
         for goal_id, attrs in self.render_result.goals():
             goal_text = split_long(attrs["name"])
-            row, col = attrs["row"], attrs["col1"]
+            row, col = attrs["row"], attrs["col"]
             pos = gp.top_left(row, col).as_tuple()
             status_color = (255, 0, 0, 255) if attrs["open"] else (0, 255, 0, 255)
             widget_tag = f"goal_{goal_id}"

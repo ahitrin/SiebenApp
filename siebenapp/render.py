@@ -260,7 +260,7 @@ class Renderer:
     def merge_cols(self):
         for goal_id, attrs in self.graph.items():
             if isinstance(goal_id, int):
-                attrs["col"] = attrs["col1"]
+                attrs["col"] = attrs.pop("col1")
 
 
 def goal_key(tup: Tuple[GoalId, int]) -> Tuple[int, int]:
@@ -288,7 +288,7 @@ def adjust_graph(render_result: RenderResult, gp: GeometryProvider) -> None:
     max_height: Dict[int, int] = {}  # key=row
 
     for goal_id, attrs in render_result.goals():
-        row, col = attrs["row"], attrs["col1"]
+        row, col = attrs["row"], attrs["col"]
         max_row = max([max_row, row])
         max_col = max([max_col, col])
         tl = gp.top_left(row, col)
@@ -316,7 +316,7 @@ def adjust_graph(render_result: RenderResult, gp: GeometryProvider) -> None:
     )
 
     for goal_id, attrs in render_result.goals():
-        row, col = attrs["row"], attrs["col1"]
+        row, col = attrs["row"], attrs["col"]
         attrs["x"] = (
             min_x
             + sum(max_width[i] for i in range(col))
@@ -341,13 +341,13 @@ def render_lines(
         for e_target, e_type in attrs["edge_render"]:
             target_attrs = render_result.graph[e_target]
             if isinstance(goal_id, int):
-                row, col1 = attrs["row"], attrs["col1"]
+                row, col = attrs["row"], attrs["col"]
                 start = middle_point(
-                    gp.top_left(row, col1), gp.top_right(row, col1), 1, 2
+                    gp.top_left(row, col), gp.top_right(row, col), 1, 2
                 )
             else:
                 left_id, p, q = render_result.edge_opts[goal_id]
-                left = render_result.graph[left_id]["col1"] if left_id > 0 else -1
+                left = render_result.graph[left_id]["col"] if left_id > 0 else -1
                 x1 = gp.top_right(attrs["row"], left)
                 x2 = gp.top_left(attrs["row"], left + 1)
                 start = middle_point(x1, x2, p, q)
@@ -358,13 +358,13 @@ def render_lines(
                     edges[goal_id]["bottom"] = start
                     edges[goal_id]["style"] = max(edges[goal_id]["style"], e_type)
             if isinstance(e_target, int):
-                row, col1 = target_attrs["row"], target_attrs["col1"]
+                row, col = target_attrs["row"], target_attrs["col"]
                 end = middle_point(
-                    gp.bottom_left(row, col1), gp.bottom_right(row, col1), 1, 2
+                    gp.bottom_left(row, col), gp.bottom_right(row, col), 1, 2
                 )
             else:
                 left_id, p, q = render_result.edge_opts[e_target]
-                left = render_result.graph[left_id]["col1"] if left_id > 0 else -1
+                left = render_result.graph[left_id]["col"] if left_id > 0 else -1
                 x1 = gp.bottom_right(target_attrs["row"], left)
                 x2 = gp.bottom_left(target_attrs["row"], left + 1)
                 end = middle_point(x1, x2, p, q)
