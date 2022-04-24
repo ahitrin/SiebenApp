@@ -134,7 +134,10 @@ class SiebenApp:
                     with dpg.table_row():
                         with dpg.group(horizontal=True):
                             if attrs["switchable"]:
-                                dpg.add_checkbox(default_value=not attrs["open"])
+                                dpg.add_checkbox(
+                                    default_value=not attrs["open"],
+                                    tag=f"switch_{goal_id}",
+                                )
                             dpg.add_text(str(goal_id), color=status_color)
                             dpg.add_text(goal_text)
                     if attrs["select"] == "select":
@@ -143,6 +146,8 @@ class SiebenApp:
                         dpg.highlight_table_row(table_id, 0, (192, 192, 192, 255))
 
             dpg.bind_item_handler_registry(widget_tag, "goals_handler")
+            if attrs["switchable"]:
+                dpg.bind_item_handler_registry(f"switch_{goal_id}", "switch_handler")
         self.nodes.update(add_to_nodes)
         self.phase = "adjust"
 
@@ -218,6 +223,12 @@ class SiebenApp:
         widget_id: str = app_data[1]
         goal_id = int(widget_id.split("_")[1])
         self.goaltree.accept(Select(goal_id))
+        self.phase = "goals"
+
+    def switch_handler(self, sender, app_data):
+        widget_id: str = app_data[1]
+        goal_id = int(widget_id.split("_")[1])
+        self.goaltree.accept_all(Select(goal_id), ToggleClose())
         self.phase = "goals"
 
     def key_handler(self, sender, app_data):
@@ -343,6 +354,9 @@ def main():
 
     with dpg.item_handler_registry(tag="goals_handler"):
         dpg.add_item_clicked_handler(callback=app.click_handler)
+
+    with dpg.item_handler_registry(tag="switch_handler"):
+        dpg.add_item_clicked_handler(callback=app.switch_handler)
 
     dpg.maximize_viewport()
     dpg.show_viewport()
