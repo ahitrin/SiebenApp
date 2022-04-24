@@ -50,6 +50,7 @@ class SiebenApp:
     def __init__(self, filename: str):
         self.filename: str = filename
         self.goaltree: Graph = load(self.filename, show_message)
+        self.is_running: bool = True
 
 
 parser = ArgumentParser()
@@ -61,7 +62,6 @@ parser.add_argument(
 )
 args = parser.parse_args()
 app = SiebenApp(args.db)
-is_running = True
 dialog_event_factory = None
 phase = "zero"  # zero -> loop [ goals -> adjust -> edges -> no_update -> ... ]
 render_result = RenderResult({}, {})
@@ -268,7 +268,6 @@ def click_handler(sender, app_data):
 
 
 def key_handler(sender, app_data):
-    global is_running
     global phase
     global columns
     show_message("")
@@ -279,7 +278,7 @@ def key_handler(sender, app_data):
             submit_dialog()
         return
     if app_data == 81:  # q
-        is_running = False
+        app.is_running = False
     elif 48 <= app_data <= 57:  # 0-9
         old_selection = app.goaltree.settings("selection")
         app.goaltree.accept(Select(app_data - 48))
@@ -356,7 +355,7 @@ dpg.maximize_viewport()
 dpg.show_viewport()
 dpg.set_primary_window("primary", True)
 
-while dpg.is_dearpygui_running() and is_running:
+while dpg.is_dearpygui_running() and app.is_running:
     if phase == "goals":
         rebuild_goals()
     elif phase == "adjust":
