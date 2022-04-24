@@ -162,6 +162,30 @@ class SiebenApp:
             dpg.set_item_pos(widget_tag, [attrs["x"], attrs["y"]])
         self.phase = "edges"
 
+    def rebuild_edges(self):
+        line_color = {
+            EdgeType.BLOCKER: (70, 70, 70, 255),
+            EdgeType.PARENT: (180, 180, 180, 255),
+        }
+        lines = render_lines(DPGGeometry(self.nodes), self.render_result)
+        fix = Point(0, -8)
+        for edge_type, start, end, _ in lines:
+            tag = f"line {edge_type} {start}, {end}"
+            if tag in self.drawn_items:
+                # lines may 'duplicate' when they're placed too close to each other
+                # tag duplication causes an error within draw_line
+                continue
+            dpg.draw_line(
+                (start + fix).as_tuple(),
+                (end + fix).as_tuple(),
+                color=line_color[edge_type],
+                tag=tag,
+                parent="primary",
+            )
+            self.drawn_items.append(tag)
+
+        self.phase = "no_update"
+
 
 parser = ArgumentParser()
 parser.add_argument(
@@ -183,32 +207,6 @@ with dpg.file_dialog(
     tag="open_dialog_id",
 ):
     dpg.add_file_extension(".db", color=(255, 0, 255, 255), custom_text="[Sieben]")
-
-
-def rebuild_edges():
-    global app
-    line_color = {
-        EdgeType.BLOCKER: (70, 70, 70, 255),
-        EdgeType.PARENT: (180, 180, 180, 255),
-    }
-    lines = render_lines(DPGGeometry(app.nodes), app.render_result)
-    fix = Point(0, -8)
-    for edge_type, start, end, _ in lines:
-        tag = f"line {edge_type} {start}, {end}"
-        if tag in app.drawn_items:
-            # lines may 'duplicate' when they're placed too close to each other
-            # tag duplication causes an error within draw_line
-            continue
-        dpg.draw_line(
-            (start + fix).as_tuple(),
-            (end + fix).as_tuple(),
-            color=line_color[edge_type],
-            tag=tag,
-            parent="primary",
-        )
-        app.drawn_items.append(tag)
-
-    app.phase = "no_update"
 
 
 def submit_dialog(sender=None, app_data=None, user_data=None):
@@ -354,7 +352,7 @@ while dpg.is_dearpygui_running() and app.is_running:
     elif app.phase == "adjust":
         app.adjust_goals()
     elif app.phase == "edges":
-        rebuild_edges()
+        app.rebuild_edges()
     elif app.phase == "zero":
         app.phase = "goals"
     dpg.render_dearpygui_frame()
