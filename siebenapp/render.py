@@ -94,7 +94,6 @@ class Renderer:
         self.reorder()
         self.update_graph()
         self.build_index()
-        self.merge_cols()
         return RenderResult(self.graph, self.result_edge_options)
 
     def split_by_layers(self) -> None:
@@ -191,11 +190,12 @@ class Renderer:
                 if goal_id is None:
                     continue
                 if goal_id in self.graph:
-                    self.graph[goal_id]["col1"] = real_col
+                    self.graph[goal_id]["col"] = real_col
                     real_col += 1
                 else:
                     self.graph[goal_id] = {
                         "name": "",
+                        "col": col,
                         "edge": [],
                         "edge_render": [],
                         "switchable": False,
@@ -205,7 +205,6 @@ class Renderer:
                 self.graph[goal_id].update(
                     {
                         "row": row,
-                        "col": col,
                         "edge_render": [
                             (child, self.edge_types[goal_id, child])
                             for child in self.edges[goal_id]
@@ -256,11 +255,6 @@ class Renderer:
         while len(result) > self.width_limit and None in result:
             result.remove(None)
         return result
-
-    def merge_cols(self):
-        for goal_id, attrs in self.graph.items():
-            if isinstance(goal_id, int):
-                attrs["col"] = attrs.pop("col1")
 
 
 def goal_key(tup: Tuple[GoalId, int]) -> Tuple[int, int]:
