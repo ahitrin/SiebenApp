@@ -73,11 +73,14 @@ columns = Renderer.DEFAULT_WIDTH
 
 
 class DPGGeometry(GeometryProvider):
+    def __init__(self, nodes: Dict[Tuple[int, int], Any]):
+        self.nodes = nodes
+
     def _pos(self, row, col):
         if col < 0:
             return 0, self._pos(row, 0)[1]
-        if (row, col) in app.nodes:
-            return dpg.get_item_pos(app.nodes[(row, col)])
+        if (row, col) in self.nodes:
+            return dpg.get_item_pos(self.nodes[(row, col)])
         if col == 0:
             return 20, 50 + row * 100
         left_pos = self._pos(row, col - 1)
@@ -87,8 +90,8 @@ class DPGGeometry(GeometryProvider):
     def _size(self, row, col):
         if col < 0:
             return 0, self._size(row, 0)[1]
-        if (row, col) in app.nodes:
-            return dpg.get_item_rect_size(app.nodes[(row, col)])
+        if (row, col) in self.nodes:
+            return dpg.get_item_rect_size(self.nodes[(row, col)])
         return 250, 30
 
     def top_left(self, row, col):
@@ -137,7 +140,7 @@ def rebuild_goals():
     global app
     save(app.goaltree, app.filename)
     app.render_result = Renderer(app.goaltree, columns).build()
-    gp = DPGGeometry()
+    gp = DPGGeometry(app.nodes)
     app.nodes.clear()
     while app.drawn_items:
         previous_tag = app.drawn_items.pop()
@@ -180,7 +183,7 @@ def rebuild_goals():
 
 def adjust_goals():
     global app
-    gp = DPGGeometry()
+    gp = DPGGeometry(app.nodes)
     adjust_graph(app.render_result, gp)
     for goal_id, attrs in app.render_result.goals():
         widget_tag = f"goal_{goal_id}"
@@ -194,7 +197,7 @@ def rebuild_edges():
         EdgeType.BLOCKER: (70, 70, 70, 255),
         EdgeType.PARENT: (180, 180, 180, 255),
     }
-    lines = render_lines(DPGGeometry(), app.render_result)
+    lines = render_lines(DPGGeometry(app.nodes), app.render_result)
     fix = Point(0, -8)
     for edge_type, start, end, _ in lines:
         tag = f"line {edge_type} {start}, {end}"
