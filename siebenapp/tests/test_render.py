@@ -140,19 +140,6 @@ def test_use_different_long_edge_types():
     }
 
 
-def test_balance_upper_level():
-    goals = build_goaltree(
-        open_(1, "Root", [2, 3, 4], select=selected),
-        open_(2, "A", blockers=[5]),
-        open_(3, "B", blockers=[5]),
-        open_(4, "C", [5]),
-        open_(5, "Top"),
-    )
-    result = Renderer(goals).build().graph
-    # Top goal should be placed in the middle of the layer
-    assert result[5]["col"] == 1
-
-
 def test_render_in_switchable_view():
     goals = build_goaltree(
         open_(1, "Uno", [2, 3, 4, 5, 6]),

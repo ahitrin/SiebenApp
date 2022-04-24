@@ -94,6 +94,7 @@ class Renderer:
         self.reorder()
         self.update_graph()
         self.build_index()
+        self.merge_cols()
         return RenderResult(self.graph, self.result_edge_options)
 
     def split_by_layers(self) -> None:
@@ -255,6 +256,11 @@ class Renderer:
         while len(result) > self.width_limit and None in result:
             result.remove(None)
         return result
+
+    def merge_cols(self):
+        for goal_id, attrs in self.graph.items():
+            if isinstance(goal_id, int):
+                attrs["col"] = attrs["col1"]
 
 
 def goal_key(tup: Tuple[GoalId, int]) -> Tuple[int, int]:
