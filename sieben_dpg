@@ -72,11 +72,6 @@ class DPGGeometry(GeometryProvider):
         return self.top_left(row, col) + Point(size[0], size[1])
 
 
-def text_width(text: str, font) -> int:
-    size = dpg.get_text_size(text, font=font)
-    return size[0] if size is not None else 0
-
-
 def show_message(text):
     dpg.set_value("message", text)
 
@@ -94,6 +89,10 @@ class SiebenApp:
         self.nodes: Dict[Tuple[int, int], Any] = {}
         self.columns: int = Renderer.DEFAULT_WIDTH
         self.font = font
+
+    def text_width(self, text: str) -> int:
+        size = dpg.get_text_size(text, font=self.font)
+        return size[0] if size is not None else 0
 
     def open_file(self, sender, app_data, user_data):
         db_file = list(app_data.get("selections", {}).values())[:1]
@@ -121,9 +120,7 @@ class SiebenApp:
             add_to_nodes[(row, col)] = widget_tag
             with dpg.group(pos=pos, parent="primary", tag=widget_tag):
                 widget_width = (
-                    text_width(goal_text, self.font)
-                    + text_width(str(goal_id), self.font)
-                    + 20
+                    self.text_width(goal_text) + self.text_width(str(goal_id)) + 20
                 )
                 if attrs["switchable"]:
                     widget_width += 50
