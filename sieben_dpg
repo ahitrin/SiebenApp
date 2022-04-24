@@ -228,6 +228,79 @@ class SiebenApp:
         self.goaltree.accept(Select(goal_id))
         self.phase = "goals"
 
+    def key_handler(self, sender, app_data):
+        show_message("")
+        if self.dialog_event_factory is not None:
+            if app_data == 256:  # Esc
+                self.close_dialog()
+            elif app_data == 257:  # Enter
+                self.submit_dialog()
+            return
+        if app_data == 81:  # q
+            self.is_running = False
+        elif 48 <= app_data <= 57:  # 0-9
+            old_selection = self.goaltree.settings("selection")
+            self.goaltree.accept(Select(app_data - 48))
+            new_selection = self.goaltree.settings("selection")
+            if old_selection != new_selection:
+                self.phase = "goals"
+        elif app_data == 65:  # a
+            self.show_dialog("Add new goal", Add)
+        elif app_data == 67:  # c
+            self.goaltree.accept(ToggleClose())
+            self.phase = "goals"
+        elif app_data == 68:  # d
+            self.goaltree.accept(Delete())
+            self.phase = "goals"
+        elif app_data == 70:  # f
+            self.show_dialog(
+                "Filter by substring (leave empty to reset filtration)", FilterBy
+            )
+        elif app_data == 73:  # i
+            self.show_dialog("Insert new goal", Insert)
+        elif app_data == 75:  # k
+            self.goaltree.accept(ToggleLink(edge_type=EdgeType.PARENT))
+            self.phase = "goals"
+        elif app_data == 76:  # l
+            self.goaltree.accept(ToggleLink())
+            self.phase = "goals"
+        elif app_data == 78:  # n
+            self.goaltree.accept(ToggleOpenView())
+            self.phase = "goals"
+        elif app_data == 79:  # o
+            dpg.show_item("open_dialog_id")
+        elif app_data == 80:  # p
+            self.goaltree.accept(ToggleProgress())
+            self.phase = "goals"
+        elif app_data == 82:  # r
+            data = self.goaltree.q(keys="name,select").values()
+            selected_text = [x["name"] for x in data if x["select"] == "select"].pop()
+            self.show_dialog("Rename goal", Rename, selected_text)
+        elif app_data == 84:  # t
+            self.goaltree.accept(ToggleSwitchableView())
+            self.phase = "goals"
+        elif app_data == 90:  # z
+            self.goaltree.accept(ToggleZoom())
+            self.phase = "goals"
+        elif app_data == 32:  # space
+            self.goaltree.accept(HoldSelect())
+            self.phase = "goals"
+        elif app_data in (61, 334):  # +
+            if self.columns < 100:
+                self.columns += 1
+                self.phase = "goals"
+        elif app_data in (45, 333):  # -
+            if self.columns > 1:
+                self.columns -= 1
+                self.phase = "goals"
+        elif app_data == 96:  # `
+            self.show_dialog(
+                "Auto link by keyword (leave empty to reset auto link)", ToggleAutoLink
+            )
+        elif app_data not in (340, 341, 342, 343, 344, 345, 346):
+            # ignore mod keys
+            print(app_data)
+
 
 parser = ArgumentParser()
 parser.add_argument(
@@ -251,85 +324,12 @@ with dpg.file_dialog(
     dpg.add_file_extension(".db", color=(255, 0, 255, 255), custom_text="[Sieben]")
 
 
-def key_handler(sender, app_data):
-    global app
-    show_message("")
-    if app.dialog_event_factory is not None:
-        if app_data == 256:  # Esc
-            app.close_dialog()
-        elif app_data == 257:  # Enter
-            app.submit_dialog()
-        return
-    if app_data == 81:  # q
-        app.is_running = False
-    elif 48 <= app_data <= 57:  # 0-9
-        old_selection = app.goaltree.settings("selection")
-        app.goaltree.accept(Select(app_data - 48))
-        new_selection = app.goaltree.settings("selection")
-        if old_selection != new_selection:
-            app.phase = "goals"
-    elif app_data == 65:  # a
-        app.show_dialog("Add new goal", Add)
-    elif app_data == 67:  # c
-        app.goaltree.accept(ToggleClose())
-        app.phase = "goals"
-    elif app_data == 68:  # d
-        app.goaltree.accept(Delete())
-        app.phase = "goals"
-    elif app_data == 70:  # f
-        app.show_dialog("Filter by substring (leave empty to reset filtration)", FilterBy)
-    elif app_data == 73:  # i
-        app.show_dialog("Insert new goal", Insert)
-    elif app_data == 75:  # k
-        app.goaltree.accept(ToggleLink(edge_type=EdgeType.PARENT))
-        app.phase = "goals"
-    elif app_data == 76:  # l
-        app.goaltree.accept(ToggleLink())
-        app.phase = "goals"
-    elif app_data == 78:  # n
-        app.goaltree.accept(ToggleOpenView())
-        app.phase = "goals"
-    elif app_data == 79:  # o
-        dpg.show_item("open_dialog_id")
-    elif app_data == 80:  # p
-        app.goaltree.accept(ToggleProgress())
-        app.phase = "goals"
-    elif app_data == 82:  # r
-        data = app.goaltree.q(keys="name,select").values()
-        selected_text = [x["name"] for x in data if x["select"] == "select"].pop()
-        app.show_dialog("Rename goal", Rename, selected_text)
-    elif app_data == 84:  # t
-        app.goaltree.accept(ToggleSwitchableView())
-        app.phase = "goals"
-    elif app_data == 90:  # z
-        app.goaltree.accept(ToggleZoom())
-        app.phase = "goals"
-    elif app_data == 32:  # space
-        app.goaltree.accept(HoldSelect())
-        app.phase = "goals"
-    elif app_data in (61, 334):  # +
-        if app.columns < 100:
-            app.columns += 1
-            app.phase = "goals"
-    elif app_data in (45, 333):  # -
-        if app.columns > 1:
-            app.columns -= 1
-            app.phase = "goals"
-    elif app_data == 96:  # `
-        app.show_dialog(
-            "Auto link by keyword (leave empty to reset auto link)", ToggleAutoLink
-        )
-    elif app_data not in (340, 341, 342, 343, 344, 345, 346):
-        # ignore mod keys
-        print(app_data)
-
-
 with dpg.window(tag="primary"):
     dpg.bind_font(default_font)
     dpg.add_text(default_value="", tag="message", pos=[5, 5])
 
 with dpg.handler_registry(tag="global_handler"):
-    dpg.add_key_press_handler(callback=key_handler)
+    dpg.add_key_press_handler(callback=app.key_handler)
 
 with dpg.item_handler_registry(tag="goals_handler"):
     dpg.add_item_clicked_handler(callback=app.click_handler)
