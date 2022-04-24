@@ -28,7 +28,7 @@ class FakeGeometry(GeometryProvider):
         return Point(col * 100 + 50, row * 100 + 50)
 
 
-def test_render_bug_example():
+def test_render_example():
     g = build_goaltree(
         open_(1, "Root", [2, 3, 4, 5, 6], [7, 8]),
         clos_(2, "Closed", blockers=[7]),
