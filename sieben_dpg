@@ -193,6 +193,10 @@ class SiebenApp:
         self.phase = "goals"
         dpg.delete_item("dialog")
 
+    def close_dialog(self, sender=None, app_data=None, user_data=None):
+        self.dialog_event_factory = None
+        dpg.delete_item("dialog")
+
 
 parser = ArgumentParser()
 parser.add_argument(
@@ -214,12 +218,6 @@ with dpg.file_dialog(
     tag="open_dialog_id",
 ):
     dpg.add_file_extension(".db", color=(255, 0, 255, 255), custom_text="[Sieben]")
-
-
-def close_dialog(sender=None, app_data=None, user_data=None):
-    global app
-    app.dialog_event_factory = None
-    dpg.delete_item("dialog")
 
 
 def show_dialog(text, event_factory, default_value=""):
@@ -246,7 +244,7 @@ def show_dialog(text, event_factory, default_value=""):
                     callback=app.submit_dialog,
                 )
                 dpg.add_spacer(height=15)
-                dpg.add_button(label="Cancel", width=75, callback=close_dialog)
+                dpg.add_button(label="Cancel", width=75, callback=app.close_dialog)
 
 
 def click_handler(sender, app_data):
@@ -262,7 +260,7 @@ def key_handler(sender, app_data):
     show_message("")
     if app.dialog_event_factory is not None:
         if app_data == 256:  # Esc
-            close_dialog()
+            app.close_dialog()
         elif app_data == 257:  # Enter
             app.submit_dialog()
         return
