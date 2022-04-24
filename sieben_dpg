@@ -51,6 +51,7 @@ class SiebenApp:
         self.filename: str = filename
         self.goaltree: Graph = load(self.filename, show_message)
         self.is_running: bool = True
+        self.dialog_event_factory = None
 
 
 parser = ArgumentParser()
@@ -62,7 +63,6 @@ parser.add_argument(
 )
 args = parser.parse_args()
 app = SiebenApp(args.db)
-dialog_event_factory = None
 phase = "zero"  # zero -> loop [ goals -> adjust -> edges -> no_update -> ... ]
 render_result = RenderResult({}, {})
 drawn_items = []
@@ -217,24 +217,24 @@ def rebuild_edges():
 
 
 def submit_dialog(sender=None, app_data=None, user_data=None):
-    global dialog_event_factory
+    global app
     global phase
     user_input = dpg.get_value("dialog_input")
-    app.goaltree.accept(dialog_event_factory(user_input))
-    dialog_event_factory = None
+    app.goaltree.accept(app.dialog_event_factory(user_input))
+    app.dialog_event_factory = None
     phase = "goals"
     dpg.delete_item("dialog")
 
 
 def close_dialog(sender=None, app_data=None, user_data=None):
-    global dialog_event_factory
-    dialog_event_factory = None
+    global app
+    app.dialog_event_factory = None
     dpg.delete_item("dialog")
 
 
 def show_dialog(text, event_factory, default_value=""):
-    global dialog_event_factory
-    dialog_event_factory = event_factory
+    global app
+    app.dialog_event_factory = event_factory
     vp_width = dpg.get_viewport_width()
     vp_height = dpg.get_viewport_height()
     dialog_pos = (0, vp_height // 2)
@@ -271,7 +271,7 @@ def key_handler(sender, app_data):
     global phase
     global columns
     show_message("")
-    if dialog_event_factory is not None:
+    if app.dialog_event_factory is not None:
         if app_data == 256:  # Esc
             close_dialog()
         elif app_data == 257:  # Enter
