@@ -301,6 +301,16 @@ class SiebenApp:
             # ignore mod keys
             print(app_data)
 
+    def frame(self):
+        if self.phase == "goals":
+            self.rebuild_goals()
+        elif self.phase == "adjust":
+            self.adjust_goals()
+        elif self.phase == "edges":
+            self.rebuild_edges()
+        elif self.phase == "zero":
+            self.phase = "goals"
+
 
 parser = ArgumentParser()
 parser.add_argument(
@@ -339,14 +349,7 @@ dpg.show_viewport()
 dpg.set_primary_window("primary", True)
 
 while dpg.is_dearpygui_running() and app.is_running:
-    if app.phase == "goals":
-        app.rebuild_goals()
-    elif app.phase == "adjust":
-        app.adjust_goals()
-    elif app.phase == "edges":
-        app.rebuild_edges()
-    elif app.phase == "zero":
-        app.phase = "goals"
+    app.frame()
     dpg.render_dearpygui_frame()
 
 dpg.destroy_context()
