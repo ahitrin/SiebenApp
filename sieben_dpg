@@ -45,6 +45,11 @@ def show_message(text):
     dpg.set_value("message", text)
 
 
+class SiebenApp:
+    def __init__(self, filename: str):
+        self.filename: str = filename
+
+
 parser = ArgumentParser()
 parser.add_argument(
     "db",
@@ -53,8 +58,8 @@ parser.add_argument(
     help="Path to the database file (default: sieben.db)",
 )
 args = parser.parse_args()
-filename = args.db
-goaltree = load(filename, show_message)
+app = SiebenApp(args.db)
+goaltree = load(app.filename, show_message)
 is_running = True
 dialog_event_factory = None
 phase = "zero"  # zero -> loop [ goals -> adjust -> edges -> no_update -> ... ]
@@ -106,13 +111,13 @@ def text_width(text: str) -> int:
 
 
 def open_file(sender, app_data, user_data):
-    global filename
+    global app
     global goaltree
     global phase
     db_file = list(app_data.get("selections", {}).values())[:1]
     if db_file:
-        filename = db_file[0]
-        goaltree = load(filename, show_message)
+        app.filename = db_file[0]
+        goaltree = load(app.filename, show_message)
         phase = "goals"
 
 
@@ -131,7 +136,7 @@ def rebuild_goals():
     global phase
     global render_result
     global nodes
-    save(goaltree, filename)
+    save(goaltree, app.filename)
     render_result = Renderer(goaltree, columns).build()
     gp = DPGGeometry()
     nodes.clear()
@@ -257,7 +262,7 @@ def show_dialog(text, event_factory, default_value=""):
 def click_handler(sender, app_data):
     global phase
     widget_id: str = app_data[1]
-    goal_id = int(widget_id.split('_')[1])
+    goal_id = int(widget_id.split("_")[1])
     goaltree.accept(Select(goal_id))
     phase = "goals"
 
