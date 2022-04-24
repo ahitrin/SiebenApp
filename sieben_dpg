@@ -168,6 +168,8 @@ def rebuild_goals():
                     dpg.highlight_table_row(table_id, 0, (128, 128, 128, 255))
                 elif attrs["select"] == "prev":
                     dpg.highlight_table_row(table_id, 0, (192, 192, 192, 255))
+
+        dpg.bind_item_handler_registry(widget_tag, "goals_handler")
     nodes.update(add_to_nodes)
     phase = "adjust"
 
@@ -252,6 +254,14 @@ def show_dialog(text, event_factory, default_value=""):
                 dpg.add_button(label="Cancel", width=75, callback=close_dialog)
 
 
+def click_handler(sender, app_data):
+    global phase
+    widget_id: str = app_data[1]
+    goal_id = int(widget_id.split('_')[1])
+    goaltree.accept(Select(goal_id))
+    phase = "goals"
+
+
 def key_handler(sender, app_data):
     global is_running
     global phase
@@ -331,8 +341,11 @@ with dpg.window(tag="primary"):
     dpg.bind_font(default_font)
     dpg.add_text(default_value="", tag="message", pos=[5, 5])
 
-with dpg.handler_registry():
+with dpg.handler_registry(tag="global_handler"):
     dpg.add_key_press_handler(callback=key_handler)
+
+with dpg.item_handler_registry(tag="goals_handler"):
+    dpg.add_item_clicked_handler(callback=click_handler)
 
 dpg.maximize_viewport()
 dpg.show_viewport()
