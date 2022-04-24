@@ -312,44 +312,47 @@ class SiebenApp:
             self.phase = "goals"
 
 
-parser = ArgumentParser()
-parser.add_argument(
-    "db",
-    nargs="?",
-    default="sieben.db",
-    help="Path to the database file (default: sieben.db)",
-)
-args = parser.parse_args()
-app = SiebenApp(args.db)
+def main():
+    parser = ArgumentParser()
+    parser.add_argument(
+        "db",
+        nargs="?",
+        default="sieben.db",
+        help="Path to the database file (default: sieben.db)",
+    )
+    args = parser.parse_args()
+    app = SiebenApp(args.db)
+
+    with dpg.file_dialog(
+        directory_selector=False,
+        show=False,
+        callback=app.open_file,
+        width=500,
+        height=300,
+        tag="open_dialog_id",
+    ):
+        dpg.add_file_extension(".db", color=(255, 0, 255, 255), custom_text="[Sieben]")
+
+    with dpg.window(tag="primary"):
+        dpg.bind_font(default_font)
+        dpg.add_text(default_value="", tag="message", pos=[5, 5])
+
+    with dpg.handler_registry(tag="global_handler"):
+        dpg.add_key_press_handler(callback=app.key_handler)
+
+    with dpg.item_handler_registry(tag="goals_handler"):
+        dpg.add_item_clicked_handler(callback=app.click_handler)
+
+    dpg.maximize_viewport()
+    dpg.show_viewport()
+    dpg.set_primary_window("primary", True)
+
+    while dpg.is_dearpygui_running() and app.is_running:
+        app.frame()
+        dpg.render_dearpygui_frame()
+
+    dpg.destroy_context()
 
 
-with dpg.file_dialog(
-    directory_selector=False,
-    show=False,
-    callback=app.open_file,
-    width=500,
-    height=300,
-    tag="open_dialog_id",
-):
-    dpg.add_file_extension(".db", color=(255, 0, 255, 255), custom_text="[Sieben]")
-
-
-with dpg.window(tag="primary"):
-    dpg.bind_font(default_font)
-    dpg.add_text(default_value="", tag="message", pos=[5, 5])
-
-with dpg.handler_registry(tag="global_handler"):
-    dpg.add_key_press_handler(callback=app.key_handler)
-
-with dpg.item_handler_registry(tag="goals_handler"):
-    dpg.add_item_clicked_handler(callback=app.click_handler)
-
-dpg.maximize_viewport()
-dpg.show_viewport()
-dpg.set_primary_window("primary", True)
-
-while dpg.is_dearpygui_running() and app.is_running:
-    app.frame()
-    dpg.render_dearpygui_frame()
-
-dpg.destroy_context()
+if __name__ == "__main__":
+    main()
