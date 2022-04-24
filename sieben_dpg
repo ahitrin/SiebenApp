@@ -197,6 +197,31 @@ class SiebenApp:
         self.dialog_event_factory = None
         dpg.delete_item("dialog")
 
+    def show_dialog(self, text, event_factory, default_value=""):
+        self.dialog_event_factory = event_factory
+        vp_width = dpg.get_viewport_width()
+        vp_height = dpg.get_viewport_height()
+        dialog_pos = (0, vp_height // 2)
+        with dpg.window(
+            id="dialog",
+            modal=True,
+            no_title_bar=True,
+            pos=dialog_pos,
+            width=vp_width - 10,
+        ):
+            with dpg.group(horizontal=True):
+                dpg.add_text(text)
+                dpg.add_input_text(tag="dialog_input", default_value=default_value)
+                dpg.focus_item("dialog_input")
+                with dpg.group():
+                    dpg.add_button(
+                        label="OK",
+                        width=75,
+                        callback=self.submit_dialog,
+                    )
+                    dpg.add_spacer(height=15)
+                    dpg.add_button(label="Cancel", width=75, callback=self.close_dialog)
+
 
 parser = ArgumentParser()
 parser.add_argument(
@@ -218,33 +243,6 @@ with dpg.file_dialog(
     tag="open_dialog_id",
 ):
     dpg.add_file_extension(".db", color=(255, 0, 255, 255), custom_text="[Sieben]")
-
-
-def show_dialog(text, event_factory, default_value=""):
-    global app
-    app.dialog_event_factory = event_factory
-    vp_width = dpg.get_viewport_width()
-    vp_height = dpg.get_viewport_height()
-    dialog_pos = (0, vp_height // 2)
-    with dpg.window(
-        id="dialog",
-        modal=True,
-        no_title_bar=True,
-        pos=dialog_pos,
-        width=vp_width - 10,
-    ):
-        with dpg.group(horizontal=True):
-            dpg.add_text(text)
-            dpg.add_input_text(tag="dialog_input", default_value=default_value)
-            dpg.focus_item("dialog_input")
-            with dpg.group():
-                dpg.add_button(
-                    label="OK",
-                    width=75,
-                    callback=app.submit_dialog,
-                )
-                dpg.add_spacer(height=15)
-                dpg.add_button(label="Cancel", width=75, callback=app.close_dialog)
 
 
 def click_handler(sender, app_data):
@@ -273,7 +271,7 @@ def key_handler(sender, app_data):
         if old_selection != new_selection:
             app.phase = "goals"
     elif app_data == 65:  # a
-        show_dialog("Add new goal", Add)
+        app.show_dialog("Add new goal", Add)
     elif app_data == 67:  # c
         app.goaltree.accept(ToggleClose())
         app.phase = "goals"
@@ -281,9 +279,9 @@ def key_handler(sender, app_data):
         app.goaltree.accept(Delete())
         app.phase = "goals"
     elif app_data == 70:  # f
-        show_dialog("Filter by substring (leave empty to reset filtration)", FilterBy)
+        app.show_dialog("Filter by substring (leave empty to reset filtration)", FilterBy)
     elif app_data == 73:  # i
-        show_dialog("Insert new goal", Insert)
+        app.show_dialog("Insert new goal", Insert)
     elif app_data == 75:  # k
         app.goaltree.accept(ToggleLink(edge_type=EdgeType.PARENT))
         app.phase = "goals"
@@ -301,7 +299,7 @@ def key_handler(sender, app_data):
     elif app_data == 82:  # r
         data = app.goaltree.q(keys="name,select").values()
         selected_text = [x["name"] for x in data if x["select"] == "select"].pop()
-        show_dialog("Rename goal", Rename, selected_text)
+        app.show_dialog("Rename goal", Rename, selected_text)
     elif app_data == 84:  # t
         app.goaltree.accept(ToggleSwitchableView())
         app.phase = "goals"
@@ -320,7 +318,7 @@ def key_handler(sender, app_data):
             app.columns -= 1
             app.phase = "goals"
     elif app_data == 96:  # `
-        show_dialog(
+        app.show_dialog(
             "Auto link by keyword (leave empty to reset auto link)", ToggleAutoLink
         )
     elif app_data not in (340, 341, 342, 343, 344, 345, 346):
