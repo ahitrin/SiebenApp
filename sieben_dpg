@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from argparse import ArgumentParser
+from typing import List
 
 import dearpygui.dearpygui as dpg
 
@@ -54,6 +55,8 @@ class SiebenApp:
         self.dialog_event_factory = None
         # zero -> loop [ goals -> adjust -> edges -> no_update -> ... ]
         self.phase: str = "zero"
+        self.render_result: RenderResult = RenderResult({}, {})
+        self.drawn_items: List[str] = []
 
 
 parser = ArgumentParser()
@@ -65,8 +68,6 @@ parser.add_argument(
 )
 args = parser.parse_args()
 app = SiebenApp(args.db)
-render_result = RenderResult({}, {})
-drawn_items = []
 nodes = {}
 columns = Renderer.DEFAULT_WIDTH
 
@@ -134,23 +135,22 @@ with dpg.file_dialog(
 
 def rebuild_goals():
     global app
-    global render_result
     global nodes
     save(app.goaltree, app.filename)
-    render_result = Renderer(app.goaltree, columns).build()
+    app.render_result = Renderer(app.goaltree, columns).build()
     gp = DPGGeometry()
     nodes.clear()
-    while drawn_items:
-        previous_tag = drawn_items.pop()
+    while app.drawn_items:
+        previous_tag = app.drawn_items.pop()
         dpg.delete_item(previous_tag)
     add_to_nodes = {}
-    for goal_id, attrs in render_result.goals():
+    for goal_id, attrs in app.render_result.goals():
         goal_text = split_long(attrs["name"])
         row, col = attrs["row"], attrs["col1"]
         pos = gp.top_left(row, col).as_tuple()
         status_color = (255, 0, 0, 255) if attrs["open"] else (0, 255, 0, 255)
         widget_tag = f"goal_{goal_id}"
-        drawn_items.append(widget_tag)
+        app.drawn_items.append(widget_tag)
         add_to_nodes[(row, col)] = widget_tag
         with dpg.group(pos=pos, parent="primary", tag=widget_tag):
             widget_width = text_width(goal_text) + text_width(str(goal_id)) + 20
@@ -181,10 +181,9 @@ def rebuild_goals():
 
 def adjust_goals():
     global app
-    global render_result
     gp = DPGGeometry()
-    adjust_graph(render_result, gp)
-    for goal_id, attrs in render_result.goals():
+    adjust_graph(app.render_result, gp)
+    for goal_id, attrs in app.render_result.goals():
         widget_tag = f"goal_{goal_id}"
         dpg.set_item_pos(widget_tag, [attrs["x"], attrs["y"]])
     app.phase = "edges"
@@ -196,11 +195,11 @@ def rebuild_edges():
         EdgeType.BLOCKER: (70, 70, 70, 255),
         EdgeType.PARENT: (180, 180, 180, 255),
     }
-    lines = render_lines(DPGGeometry(), render_result)
+    lines = render_lines(DPGGeometry(), app.render_result)
     fix = Point(0, -8)
     for edge_type, start, end, _ in lines:
         tag = f"line {edge_type} {start}, {end}"
-        if tag in drawn_items:
+        if tag in app.drawn_items:
             # lines may 'duplicate' when they're placed too close to each other
             # tag duplication causes an error within draw_line
             continue
@@ -211,7 +210,7 @@ def rebuild_edges():
             tag=tag,
             parent="primary",
         )
-        drawn_items.append(tag)
+        app.drawn_items.append(tag)
 
     app.phase = "no_update"
 
