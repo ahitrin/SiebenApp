@@ -15,17 +15,23 @@ from siebenapp.tests.dsl import build_goaltree, open_, clos_, selected, previous
 
 
 class FakeGeometry(GeometryProvider):
+    def width(self, row, col):
+        return Point(50, 0)
+
+    def height(self, row, col):
+        return Point(0, 50)
+
     def top_left(self, row, col):
         return Point(col * 100, row * 100)
 
     def top_right(self, row, col):
-        return Point(col * 100 + 50, row * 100)
+        return self.top_left(row, col) + self.width(row, col)
 
     def bottom_left(self, row, col):
-        return Point(col * 100, row * 100 + 50)
+        return self.top_left(row, col) + self.height(row, col)
 
     def bottom_right(self, row, col):
-        return Point(col * 100 + 50, row * 100 + 50)
+        return self.bottom_left(row, col) + self.width(row, col)
 
 
 def test_render_example():
