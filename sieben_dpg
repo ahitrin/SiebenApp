@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from argparse import ArgumentParser
+from pathlib import Path
 from typing import List, Tuple, Dict, Any
 
 import dearpygui.dearpygui as dpg
@@ -327,7 +328,8 @@ def main():
     dpg.create_context()
 
     with dpg.font_registry():
-        with dpg.font("Ubuntu-R.ttf", 14) as f1:
+        font_file = Path(__file__).parent / "Ubuntu-R.ttf"
+        with dpg.font(str(font_file), 14) as f1:
             dpg.add_font_range_hint(dpg.mvFontRangeHint_Cyrillic)
             default_font = f1
 
