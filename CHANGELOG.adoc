@@ -1,5 +1,60 @@
 = Changelog
 
+== Alpha version 0.10
+2022-06-20
+
+New/done features:
+
+* Auto-link new subgoals to the given goal https://github.com/ahitrin/SiebenApp/issues/181[#181]
+* Try alternatives to Qt (work still in progress) https://github.com/ahitrin/SiebenApp/issues/255[#255]
+* Flow improvement: switch onto previously selected goal on closing instead of the random one
+* Add sane upper limit on columns size
+* `sieben-manage extract`: respect goaltree wrappers
+* `clieben`: separate children and blockers list
+* Verify goaltree on each load
+
+ADR made:
+
+* Do not use regex from user input https://github.com/ahitrin/SiebenApp/blob/master/doc/adr/0006-do-not-use-regex-from-user-input.md[6].
+* Pass selected goals through all layers as is https://github.com/ahitrin/SiebenApp/blob/master/doc/adr/0007-pass-selected-goals-through-all-layers-as-is.md[7].
+
+Bug fixes:
+
+* Fix Jekyll dependencies and ignore work files (blog)
+* Performance: get rid of double q() call in Enumeration
+* `sieben-manage` must not fail when called without arguments
+* Remove old ignored dependency from dependabot settings
+* An extraction root must always have id 1 after `sieben-manage extract`
+
+Refactoring/cleanup:
+
+* Do not ignore received files in approval tests
+* Extract common goaltree wrappers into a single method
+* Slightly remove code duplication
+* Render: do not use 'col1' attribute anymore
+* Remove unneeded code
+
+Other improvements:
+
+* Update hotkeys help in a tutorial
+* Improve type annotations in `render.py`
+* Update examples/zoom pictures and text
+* Add sample DB to examples
+* Better notification on errors in properties tests
+* Add new target into `Makefile`: CI-like properties tests
+* Add new dependency: dearpygui (related to https://github.com/ahitrin/SiebenApp/issues/255[#255])
+* Update dependencies (thx to dependabot):
+  * approvaltests from 3.3.2 to 5.2.0
+  * black from 22.12b0 to 22.3.0
+  * hypothesis from 6.34.1 to 6.46.11
+  * mypy from 0.930 to 0.961
+  * py-spy from 0.3.11 to 0.3.12
+  * pytest from 6.2.5 to 7.1.2
+
+Compatibility breaks:
+
+* Remove pytest-approvaltests dependency (not needed in new versions of approvaltests)
+
 == Alpha version 0.9
 2022-01-09
 
@@ -37,7 +92,7 @@ Other improvements:
 Compatibility breaks:
 
 * Drop support for Python 3.7
-* Get rid of pyilnt (mypy+black should be enough)
+* Get rid of pylint (mypy+black should be enough)
 
 == Alpha version 0.8
 2021-05-02
