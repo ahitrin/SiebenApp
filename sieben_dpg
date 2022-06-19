@@ -349,8 +349,8 @@ def main():
         directory_selector=False,
         show=False,
         callback=app.open_file,
-        width=500,
-        height=300,
+        width=800,
+        height=600,
         tag="open_dialog_id",
     ):
         dpg.add_file_extension(".db", color=(255, 0, 255, 255), custom_text="[Sieben]")
