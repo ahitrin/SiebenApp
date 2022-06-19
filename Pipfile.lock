@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "7a8c213dc05944e585c67e24c8ffd87e9c496f3227d748d3e0653ecf63e022ee"
+            "sha256": "d16aa181503fe94a833159a96f2bdcf46ba776429148ec5202538ca3f23b1303"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -71,11 +71,11 @@
         },
         "approvaltests": {
             "hashes": [
-                "sha256:a3a6bd2abb4e675d297af6949388dd08ad5d9617db81d89ffa7abb9dbce45b8f",
-                "sha256:ecc11325e23e647079c01795d9e482570244c893fce89dc7baa8676721796423"
+                "sha256:339874a62baad92c591cc338182aadf39b8f03cdd6bf65e49cde595388927bb0",
+                "sha256:84f219126aca77e29c07357b77534433ee6308cb0bdb0c7ec2e34b85f4957c6c"
             ],
             "index": "pypi",
-            "version": "==5.2.0"
+            "version": "==5.3.0"
         },
         "attrs": {
             "hashes": [
@@ -135,7 +135,7 @@
                 "sha256:2857e29ff0d34db842cd7ca3230549d1a697f96ee6d3fb071cfa6c7393832597",
                 "sha256:6881edbebdb17b39b4eaaa821b438bf6eddffb4468cf344f09f89def34a8b1df"
             ],
-            "markers": "python_version >= '3.5'",
+            "markers": "python_full_version >= '3.5.0'",
             "version": "==2.0.12"
         },
         "click": {
@@ -245,7 +245,7 @@
                 "sha256:84d9dd047ffa80596e0f246e2eab0b391788b0503584e8945f2368256d2735ff",
                 "sha256:9d643ff0a55b762d5cdb124b8eaa99c66322e2157b69160bc32796e824360e6d"
             ],
-            "markers": "python_version >= '3.5'",
+            "markers": "python_full_version >= '3.5.0'",
             "version": "==3.3"
         },
         "iniconfig": {
@@ -419,7 +419,7 @@
                 "sha256:6657594ee297170d19f67d55c05852a874e7eb634f4f753dbd667855e07c1708",
                 "sha256:f1c24655a0da0d1b67f07e17a5e6b2a105894e6824b92096378bb3668ef02376"
             ],
-            "markers": "python_version >= '3.7'",
+            "markers": "python_version < '3.10'",
             "version": "==4.2.0"
         },
         "urllib3": {
