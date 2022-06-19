@@ -44,12 +44,12 @@ Other improvements:
 * Add new target into `Makefile`: CI-like properties tests
 * Add new dependency: dearpygui (related to https://github.com/ahitrin/SiebenApp/issues/255[#255])
 * Update dependencies (thx to dependabot):
-  * approvaltests from 3.3.2 to 5.2.0
-  * black from 22.12b0 to 22.3.0
-  * hypothesis from 6.34.1 to 6.46.11
-  * mypy from 0.930 to 0.961
-  * py-spy from 0.3.11 to 0.3.12
-  * pytest from 6.2.5 to 7.1.2
+approvaltests (3.3.2 to 5.2.0),
+black (22.12b0 to 22.3.0),
+hypothesis (6.34.1 to 6.46.11),
+mypy (0.930 to 0.961),
+py-spy (0.3.11 to 0.3.12),
+pytest (6.2.5 to 7.1.2)
 
 Compatibility breaks:
 
