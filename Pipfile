@@ -16,7 +16,7 @@ dearpygui = "==1.6.2"
 radon = "==5.1.0"
 
 [packages]
-PyQt5 = "==5.15.6"
+PyQt5 = "==5.15.7"
 
 [requires]
 python_version = "3.8"
