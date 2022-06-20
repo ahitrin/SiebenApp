@@ -1,4 +1,4 @@
-.PHONY: check venv test install format mypy run clean distclean prepare
+.PHONY: check venv test test-cov test-prop-ci analysis install format mypy run clean distclean prepare
 
 all: check venv test
 
@@ -22,6 +22,9 @@ test-cov:
 test-prop-ci: export HYPOTHESIS_PROFILE=ci
 test-prop-ci:
 	pipenv run py.test -k test_properties
+
+analysis:
+	pipenv run radon cc -nc -s siebenapp/*.py
 
 install:
 	pipenv run python3 setup.py install
