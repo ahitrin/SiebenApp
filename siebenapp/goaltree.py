@@ -294,7 +294,7 @@ class Goals(Graph):
                     front.add(e.target)
         return lower in total
 
-    def verify(self) -> bool:
+    def verify(self) -> None:
         assert all(
             g.target in self.closed for p in self.closed for g in self._forward_edges(p)
         ), "Open goals could not be blocked by closed ones"
@@ -335,8 +335,6 @@ class Goals(Graph):
         assert len(parent_edges) == len(
             edges_with_parent
         ), "Each goal must have at most 1 parent"
-
-        return True
 
     @staticmethod
     def build(goals, edges, settings, message_fn=None):

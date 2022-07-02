@@ -84,11 +84,10 @@ class Graph:
         if self.goaltree is not None:
             self.goaltree.error(message)
 
-    def verify(self) -> bool:
-        """Check all inner data for correctness"""
+    def verify(self) -> None:
+        """Check all inner data for correctness. Raise exception on violations."""
         if self.goaltree is not None:
             return self.goaltree.verify()
-        return False
 
 
 def with_key(key):

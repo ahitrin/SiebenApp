@@ -215,12 +215,12 @@ def test_previous_selection_should_not_be_changed_or_reset_after_zoom():
             open_(5, ""),
         )
     )
-    assert goals.verify()
+    goals.verify()
     goals.accept(ToggleZoom())
-    assert goals.verify()
+    goals.verify()
     # Currently, we cannot make such move via user interface because goal 3 is hidden
     goals.accept(ToggleLink(3, 2, EdgeType.BLOCKER))
-    assert goals.verify()
+    goals.verify()
 
 
 def test_selection_should_not_be_changed_on_stacked_unzoom_a_long_chain_of_blockers():
@@ -251,7 +251,7 @@ def test_selection_should_not_be_changed_on_stacked_unzoom_a_long_chain_of_block
         3: {"name": "D", "edge": [], "select": "select"},
         4: {"name": "E", "edge": [], "select": "prev"},
     }
-    assert goals.verify()
+    goals.verify()
 
 
 def test_unlink_for_goal_outside_of_zoomed_tree_should_not_cause_selection_change():

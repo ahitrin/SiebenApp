@@ -105,12 +105,11 @@ class Zoom(Graph):
                 edges_to_visit.update(edges[edge_id]["edge"])
         return visible_goals
 
-    def verify(self) -> bool:
-        ok = self.goaltree.verify()
+    def verify(self) -> None:
+        self.goaltree.verify()
         assert (
             self.zoom_root[0] == Goals.ROOT_ID
         ), "Zoom stack must always start from the root"
-        return ok
 
     @staticmethod
     def export(goals):

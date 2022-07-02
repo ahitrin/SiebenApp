@@ -202,7 +202,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 
     @invariant()
     def goaltree_is_always_valid(self):
-        assert self.goaltree.verify()
+        self.goaltree.verify()
 
     @invariant()
     def there_is_always_one_selected_goal_and_at_most_one_previous(self):
