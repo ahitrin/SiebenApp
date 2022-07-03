@@ -11,7 +11,7 @@ venv:
 	$([ which pipenv ] || pip install pipenv)
 	pipenv install -d
 
-prepare: test format mypy
+prepare: format test mypy
 
 test:
 	pipenv run py.test
