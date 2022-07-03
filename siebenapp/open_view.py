@@ -30,14 +30,17 @@ class OpenView(Graph):
         if not origin.settings("filter_open"):
             self.accept(ToggleOpenView())
 
+    def _is_visible(self, goal_id: int, attrs) -> bool:
+        if self._open:
+            # Here we know something about other layers (Zoom). I do not like it
+            return attrs["open"] or goal_id in self.selections() or goal_id in {1, -1}
+        return True
+
     @with_key("open")
     def q(self, keys: str = "name") -> Dict[int, Any]:
         goals = self.goaltree.q(keys)
         result: Dict[int, Any] = {
-            k: {}
-            for k, v in goals.items()
-            # here we know something about other layers (Zoom). I do not like it
-            if not self._open or v["open"] or k in self.selections() or k in {1, -1}
+            k: {} for k, v in goals.items() if self._is_visible(k, v)
         }
         # goals without parents
         not_linked: Set[int] = set(g for g in result.keys() if g > 1)
