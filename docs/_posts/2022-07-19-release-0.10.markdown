@@ -1,0 +1,68 @@
+---
+layout: post
+title:  "Version 0.10 is released"
+date:   2022-07-19
+tags: news
+---
+
+A new release 0.10 have relatively small changes, but they seem useful in some way.
+
+## New features
+
+### Auto-link new subgoals to the given goal [#181](https://github.com/ahitrin/SiebenApp/issues/181)
+
+A little bit of automation was added into Sieben.
+Sometimes, it would be useful to connect a new subgoal with two parents at once.
+With a new tilde hotkey (<code>`</code>), it becomes easy.
+
+With this hotkey, we could define a pattern that's used to bind new subgoals to the given node.
+All subgoals matching pattern provided will be automatically linked to it.
+
+![an example goal tree](/SiebenApp/images/2022-release-0.10/autolink-1.png)
+
+Autolink works on any name change: creation of new goals and rename of existing ones.
+
+![adding a goal](/SiebenApp/images/2022-release-0.10/autolink-2.png)
+
+It's most useful when you have a complex structural flow.
+Works seamlessly with all other features like zoom or view changes.
+
+![additional link is created](/SiebenApp/images/2022-release-0.10/autolink-3.png)
+
+To get rid of autolinking, select a node it owns, press <code>`</code> again, and then enter an empty value.
+It will remove automation, but all existing links will be preserved.
+
+![remove autolink](/SiebenApp/images/2022-release-0.10/autolink-4.png)
+
+### Try alternatives to Qt [#255](https://github.com/ahitrin/SiebenApp/issues/255) (still in progress)
+
+Most of the efforts was left in this ticket.
+I tried different UI engines, and stopped on [DearPyGui](https://dearpygui.readthedocs.io/en/latest/).
+It's a GUI webkit that's installed as a pure Python dependency and provides a broad list of features.
+A DPG version of SiebenApp could be run by invoking `./sieben_dpg <path-to-db>` from the project root directory.
+
+It looks like this:
+
+![DPG version](/SiebenApp/images/2022-release-0.10/dpg.png)
+
+A "classic" Qt5 view of the same goaltree:
+
+![Qt version](/SiebenApp/images/2022-release-0.10/qt.png)
+
+DPG version still lacks few UI elements that exist in Qt version: view radio buttons, menu, help/about dialogs.
+It's not much difficult to add all of this.
+What warns me more, this version has several visual glitches I've tired to fight.
+Also, it loses to Qt5 version in performance on large goal trees.
+Due to these issues, I'm not ready yet to get rid of Qt5 right now.
+
+After some rest, I plan to continue this work.
+DearPyGui still looks promising, and during this task I've also made few improvements on rendering engine making Qt5 version better too.
+
+### Other minor fixes
+
+More changes are available in the [changelog file](https://github.com/ahitrin/SiebenApp/blob/master/CHANGELOG.adoc#alpha-version-010).
+
+## Future plans
+
+In the next release, I'd prefer to focus mainly on `sieben-manage` improvements.
+I need some rest after exausting work on the new GUI engine.
