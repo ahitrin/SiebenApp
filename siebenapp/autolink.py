@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, Any, List, Union, Tuple, Optional
+from typing import Dict, Any, List, Union, Tuple, Optional, Set
 
 from siebenapp.domain import (
     Graph,
@@ -35,20 +35,20 @@ class AutoLink(Graph):
                 self.back_kw[goal_id] = keyword
 
     def accept_ToggleAutoLink(self, command: ToggleAutoLink) -> None:
-        selected_id = self.settings("selection")
+        selected_id: int = self.settings("selection")
         if selected_id in self.goaltree.closed:
             self.error("Autolink cannot be set for closed goals")
             return
         if selected_id == Goals.ROOT_ID:
             self.error("Autolink cannot be set for the root goal")
             return
-        keyword = command.keyword.lower().strip()
+        keyword: str = command.keyword.lower().strip()
         if selected_id in self.back_kw:
             self.keywords.pop(self.back_kw[selected_id])
             self.back_kw.pop(selected_id)
             self.events().append(("remove_autolink", selected_id))
         if keyword in self.keywords:
-            old_id = self.keywords.pop(keyword)
+            old_id: int = self.keywords.pop(keyword)
             self.back_kw.pop(old_id)
             self.events().append(("remove_autolink", old_id))
         if not keyword:
@@ -59,7 +59,7 @@ class AutoLink(Graph):
         self.events().append(("add_autolink", selected_id, keyword))
 
     def accept_ToggleClose(self, command: ToggleClose) -> None:
-        selected_id = self.settings("selection")
+        selected_id: int = self.settings("selection")
         if selected_id in self.back_kw:
             self.keywords.pop(self.back_kw[selected_id])
             self.back_kw.pop(selected_id)
@@ -73,32 +73,32 @@ class AutoLink(Graph):
         self._autolink_new_goal(command)
 
     def _autolink_new_goal(self, command: Union[Add, Insert]) -> None:
-        matching = self._find_matching_goals(command.name)
-        ids_before = set(self.goaltree.goals.keys())
+        matching: List[int] = self._find_matching_goals(command.name)
+        ids_before: Set[int] = set(self.goaltree.goals.keys())
         self.goaltree.accept(command)
-        ids_after = set(self.goaltree.goals.keys())
-        ids_diff = ids_after.difference(ids_before)
+        ids_after: Set[int] = set(self.goaltree.goals.keys())
+        ids_diff: Set[int] = ids_after.difference(ids_before)
         if ids_diff:
-            added_id = ids_diff.pop()
+            added_id: int = ids_diff.pop()
             self._make_links(matching, added_id)
 
     def accept_Rename(self, command: Rename) -> None:
-        matching = self._find_matching_goals(command.new_name)
+        matching: List[int] = self._find_matching_goals(command.new_name)
         self.goaltree.accept(command)
-        selected_id = command.goal_id or self.settings("selection")
+        selected_id: int = command.goal_id or self.settings("selection")
         self._make_links(matching, selected_id)
 
     def accept_Delete(self, command: Delete) -> None:
-        selected_id = command.goal_id or self.settings("selection")
-        edges = self.goaltree.q("edge")
-        goals_to_check = [selected_id]
+        selected_id: int = command.goal_id or self.settings("selection")
+        edges: Dict[int, Any] = self.goaltree.q("edge")
+        goals_to_check: List[int] = [selected_id]
         while goals_to_check:
-            goal_id = goals_to_check.pop()
+            goal_id: int = goals_to_check.pop()
             goals_to_check.extend(
                 e[0] for e in edges[goal_id]["edge"] if e[1] == EdgeType.PARENT
             )
             if goal_id in self.back_kw:
-                added_kw = self.back_kw.pop(goal_id)
+                added_kw: str = self.back_kw.pop(goal_id)
                 self.keywords.pop(added_kw)
                 self.events().append(("remove_autolink", goal_id))
         self.goaltree.accept(command)
@@ -119,13 +119,13 @@ class AutoLink(Graph):
 
     @with_key("edge")
     def q(self, keys: str = "name") -> Dict[int, Any]:
-        goals = self.goaltree.q(keys)
+        goals: Dict[int, Any] = self.goaltree.q(keys)
         new_goals: Dict[int, Any] = dict(goals)
         for keyword, goal_id in self.keywords.items():
-            pseudo_id = -(goal_id + 10)
+            pseudo_id: int = -(goal_id + 10)
             for real_goal, attrs in goals.items():
-                real_edges = attrs.pop("edge")
-                new_edges = [
+                real_edges: List[Tuple[int, EdgeType]] = attrs.pop("edge")
+                new_edges: List[Tuple[int, EdgeType]] = [
                     e if e[0] != goal_id else (pseudo_id, e[1]) for e in real_edges
                 ]
                 attrs["edge"] = new_edges
