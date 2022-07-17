@@ -35,10 +35,10 @@ class Goals(Graph):
             lambda: defaultdict(lambda: EdgeType.BLOCKER)
         )
         self.closed: Set[int] = set()
-        self.selection = Goals.ROOT_ID
-        self.previous_selection = Goals.ROOT_ID
+        self.selection: int = Goals.ROOT_ID
+        self.previous_selection: int = Goals.ROOT_ID
         self._events: deque = deque()
-        self.message_fn = message_fn
+        self.message_fn: Optional[Callable[[str], None]] = message_fn
         self._add_no_link(name)
 
     def error(self, message: str) -> None:
@@ -55,7 +55,9 @@ class Goals(Graph):
         return [Edge(k, goal, v) for k, v in self.edges_backward[goal].items()]
 
     def _parent(self, goal: int) -> int:
-        parents = {e for e in self._back_edges(goal) if e.type == EdgeType.PARENT}
+        parents: Set[Edge] = {
+            e for e in self._back_edges(goal) if e.type == EdgeType.PARENT
+        }
         return parents.pop().source if parents else Goals.ROOT_ID
 
     def settings(self, key: str) -> Any:
@@ -78,22 +80,22 @@ class Goals(Graph):
         return self._events
 
     def accept_Add(self, command: Add) -> bool:
-        add_to = command.add_to or self.selection
+        add_to: int = command.add_to or self.selection
         if add_to in self.closed:
             self.error("A new subgoal cannot be added to the closed one")
             return False
-        next_id = self._add_no_link(command.name)
+        next_id: int = self._add_no_link(command.name)
         self.accept_ToggleLink(ToggleLink(add_to, next_id, command.edge_type))
         return True
 
     def _add_no_link(self, name: str) -> int:
-        next_id = max(list(self.goals.keys()) + [0]) + 1
+        next_id: int = max(list(self.goals.keys()) + [0]) + 1
         self.goals[next_id] = name
         self._events.append(("add", next_id, name, True))
         return next_id
 
     def accept_Select(self, command: Select):
-        goal_id = command.goal_id
+        goal_id: int = command.goal_id
         if goal_id in self.goals and self.goals[goal_id] is not None:
             self.selection = goal_id
             self._events.append(("select", goal_id))
@@ -110,7 +112,7 @@ class Goals(Graph):
                 return "prev"
             return None
 
-        keys_list = keys.split(",")
+        keys_list: List[str] = keys.split(",")
         result: Dict[int, Any] = dict()
         for key, name in ((k, n) for k, n in self.goals.items() if n is not None):
             value = {
@@ -134,15 +136,15 @@ class Goals(Graph):
         if (lower := self.previous_selection) == (upper := self.selection):
             self.error("A new goal can be inserted only between two different goals")
             return
-        edge_type = self.edges_forward[lower].get(upper, EdgeType.BLOCKER)
+        edge_type: EdgeType = self.edges_forward[lower].get(upper, EdgeType.BLOCKER)
         if self.accept_Add(Add(command.name, lower, edge_type)):
-            key = len(self.goals)
+            key: int = len(self.goals)
             self.accept_ToggleLink(ToggleLink(key, upper, edge_type))
             if self._has_link(lower, upper):
                 self.accept_ToggleLink(ToggleLink(lower, upper))
 
     def accept_Rename(self, command: Rename):
-        goal_id = command.goal_id or self.selection
+        goal_id: int = command.goal_id or self.selection
         self.goals[goal_id] = command.new_name
         self._events.append(("rename", command.new_name, goal_id))
 
@@ -173,40 +175,44 @@ class Goals(Graph):
         return all(g.target in self.closed for g in self._forward_edges(self.selection))
 
     def _may_be_reopened(self) -> bool:
-        blocked_by_selected = [e.source for e in self._back_edges(self.selection)]
+        blocked_by_selected: List[int] = [
+            e.source for e in self._back_edges(self.selection)
+        ]
         return all(g not in self.closed for g in blocked_by_selected)
 
     def _first_open_and_switchable(self, root: int) -> int:
-        root = max(root, Goals.ROOT_ID)
-        front = [root]
+        actual_root: int = max(root, Goals.ROOT_ID)
+        front: List[int] = [actual_root]
         candidates: List[int] = []
         while front:
-            next_goal = front.pop()
-            subgoals = [
+            next_goal: int = front.pop()
+            subgoals: List[int] = [
                 e.target
                 for e in self._forward_edges(next_goal)
                 if e.target not in self.closed and e.type == EdgeType.PARENT
             ]
             front.extend(subgoals)
             candidates.extend(g for g in subgoals if self._switchable(g))
-        return min(candidates) if candidates else root
+        return min(candidates) if candidates else actual_root
 
     def accept_Delete(self, command: Delete) -> None:
         if (goal_id := command.goal_id or self.selection) == Goals.ROOT_ID:
             self.error("Root goal can't be deleted")
             return
-        parent = self._parent(goal_id)
+        parent: int = self._parent(goal_id)
         self._delete_subtree(goal_id)
         self.accept_Select(Select(parent))
         self.accept(HoldSelect())
 
     def _delete_subtree(self, goal_id: int) -> None:
-        parent = self._parent(goal_id)
+        parent: int = self._parent(goal_id)
         self.goals[goal_id] = None
         self.closed.add(goal_id)
-        forward_edges = self._forward_edges(goal_id)
-        next_to_remove = {e for e in forward_edges if e.type == EdgeType.PARENT}
-        blockers = {e for e in forward_edges if e.type == EdgeType.BLOCKER}
+        forward_edges: List[Edge] = self._forward_edges(goal_id)
+        next_to_remove: Set[Edge] = {
+            e for e in forward_edges if e.type == EdgeType.PARENT
+        }
+        blockers: Set[Edge] = {e for e in forward_edges if e.type == EdgeType.BLOCKER}
         for back_edge in self._back_edges(goal_id):
             self.edges_forward[back_edge.source].pop(goal_id)
         self.edges_forward[goal_id].clear()
@@ -240,7 +246,7 @@ class Goals(Graph):
             self._create_new_link(lower, upper, command.edge_type)
 
     def _replace_link(self, lower: int, upper: int, edge_type: EdgeType) -> None:
-        old_edge_type = self.edges_forward[lower][upper]
+        old_edge_type: EdgeType = self.edges_forward[lower][upper]
         self.edges[(lower, upper)] = edge_type
         self.edges_forward[lower][upper] = edge_type
         self.edges_backward[upper][lower] = edge_type
@@ -273,7 +279,7 @@ class Goals(Graph):
         self._events.append(("link", lower, upper, edge_type))
 
     def _transform_old_parents_into_blocked(self, lower, upper):
-        old_parents = [
+        old_parents: List[int] = [
             e.source
             for e in self._back_edges(upper)
             if e.type == EdgeType.PARENT and e.source != lower
@@ -302,7 +308,7 @@ class Goals(Graph):
         queue: List[int] = [Goals.ROOT_ID]
         visited: Set[int] = set()
         while queue:
-            goal = queue.pop()
+            goal: int = queue.pop()
             queue.extend(
                 g.target
                 for g in self._forward_edges(goal)
@@ -313,15 +319,15 @@ class Goals(Graph):
             x for x in self.goals if self.goals[x] is not None
         }, "All subgoals must be accessible from the root goal"
 
-        deleted_nodes = [g for g, v in self.goals.items() if v is None]
+        deleted_nodes: List[int] = [g for g, v in self.goals.items() if v is None]
         assert all(
             not self._forward_edges(n) for n in deleted_nodes
         ), "Deleted goals must have no dependencies"
 
-        fwd_edges = set(
+        fwd_edges: Set[Tuple[int, int, EdgeType]] = set(
             (g1, g2, et) for g1, e in self.edges_forward.items() for g2, et in e.items()
         )
-        bwd_edges = set(
+        bwd_edges: Set[Tuple[int, int, EdgeType]] = set(
             (g1, g2, et)
             for g2, e in self.edges_backward.items()
             for g1, et in e.items()
@@ -330,8 +336,10 @@ class Goals(Graph):
             fwd_edges == bwd_edges
         ), "Forward and backward edges must always match each other"
 
-        parent_edges = [k for k, v in self.edges.items() if v == EdgeType.PARENT]
-        edges_with_parent = {child for parent, child in parent_edges}
+        parent_edges: List[Tuple[int, int]] = [
+            k for k, v in self.edges.items() if v == EdgeType.PARENT
+        ]
+        edges_with_parent: Set[int] = {child for parent, child in parent_edges}
         assert len(parent_edges) == len(
             edges_with_parent
         ), "Each goal must have at most 1 parent"
@@ -339,9 +347,9 @@ class Goals(Graph):
     @staticmethod
     def build(goals, edges, settings, message_fn=None):
         # type: (GoalsData, EdgesData, OptionsData, Callable[[str], None]) -> Goals
-        result = Goals("", message_fn)
+        result: Goals = Goals("", message_fn)
         result._events.clear()
-        goals_dict = {g[0]: g[1] for g in goals}
+        goals_dict: Dict[int, Optional[str]] = {g[0]: g[1] for g in goals}
         result.goals = {
             i: goals_dict.get(i) for i in range(1, max(goals_dict.keys()) + 1)
         }
@@ -354,7 +362,7 @@ class Goals(Graph):
             result.edges[parent, child] = EdgeType(link_type)
             result.edges_forward[parent][child] = EdgeType(link_type)
             result.edges_backward[child][parent] = EdgeType(link_type)
-        selection_dict = dict(settings)
+        selection_dict: Dict[str, int] = dict(settings)
         result.selection = selection_dict.get("selection", result.selection)
         result.previous_selection = selection_dict.get(
             "previous_selection", result.previous_selection
@@ -365,13 +373,13 @@ class Goals(Graph):
     @staticmethod
     def export(goals):
         # type: (Goals) -> Tuple[GoalsData, EdgesData, OptionsData]
-        nodes = [
+        nodes: GoalsData = [
             (g_id, g_name, g_id not in goals.closed)
             for g_id, g_name in goals.goals.items()
         ]
 
-        edges = [(k[0], k[1], v) for k, v in goals.edges.items()]
-        settings = [
+        edges: EdgesData = [(k[0], k[1], v) for k, v in goals.edges.items()]
+        settings: OptionsData = [
             ("selection", goals.selection),
             ("previous_selection", goals.previous_selection),
         ]
