@@ -1,19 +1,20 @@
 from argparse import ArgumentParser
 from os import path
+from siebenapp.cli import IO, ConsoleIO
 from siebenapp.system import load, dot_export, save, extract_subtree
 
 
-def print_dot(args):
+def print_dot(args, io: IO):
     tree = load(args.db).goaltree.goaltree
-    print(dot_export(tree))
+    io.write(dot_export(tree))
 
 
-def migrate(args):
+def migrate(args, io: IO):
     goals = load(args.db)
     save(goals, args.db)
 
 
-def extract(args):
+def extract(args, io: IO):
     tree = load(args.source_db).goaltree.goaltree
     assert not path.exists(args.target_db), f"File {args.target_db} already exists!"
     result = extract_subtree(tree, args.goal_id)
@@ -54,6 +55,6 @@ def main():
 
     args = parser.parse_args()
     if "func" in dir(args):
-        args.func(args)
+        args.func(args, ConsoleIO("> "))
     else:
         parser.print_help()
