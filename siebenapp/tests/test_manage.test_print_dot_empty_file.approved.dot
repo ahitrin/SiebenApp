@@ -1,0 +1,4 @@
+digraph g {
+node [shape=box];
+1 [label="1: Rename me", color=red, style=bold];
+}
