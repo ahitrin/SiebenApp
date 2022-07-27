@@ -1,6 +1,7 @@
 # coding: utf-8
 import pytest
 from approvaltests import verify  # type: ignore
+from approvaltests.namer import get_default_namer  # type: ignore
 from approvaltests.reporters import GenericDiffReporterFactory  # type: ignore
 
 from siebenapp.domain import Select, EdgeType
@@ -44,7 +45,11 @@ def test_dot_export():
         clos_(6, "!@#$%^&*()\\/,.?"),
         open_(7, ";:[{}]<>", select=previous),
     )
-    verify(dot_export(goals), reporter=GenericDiffReporterFactory().get_first_working())
+    verify(
+        dot_export(goals),
+        GenericDiffReporterFactory().get_first_working(),
+        get_default_namer(".dot"),
+    )
 
 
 @pytest.fixture()
