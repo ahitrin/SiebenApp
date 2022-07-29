@@ -6,7 +6,7 @@ from typing import List, Optional
 
 
 def print_dot(args, io: IO):
-    tree = load(args.db).goaltree.goaltree
+    tree = load(args.db)
     io.write(dot_export(tree))
 
 
