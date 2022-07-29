@@ -1,0 +1,6 @@
+digraph g {
+node [shape=box];
+1 [label="1: Also 4", color=red];
+2 [label="2: Now 5", color=red, style=bold];
+3 [label="3: Lucky 7", color=green];
+}
