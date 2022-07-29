@@ -27,7 +27,6 @@ class DummyIO(IO):
 
 
 def test_simple_scenario():
-    log = []
     commands = [
         "r Approval testing",
         "a Measure coverage",
@@ -36,15 +35,14 @@ def test_simple_scenario():
         "3",
         "c",
     ]
-    io = DummyIO(commands, log)
+    io = DummyIO(commands)
     db_name = ":memory:"
     goals = load(db_name, update_message)
     loop(io, goals, db_name)
-    verify("\n".join(log), reporter=GenericDiffReporterFactory().get_first_working())
+    verify("\n".join(io.log), reporter=GenericDiffReporterFactory().get_first_working())
 
 
 def test_complex_scenario():
-    log = []
     commands = [
         "r Cover all current features",
         "a Filter view",
@@ -79,8 +77,8 @@ def test_complex_scenario():
         # exit
         "q",
     ]
-    io = DummyIO(commands, log)
+    io = DummyIO(commands)
     db_name = ":memory:"
     goals = load(db_name, update_message)
     loop(io, goals, db_name)
-    verify("\n".join(log), reporter=GenericDiffReporterFactory().get_first_working())
+    verify("\n".join(io.log), reporter=GenericDiffReporterFactory().get_first_working())
