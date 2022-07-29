@@ -2,6 +2,7 @@ from argparse import ArgumentParser
 from os import path
 from siebenapp.cli import IO, ConsoleIO
 from siebenapp.system import load, dot_export, save, extract_subtree
+from typing import List, Optional
 
 
 def print_dot(args, io: IO):
@@ -21,7 +22,7 @@ def extract(args, io: IO):
     save(result, args.target_db)
 
 
-def main():
+def main(argv: Optional[List[str]] = None, io: Optional[IO] = None):
     parser = ArgumentParser()
     subparsers = parser.add_subparsers(title="commands")
 
@@ -53,8 +54,9 @@ def main():
     )
     parser_extract.set_defaults(func=extract)
 
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
+    io = io or ConsoleIO("> ")
     if "func" in dir(args):
-        args.func(args, ConsoleIO("> "))
+        args.func(args, io)
     else:
         parser.print_help()

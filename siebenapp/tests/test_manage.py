@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from tempfile import NamedTemporaryFile
 
 from approvaltests.namer import get_default_namer  # type: ignore
@@ -7,23 +6,17 @@ from approvaltests.reporters import GenericDiffReporterFactory  # type: ignore
 from approvaltests.reporters.generic_diff_reporter import GenericDiffReporter  # type: ignore
 
 from siebenapp.layers import all_layers
-from siebenapp.manage import print_dot
+from siebenapp.manage import main
 from siebenapp.system import save
 from siebenapp.tests.dsl import build_goaltree, open_, clos_, selected, previous
 from siebenapp.tests.test_cli import DummyIO
 
 
-@dataclass
-class FakeArgs:
-    db: str
-
-
 def test_print_dot_empty_file():
     file_name = NamedTemporaryFile().name
-    args = FakeArgs(db=file_name)
     log = []
     io = DummyIO([], log)
-    print_dot(args, io)
+    main(["dot", file_name], io)
     verify(
         "\n".join(log),
         GenericDiffReporterFactory().get_first_working(),
@@ -44,10 +37,9 @@ def test_print_dot_complex_tree():
     )
     file_name = NamedTemporaryFile().name
     save(all_layers(g), file_name)
-    args = FakeArgs(db=file_name)
     log = []
     io = DummyIO([], log)
-    print_dot(args, io)
+    main(["dot", file_name], io)
     verify(
         "\n".join(log),
         GenericDiffReporterFactory().get_first_working(),
