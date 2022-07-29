@@ -15,7 +15,7 @@ from siebenapp.tests.test_cli import DummyIO
 
 def test_print_dot_empty_file():
     file_name = NamedTemporaryFile().name
-    io = DummyIO([], [])
+    io = DummyIO()
     main(["dot", file_name], io)
     verify(
         "\n".join(io.log),
@@ -42,7 +42,7 @@ def complex_goaltree_file():
 
 
 def test_print_dot_complex_tree(complex_goaltree_file):
-    io = DummyIO([], [])
+    io = DummyIO()
     main(["dot", complex_goaltree_file], io)
     verify(
         "\n".join(io.log),
@@ -52,7 +52,7 @@ def test_print_dot_complex_tree(complex_goaltree_file):
 
 
 def test_print_dot_complex_tree_with_closed(complex_goaltree_file):
-    io = DummyIO([], [])
+    io = DummyIO()
     main(["dot", "-n", complex_goaltree_file], io)
     verify(
         "\n".join(io.log),
@@ -62,7 +62,7 @@ def test_print_dot_complex_tree_with_closed(complex_goaltree_file):
 
 
 def test_print_dot_complex_tree_with_progress(complex_goaltree_file):
-    io = DummyIO([], [])
+    io = DummyIO()
     main(["dot", "-p", complex_goaltree_file], io)
     verify(
         "\n".join(io.log),
@@ -72,7 +72,7 @@ def test_print_dot_complex_tree_with_progress(complex_goaltree_file):
 
 
 def test_print_dot_complex_tree_only_switchable(complex_goaltree_file):
-    io = DummyIO([], [])
+    io = DummyIO()
     main(["dot", "-t", complex_goaltree_file], io)
     verify(
         "\n".join(io.log),
