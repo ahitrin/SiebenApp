@@ -1,0 +1,28 @@
+digraph g {
+node [shape=box];
+1 [label="1: Root", color=red];
+2 [label="2: Closed", color=green];
+3 [label="3: Simply 3", color=red];
+4 [label="4: Also 4", color=red];
+5 [label="5: Now 5", color=red, style=bold];
+6 [label="6: Same 6", color=green];
+7 [label="7: Lucky 7", color=green];
+8 [label="8: Finally 8", color=green];
+2 -> 1 [color=gray];
+3 -> 1 [color=black];
+4 -> 1 [color=black];
+5 -> 1 [color=black];
+6 -> 1 [color=gray];
+7 -> 1 [color=gray, style=dashed];
+8 -> 1 [color=gray, style=dashed];
+7 -> 2 [color=gray, style=dashed];
+5 -> 3 [color=black, style=dashed];
+8 -> 3 [color=gray, style=dashed];
+5 -> 4 [color=black, style=dashed];
+6 -> 4 [color=gray, style=dashed];
+7 -> 4 [color=gray, style=dashed];
+8 -> 4 [color=gray, style=dashed];
+6 -> 5 [color=gray, style=dashed];
+7 -> 6 [color=gray, style=dashed];
+8 -> 7 [color=gray];
+}

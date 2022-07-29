@@ -1,12 +1,15 @@
 from argparse import ArgumentParser
 from os import path
 from siebenapp.cli import IO, ConsoleIO
+from siebenapp.open_view import ToggleOpenView
 from siebenapp.system import load, dot_export, save, extract_subtree
 from typing import List, Optional
 
 
 def print_dot(args, io: IO):
     tree = load(args.db)
+    if args.n:
+        tree.accept(ToggleOpenView())
     io.write(dot_export(tree))
 
 
@@ -27,6 +30,12 @@ def main(argv: Optional[List[str]] = None, io: Optional[IO] = None):
     subparsers = parser.add_subparsers(title="commands")
 
     parser_dot = subparsers.add_parser("dot")
+    parser_dot.add_argument(
+        "-n",
+        required=False,
+        action="store_true",
+        help="Show closed goals (same as n key in the app)",
+    )
     parser_dot.add_argument("db")
     parser_dot.set_defaults(func=print_dot)
 
