@@ -1,5 +1,6 @@
 from tempfile import NamedTemporaryFile
 
+import pytest
 from approvaltests.namer import get_default_namer  # type: ignore
 from approvaltests import verify, Options  # type: ignore
 from approvaltests.reporters import GenericDiffReporterFactory  # type: ignore
@@ -24,7 +25,8 @@ def test_print_dot_empty_file():
     )
 
 
-def test_print_dot_complex_tree():
+@pytest.fixture
+def complex_goaltree_file():
     g = build_goaltree(
         open_(1, "Root", [2, 3, 4, 5, 6], [7, 8]),
         clos_(2, "Closed", blockers=[7]),
@@ -37,9 +39,13 @@ def test_print_dot_complex_tree():
     )
     file_name = NamedTemporaryFile().name
     save(all_layers(g), file_name)
+    return file_name
+
+
+def test_print_dot_complex_tree(complex_goaltree_file):
     log = []
     io = DummyIO([], log)
-    main(["dot", file_name], io)
+    main(["dot", complex_goaltree_file], io)
     verify(
         "\n".join(log),
         GenericDiffReporterFactory().get_first_working(),
@@ -47,22 +53,10 @@ def test_print_dot_complex_tree():
     )
 
 
-def test_print_dot_complex_tree_with_closed():
-    g = build_goaltree(
-        open_(1, "Root", [2, 3, 4, 5, 6], [7, 8]),
-        clos_(2, "Closed", blockers=[7]),
-        open_(3, "Simply 3", blockers=[5, 8]),
-        open_(4, "Also 4", blockers=[5, 6, 7, 8], select=selected),
-        open_(5, "Now 5", blockers=[6]),
-        clos_(6, "Same 6", blockers=[7]),
-        clos_(7, "Lucky 7", [8], select=previous),
-        clos_(8, "Finally 8"),
-    )
-    file_name = NamedTemporaryFile().name
-    save(all_layers(g), file_name)
+def test_print_dot_complex_tree_with_closed(complex_goaltree_file):
     log = []
     io = DummyIO([], log)
-    main(["dot", "-n", file_name], io)
+    main(["dot", "-n", complex_goaltree_file], io)
     verify(
         "\n".join(log),
         GenericDiffReporterFactory().get_first_working(),
@@ -70,22 +64,10 @@ def test_print_dot_complex_tree_with_closed():
     )
 
 
-def test_print_dot_complex_tree_with_progress():
-    g = build_goaltree(
-        open_(1, "Root", [2, 3, 4, 5, 6], [7, 8]),
-        clos_(2, "Closed", blockers=[7]),
-        open_(3, "Simply 3", blockers=[5, 8]),
-        open_(4, "Also 4", blockers=[5, 6, 7, 8], select=selected),
-        open_(5, "Now 5", blockers=[6]),
-        clos_(6, "Same 6", blockers=[7]),
-        clos_(7, "Lucky 7", [8], select=previous),
-        clos_(8, "Finally 8"),
-    )
-    file_name = NamedTemporaryFile().name
-    save(all_layers(g), file_name)
+def test_print_dot_complex_tree_with_progress(complex_goaltree_file):
     log = []
     io = DummyIO([], log)
-    main(["dot", "-p", file_name], io)
+    main(["dot", "-p", complex_goaltree_file], io)
     verify(
         "\n".join(log),
         GenericDiffReporterFactory().get_first_working(),
@@ -93,22 +75,10 @@ def test_print_dot_complex_tree_with_progress():
     )
 
 
-def test_print_dot_complex_tree_only_switchable():
-    g = build_goaltree(
-        open_(1, "Root", [2, 3, 4, 5, 6], [7, 8]),
-        clos_(2, "Closed", blockers=[7]),
-        open_(3, "Simply 3", blockers=[5, 8]),
-        open_(4, "Also 4", blockers=[5, 6, 7, 8], select=selected),
-        open_(5, "Now 5", blockers=[6]),
-        clos_(6, "Same 6", blockers=[7]),
-        clos_(7, "Lucky 7", [8], select=previous),
-        clos_(8, "Finally 8"),
-    )
-    file_name = NamedTemporaryFile().name
-    save(all_layers(g), file_name)
+def test_print_dot_complex_tree_only_switchable(complex_goaltree_file):
     log = []
     io = DummyIO([], log)
-    main(["dot", "-t", file_name], io)
+    main(["dot", "-t", complex_goaltree_file], io)
     verify(
         "\n".join(log),
         GenericDiffReporterFactory().get_first_working(),
