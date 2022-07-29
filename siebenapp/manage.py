@@ -2,6 +2,7 @@ from argparse import ArgumentParser
 from os import path
 from siebenapp.cli import IO, ConsoleIO
 from siebenapp.open_view import ToggleOpenView
+from siebenapp.progress_view import ToggleProgress
 from siebenapp.switchable_view import ToggleSwitchableView
 from siebenapp.system import load, dot_export, save, extract_subtree
 from typing import List, Optional
@@ -11,6 +12,8 @@ def print_dot(args, io: IO):
     tree = load(args.db)
     if args.n:
         tree.accept(ToggleOpenView())
+    if args.p:
+        tree.accept(ToggleProgress())
     if args.t:
         tree.accept(ToggleSwitchableView())
     io.write(dot_export(tree))
@@ -38,6 +41,12 @@ def main(argv: Optional[List[str]] = None, io: Optional[IO] = None):
         required=False,
         action="store_true",
         help="Show closed goals (same as n key in the app)",
+    )
+    parser_dot.add_argument(
+        "-p",
+        required=False,
+        action="store_true",
+        help="Show goal progress (same as p key in the app)",
     )
     parser_dot.add_argument(
         "-t",
