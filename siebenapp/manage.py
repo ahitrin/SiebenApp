@@ -31,29 +31,18 @@ def extract(args, io: IO):
     save(result, args.target_db)
 
 
+def _flag(parser, key, description) -> None:
+    parser.add_argument(key, required=False, action="store_true", help=description)
+
+
 def main(argv: Optional[List[str]] = None, io: Optional[IO] = None):
     parser = ArgumentParser()
     subparsers = parser.add_subparsers(title="commands")
 
     parser_dot = subparsers.add_parser("dot")
-    parser_dot.add_argument(
-        "-n",
-        required=False,
-        action="store_true",
-        help="Show closed goals (same as n key in the app)",
-    )
-    parser_dot.add_argument(
-        "-p",
-        required=False,
-        action="store_true",
-        help="Show goal progress (same as p key in the app)",
-    )
-    parser_dot.add_argument(
-        "-t",
-        required=False,
-        action="store_true",
-        help="Show only switchable goals (same as t key in app)",
-    )
+    _flag(parser_dot, "-n", "Show closed goals (same as n key in the app)")
+    _flag(parser_dot, "-p", "Show goal progress (same as p key in the app)")
+    _flag(parser_dot, "-t", "Show only switchable goals (same as t key in app)")
     parser_dot.add_argument("db")
     parser_dot.set_defaults(func=print_dot)
 
