@@ -2,12 +2,14 @@ from argparse import ArgumentParser
 from html import escape
 from os import path
 from siebenapp.cli import IO, ConsoleIO
-from siebenapp.domain import EdgeType
+from siebenapp.domain import EdgeType, Graph
+from siebenapp.goaltree import Goals, GoalsData, EdgesData, OptionsData
+from siebenapp.layers import get_root, persistent_layers
 from siebenapp.open_view import ToggleOpenView
 from siebenapp.progress_view import ToggleProgress
 from siebenapp.switchable_view import ToggleSwitchableView
-from siebenapp.system import load, save, extract_subtree, split_long
-from typing import List, Optional, Dict
+from siebenapp.system import load, save, split_long
+from typing import List, Optional, Dict, Set
 
 
 def print_dot(args, io: IO):
@@ -112,3 +114,40 @@ def dot_export(goals):
             lines.append(f"{edge[0]} -> {num} [{line_attrs}];")
     body = "\n".join(lines)
     return f"digraph g {{\nnode [shape=box];\n{body}\n}}"
+
+
+def extract_subtree(source_goals: Graph, goal_id: int) -> Graph:
+    root_goaltree: Goals = get_root(source_goals)
+    source_data = root_goaltree.q(keys="name,edge,open")
+    assert goal_id in source_data.keys(), f"Cannot find goal with id {goal_id}"
+    target_goals: Set[int] = set()
+    goals_to_add: Set[int] = {goal_id}
+    goals_data: GoalsData = []
+    edges_data: EdgesData = []
+    options_data: OptionsData = []
+    while goals_to_add:
+        goal = goals_to_add.pop()
+        attrs = source_data[goal]
+        target_goals.add(goal)
+        goals_data.append((goal, attrs["name"], attrs["open"]))
+        edges_data.extend((goal, target_, type_) for target_, type_ in attrs["edge"])
+        goals_to_add.update(
+            set(
+                edge[0]
+                for edge in attrs["edge"]
+                if edge[1] == EdgeType.PARENT and edge[0] not in target_goals
+            )
+        )
+    edges_data = [edge for edge in edges_data if edge[1] in target_goals]
+    remap = {
+        old: idx + 2
+        for idx, old in enumerate(g for g in sorted(target_goals) if g != goal_id)
+    }
+    remap[goal_id] = Goals.ROOT_ID
+    goals_data = [
+        (remap[goal_id], name, is_open) for goal_id, name, is_open in goals_data
+    ]
+    edges_data = [
+        (remap[source], remap[target], e_type) for source, target, e_type in edges_data
+    ]
+    return persistent_layers(Goals.build(goals_data, edges_data, options_data))

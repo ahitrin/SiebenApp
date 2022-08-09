@@ -1,13 +1,13 @@
 # coding: utf-8
 import sqlite3
 from os import path
-from typing import Callable, List, Set
+from typing import Callable, List
 
 from siebenapp.autolink import AutoLink, AutoLinkData
-from siebenapp.domain import EdgeType, Graph
+from siebenapp.domain import Graph
 from siebenapp.enumeration import Enumeration
-from siebenapp.goaltree import Goals, GoalsData, EdgesData, OptionsData
-from siebenapp.layers import persistent_layers, all_layers, get_root
+from siebenapp.goaltree import Goals
+from siebenapp.layers import all_layers, get_root
 from siebenapp.zoom import Zoom, ZoomData
 
 MIGRATIONS = [
@@ -230,40 +230,3 @@ def split_long(line: str) -> str:
         space_position = line.find(" ", margin)
     parts.append(line)
     return "\n".join(parts)
-
-
-def extract_subtree(source_goals: Graph, goal_id: int) -> Graph:
-    root_goaltree: Goals = get_root(source_goals)
-    source_data = root_goaltree.q(keys="name,edge,open")
-    assert goal_id in source_data.keys(), f"Cannot find goal with id {goal_id}"
-    target_goals: Set[int] = set()
-    goals_to_add: Set[int] = {goal_id}
-    goals_data: GoalsData = []
-    edges_data: EdgesData = []
-    options_data: OptionsData = []
-    while goals_to_add:
-        goal = goals_to_add.pop()
-        attrs = source_data[goal]
-        target_goals.add(goal)
-        goals_data.append((goal, attrs["name"], attrs["open"]))
-        edges_data.extend((goal, target_, type_) for target_, type_ in attrs["edge"])
-        goals_to_add.update(
-            set(
-                edge[0]
-                for edge in attrs["edge"]
-                if edge[1] == EdgeType.PARENT and edge[0] not in target_goals
-            )
-        )
-    edges_data = [edge for edge in edges_data if edge[1] in target_goals]
-    remap = {
-        old: idx + 2
-        for idx, old in enumerate(g for g in sorted(target_goals) if g != goal_id)
-    }
-    remap[goal_id] = Goals.ROOT_ID
-    goals_data = [
-        (remap[goal_id], name, is_open) for goal_id, name, is_open in goals_data
-    ]
-    edges_data = [
-        (remap[source], remap[target], e_type) for source, target, e_type in edges_data
-    ]
-    return persistent_layers(Goals.build(goals_data, edges_data, options_data))
