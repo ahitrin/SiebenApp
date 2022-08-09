@@ -7,7 +7,7 @@ from approvaltests.reporters import GenericDiffReporterFactory  # type: ignore
 from siebenapp.domain import Select, EdgeType
 from siebenapp.enumeration import Enumeration
 from siebenapp.layers import persistent_layers, all_layers
-from siebenapp.system import split_long, dot_export, extract_subtree
+from siebenapp.system import split_long, extract_subtree
 from siebenapp.tests.dsl import build_goaltree, open_, clos_, selected, previous
 from siebenapp.zoom import ToggleZoom
 
@@ -29,27 +29,6 @@ from siebenapp.zoom import ToggleZoom
 )
 def test_split_long_labels(source, result):
     assert split_long(source) == result
-
-
-def test_dot_export():
-    goals = build_goaltree(
-        open_(1, "Root", [2, 3, 4, 5], blockers=[6]),
-        clos_(
-            2,
-            "This is closed goal with no children or blockers. "
-            "It also has a long name that must be compacted",
-        ),
-        open_(3, 'I have some "special" symbols', [6, 7], select=selected),
-        clos_(4, ""),
-        open_(5, "Many blockerz", blockers=[2, 4, 6, 7]),
-        clos_(6, "!@#$%^&*()\\/,.?"),
-        open_(7, ";:[{}]<>", select=previous),
-    )
-    verify(
-        dot_export(goals),
-        GenericDiffReporterFactory().get_first_working(),
-        get_default_namer(".dot"),
-    )
 
 
 @pytest.fixture()

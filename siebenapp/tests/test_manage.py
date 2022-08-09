@@ -7,7 +7,7 @@ from approvaltests.reporters import GenericDiffReporterFactory  # type: ignore
 from approvaltests.reporters.generic_diff_reporter import GenericDiffReporter  # type: ignore
 
 from siebenapp.layers import all_layers
-from siebenapp.manage import main
+from siebenapp.manage import main, dot_export
 from siebenapp.system import save
 from siebenapp.tests.dsl import build_goaltree, open_, clos_, selected, previous
 from siebenapp.tests.test_cli import DummyIO
@@ -76,6 +76,27 @@ def test_print_dot_complex_tree_only_switchable(complex_goaltree_file):
     main(["dot", "-t", complex_goaltree_file], io)
     verify(
         "\n".join(io.log),
+        GenericDiffReporterFactory().get_first_working(),
+        get_default_namer(".dot"),
+    )
+
+
+def test_dot_export():
+    goals = build_goaltree(
+        open_(1, "Root", [2, 3, 4, 5], blockers=[6]),
+        clos_(
+            2,
+            "This is closed goal with no children or blockers. "
+            "It also has a long name that must be compacted",
+        ),
+        open_(3, 'I have some "special" symbols', [6, 7], select=selected),
+        clos_(4, ""),
+        open_(5, "Many blockerz", blockers=[2, 4, 6, 7]),
+        clos_(6, "!@#$%^&*()\\/,.?"),
+        open_(7, ";:[{}]<>", select=previous),
+    )
+    verify(
+        dot_export(goals),
         GenericDiffReporterFactory().get_first_working(),
         get_default_namer(".dot"),
     )

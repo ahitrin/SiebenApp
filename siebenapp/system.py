@@ -1,8 +1,7 @@
 # coding: utf-8
 import sqlite3
-from html import escape
 from os import path
-from typing import Callable, List, Dict, Set
+from typing import Callable, List, Set
 
 from siebenapp.autolink import AutoLink, AutoLinkData
 from siebenapp.domain import EdgeType, Graph
@@ -231,40 +230,6 @@ def split_long(line: str) -> str:
         space_position = line.find(" ", margin)
     parts.append(line)
     return "\n".join(parts)
-
-
-def _format_name(num: int, goal: Dict[str, str]) -> str:
-    goal_name = escape(goal["name"])
-    label = f'"{num}: {goal_name}"' if num >= 0 else f'"{goal_name}"'
-    return split_long(label)
-
-
-def dot_export(goals):
-    data = goals.q(keys="open,name,edge,switchable")
-    lines = []
-    for num in sorted(data.keys()):
-        goal = data[num]
-        attributes = {
-            "label": _format_name(num, goal),
-            "color": "red" if goal["open"] else "green",
-        }
-        if goal["switchable"] and goal["open"]:
-            attributes["style"] = "bold"
-        attributes_str = ", ".join(
-            f"{k}={attributes[k]}"
-            for k in ["label", "color", "style", "fillcolor"]
-            if k in attributes and attributes[k]
-        )
-        lines.append(f"{num} [{attributes_str}];")
-    for num in sorted(data.keys()):
-        for edge in data[num]["edge"]:
-            color = "black" if data[edge[0]]["open"] else "gray"
-            line_attrs = f"color={color}"
-            if edge[1] == EdgeType.BLOCKER:
-                line_attrs += ", style=dashed"
-            lines.append(f"{edge[0]} -> {num} [{line_attrs}];")
-    body = "\n".join(lines)
-    return f"digraph g {{\nnode [shape=box];\n{body}\n}}"
 
 
 def extract_subtree(source_goals: Graph, goal_id: int) -> Graph:
