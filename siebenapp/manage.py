@@ -9,7 +9,7 @@ from siebenapp.open_view import ToggleOpenView
 from siebenapp.progress_view import ToggleProgress
 from siebenapp.switchable_view import ToggleSwitchableView
 from siebenapp.system import load, save, split_long
-from typing import List, Optional, Dict, Set
+from typing import List, Optional, Dict, Set, Any
 
 
 def print_dot(args, io: IO):
@@ -135,7 +135,20 @@ def dot_export(goals):
 
 
 def markdown_export(goals):
-    return ""
+    data = goals.q(keys="open,name,edge,switchable")
+    output: List[str] = []
+    for k, v in data.items():
+        output.append(_format_md_row(k, v))
+    return "\n".join(output)
+
+
+def _format_md_row(goal_id: int, goal_attrs: Dict[str, Any]) -> str:
+    open_status = " " if goal_attrs["open"] else "x"
+    blockers: List[str] = [
+        f"**{e[0]}**" for e in goal_attrs["edge"] if e[1] == EdgeType.BLOCKER
+    ]
+    blocked_status = "" if not blockers else f" (blocked by {', '.join(blockers)})"
+    return f"* [{open_status}] **{goal_id}** {goal_attrs['name']}{blocked_status}"
 
 
 def extract_subtree(source_goals: Graph, goal_id: int) -> Graph:
