@@ -126,6 +126,36 @@ def test_print_md_complex_tree(complex_goaltree_file):
     )
 
 
+def test_print_md_complex_tree_with_closed(complex_goaltree_file):
+    io = DummyIO()
+    main(["md", "-n", complex_goaltree_file], io)
+    verify(
+        "\n".join(io.log),
+        GenericDiffReporterFactory().get_first_working(),
+        get_default_namer(".md"),
+    )
+
+
+def test_print_md_complex_tree_with_progress(complex_goaltree_file):
+    io = DummyIO()
+    main(["md", "-p", complex_goaltree_file], io)
+    verify(
+        "\n".join(io.log),
+        GenericDiffReporterFactory().get_first_working(),
+        get_default_namer(".md"),
+    )
+
+
+def test_print_md_complex_tree_only_switchable(complex_goaltree_file):
+    io = DummyIO()
+    main(["md", "-t", complex_goaltree_file], io)
+    verify(
+        "\n".join(io.log),
+        GenericDiffReporterFactory().get_first_working(),
+        get_default_namer(".md"),
+    )
+
+
 @pytest.fixture()
 def extract_source():
     # Legend: goals marked with 'NX' must not be extracted
