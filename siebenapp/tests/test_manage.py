@@ -37,7 +37,10 @@ def complex_goaltree_file():
         open_(5, "Now 5", blockers=[6]),
         clos_(6, "Same 6", blockers=[7]),
         clos_(7, "Lucky 7", [8], select=previous),
-        clos_(8, "Finally 8"),
+        clos_(8, "Finally 8", [9]),
+        clos_(9, "Nested 9", [10]),
+        clos_(10, "More nested 10", [11]),
+        clos_(11, "Even more nested 11"),
     )
     file_name = NamedTemporaryFile().name
     save(all_layers(g), file_name)

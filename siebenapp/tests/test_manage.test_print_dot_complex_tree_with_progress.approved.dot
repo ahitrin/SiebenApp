@@ -4,7 +4,7 @@ node [shape=box];
 2 [label="2: [0/1] Simply 3", color=red];
 3 [label="3: [0/1] Also 4", color=red];
 4 [label="4: [0/1] Now 5", color=red, style=bold];
-5 [label="5: [2/2] Lucky 7", color=green];
+5 [label="5: [5/5] Lucky 7", color=green];
 2 -> 1 [color=black];
 3 -> 1 [color=black];
 4 -> 1 [color=black];
