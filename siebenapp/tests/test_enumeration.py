@@ -2,6 +2,7 @@ import pytest
 
 from siebenapp.domain import EdgeType, Add, Select
 from siebenapp.enumeration import Enumeration, BidirectionalIndex
+from siebenapp.goaltree import Goals
 from siebenapp.layers import all_layers
 from siebenapp.switchable_view import ToggleSwitchableView, SwitchableView
 from siebenapp.tests.dsl import build_goaltree, open_, previous, selected
@@ -46,6 +47,7 @@ def test_simple_enumeration_is_not_changed():
         2: {"name": "b", "edge": [(3, EdgeType.BLOCKER)]},
         3: {"name": "c", "edge": []},
     }
+    assert e.settings("root") == Goals.ROOT_ID
 
 
 def test_apply_mapping_for_the_10th_element(goal_chain_10):
@@ -62,6 +64,7 @@ def test_apply_mapping_for_the_10th_element(goal_chain_10):
         9: {"name": "i", "edge": [(0, EdgeType.PARENT)]},
         0: {"name": "j", "edge": []},
     }
+    assert e.settings("root") == Goals.ROOT_ID
 
 
 def test_apply_mapping_for_the_11th_element(goal_chain_11):
@@ -79,6 +82,7 @@ def test_apply_mapping_for_the_11th_element(goal_chain_11):
         10: {"name": "j", "edge": [(21, EdgeType.PARENT)]},
         21: {"name": "k", "edge": []},
     }
+    assert e.settings("root") == 11
 
 
 def test_use_mapping_in_selection(goal_chain_10):

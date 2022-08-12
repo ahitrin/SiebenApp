@@ -44,6 +44,12 @@ class Enumeration(Graph):
         goals = self.goaltree.q(keys)
         return goals, BidirectionalIndex(goals)
 
+    def settings(self, key: str) -> Any:
+        if key == "root":
+            goals, index = self._id_mapping()
+            return index.forward(self.goaltree.settings("root"))
+        return self.goaltree.settings(key)
+
     def q(self, keys: str = "name") -> Dict[int, Any]:
         result: Dict[int, Any] = dict()
         goals, index = self._id_mapping(keys)

@@ -2,6 +2,7 @@ from _pytest.fixtures import fixture
 
 from siebenapp.domain import EdgeType, Select, HoldSelect
 from siebenapp.filter_view import FilterBy, FilterView
+from siebenapp.goaltree import Goals
 from siebenapp.tests.dsl import build_goaltree, open_, selected
 from siebenapp.zoom import Zoom, ToggleZoom
 
@@ -37,6 +38,7 @@ def test_empty_string_means_no_filter(goaltree):
         2: {"name": "Beta", "edge": [(3, EdgeType.PARENT)], "select": None},
         3: {"name": "Gamma", "edge": [], "select": None},
     }
+    assert goaltree.settings("root") == Goals.ROOT_ID
 
 
 def test_filter_by_substring(goaltree):
@@ -57,6 +59,7 @@ def test_filter_by_substring(goaltree):
             "switchable": False,
         },
     }
+    assert goaltree.settings("root") == 1
 
 
 def test_selected_goal_must_not_be_filtered_out(goaltree):
@@ -70,6 +73,7 @@ def test_selected_goal_must_not_be_filtered_out(goaltree):
         2: {"name": "Beta", "edge": [(3, EdgeType.PARENT)], "select": None},
         3: {"name": "Gamma", "edge": [], "select": "select"},
     }
+    assert goaltree.settings("root") == -2
 
 
 def test_previously_selected_goal_must_not_be_filtered_out(goaltree):
@@ -83,6 +87,7 @@ def test_previously_selected_goal_must_not_be_filtered_out(goaltree):
         },
         3: {"name": "Gamma", "edge": [], "select": "select"},
     }
+    assert goaltree.settings("root") == 1
 
 
 def test_zoomed_parent_goal_must_not_be_filtered_out(zoomed_goaltree):
@@ -101,6 +106,7 @@ def test_zoomed_parent_goal_must_not_be_filtered_out(zoomed_goaltree):
         2: {"name": "Beta", "edge": [(3, EdgeType.PARENT)], "select": "select"},
         3: {"name": "Gamma", "edge": [], "select": None},
     }
+    assert zoomed_goaltree.settings("root") == -1
 
 
 def test_empty_filter_string_means_resetting(goaltree):

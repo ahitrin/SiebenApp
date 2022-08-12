@@ -85,6 +85,11 @@ class Zoom(Graph):
             last_zoom = self.zoom_root.pop(-1)
             self.events().append(("unzoom", last_zoom))
 
+    def settings(self, key: str) -> Any:
+        if key == "root" and self.zoom_root[-1] != Goals.ROOT_ID:
+            return -1
+        return self.goaltree.settings(key)
+
     def selections(self) -> Set[int]:
         ids = self.goaltree.selections()
         if len(self.zoom_root) > 1 and Goals.ROOT_ID in ids:

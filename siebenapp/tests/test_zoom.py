@@ -24,6 +24,7 @@ def test_single_goal_could_not_be_zoomed():
     assert goals.q() == {1: {"name": "Root"}}
     goals.accept(ToggleZoom())
     assert goals.q() == {1: {"name": "Root"}}
+    assert goals.settings("root") == 1
 
 
 def test_skip_intermediate_goal_during_zoom():
@@ -39,6 +40,7 @@ def test_skip_intermediate_goal_during_zoom():
         -1: {"name": "Root", "edge": [(3, EdgeType.BLOCKER)]},
         3: {"name": "Zoomed", "edge": []},
     }
+    assert goals.settings("root") == -1
 
 
 def test_hide_neighbour_goals_during_zoom():
