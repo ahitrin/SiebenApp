@@ -47,11 +47,11 @@ def main(argv: Optional[List[str]] = None, io: Optional[IO] = None):
     _flag(parser_dot, "-n", "Show closed goals (same as n key in the app)")
     _flag(parser_dot, "-p", "Show goal progress (same as p key in the app)")
     _flag(parser_dot, "-t", "Show only switchable goals (same as t key in app)")
-    parser_dot.add_argument("db")
+    parser_dot.add_argument("db", help="An existing file with goaltree.")
     parser_dot.set_defaults(func=print_dot)
 
     parser_migrate = subparsers.add_parser("migrate")
-    parser_migrate.add_argument("db")
+    parser_migrate.add_argument("db", help="An existing file with goaltree.")
     parser_migrate.set_defaults(func=migrate)
 
     parser_extract = subparsers.add_parser("extract")
