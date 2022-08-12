@@ -105,6 +105,17 @@ def test_dot_export():
     )
 
 
+def test_print_md_empty_file():
+    file_name = NamedTemporaryFile().name
+    io = DummyIO()
+    main(["md", file_name], io)
+    verify(
+        "\n".join(io.log),
+        GenericDiffReporterFactory().get_first_working(),
+        get_default_namer(".md"),
+    )
+
+
 @pytest.fixture()
 def extract_source():
     # Legend: goals marked with 'NX' must not be extracted

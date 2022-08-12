@@ -23,6 +23,17 @@ def print_dot(args, io: IO):
     io.write(dot_export(tree))
 
 
+def print_md(args, io: IO):
+    tree = load(args.db)
+    if args.n:
+        tree.accept(ToggleOpenView())
+    if args.p:
+        tree.accept(ToggleProgress())
+    if args.t:
+        tree.accept(ToggleSwitchableView())
+    io.write(markdown_export(tree))
+
+
 def migrate(args, io: IO):
     goals = load(args.db)
     save(goals, args.db)
@@ -49,6 +60,13 @@ def main(argv: Optional[List[str]] = None, io: Optional[IO] = None):
     _flag(parser_dot, "-t", "Show only switchable goals (same as t key in app)")
     parser_dot.add_argument("db", help="An existing file with goaltree.")
     parser_dot.set_defaults(func=print_dot)
+
+    parser_dot = subparsers.add_parser("md")
+    _flag(parser_dot, "-n", "Show closed goals (same as n key in the app)")
+    _flag(parser_dot, "-p", "Show goal progress (same as p key in the app)")
+    _flag(parser_dot, "-t", "Show only switchable goals (same as t key in app)")
+    parser_dot.add_argument("db", help="An existing file with goaltree.")
+    parser_dot.set_defaults(func=print_md)
 
     parser_migrate = subparsers.add_parser("migrate")
     parser_migrate.add_argument("db", help="An existing file with goaltree.")
@@ -114,6 +132,10 @@ def dot_export(goals):
             lines.append(f"{edge[0]} -> {num} [{line_attrs}];")
     body = "\n".join(lines)
     return f"digraph g {{\nnode [shape=box];\n{body}\n}}"
+
+
+def markdown_export(goals):
+    return ""
 
 
 def extract_subtree(source_goals: Graph, goal_id: int) -> Graph:
