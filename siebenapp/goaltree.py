@@ -115,17 +115,15 @@ class Goals(Graph):
                 return "prev"
             return None
 
-        keys_list: List[str] = keys.split(",")
         result: Dict[GoalId, Any] = dict()
         for key, name in ((k, n) for k, n in self.goals.items() if n is not None):
-            value = {
+            result[key] = {
                 "edge": sorted([(e.target, e.type) for e in self._forward_edges(key)]),
                 "name": name,
                 "open": key not in self.closed,
                 "select": sel(key),
                 "switchable": self._switchable(key),
             }
-            result[key] = {k: v for k, v in value.items() if k in keys_list}
         return RenderResult(result, {})
 
     def _switchable(self, key: int) -> bool:
