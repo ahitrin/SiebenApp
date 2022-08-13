@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Dict, Any
 
-from siebenapp.domain import Graph, Command, with_key, EdgeType
+from siebenapp.domain import Graph, Command, with_key, EdgeType, RenderResult
 
 
 @dataclass(frozen=True)
@@ -35,7 +35,8 @@ class FilterView(Graph):
     @with_key("name")
     def q(self, keys: str = "name") -> Dict[int, Any]:
         unfiltered = self.goaltree.q(keys)
-        return self._filter(unfiltered, keys) if self.pattern else unfiltered
+        filtered = self._filter(unfiltered, keys) if self.pattern else unfiltered
+        return RenderResult(filtered, {}).slice(keys)
 
     def _filter(self, unfiltered, keys):
         accepted_nodes = [

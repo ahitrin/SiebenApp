@@ -1,7 +1,7 @@
 import math
 from typing import List, Dict, Tuple, Any, Iterable
 
-from siebenapp.domain import Graph, Select
+from siebenapp.domain import Graph, Select, GoalId, RenderResult
 
 
 class BidirectionalIndex:
@@ -51,7 +51,7 @@ class Enumeration(Graph):
         return self.goaltree.settings(key)
 
     def q(self, keys: str = "name") -> Dict[int, Any]:
-        result: Dict[int, Any] = dict()
+        result: Dict[GoalId, Any] = dict()
         goals, index = self._id_mapping(keys)
         for old_id, val in goals.items():
             new_id = index.forward(old_id)
@@ -60,7 +60,7 @@ class Enumeration(Graph):
                 result[new_id]["edge"] = [
                     (index.forward(edge[0]), edge[1]) for edge in val["edge"]
                 ]
-        return result
+        return RenderResult(result, {}).slice(keys)
 
     def accept_Select(self, command: Select):
         goals, index = self._id_mapping()

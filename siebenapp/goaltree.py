@@ -14,6 +14,8 @@ from siebenapp.domain import (
     Select,
     Insert,
     Rename,
+    GoalId,
+    RenderResult,
 )
 
 GoalsData = List[Tuple[int, Optional[str], bool]]
@@ -114,7 +116,7 @@ class Goals(Graph):
             return None
 
         keys_list: List[str] = keys.split(",")
-        result: Dict[int, Any] = dict()
+        result: Dict[GoalId, Any] = dict()
         for key, name in ((k, n) for k, n in self.goals.items() if n is not None):
             value = {
                 "edge": sorted([(e.target, e.type) for e in self._forward_edges(key)]),
@@ -124,7 +126,7 @@ class Goals(Graph):
                 "switchable": self._switchable(key),
             }
             result[key] = {k: v for k, v in value.items() if k in keys_list}
-        return result
+        return RenderResult(result, {}).slice(keys)
 
     def _switchable(self, key: int) -> bool:
         if key in self.closed:

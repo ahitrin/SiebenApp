@@ -8,6 +8,8 @@ from siebenapp.domain import (
     ToggleClose,
     Delete,
     with_key,
+    GoalId,
+    RenderResult,
 )
 from siebenapp.goaltree import Goals
 
@@ -47,7 +49,9 @@ class Zoom(Graph):
         if self.zoom_root == [1]:
             return origin_goals
         visible_goals = self._build_visible_goals(origin_goals)
-        zoomed_goals = {k: v for k, v in origin_goals.items() if k in visible_goals}
+        zoomed_goals: Dict[GoalId, Any] = {
+            k: v for k, v in origin_goals.items() if k in visible_goals
+        }
         zoomed_goals[-1] = origin_goals[1]
         for goal in zoomed_goals:
             zoomed_goals[goal]["edge"] = [
@@ -68,7 +72,7 @@ class Zoom(Graph):
         if "switchable" in keys:
             zoomed_goals[-1]["switchable"] = False
         zoomed_goals[-1]["edge"] = sorted(list(global_root_edges))
-        return zoomed_goals
+        return RenderResult(zoomed_goals, {}).slice(keys)
 
     def accept_ToggleClose(self, command: ToggleClose):
         if self.settings("selection") == self.zoom_root[-1]:

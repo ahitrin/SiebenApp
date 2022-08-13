@@ -12,6 +12,8 @@ from siebenapp.domain import (
     Insert,
     Rename,
     Delete,
+    GoalId,
+    RenderResult,
 )
 from siebenapp.goaltree import Goals
 
@@ -120,7 +122,7 @@ class AutoLink(Graph):
     @with_key("edge")
     def q(self, keys: str = "name") -> Dict[int, Any]:
         goals: Dict[int, Any] = self.goaltree.q(keys)
-        new_goals: Dict[int, Any] = dict(goals)
+        new_goals: Dict[GoalId, Any] = {k: v for k, v in goals.items()}
         for keyword, goal_id in self.keywords.items():
             pseudo_id: int = -(goal_id + 10)
             for real_goal, attrs in goals.items():
@@ -140,7 +142,7 @@ class AutoLink(Graph):
             if "switchable" in keys:
                 pseudo_goal["switchable"] = False
             new_goals[pseudo_id] = pseudo_goal
-        return new_goals
+        return RenderResult(new_goals, {}).slice(keys)
 
     @staticmethod
     def export(goals: "AutoLink") -> AutoLinkData:

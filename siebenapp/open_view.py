@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Dict, Any, Set, List, Tuple
 
-from siebenapp.domain import Command, Graph, with_key, EdgeType
+from siebenapp.domain import Command, Graph, with_key, EdgeType, RenderResult, GoalId
 
 
 @dataclass(frozen=True)
@@ -61,4 +61,5 @@ class OpenView(Graph):
                 root_goal: int = root_goals.pop()
                 for missing_goal in not_linked:
                     result[root_goal]["edge"].append((missing_goal, EdgeType.BLOCKER))
-        return result
+        repacked: Dict[GoalId, Any] = {k: v for k, v in result.items()}
+        return RenderResult(repacked, {}).slice(keys)

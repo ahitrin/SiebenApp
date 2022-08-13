@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Dict, Any, Tuple, List
 
-from siebenapp.domain import Graph, Command, with_key, EdgeType
+from siebenapp.domain import Graph, Command, with_key, EdgeType, GoalId, RenderResult
 
 
 @dataclass(frozen=True)
@@ -56,4 +56,5 @@ class ProgressView(Graph):
             old_name = attr["name"]
             attr["name"] = f"[{progress[0]}/{progress[1]}] {old_name}"
 
-        return result
+        repacked: Dict[GoalId, Any] = {k: v for k, v in result.items()}
+        return RenderResult(repacked, {}).slice(keys)
