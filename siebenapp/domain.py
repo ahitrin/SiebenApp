@@ -31,6 +31,14 @@ class RenderResult:
     graph: Dict[GoalId, Any]
     edge_opts: Dict[str, Tuple[int, int, int]]
 
+    def slice(self, keys: str):
+        """Returns a subset of goal attributes, for the given keys only"""
+        allowed_keys = set(keys.split(","))
+        return {
+            goal_id: {k: v for k, v in attrs.items() if k in allowed_keys}
+            for goal_id, attrs in self.graph.items()
+        }
+
     def goals(self):
         return [
             (goal_id, attrs)
