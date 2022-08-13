@@ -45,7 +45,7 @@ class Zoom(Graph):
 
     @with_key("edge")
     def q(self, keys: str = "name") -> RenderResult:
-        origin_goals = self.goaltree.q(keys).slice(keys)
+        origin_goals = self.goaltree.q(keys).graph
         if self.zoom_root == [1]:
             return RenderResult(origin_goals, {})
         visible_goals = self._build_visible_goals(origin_goals)
@@ -69,8 +69,7 @@ class Zoom(Graph):
                 attrs["edge"] = [e for e in attrs["edge"] if e[0] in visible_goals]
                 zoomed_goals[goal_id] = attrs
                 global_root_edges.add((goal_id, EdgeType.BLOCKER))
-        if "switchable" in keys:
-            zoomed_goals[-1]["switchable"] = False
+        zoomed_goals[-1]["switchable"] = False
         zoomed_goals[-1]["edge"] = sorted(list(global_root_edges))
         return RenderResult(zoomed_goals, {})
 
@@ -101,10 +100,10 @@ class Zoom(Graph):
             ids.add(-1)
         return ids
 
-    def _build_visible_goals(self, edges: Dict[int, Any]) -> Set[int]:
+    def _build_visible_goals(self, edges: Dict[GoalId, Any]) -> Set[int]:
         current_zoom_root = self.zoom_root[-1]
         if current_zoom_root == Goals.ROOT_ID:
-            return set(edges.keys())
+            return set(e for e in edges.keys() if isinstance(e, int))
         visible_goals = {current_zoom_root}
         edges_to_visit = set(edges[current_zoom_root]["edge"])
         while edges_to_visit:
