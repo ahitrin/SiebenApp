@@ -107,7 +107,7 @@ class Goals(Graph):
         self.previous_selection = self.selection
         self._events.append(("hold_select", self.selection))
 
-    def q(self, keys: str = "name") -> Dict[int, Any]:
+    def q(self, keys: str = "name") -> RenderResult:
         def sel(x: int) -> Optional[str]:
             if x == self.selection:
                 return "select"
@@ -126,7 +126,7 @@ class Goals(Graph):
                 "switchable": self._switchable(key),
             }
             result[key] = {k: v for k, v in value.items() if k in keys_list}
-        return RenderResult(result, {}).slice(keys)
+        return RenderResult(result, {})
 
     def _switchable(self, key: int) -> bool:
         if key in self.closed:

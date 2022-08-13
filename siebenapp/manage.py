@@ -107,7 +107,9 @@ def _format_name(num: int, goal: Dict[str, str]) -> str:
 
 
 def dot_export(goals):
-    data = goals.q(keys="open,name,edge,switchable")
+    data = goals.q(keys="open,name,edge,switchable").slice(
+        keys="open,name,edge,switchable"
+    )
     lines = []
     for num in sorted(data.keys()):
         goal = data[num]
@@ -135,7 +137,9 @@ def dot_export(goals):
 
 
 def markdown_export(goals):
-    data = goals.q(keys="open,name,edge,switchable")
+    data = goals.q(keys="open,name,edge,switchable").slice(
+        keys="open,name,edge,switchable"
+    )
     output: List[str] = []
     for k, v in data.items():
         output.append(_format_md_row(k, v))
@@ -153,7 +157,7 @@ def _format_md_row(goal_id: int, goal_attrs: Dict[str, Any]) -> str:
 
 def extract_subtree(source_goals: Graph, goal_id: int) -> Graph:
     root_goaltree: Goals = get_root(source_goals)
-    source_data = root_goaltree.q(keys="name,edge,open")
+    source_data = root_goaltree.q(keys="name,edge,open").slice(keys="name,edge,open")
     assert goal_id in source_data.keys(), f"Cannot find goal with id {goal_id}"
     target_goals: Set[int] = set()
     goals_to_add: Set[int] = {goal_id}

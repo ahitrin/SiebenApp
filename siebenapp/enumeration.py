@@ -41,7 +41,7 @@ class Enumeration(Graph):
     def _id_mapping(
         self, keys: str = "name"
     ) -> Tuple[Dict[int, Any], BidirectionalIndex]:
-        goals = self.goaltree.q(keys)
+        goals = self.goaltree.q(keys).slice(keys)
         return goals, BidirectionalIndex(goals)
 
     def settings(self, key: str) -> Any:
@@ -50,7 +50,7 @@ class Enumeration(Graph):
             return index.forward(self.goaltree.settings("root"))
         return self.goaltree.settings(key)
 
-    def q(self, keys: str = "name") -> Dict[int, Any]:
+    def q(self, keys: str = "name") -> RenderResult:
         result: Dict[GoalId, Any] = dict()
         goals, index = self._id_mapping(keys)
         for old_id, val in goals.items():
@@ -60,7 +60,7 @@ class Enumeration(Graph):
                 result[new_id]["edge"] = [
                     (index.forward(edge[0]), edge[1]) for edge in val["edge"]
                 ]
-        return RenderResult(result, {}).slice(keys)
+        return RenderResult(result, {})
 
     def accept_Select(self, command: Select):
         goals, index = self._id_mapping()

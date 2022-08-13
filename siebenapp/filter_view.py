@@ -23,7 +23,7 @@ class FilterView(Graph):
         if key == "filter_pattern":
             return self.pattern
         if key == "root" and self.pattern:
-            goals = self.q("edge")
+            goals = self.q("edge").slice("edge")
             old_root = self.goaltree.settings("root")
             return old_root if old_root in goals else -2
         return self.goaltree.settings(key)
@@ -33,10 +33,10 @@ class FilterView(Graph):
         self.pattern = origin.settings("filter_pattern")
 
     @with_key("name")
-    def q(self, keys: str = "name") -> Dict[int, Any]:
-        unfiltered = self.goaltree.q(keys)
+    def q(self, keys: str = "name") -> RenderResult:
+        unfiltered = self.goaltree.q(keys).slice(keys)
         filtered = self._filter(unfiltered, keys) if self.pattern else unfiltered
-        return RenderResult(filtered, {}).slice(keys)
+        return RenderResult(filtered, {})
 
     def _filter(self, unfiltered, keys):
         accepted_nodes = [

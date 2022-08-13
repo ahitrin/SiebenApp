@@ -35,7 +35,7 @@ class Zoom(Graph):
             self.events().append(("unzoom", last_zoom))
         elif selection not in self.zoom_root:
             # try to zoom
-            origin_goals = self.goaltree.q("edge")
+            origin_goals = self.goaltree.q("edge").slice("edge")
             visible_goals = self._build_visible_goals(origin_goals)
             if selection in visible_goals:
                 self.zoom_root.append(selection)
@@ -44,10 +44,10 @@ class Zoom(Graph):
                 self.error("Zooming outside of current zoom root is not allowed!")
 
     @with_key("edge")
-    def q(self, keys: str = "name") -> Dict[int, Any]:
-        origin_goals = self.goaltree.q(keys)
+    def q(self, keys: str = "name") -> RenderResult:
+        origin_goals = self.goaltree.q(keys).slice(keys)
         if self.zoom_root == [1]:
-            return origin_goals
+            return RenderResult(origin_goals, {})
         visible_goals = self._build_visible_goals(origin_goals)
         zoomed_goals: Dict[GoalId, Any] = {
             k: v for k, v in origin_goals.items() if k in visible_goals
@@ -72,7 +72,7 @@ class Zoom(Graph):
         if "switchable" in keys:
             zoomed_goals[-1]["switchable"] = False
         zoomed_goals[-1]["edge"] = sorted(list(global_root_edges))
-        return RenderResult(zoomed_goals, {}).slice(keys)
+        return RenderResult(zoomed_goals, {})
 
     def accept_ToggleClose(self, command: ToggleClose):
         if self.settings("selection") == self.zoom_root[-1]:
@@ -81,9 +81,9 @@ class Zoom(Graph):
         self.goaltree.accept(ToggleClose(self.zoom_root[-1]))
 
     def accept_Delete(self, command: Delete) -> None:
-        ids_before: Set[int] = set(self.goaltree.q().keys())
+        ids_before: Set[int] = set(self.goaltree.q().slice("name").keys())
         self.goaltree.accept(command)
-        ids_after: Set[int] = set(self.goaltree.q().keys())
+        ids_after: Set[int] = set(self.goaltree.q().slice("name").keys())
         removed = ids_before.difference(ids_after)
         while self.zoom_root and self.zoom_root[-1] in removed:
             last_zoom = self.zoom_root.pop(-1)

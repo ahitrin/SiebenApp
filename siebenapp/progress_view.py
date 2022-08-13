@@ -29,11 +29,11 @@ class ProgressView(Graph):
     @with_key("name")
     @with_key("open")
     @with_key("edge")
-    def q(self, keys: str = "name") -> Dict[int, Any]:
+    def q(self, keys: str = "name") -> RenderResult:
         if not self.show_progress:
             return self.goaltree.q(keys)
         progress_cache: Dict[int, Tuple[int, int]] = {}
-        result = self.goaltree.q(keys)
+        result = self.goaltree.q(keys).slice(keys)
         queue: List[int] = list(result.keys())
         while queue:
             goal_id = queue.pop(0)
@@ -57,4 +57,4 @@ class ProgressView(Graph):
             attr["name"] = f"[{progress[0]}/{progress[1]}] {old_name}"
 
         repacked: Dict[GoalId, Any] = {k: v for k, v in result.items()}
-        return RenderResult(repacked, {}).slice(keys)
+        return RenderResult(repacked, {})

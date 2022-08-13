@@ -101,7 +101,7 @@ class Graph:
             return self.goaltree.events()
         raise NotImplementedError
 
-    def q(self, keys: str = "name") -> Dict[int, Any]:
+    def q(self, keys: str = "name") -> RenderResult:
         """Run search query against content"""
         raise NotImplementedError
 
@@ -126,7 +126,7 @@ def with_key(key):
                 keys = ",".join([keys, key])
             result = q(self, keys)
             if no_key:
-                for v in result.values():
+                for v in result.graph.values():
                     v.pop(key, None)
             return result
 

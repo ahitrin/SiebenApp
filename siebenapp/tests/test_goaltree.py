@@ -28,27 +28,27 @@ class GoalsTest(TestCase):
         return build_goaltree(*goal_prototypes, message_fn=self._register_message)
 
     def test_there_is_one_goal_at_start(self):
-        assert self.goals.q(keys="name,switchable") == {
+        assert self.goals.q(keys="name,switchable").slice(keys="name,switchable") == {
             1: {"name": "Root", "switchable": True}
         }
 
     def test_new_goal_moves_to_top(self):
         self.goals.accept(Add("A"))
-        assert self.goals.q(keys="name,switchable") == {
+        assert self.goals.q(keys="name,switchable").slice(keys="name,switchable") == {
             1: {"name": "Root", "switchable": False},
             2: {"name": "A", "switchable": True},
         }
 
     def test_added_goal_has_strong_link_with_parent(self):
         self.goals.accept(Add("New"))
-        assert self.goals.q(keys="name,edge") == {
+        assert self.goals.q(keys="name,edge").slice(keys="name,edge") == {
             1: {"name": "Root", "edge": [(2, EdgeType.PARENT)]},
             2: {"name": "New", "edge": []},
         }
 
     def test_two_new_goals_move_to_top(self):
         self.goals.accept_all(Add("A"), Add("B"))
-        assert self.goals.q(keys="name,switchable") == {
+        assert self.goals.q(keys="name,switchable").slice(keys="name,switchable") == {
             1: {"name": "Root", "switchable": False},
             2: {"name": "A", "switchable": True},
             3: {"name": "B", "switchable": True},
@@ -56,7 +56,7 @@ class GoalsTest(TestCase):
 
     def test_two_goals_in_a_chain(self):
         self.goals.accept_all(Add("A"), Add("AA", 2))
-        assert self.goals.q(keys="name,switchable") == {
+        assert self.goals.q(keys="name,switchable").slice(keys="name,switchable") == {
             1: {"name": "Root", "switchable": False},
             2: {"name": "A", "switchable": False},
             3: {"name": "AA", "switchable": True},
@@ -64,16 +64,20 @@ class GoalsTest(TestCase):
 
     def test_rename_goal(self):
         self.goals.accept_all(Add("Boom"), Select(2), Rename("A"))
-        assert self.goals.q() == {1: {"name": "Root"}, 2: {"name": "A"}}
+        assert self.goals.q().slice("name") == {1: {"name": "Root"}, 2: {"name": "A"}}
 
     def test_insert_goal_in_the_middle(self):
         self.goals.accept_all(Add("B"), HoldSelect(), Select(2))
-        assert self.goals.q(keys="name,edge,switchable") == {
+        assert self.goals.q(keys="name,edge,switchable").slice(
+            keys="name,edge,switchable"
+        ) == {
             1: {"name": "Root", "edge": [(2, EdgeType.PARENT)], "switchable": False},
             2: {"name": "B", "edge": [], "switchable": True},
         }
         self.goals.accept(Insert("A"))
-        assert self.goals.q(keys="name,edge,switchable") == {
+        assert self.goals.q(keys="name,edge,switchable").slice(
+            keys="name,edge,switchable"
+        ) == {
             1: {"name": "Root", "edge": [(3, EdgeType.PARENT)], "switchable": False},
             2: {"name": "B", "edge": [], "switchable": True},
             3: {"name": "A", "edge": [(2, EdgeType.PARENT)], "switchable": False},
@@ -86,7 +90,9 @@ class GoalsTest(TestCase):
             open_(3, "B", select=selected),
         )
         self.goals.accept(Insert("Wow"))
-        assert self.goals.q(keys="name,edge,switchable") == {
+        assert self.goals.q(keys="name,edge,switchable").slice(
+            keys="name,edge,switchable"
+        ) == {
             1: {
                 "name": "Root",
                 "edge": [(2, EdgeType.PARENT), (3, EdgeType.PARENT)],
@@ -105,24 +111,29 @@ class GoalsTest(TestCase):
         )
         self.goals.accept(Insert("Intermediate?"))
         # No, it's not intermediate
-        assert self.goals.q("name,edge") == {
+        assert self.goals.q("name,edge").slice("name,edge") == {
             1: {"name": "Root", "edge": [(2, EdgeType.PARENT)]},
             2: {"name": "Selected", "edge": [(3, EdgeType.BLOCKER)]},
             3: {"name": "Intermediate?", "edge": []},
         }
 
     def test_close_single_goal(self):
-        assert self.goals.q(keys="name,open") == {1: {"name": "Root", "open": True}}
-        self.goals.accept(ToggleClose())
-        assert self.goals.q(keys="name,open,switchable") == {
-            1: {"name": "Root", "open": False, "switchable": True}
+        assert self.goals.q(keys="name,open").slice(keys="name,open") == {
+            1: {"name": "Root", "open": True}
         }
+        self.goals.accept(ToggleClose())
+        assert self.goals.q(keys="name,open,switchable").slice(
+            keys="name,open,switchable"
+        ) == {1: {"name": "Root", "open": False, "switchable": True}}
 
     def test_reopen_goal(self):
         self.goals = self.build(open_(1, "Root", [2]), clos_(2, "A", select=selected))
-        assert self.goals.q(keys="open") == {1: {"open": True}, 2: {"open": False}}
+        assert self.goals.q(keys="open").slice(keys="open") == {
+            1: {"open": True},
+            2: {"open": False},
+        }
         self.goals.accept(ToggleClose())
-        assert self.goals.q(keys="open,switchable") == {
+        assert self.goals.q(keys="open,switchable").slice(keys="open,switchable") == {
             1: {"open": True, "switchable": False},
             2: {"open": True, "switchable": True},
         }
@@ -134,19 +145,19 @@ class GoalsTest(TestCase):
             clos_(3, "Ab"),
         )
         self.goals.accept_all(Select(2), ToggleClose())
-        assert self.goals.q(keys="open,switchable") == {
+        assert self.goals.q(keys="open,switchable").slice(keys="open,switchable") == {
             1: {"open": True, "switchable": True},
             2: {"open": False, "switchable": True},
             3: {"open": False, "switchable": False},
         }
         self.goals.accept_all(Select(2), ToggleClose())
-        assert self.goals.q(keys="open,switchable") == {
+        assert self.goals.q(keys="open,switchable").slice(keys="open,switchable") == {
             1: {"open": True, "switchable": False},
             2: {"open": True, "switchable": True},
             3: {"open": False, "switchable": True},
         }
         self.goals.accept_all(Select(2), ToggleClose())
-        assert self.goals.q(keys="open,switchable") == {
+        assert self.goals.q(keys="open,switchable").slice(keys="open,switchable") == {
             1: {"open": True, "switchable": True},
             2: {"open": False, "switchable": True},
             3: {"open": False, "switchable": False},
@@ -156,14 +167,14 @@ class GoalsTest(TestCase):
         self.goals = self.build(
             open_(1, "Root", [2], select=selected), clos_(2, "A", [3]), clos_(3, "B")
         )
-        assert self.goals.q(keys="open,switchable") == {
+        assert self.goals.q(keys="open,switchable").slice(keys="open,switchable") == {
             1: {"open": True, "switchable": True},
             2: {"open": False, "switchable": True},
             3: {"open": False, "switchable": False},
         }
         self.goals.accept_all(Select(3), ToggleClose())
         # nothing should change
-        assert self.goals.q(keys="open,switchable") == {
+        assert self.goals.q(keys="open,switchable").slice(keys="open,switchable") == {
             1: {"open": True, "switchable": True},
             2: {"open": False, "switchable": True},
             3: {"open": False, "switchable": False},
@@ -177,7 +188,7 @@ class GoalsTest(TestCase):
             open_(4, "C"),
         )
         self.goals.accept(ToggleClose())
-        assert self.goals.q(keys="open") == {
+        assert self.goals.q(keys="open").slice(keys="open") == {
             1: {"open": True},
             2: {"open": True},
             3: {"open": True},
@@ -187,7 +198,9 @@ class GoalsTest(TestCase):
     def test_delete_single_goal(self):
         self.goals = self.build(open_(1, "Root", [2]), open_(2, "A", select=selected))
         self.goals.accept(Delete())
-        assert self.goals.q(keys="name,select,switchable") == {
+        assert self.goals.q(keys="name,select,switchable").slice(
+            keys="name,select,switchable"
+        ) == {
             1: {"name": "Root", "select": "select", "switchable": True},
         }
 
@@ -196,7 +209,7 @@ class GoalsTest(TestCase):
             open_(1, "Root", [2, 3]), open_(2, "A", select=selected), open_(3, "B")
         )
         self.goals.accept(Delete())
-        assert self.goals.q(keys="name,switchable") == {
+        assert self.goals.q(keys="name,switchable").slice(keys="name,switchable") == {
             1: {"name": "Root", "switchable": False},
             3: {"name": "B", "switchable": True},
         }
@@ -206,7 +219,7 @@ class GoalsTest(TestCase):
             open_(1, "Root", [2]), open_(2, "A", [3], select=selected), open_(3, "B")
         )
         self.goals.accept(Delete())
-        assert self.goals.q() == {1: {"name": "Root"}}
+        assert self.goals.q().slice("name") == {1: {"name": "Root"}}
 
     def test_relink_goal_chain_with_blockers(self):
         self.goals = self.build(
@@ -215,7 +228,7 @@ class GoalsTest(TestCase):
             open_(3, "B"),
         )
         self.goals.accept(Delete())
-        assert self.goals.q("name,edge") == {
+        assert self.goals.q("name,edge").slice("name,edge") == {
             1: {"name": "Root", "edge": [(3, EdgeType.BLOCKER)]},
             3: {"name": "B", "edge": []},
         }
@@ -227,7 +240,7 @@ class GoalsTest(TestCase):
             open_(3, "Delete me", select=selected),
         )
         self.goals.accept(Delete())
-        assert self.goals.q("name,edge,select") == {
+        assert self.goals.q("name,edge,select").slice("name,edge,select") == {
             1: {"name": "Root", "edge": [(2, EdgeType.PARENT)], "select": None},
             2: {"name": "Parent", "edge": [], "select": "select"},
         }
@@ -238,7 +251,7 @@ class GoalsTest(TestCase):
             open_(2, "A", select=previous),
             open_(3, "B", select=selected),
         )
-        assert self.goals.q(keys="switchable,edge") == {
+        assert self.goals.q(keys="switchable,edge").slice(keys="switchable,edge") == {
             1: {
                 "switchable": False,
                 "edge": [(2, EdgeType.PARENT), (3, EdgeType.PARENT)],
@@ -247,7 +260,7 @@ class GoalsTest(TestCase):
             3: {"switchable": True, "edge": []},
         }
         self.goals.accept(ToggleLink())
-        assert self.goals.q(keys="switchable,edge") == {
+        assert self.goals.q(keys="switchable,edge").slice(keys="switchable,edge") == {
             1: {
                 "switchable": False,
                 "edge": [(2, EdgeType.PARENT), (3, EdgeType.PARENT)],
@@ -263,7 +276,7 @@ class GoalsTest(TestCase):
             open_(3, "B", blockers=[4], select=previous),
             open_(4, "C", select=selected),
         )
-        assert self.goals.q(keys="edge,switchable") == {
+        assert self.goals.q(keys="edge,switchable").slice(keys="edge,switchable") == {
             1: {
                 "edge": [(2, EdgeType.PARENT), (3, EdgeType.PARENT)],
                 "switchable": False,
@@ -275,7 +288,7 @@ class GoalsTest(TestCase):
 
     def test_no_link_to_self_is_allowed(self):
         self.goals.accept(ToggleLink())
-        assert self.goals.q(keys="edge") == {1: {"edge": []}}
+        assert self.goals.q(keys="edge").slice(keys="edge") == {1: {"edge": []}}
 
     def test_no_loops_allowed(self):
         self.goals = self.build(
@@ -285,7 +298,7 @@ class GoalsTest(TestCase):
             open_(4, "more", select=previous),
         )
         self.goals.accept(ToggleLink())
-        assert self.goals.q(keys="edge") == {
+        assert self.goals.q(keys="edge").slice(keys="edge") == {
             1: {"edge": [(2, EdgeType.PARENT)]},
             2: {"edge": [(3, EdgeType.PARENT)]},
             3: {"edge": [(4, EdgeType.PARENT)]},
@@ -300,7 +313,7 @@ class GoalsTest(TestCase):
             open_(4, "Child", select=selected),
         )
         self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
-        assert self.goals.q(keys="edge") == {
+        assert self.goals.q(keys="edge").slice(keys="edge") == {
             1: {"edge": [(2, EdgeType.PARENT), (3, EdgeType.PARENT)]},
             2: {"edge": [(4, EdgeType.BLOCKER)]},
             3: {"edge": [(4, EdgeType.PARENT)]},
@@ -314,7 +327,7 @@ class GoalsTest(TestCase):
             open_(3, "B", blockers=[2], select=previous),
         )
         self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
-        assert self.goals.q("name,edge") == {
+        assert self.goals.q("name,edge").slice("name,edge") == {
             1: {"name": "Root", "edge": [(2, EdgeType.BLOCKER), (3, EdgeType.PARENT)]},
             2: {"name": "A", "edge": []},
             3: {"name": "B", "edge": [(2, EdgeType.PARENT)]},
@@ -327,7 +340,7 @@ class GoalsTest(TestCase):
             open_(3, "B", select=selected),
         )
         self.goals.accept(ToggleLink(edge_type=EdgeType.BLOCKER))
-        assert self.goals.q(keys="edge,switchable") == {
+        assert self.goals.q(keys="edge,switchable").slice(keys="edge,switchable") == {
             1: {
                 "edge": [(2, EdgeType.PARENT), (3, EdgeType.PARENT)],
                 "switchable": False,
@@ -340,17 +353,17 @@ class GoalsTest(TestCase):
         self.goals = self.build(
             open_(1, "Root", [2], select=previous), open_(2, "Top", [], select=selected)
         )
-        assert self.goals.q(keys="name,edge") == {
+        assert self.goals.q(keys="name,edge").slice(keys="name,edge") == {
             1: {"name": "Root", "edge": [(2, EdgeType.PARENT)]},
             2: {"name": "Top", "edge": []},
         }
         self.goals.accept(ToggleLink())
-        assert self.goals.q(keys="name,edge") == {
+        assert self.goals.q(keys="name,edge").slice(keys="name,edge") == {
             1: {"name": "Root", "edge": [(2, EdgeType.BLOCKER)]},
             2: {"name": "Top", "edge": []},
         }
         self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
-        assert self.goals.q(keys="name,edge") == {
+        assert self.goals.q(keys="name,edge").slice(keys="name,edge") == {
             1: {"name": "Root", "edge": [(2, EdgeType.PARENT)]},
             2: {"name": "Top", "edge": []},
         }
@@ -362,28 +375,32 @@ class GoalsTest(TestCase):
             open_(3, "B", blockers=[4]),
             open_(4, "C", select=selected),
         )
-        assert self.goals.q(keys="name,edge") == {
+        assert self.goals.q(keys="name,edge").slice(keys="name,edge") == {
             1: {"name": "Root", "edge": [(2, EdgeType.PARENT), (3, EdgeType.PARENT)]},
             2: {"name": "A", "edge": [(4, EdgeType.PARENT)]},
             3: {"name": "B", "edge": [(4, EdgeType.BLOCKER)]},
             4: {"name": "C", "edge": []},
         }
         self.goals.accept_all(Select(3), Delete())
-        assert self.goals.q(keys="name,edge,switchable") == {
+        assert self.goals.q(keys="name,edge,switchable").slice(
+            keys="name,edge,switchable"
+        ) == {
             1: {"name": "Root", "edge": [(2, EdgeType.PARENT)], "switchable": False},
             2: {"name": "A", "edge": [(4, EdgeType.PARENT)], "switchable": False},
             4: {"name": "C", "edge": [], "switchable": True},
         }
 
     def test_root_goal_is_selected_by_default(self):
-        assert self.goals.q(keys="select") == {1: {"select": "select"}}
+        assert self.goals.q(keys="select").slice(keys="select") == {
+            1: {"select": "select"}
+        }
         self.goals.accept(Add("A"))
-        assert self.goals.q(keys="select") == {
+        assert self.goals.q(keys="select").slice(keys="select") == {
             1: {"select": "select"},
             2: {"select": None},
         }
         self.goals.accept(Add("B"))
-        assert self.goals.q(keys="select") == {
+        assert self.goals.q(keys="select").slice(keys="select") == {
             1: {"select": "select"},
             2: {"select": None},
             3: {"select": None},
@@ -391,12 +408,12 @@ class GoalsTest(TestCase):
 
     def test_new_goal_is_added_to_the_selected_node(self):
         self.goals.accept_all(Add("A"), Select(2))
-        assert self.goals.q(keys="name,select") == {
+        assert self.goals.q(keys="name,select").slice(keys="name,select") == {
             1: {"name": "Root", "select": "prev"},
             2: {"name": "A", "select": "select"},
         }
         self.goals.accept(Add("B"))
-        assert self.goals.q(keys="name,select,edge") == {
+        assert self.goals.q(keys="name,select,edge").slice(keys="name,select,edge") == {
             1: {"name": "Root", "select": "prev", "edge": [(2, EdgeType.PARENT)]},
             2: {"name": "A", "select": "select", "edge": [(3, EdgeType.PARENT)]},
             3: {"name": "B", "select": None, "edge": []},
@@ -410,7 +427,7 @@ class GoalsTest(TestCase):
             open_(4, "C"),
         )
         self.goals.accept(ToggleClose())
-        assert self.goals.q(keys="open,select") == {
+        assert self.goals.q(keys="open,select").slice(keys="open,select") == {
             1: {"open": True, "select": None},
             2: {"open": False, "select": None},
             3: {"open": True, "select": "select"},
@@ -425,7 +442,7 @@ class GoalsTest(TestCase):
             open_(4, "C", select=previous),
         )
         self.goals.accept(ToggleClose())
-        assert self.goals.q(keys="open,select") == {
+        assert self.goals.q(keys="open,select").slice(keys="open,select") == {
             1: {"open": True, "select": None},
             2: {"open": False, "select": None},
             3: {"open": True, "select": None},
@@ -441,7 +458,7 @@ class GoalsTest(TestCase):
             open_(5, "Closing", select=selected),
         )
         self.goals.accept(ToggleClose(3))
-        assert self.goals.q(keys="open,select") == {
+        assert self.goals.q(keys="open,select").slice(keys="open,select") == {
             1: {"open": True, "select": None},
             2: {"open": True, "select": None},
             3: {"open": True, "select": None},
@@ -459,7 +476,7 @@ class GoalsTest(TestCase):
             open_(6, "Must be selected"),
         )
         self.goals.accept(ToggleClose(3))
-        assert self.goals.q(keys="open,select") == {
+        assert self.goals.q(keys="open,select").slice(keys="open,select") == {
             1: {"open": True, "select": None},
             2: {"open": True, "select": None},
             3: {"open": True, "select": None},
@@ -470,14 +487,18 @@ class GoalsTest(TestCase):
 
     def test_ignore_wrong_selection(self):
         self.goals.accept(Select(2))
-        assert self.goals.q(keys="select") == {1: {"select": "select"}}
+        assert self.goals.q(keys="select").slice(keys="select") == {
+            1: {"select": "select"}
+        }
 
     def test_do_not_select_deleted_goals(self):
         self.goals = self.build(
             open_(1, "Root", [2]), open_(2, "broken", select=selected)
         )
         self.goals.accept_all(Delete(), Select(2))
-        assert self.goals.q(keys="select") == {1: {"select": "select"}}
+        assert self.goals.q(keys="select").slice(keys="select") == {
+            1: {"select": "select"}
+        }
 
     def test_selection_should_be_instant(self):
         self.goals = self.build(
@@ -494,7 +515,7 @@ class GoalsTest(TestCase):
             open_(11, "J"),
         )
         self.goals.accept(Select(2))
-        assert self.goals.q(keys="select") == {
+        assert self.goals.q(keys="select").slice(keys="select") == {
             1: {"select": "prev"},
             2: {"select": "select"},
             3: {"select": None},
@@ -508,7 +529,7 @@ class GoalsTest(TestCase):
             11: {"select": None},
         }
         self.goals.accept(Select(11))
-        assert self.goals.q(keys="select") == {
+        assert self.goals.q(keys="select").slice(keys="select") == {
             1: {"select": "prev"},
             2: {"select": None},
             3: {"select": None},

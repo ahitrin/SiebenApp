@@ -37,8 +37,8 @@ class OpenView(Graph):
         return True
 
     @with_key("open")
-    def q(self, keys: str = "name") -> Dict[int, Any]:
-        goals = self.goaltree.q(keys)
+    def q(self, keys: str = "name") -> RenderResult:
+        goals = self.goaltree.q(keys).slice(keys)
         result: Dict[int, Any] = {
             k: {} for k, v in goals.items() if self._is_visible(k, v)
         }
@@ -62,4 +62,4 @@ class OpenView(Graph):
                 for missing_goal in not_linked:
                     result[root_goal]["edge"].append((missing_goal, EdgeType.BLOCKER))
         repacked: Dict[GoalId, Any] = {k: v for k, v in result.items()}
-        return RenderResult(repacked, {}).slice(keys)
+        return RenderResult(repacked, {})

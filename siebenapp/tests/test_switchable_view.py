@@ -13,18 +13,18 @@ def test_toggle_hide_non_switchable_goals():
         open_(3, "Switchable 2"),
     )
     e = SwitchableView(g)
-    assert e.q(keys="name,switchable,select") == {
+    assert e.q(keys="name,switchable,select").slice(keys="name,switchable,select") == {
         1: {"name": "Root", "switchable": False, "select": None},
         2: {"name": "Switchable 1", "switchable": True, "select": "select"},
         3: {"name": "Switchable 2", "switchable": True, "select": None},
     }
     e.accept(ToggleSwitchableView())
-    assert e.q(keys="name,switchable,select") == {
+    assert e.q(keys="name,switchable,select").slice(keys="name,switchable,select") == {
         2: {"name": "Switchable 1", "switchable": True, "select": "select"},
         3: {"name": "Switchable 2", "switchable": True, "select": None},
     }
     e.accept(ToggleSwitchableView())
-    assert e.q(keys="name,switchable,select") == {
+    assert e.q(keys="name,switchable,select").slice(keys="name,switchable,select") == {
         1: {"name": "Root", "switchable": False, "select": None},
         2: {"name": "Switchable 1", "switchable": True, "select": "select"},
         3: {"name": "Switchable 2", "switchable": True, "select": None},
@@ -40,7 +40,7 @@ def test_do_not_hide_unswitchable_goals_when_they_have_selection():
         )
     )
     v.accept_all(ToggleSwitchableView())
-    assert v.q("name,switchable,select") == {
+    assert v.q("name,switchable,select").slice("name,switchable,select") == {
         1: {"name": "Selected", "switchable": False, "select": "select"},
         2: {"name": "Prev-selected", "switchable": False, "select": "prev"},
         3: {"name": "Switchable", "switchable": True, "select": None},
@@ -50,13 +50,13 @@ def test_do_not_hide_unswitchable_goals_when_they_have_selection():
 def test_non_switchable_goals_disappear_on_selection_change():
     e = SwitchableView(Goals("root"))
     e.accept_all(Add("1"), Add("2"), Select(2), ToggleSwitchableView(), Select(2))
-    assert e.q("name,switchable,select") == {
+    assert e.q("name,switchable,select").slice("name,switchable,select") == {
         1: {"name": "root", "switchable": False, "select": "prev"},
         2: {"name": "1", "switchable": True, "select": "select"},
         3: {"name": "2", "switchable": True, "select": None},
     }
     e.accept(HoldSelect())
-    assert e.q("name,switchable,select") == {
+    assert e.q("name,switchable,select").slice("name,switchable,select") == {
         2: {"name": "1", "switchable": True, "select": "select"},
         3: {"name": "2", "switchable": True, "select": None},
     }
@@ -70,12 +70,12 @@ def test_how_should_we_deal_with_zooming():
     )
     v = SwitchableView(persistent_layers(g))
     v.accept_all(ToggleZoom(), ToggleSwitchableView())
-    assert v.q("name,select") == {
+    assert v.q("name,select").slice("name,select") == {
         2: {"name": "Zoomed", "select": "select"},
         3: {"name": "Ex-top", "select": None},
     }
     v.accept(Add("Unexpectedly hidden"))
-    assert v.q("name,select") == {
+    assert v.q("name,select").slice("name,select") == {
         2: {"name": "Zoomed", "select": "select"},
         3: {"name": "Ex-top", "select": None},
         4: {"name": "Unexpectedly hidden", "select": None},

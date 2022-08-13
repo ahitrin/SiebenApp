@@ -58,7 +58,7 @@ class Renderer:
         self.width_limit = width_limit
         original_graph: Dict[int, Any] = goals.q(
             keys="name,edge,open,select,switchable"
-        )
+        ).slice(keys="name,edge,open,select,switchable")
         self.graph: Dict[GoalId, Any] = {k: v for k, v in original_graph.items()}
         self.edges: Dict[GoalId, List[GoalId]] = {
             key: [e[0] for e in values["edge"]] for key, values in self.graph.items()

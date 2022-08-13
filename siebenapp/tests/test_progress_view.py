@@ -18,7 +18,7 @@ def goaltree():
 
 
 def test_no_progress_by_default(goaltree):
-    assert goaltree.q("name") == {
+    assert goaltree.q("name").slice("name") == {
         1: {"name": "Root"},
         2: {"name": "With blocker"},
         3: {"name": "With subgoal"},
@@ -28,7 +28,7 @@ def test_no_progress_by_default(goaltree):
 
 def test_show_progress(goaltree):
     goaltree.accept(ToggleProgress())
-    assert goaltree.q("name") == {
+    assert goaltree.q("name").slice("name") == {
         1: {"name": "[0/4] Root"},
         2: {"name": "[0/1] With blocker"},
         3: {"name": "[0/2] With subgoal"},
@@ -38,7 +38,7 @@ def test_show_progress(goaltree):
 
 def test_toggle_hide_progress(goaltree):
     goaltree.accept_all(ToggleProgress(), ToggleProgress())
-    assert goaltree.q("name") == {
+    assert goaltree.q("name").slice("name") == {
         1: {"name": "Root"},
         2: {"name": "With blocker"},
         3: {"name": "With subgoal"},
@@ -48,14 +48,14 @@ def test_toggle_hide_progress(goaltree):
 
 def test_change_progress_on_close(goaltree):
     goaltree.accept_all(ToggleProgress(), Select(4), ToggleClose())
-    assert goaltree.q("name") == {
+    assert goaltree.q("name").slice("name") == {
         1: {"name": "[1/4] Root"},
         2: {"name": "[0/1] With blocker"},
         3: {"name": "[1/2] With subgoal"},
         4: {"name": "[1/1] Top goal"},
     }
     goaltree.accept_all(Select(2), ToggleClose())
-    assert goaltree.q("name") == {
+    assert goaltree.q("name").slice("name") == {
         1: {"name": "[2/4] Root"},
         2: {"name": "[1/1] With blocker"},
         3: {"name": "[1/2] With subgoal"},
