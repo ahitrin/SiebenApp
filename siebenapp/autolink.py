@@ -121,7 +121,7 @@ class AutoLink(Graph):
 
     @with_key("edge")
     def q(self, keys: str = "name") -> RenderResult:
-        goals: Dict[int, Any] = self.goaltree.q(keys).slice(keys)
+        goals: Dict[GoalId, Any] = self.goaltree.q(keys).graph
         new_goals: Dict[GoalId, Any] = {k: v for k, v in goals.items()}
         for keyword, goal_id in self.keywords.items():
             pseudo_id: int = -(goal_id + 10)
@@ -132,15 +132,13 @@ class AutoLink(Graph):
                 ]
                 attrs["edge"] = new_edges
                 new_goals[real_goal] = attrs
-            pseudo_goal: Dict[str, Any] = {"edge": [(goal_id, EdgeType.PARENT)]}
-            if "name" in keys:
-                pseudo_goal["name"] = f"Autolink: '{keyword}'"
-            if "open" in keys:
-                pseudo_goal["open"] = True
-            if "select" in keys:
-                pseudo_goal["select"] = None
-            if "switchable" in keys:
-                pseudo_goal["switchable"] = False
+            pseudo_goal: Dict[str, Any] = {
+                "edge": [(goal_id, EdgeType.PARENT)],
+                "name": f"Autolink: '{keyword}'",
+                "open": True,
+                "select": None,
+                "switchable": False,
+            }
             new_goals[pseudo_id] = pseudo_goal
         return RenderResult(new_goals, {})
 
