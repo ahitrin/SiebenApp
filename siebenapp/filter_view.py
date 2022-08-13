@@ -33,39 +33,33 @@ class FilterView(Graph):
         self.pattern = origin.settings("filter_pattern")
 
     @with_key("name")
+    @with_key("edge")
     def q(self, keys: str = "name") -> RenderResult:
-        unfiltered = self.goaltree.q(keys).slice(keys)
-        filtered = self._filter(unfiltered, keys) if self.pattern else unfiltered
+        unfiltered = self.goaltree.q(keys).graph
+        filtered = self._filter(unfiltered) if self.pattern else unfiltered
         return RenderResult(filtered, {})
 
-    def _filter(self, unfiltered, keys):
+    def _filter(self, unfiltered):
         accepted_nodes = [
             goal_id
             for goal_id, attrs in unfiltered.items()
             if self.pattern in attrs["name"].lower() or goal_id in self.selections()
         ]
         filtered: Dict[int, Any] = {
-            -2: self._fake_goal(keys),
+            -2: {
+                "name": f"Filter by '{self.pattern}'",
+                "edge": [],
+                "select": None,
+                "switchable": False,
+                "open": True,
+            },
         }
         for goal_id, attrs in unfiltered.items():
             if goal_id in accepted_nodes:
-                if "edge" in keys:
-                    attrs["edge"] = [e for e in attrs["edge"] if e[0] in accepted_nodes]
-                    if goal_id > 1:
-                        filtered[-2]["edge"].append((goal_id, EdgeType.BLOCKER))
-                    else:
-                        attrs["edge"].insert(0, (-2, EdgeType.BLOCKER))
+                attrs["edge"] = [e for e in attrs["edge"] if e[0] in accepted_nodes]
+                if goal_id > 1:
+                    filtered[-2]["edge"].append((goal_id, EdgeType.BLOCKER))
+                else:
+                    attrs["edge"].insert(0, (-2, EdgeType.BLOCKER))
                 filtered[goal_id] = attrs
         return filtered
-
-    def _fake_goal(self, keys: str) -> Dict[str, Any]:
-        goal: Dict[str, Any] = {"name": f"Filter by '{self.pattern}'"}
-        if "edge" in keys:
-            goal["edge"] = []
-        if "select" in keys:
-            goal["select"] = None
-        if "switchable" in keys:
-            goal["switchable"] = False
-        if "open" in keys:
-            goal["open"] = True
-        return goal
