@@ -7,7 +7,6 @@ from siebenapp.domain import (
     Command,
     ToggleClose,
     Delete,
-    with_key,
     GoalId,
     RenderResult,
 )
@@ -43,7 +42,6 @@ class Zoom(Graph):
             else:
                 self.error("Zooming outside of current zoom root is not allowed!")
 
-    @with_key("edge")
     def q(self, keys: str = "name") -> RenderResult:
         origin_goals = self.goaltree.q(keys).graph
         if self.zoom_root == [1]:

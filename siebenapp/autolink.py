@@ -4,7 +4,6 @@ from typing import Dict, Any, List, Union, Tuple, Optional, Set
 from siebenapp.domain import (
     Graph,
     Command,
-    with_key,
     EdgeType,
     ToggleClose,
     Add,
@@ -119,7 +118,6 @@ class AutoLink(Graph):
             if target_goal not in self_children[add_to]:
                 self.goaltree.accept(ToggleLink(add_to, target_goal, EdgeType.BLOCKER))
 
-    @with_key("edge")
     def q(self, keys: str = "name") -> RenderResult:
         goals: Dict[GoalId, Any] = self.goaltree.q(keys).graph
         new_goals: Dict[GoalId, Any] = {k: v for k, v in goals.items()}

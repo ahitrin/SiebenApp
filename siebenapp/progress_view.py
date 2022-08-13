@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Dict, Any, Tuple, List
 
-from siebenapp.domain import Graph, Command, with_key, EdgeType, GoalId, RenderResult
+from siebenapp.domain import Graph, Command, EdgeType, GoalId, RenderResult
 
 
 @dataclass(frozen=True)
@@ -26,9 +26,6 @@ class ProgressView(Graph):
         super().reconfigure_from(origin)
         self.show_progress = origin.settings("filter_progress")
 
-    @with_key("name")
-    @with_key("open")
-    @with_key("edge")
     def q(self, keys: str = "name") -> RenderResult:
         if not self.show_progress:
             return self.goaltree.q(keys)

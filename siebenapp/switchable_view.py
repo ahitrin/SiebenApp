@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Dict, Any
 
-from siebenapp.domain import Command, Graph, with_key, RenderResult, GoalId
+from siebenapp.domain import Command, Graph, RenderResult, GoalId
 
 
 @dataclass(frozen=True)
@@ -30,7 +30,6 @@ class SwitchableView(Graph):
         if origin.settings("filter_switchable"):
             self.accept(ToggleSwitchableView())
 
-    @with_key("switchable")
     def q(self, keys: str = "name") -> RenderResult:
         goals: Dict[GoalId, Any] = {
             k: v for k, v in self.goaltree.q(keys).graph.items()

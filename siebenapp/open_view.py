@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Dict, Any, Set, List, Tuple
 
-from siebenapp.domain import Command, Graph, with_key, EdgeType, RenderResult, GoalId
+from siebenapp.domain import Command, Graph, EdgeType, RenderResult, GoalId
 
 
 @dataclass(frozen=True)
@@ -36,8 +36,6 @@ class OpenView(Graph):
             return attrs["open"] or goal_id in self.selections() or goal_id in {1, -1}
         return True
 
-    @with_key("open")
-    @with_key("edge")
     def q(self, keys: str = "name") -> RenderResult:
         goals = self.goaltree.q(keys).graph
         result: Dict[GoalId, Any] = {

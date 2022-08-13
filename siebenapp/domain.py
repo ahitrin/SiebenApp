@@ -116,25 +116,6 @@ class Graph:
             return self.goaltree.verify()
 
 
-def with_key(key):
-    """Wraps around Graph.q, adding given key to the request"""
-
-    def inner(q):
-        @wraps(q)
-        def wrapper(self, keys="name"):
-            if no_key := key not in keys:
-                keys = ",".join([keys, key])
-            result = q(self, keys)
-            if no_key:
-                for v in result.graph.values():
-                    v.pop(key, None)
-            return result
-
-        return wrapper
-
-    return inner
-
-
 # == Command implementations ==
 
 # === Graph layer ===
