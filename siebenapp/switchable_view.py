@@ -33,7 +33,7 @@ class SwitchableView(Graph):
     @with_key("switchable")
     def q(self, keys: str = "name") -> RenderResult:
         goals: Dict[GoalId, Any] = {
-            k: v for k, v in self.goaltree.q(keys).slice(keys).items()
+            k: v for k, v in self.goaltree.q(keys).graph.items()
         }
         if self._only_switchable:
             goals = {
@@ -42,6 +42,5 @@ class SwitchableView(Graph):
                 if v["switchable"] or k in self.selections()
             }
             for v in goals.values():
-                if "edge" in v:
-                    v["edge"] = []
+                v["edge"] = []
         return RenderResult(goals, {})
