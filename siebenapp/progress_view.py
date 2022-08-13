@@ -32,9 +32,9 @@ class ProgressView(Graph):
     def q(self, keys: str = "name") -> RenderResult:
         if not self.show_progress:
             return self.goaltree.q(keys)
-        progress_cache: Dict[int, Tuple[int, int]] = {}
-        result = self.goaltree.q(keys).slice(keys)
-        queue: List[int] = list(result.keys())
+        progress_cache: Dict[GoalId, Tuple[int, int]] = {}
+        result = self.goaltree.q(keys).graph
+        queue: List[GoalId] = list(result.keys())
         while queue:
             goal_id = queue.pop(0)
             children = [
