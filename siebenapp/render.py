@@ -1,29 +1,12 @@
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Dict, List, Tuple, Union, Any, Set, Optional, Protocol
+from typing import Dict, List, Tuple, Any, Set, Optional, Protocol
 
-from siebenapp.domain import Graph, EdgeType
+from siebenapp.domain import Graph, EdgeType, GoalId, RenderResult
 
-
-# GoalId for real nodes is integer: -1, 4, 34, etc
-# GoalId for fake nodes (used to build edges) is str: '3_5', '1_1', etc
-GoalId = Union[str, int]
 # Layer is a row of GoalIds, possibly with holes (marked with None)
 # E.g.: [17, "3_4", None, 5]
 Layer = List[Optional[GoalId]]
-
-
-@dataclass(frozen=True)
-class RenderResult:
-    graph: Dict[GoalId, Any]
-    edge_opts: Dict[str, Tuple[int, int, int]]
-
-    def goals(self):
-        return [
-            (goal_id, attrs)
-            for goal_id, attrs in self.graph.items()
-            if isinstance(goal_id, int)
-        ]
 
 
 @dataclass(frozen=True)

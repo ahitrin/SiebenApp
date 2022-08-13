@@ -2,7 +2,7 @@ from collections import deque
 from dataclasses import dataclass
 from enum import IntEnum
 from functools import wraps
-from typing import Dict, Any, Set
+from typing import Dict, Any, Set, Union, Tuple
 
 
 class EdgeType(IntEnum):
@@ -19,6 +19,24 @@ class Edge:
 
 class Command:
     pass
+
+
+# GoalId for real nodes is integer: -1, 4, 34, etc
+# GoalId for fake nodes (used to build edges) is str: '3_5', '1_1', etc
+GoalId = Union[str, int]
+
+
+@dataclass(frozen=True)
+class RenderResult:
+    graph: Dict[GoalId, Any]
+    edge_opts: Dict[str, Tuple[int, int, int]]
+
+    def goals(self):
+        return [
+            (goal_id, attrs)
+            for goal_id, attrs in self.graph.items()
+            if isinstance(goal_id, int)
+        ]
 
 
 class Graph:
