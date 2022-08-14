@@ -18,12 +18,12 @@ def two_goals():
 
 
 def test_open_goal_is_shown_by_default(trivial):
-    assert trivial.q("name").slice("name") == {1: {"name": "Start"}}
+    assert trivial.q().slice("name") == {1: {"name": "Start"}}
 
 
 def test_open_goal_is_shown_after_switch(trivial):
     trivial.accept(ToggleOpenView())
-    assert trivial.q("name").slice("name") == {1: {"name": "Start"}}
+    assert trivial.q().slice("name") == {1: {"name": "Start"}}
 
 
 def test_filter_open_setting_is_set_by_default(trivial):
@@ -36,19 +36,19 @@ def test_filter_open_setting_is_changed_after_switch(trivial):
 
 
 def test_closed_goal_is_not_shown_by_default(two_goals):
-    assert two_goals.q("name,open,edge").slice("name,open,edge") == {
+    assert two_goals.q().slice("name,open,edge") == {
         1: {"name": "Open", "open": True, "edge": []}
     }
 
 
 def test_closed_goal_is_shown_after_switch(two_goals):
     two_goals.accept(ToggleOpenView())
-    assert two_goals.q("name,open,edge").slice("name,open,edge") == {
+    assert two_goals.q().slice("name,open,edge") == {
         1: {"name": "Open", "open": True, "edge": [(2, EdgeType.PARENT)]},
         2: {"name": "Closed", "open": False, "edge": []},
     }
     two_goals.accept(ToggleOpenView())
-    assert two_goals.q("name,open,edge").slice("name,open,edge") == {
+    assert two_goals.q().slice("name,open,edge") == {
         1: {"name": "Open", "open": True, "edge": []}
     }
 
@@ -61,7 +61,7 @@ def test_simple_open_enumeration_workflow():
             open_(3, "2"),
         )
     )
-    assert e.q(keys="name,select,open,edge").slice(keys="name,select,open,edge") == {
+    assert e.q().slice(keys="name,select,open,edge") == {
         1: {
             "name": "Root",
             "select": "prev",
@@ -72,7 +72,7 @@ def test_simple_open_enumeration_workflow():
         3: {"name": "2", "select": None, "open": True, "edge": []},
     }
     e.accept(ToggleClose())
-    assert e.q(keys="name,select,open,edge").slice(keys="name,select,open,edge") == {
+    assert e.q().slice(keys="name,select,open,edge") == {
         1: {
             "name": "Root",
             "select": "select",
@@ -93,7 +93,7 @@ def test_closed_goals_are_shown_when_selected():
         )
     )
     v.accept_all(ToggleOpenView(), Select(2), HoldSelect(), Select(3))
-    assert v.q("name,select,open").slice("name,select,open") == {
+    assert v.q().slice("name,select,open") == {
         1: {"name": "Root", "open": True, "select": None},
         2: {"name": "closed", "open": False, "select": "prev"},
         3: {"name": "closed too", "open": False, "select": "select"},
@@ -101,7 +101,7 @@ def test_closed_goals_are_shown_when_selected():
     }
     v.accept(ToggleOpenView())
     # Still show: open goals, selected goals
-    assert v.q("name,select,open").slice("name,select,open") == {
+    assert v.q().slice("name,select,open") == {
         1: {"name": "Root", "open": True, "select": None},
         2: {"name": "closed", "open": False, "select": "prev"},
         3: {"name": "closed too", "open": False, "select": "select"},
@@ -116,7 +116,7 @@ def test_build_fake_links_to_far_closed_goals():
             clos_(3, "Top", select=selected),
         )
     )
-    assert v.q("select,edge").slice("select,edge") == {
+    assert v.q().slice("select,edge") == {
         1: {"select": "prev", "edge": [(3, EdgeType.BLOCKER)]},
         3: {"select": "select", "edge": []},
     }
@@ -129,7 +129,7 @@ def test_still_show_root_when_it_is_closed_and_unselected():
             clos_(2, "Visible", select=selected),
         )
     )
-    assert v.q("select,open,edge").slice("select,open,edge") == {
+    assert v.q().slice("select,open,edge") == {
         1: {"select": None, "open": False, "edge": [(2, EdgeType.PARENT)]},
         2: {"select": "select", "open": False, "edge": []},
     }

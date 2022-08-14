@@ -28,9 +28,9 @@ class ProgressView(Graph):
 
     def q(self, keys: str = "name") -> RenderResult:
         if not self.show_progress:
-            return self.goaltree.q(keys)
+            return self.goaltree.q()
         progress_cache: Dict[GoalId, Tuple[int, int]] = {}
-        result = self.goaltree.q(keys).graph
+        result = self.goaltree.q().graph
         queue: List[GoalId] = list(result.keys())
         while queue:
             goal_id = queue.pop(0)

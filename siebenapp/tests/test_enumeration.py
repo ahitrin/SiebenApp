@@ -42,7 +42,7 @@ def test_simple_enumeration_is_not_changed():
             open_(3, "c", select=selected),
         )
     )
-    assert e.q(keys="name,edge").slice(keys="name,edge") == {
+    assert e.q().slice(keys="name,edge") == {
         1: {"name": "a", "edge": [(2, EdgeType.PARENT), (3, EdgeType.PARENT)]},
         2: {"name": "b", "edge": [(3, EdgeType.BLOCKER)]},
         3: {"name": "c", "edge": []},
@@ -52,7 +52,7 @@ def test_simple_enumeration_is_not_changed():
 
 def test_apply_mapping_for_the_10th_element(goal_chain_10):
     e = Enumeration(goal_chain_10)
-    assert e.q(keys="name,edge").slice(keys="name,edge") == {
+    assert e.q().slice(keys="name,edge") == {
         1: {"name": "a", "edge": [(2, EdgeType.PARENT)]},
         2: {"name": "b", "edge": [(3, EdgeType.PARENT)]},
         3: {"name": "c", "edge": [(4, EdgeType.PARENT)]},
@@ -69,7 +69,7 @@ def test_apply_mapping_for_the_10th_element(goal_chain_10):
 
 def test_apply_mapping_for_the_11th_element(goal_chain_11):
     e = Enumeration(goal_chain_11)
-    assert e.q(keys="name,edge").slice(keys="name,edge") == {
+    assert e.q().slice(keys="name,edge") == {
         11: {"name": "a", "edge": [(12, EdgeType.PARENT)]},
         12: {"name": "b", "edge": [(13, EdgeType.PARENT)]},
         13: {"name": "c", "edge": [(14, EdgeType.PARENT)]},
@@ -88,7 +88,7 @@ def test_apply_mapping_for_the_11th_element(goal_chain_11):
 def test_use_mapping_in_selection(goal_chain_10):
     e = Enumeration(goal_chain_10)
     e.accept(Select(0))
-    assert e.q(keys="name,select").slice(keys="name,select") == {
+    assert e.q().slice(keys="name,select") == {
         1: {"name": "a", "select": "prev"},
         2: {"name": "b", "select": None},
         3: {"name": "c", "select": None},
@@ -106,7 +106,7 @@ def test_do_not_select_goal_by_partial_id(goal_chain_11):
     e = Enumeration(goal_chain_11)
     # Select(1) is kept in cache, and selection is not changed yet
     e.accept_all(Select(1))
-    assert e.q(keys="name,select").slice(keys="name,select") == {
+    assert e.q().slice(keys="name,select") == {
         11: {"name": "a", "select": "select"},
         12: {"name": "b", "select": None},
         13: {"name": "c", "select": None},
@@ -124,7 +124,7 @@ def test_do_not_select_goal_by_partial_id(goal_chain_11):
 def test_select_goal_by_id_parts(goal_chain_11):
     e = Enumeration(goal_chain_11)
     e.accept_all(Select(1), Select(6))
-    assert e.q(keys="name,select").slice(keys="name,select") == {
+    assert e.q().slice(keys="name,select") == {
         11: {"name": "a", "select": "prev"},
         12: {"name": "b", "select": None},
         13: {"name": "c", "select": None},
@@ -141,7 +141,7 @@ def test_select_goal_by_id_parts(goal_chain_11):
 
 def test_select_goal_by_full_id(goal_chain_11):
     e = Enumeration(goal_chain_11)
-    assert e.q(keys="name,select").slice(keys="name,select") == {
+    assert e.q().slice(keys="name,select") == {
         11: {"name": "a", "select": "select"},
         12: {"name": "b", "select": None},
         13: {"name": "c", "select": None},
@@ -155,7 +155,7 @@ def test_select_goal_by_full_id(goal_chain_11):
         21: {"name": "k", "select": None},
     }
     e.accept(Select(13))
-    assert e.q(keys="name,select").slice(keys="name,select") == {
+    assert e.q().slice(keys="name,select") == {
         11: {"name": "a", "select": "prev"},
         12: {"name": "b", "select": None},
         13: {"name": "c", "select": "select"},
@@ -172,7 +172,7 @@ def test_select_goal_by_full_id(goal_chain_11):
 
 def test_select_goal_by_full_id_with_non_empty_cache(goal_chain_11):
     e = Enumeration(goal_chain_11)
-    assert e.q(keys="name,select").slice(keys="name,select") == {
+    assert e.q().slice(keys="name,select") == {
         11: {"name": "a", "select": "select"},
         12: {"name": "b", "select": None},
         13: {"name": "c", "select": None},
@@ -186,7 +186,7 @@ def test_select_goal_by_full_id_with_non_empty_cache(goal_chain_11):
         21: {"name": "k", "select": None},
     }
     e.accept_all(Select(2), Select(13))
-    assert e.q(keys="name,select").slice(keys="name,select") == {
+    assert e.q().slice(keys="name,select") == {
         11: {"name": "a", "select": "prev"},
         12: {"name": "b", "select": None},
         13: {"name": "c", "select": "select"},
@@ -207,7 +207,7 @@ def test_enumerated_goals_must_have_the_same_dimension():
             open_(1, "a", [2, 20], select=selected), open_(2, "b"), open_(20, "x")
         )
     )
-    assert e.q(keys="name,switchable,select").slice(keys="name,switchable,select") == {
+    assert e.q().slice(keys="name,switchable,select") == {
         1: {"name": "a", "switchable": False, "select": "select"},
         2: {"name": "b", "switchable": True, "select": None},
         3: {"name": "x", "switchable": True, "select": None},
@@ -220,7 +220,7 @@ def test_selection_cache_should_be_reset_after_view_switch(goal_chain_11):
     e.accept(Select(1))
     # Select(1) is kept in a cache and not applied yet
     e.accept(ToggleSwitchableView())
-    assert e.q("name,select").slice("name,select") == {
+    assert e.q().slice("name,select") == {
         1: {"name": "a", "select": "select"},
         2: {"name": "k", "select": None},
         3: {"name": "Also top", "select": None},
@@ -228,7 +228,7 @@ def test_selection_cache_should_be_reset_after_view_switch(goal_chain_11):
     # Select(2) is being applied without any effect from the previous selection
     # This happens because selection cache was reset
     e.accept(Select(2))
-    assert e.q("name,select").slice("name,select") == {
+    assert e.q().slice("name,select") == {
         1: {"name": "a", "select": "prev"},
         2: {"name": "k", "select": "select"},
         3: {"name": "Also top", "select": None},
@@ -237,15 +237,15 @@ def test_selection_cache_should_be_reset_after_view_switch(goal_chain_11):
 
 def test_selection_cache_should_avoid_overflow(goal_chain_11):
     e = Enumeration(goal_chain_11)
-    assert e.q(keys="select").slice(keys="select")[11] == {"select": "select"}
+    assert e.q().slice(keys="select")[11] == {"select": "select"}
     e.accept(Select(5))
-    assert e.q(keys="select").slice(keys="select")[11] == {"select": "select"}
+    assert e.q().slice(keys="select")[11] == {"select": "select"}
     e.accept(Select(1))
-    assert e.q(keys="select").slice(keys="select")[11] == {"select": "select"}
-    assert e.q(keys="select").slice(keys="select")[14] == {"select": None}
+    assert e.q().slice(keys="select")[11] == {"select": "select"}
+    assert e.q().slice(keys="select")[14] == {"select": None}
     e.accept(Select(4))
-    assert e.q(keys="select").slice(keys="select")[11] == {"select": "prev"}
-    assert e.q(keys="select").slice(keys="select")[14] == {"select": "select"}
+    assert e.q().slice(keys="select")[11] == {"select": "prev"}
+    assert e.q().slice(keys="select")[14] == {"select": "select"}
 
 
 def test_do_not_enumerate_goals_with_negative_id():
@@ -257,13 +257,13 @@ def test_do_not_enumerate_goals_with_negative_id():
         )
     )
     g.accept(ToggleZoom())
-    assert g.q("name,select,edge").slice("name,select,edge") == {
+    assert g.q().slice("name,select,edge") == {
         -1: {"name": "Root", "select": None, "edge": [(2, EdgeType.BLOCKER)]},
         2: {"name": "Zoomed", "select": "select", "edge": [(3, EdgeType.PARENT)]},
         3: {"name": "Top", "select": None, "edge": []},
     }
     e = Enumeration(g)
-    assert e.q("name,select,edge").slice("name,select,edge") == {
+    assert e.q().slice("name,select,edge") == {
         -1: {"name": "Root", "select": None, "edge": [(1, EdgeType.BLOCKER)]},
         1: {"name": "Zoomed", "select": "select", "edge": [(2, EdgeType.PARENT)]},
         2: {"name": "Top", "select": None, "edge": []},

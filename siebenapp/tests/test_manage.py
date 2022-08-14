@@ -201,22 +201,18 @@ def test_extract_wrong_goal_id(extract_source):
 
 def test_extract_successful(extract_source, extract_target):
     result = extract_subtree(extract_source, 2)
-    assert extract_target.q(keys="name,edge,open,selection").slice(
+    assert extract_target.q().slice(
         keys="name,edge,open,selection"
-    ) == result.q(keys="name,edge,open,selection").slice(
-        keys="name,edge,open,selection"
-    )
+    ) == result.q().slice(keys="name,edge,open,selection")
 
 
 def test_zoom_after_extract(extract_source, extract_target):
     result = extract_subtree(extract_source, 2)
     result.accept_all(Select(3), ToggleZoom())
     extract_target.accept_all(Select(3), ToggleZoom())
-    assert extract_target.q(keys="name,edge,open,selection").slice(
+    assert extract_target.q().slice(
         keys="name,edge,open,selection"
-    ) == result.q(keys="name,edge,open,selection").slice(
-        keys="name,edge,open,selection"
-    )
+    ) == result.q().slice(keys="name,edge,open,selection")
 
 
 def test_extract_misordered():
@@ -230,7 +226,7 @@ def test_extract_misordered():
         )
     )
     result = extract_subtree(source, 3)
-    assert result.q("name,edge").slice("name,edge") == {
+    assert result.q().slice("name,edge") == {
         1: {"name": "Extraction root", "edge": [(2, EdgeType.PARENT)]},
         2: {"name": "Top", "edge": []},
     }

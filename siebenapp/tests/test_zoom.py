@@ -36,7 +36,7 @@ def test_skip_intermediate_goal_during_zoom():
         )
     )
     goals.accept(ToggleZoom())
-    assert goals.q(keys="name,edge").slice(keys="name,edge") == {
+    assert goals.q().slice(keys="name,edge") == {
         -1: {"name": "Root", "edge": [(3, EdgeType.BLOCKER)]},
         3: {"name": "Zoomed", "edge": []},
     }
@@ -53,7 +53,7 @@ def test_hide_neighbour_goals_during_zoom():
         )
     )
     goals.accept(ToggleZoom())
-    assert goals.q(keys="name,edge").slice(keys="name,edge") == {
+    assert goals.q().slice(keys="name,edge") == {
         -1: {"name": "Root", "edge": [(2, EdgeType.BLOCKER)]},
         2: {"name": "Zoomed", "edge": []},
     }
@@ -68,13 +68,13 @@ def test_do_not_hide_subgoals():
         )
     )
     goals.accept(ToggleZoom())
-    assert goals.q(keys="name,edge").slice(keys="name,edge") == {
+    assert goals.q().slice(keys="name,edge") == {
         -1: {"name": "Root", "edge": [(2, EdgeType.BLOCKER)]},
         2: {"name": "Zoomed", "edge": [(3, EdgeType.PARENT)]},
         3: {"name": "Visible", "edge": []},
     }
     goals.accept(Add("More children", 3))
-    assert goals.q(keys="name,edge").slice(keys="name,edge") == {
+    assert goals.q().slice(keys="name,edge") == {
         -1: {"name": "Root", "edge": [(2, EdgeType.BLOCKER)]},
         2: {"name": "Zoomed", "edge": [(3, EdgeType.PARENT)]},
         3: {"name": "Visible", "edge": [(4, EdgeType.PARENT)]},
@@ -92,7 +92,7 @@ def test_hide_subgoals_of_blockers():
         )
     )
     goals.accept(ToggleZoom())
-    assert goals.q(keys="name,edge,switchable").slice(keys="name,edge,switchable") == {
+    assert goals.q().slice(keys="name,edge,switchable") == {
         -1: {"name": "Root", "edge": [(2, EdgeType.BLOCKER)], "switchable": False},
         2: {"name": "Zoomed", "edge": [(3, EdgeType.BLOCKER)], "switchable": False},
         3: {"name": "Blocker", "edge": [], "switchable": False},
@@ -113,7 +113,7 @@ def test_double_zoom_means_unzoom():
         2: {"name": "Zoomed"},
     }
     goals.accept(ToggleZoom())
-    assert goals.q("name,edge").slice("name,edge") == {
+    assert goals.q().slice("name,edge") == {
         1: {"name": "Root", "edge": [(2, EdgeType.PARENT), (3, EdgeType.PARENT)]},
         2: {"name": "Zoomed", "edge": []},
         3: {"name": "Hidden", "edge": []},
@@ -131,7 +131,7 @@ def test_stacked_zoom():
         )
     )
     goals.accept_all(ToggleZoom(), Select(4), ToggleZoom())
-    assert goals.q("edge").slice("edge") == {
+    assert goals.q().slice("edge") == {
         -1: {"edge": [(3, EdgeType.BLOCKER), (4, EdgeType.BLOCKER)]},
         3: {"edge": [(4, EdgeType.PARENT)]},
         4: {"edge": [(5, EdgeType.PARENT)]},
@@ -139,7 +139,7 @@ def test_stacked_zoom():
     }
     goals.accept(ToggleZoom())
     # Zoom on goal 3 still exists
-    assert goals.q("edge").slice("edge") == {
+    assert goals.q().slice("edge") == {
         -1: {"edge": [(3, EdgeType.BLOCKER)]},
         3: {"edge": [(4, EdgeType.PARENT)]},
         4: {"edge": [(5, EdgeType.PARENT)]},
@@ -156,7 +156,7 @@ def test_selection_should_not_be_changed_if_selected_goal_is_visible():
         )
     )
     goals.accept(ToggleZoom())
-    assert goals.q(keys="name,edge,select").slice(keys="name,edge,select") == {
+    assert goals.q().slice(keys="name,edge,select") == {
         -1: {"name": "Root", "edge": [(2, EdgeType.BLOCKER)], "select": None},
         2: {"name": "Select root", "edge": [(3, EdgeType.PARENT)], "select": "select"},
         3: {"name": "Previous selected", "edge": [], "select": "prev"},
@@ -173,7 +173,7 @@ def test_selection_should_not_be_changed_if_selected_goal_is_sibling_to_zoom_roo
     )
     goals.accept(ToggleZoom())
     assert goals.events()[-1] == ("zoom", 2, 3)
-    assert goals.q("name,edge,select").slice("name,edge,select") == {
+    assert goals.q().slice("name,edge,select") == {
         -1: {
             "name": "Root",
             "edge": [(2, EdgeType.BLOCKER), (3, EdgeType.BLOCKER)],
@@ -195,7 +195,7 @@ def test_selection_should_not_be_changed_if_selected_goal_is_not_a_child_of_zoom
     )
     goals.accept(ToggleZoom())
     assert goals.events()[-1] == ("zoom", 2, 4)
-    assert goals.q("name,edge,select").slice("name,edge,select") == {
+    assert goals.q().slice("name,edge,select") == {
         -1: {
             "name": "Root",
             "edge": [(3, EdgeType.BLOCKER), (4, EdgeType.BLOCKER)],
@@ -243,7 +243,7 @@ def test_selection_should_not_be_changed_on_stacked_unzoom_a_long_chain_of_block
         Select(3),
         ToggleZoom(),  # unzoom on 3/D (zoom root is on 2/A again))
     )
-    assert goals.q("name,edge,select").slice("name,edge,select") == {
+    assert goals.q().slice("name,edge,select") == {
         -1: {
             "name": "Root",
             "edge": [(2, EdgeType.BLOCKER), (4, EdgeType.BLOCKER)],
@@ -270,7 +270,7 @@ def test_unlink_for_goal_outside_of_zoomed_tree_should_not_cause_selection_chang
         Select(2),
         ToggleLink(),  # unlink 3 -> 2
     )
-    assert goals.q("name,edge,select").slice("name,edge,select") == {
+    assert goals.q().slice("name,edge,select") == {
         -1: {
             "name": "Root",
             "edge": [(2, EdgeType.BLOCKER), (3, EdgeType.BLOCKER)],
@@ -290,9 +290,7 @@ def test_closing_zoom_root_should_cause_unzoom():
         )
     )
     goals.accept_all(ToggleZoom(), ToggleClose())
-    assert goals.q(keys="name,edge,select,open").slice(
-        keys="name,edge,select,open"
-    ) == {
+    assert goals.q().slice(keys="name,edge,select,open") == {
         1: {
             "name": "Root",
             "edge": [(2, EdgeType.PARENT)],
@@ -318,9 +316,7 @@ def test_goal_closing_must_not_cause_root_selection():
         )
     )
     goals.accept(ToggleZoom())
-    assert goals.q(keys="name,edge,select,open").slice(
-        keys="name,edge,select,open"
-    ) == {
+    assert goals.q().slice(keys="name,edge,select,open") == {
         -1: {
             "name": "Root",
             "edge": [(2, EdgeType.BLOCKER)],
@@ -336,9 +332,7 @@ def test_goal_closing_must_not_cause_root_selection():
         3: {"name": "Close me", "edge": [], "select": None, "open": True},
     }
     goals.accept_all(Select(3), ToggleClose())
-    assert goals.q(keys="name,edge,select,open").slice(
-        keys="name,edge,select,open"
-    ) == {
+    assert goals.q().slice(keys="name,edge,select,open") == {
         -1: {
             "name": "Root",
             "edge": [(2, EdgeType.BLOCKER)],
@@ -368,9 +362,7 @@ def test_goal_reopening_must_not_change_selection():
         Select(3),
         ToggleClose(),
     )
-    assert goals.q(keys="name,edge,select,open").slice(
-        keys="name,edge,select,open"
-    ) == {
+    assert goals.q().slice(keys="name,edge,select,open") == {
         -1: {
             "name": "Root",
             "edge": [(2, EdgeType.BLOCKER)],
@@ -386,9 +378,7 @@ def test_goal_reopening_must_not_change_selection():
         3: {"name": "Reopen me", "edge": [], "select": None, "open": False},
     }
     goals.accept_all(Select(3), ToggleClose())
-    assert goals.q(keys="name,edge,select,open").slice(
-        keys="name,edge,select,open"
-    ) == {
+    assert goals.q().slice(keys="name,edge,select,open") == {
         -1: {
             "name": "Root",
             "edge": [(2, EdgeType.BLOCKER)],
@@ -414,9 +404,7 @@ def test_deleting_zoom_root_should_cause_unzoom():
         )
     )
     goals.accept_all(ToggleZoom(), Delete())
-    assert goals.q(keys="name,edge,select,open").slice(
-        keys="name,edge,select,open"
-    ) == {
+    assert goals.q().slice(keys="name,edge,select,open") == {
         1: {
             "name": "Root",
             "edge": [(2, EdgeType.PARENT)],
@@ -438,7 +426,7 @@ def test_deleting_parent_goal_should_cause_unzoom():
         )
     )
     goals.accept_all(ToggleZoom(), Select(4), ToggleZoom(), Select(5), ToggleZoom())
-    assert goals.q(keys="name,edge,select").slice(keys="name,edge,select") == {
+    assert goals.q().slice(keys="name,edge,select") == {
         -1: {
             "name": "Root",
             "edge": [(2, EdgeType.BLOCKER), (5, EdgeType.BLOCKER)],
@@ -453,7 +441,7 @@ def test_deleting_parent_goal_should_cause_unzoom():
         ("zoom", 4, 5),
     ]
     goals.accept_all(Select(2), Delete())
-    assert goals.q(keys="name,edge,select").slice(keys="name,edge,select") == {
+    assert goals.q().slice(keys="name,edge,select") == {
         1: {
             "name": "Root",
             "edge": [],
@@ -480,13 +468,13 @@ def test_goal_deletion_must_not_cause_root_selection():
         )
     )
     goals.accept(ToggleZoom())
-    assert goals.q(keys="name,edge,select").slice(keys="name,edge,select") == {
+    assert goals.q().slice(keys="name,edge,select") == {
         -1: {"name": "Root", "edge": [(3, EdgeType.BLOCKER)], "select": None},
         3: {"name": "Zoom root", "edge": [(4, EdgeType.PARENT)], "select": "select"},
         4: {"name": "Deleted", "edge": [], "select": None},
     }
     goals.accept_all(Select(4), Delete())
-    assert goals.q(keys="name,edge,select").slice(keys="name,edge,select") == {
+    assert goals.q().slice(keys="name,edge,select") == {
         -1: {"name": "Root", "edge": [(3, EdgeType.BLOCKER)], "select": None},
         3: {"name": "Zoom root", "edge": [], "select": "select"},
     }
@@ -522,7 +510,7 @@ def test_do_not_duplicate_parent_prev_selection():
     )
     assert goals.selections() == {1, 2}
     goals.accept(ToggleZoom())
-    assert goals.q("name,edge,select").slice("name,edge,select") == {
+    assert goals.q().slice("name,edge,select") == {
         -1: {"name": "Root", "edge": [(2, EdgeType.BLOCKER)], "select": "prev"},
         2: {"name": "Zoom root", "edge": [], "select": "select"},
     }
@@ -536,12 +524,12 @@ def test_zoom_root_must_not_be_switchable():
             clos_(2, "Closed", [], select=selected),
         )
     )
-    assert goals.q("switchable").slice("switchable") == {
+    assert goals.q().slice("switchable") == {
         1: {"switchable": True},
         2: {"switchable": True},
     }
     goals.accept(ToggleZoom())
-    assert goals.q("switchable").slice("switchable") == {
+    assert goals.q().slice("switchable") == {
         -1: {"switchable": False},
         2: {"switchable": True},
     }
@@ -569,8 +557,8 @@ def test_zoom_attempt_out_of_stack():
         3: {"name": "Zoom root", "edge": [(4, EdgeType.PARENT)], "select": None},
         4: {"name": "Top", "edge": [], "select": None},
     }
-    assert goals.q("name,select,edge").slice("name,select,edge") == expected
+    assert goals.q().slice("name,select,edge") == expected
     # Try to zoom out of current stack should not be allowed!
     goals.accept(ToggleZoom())
-    assert goals.q("name,select,edge").slice("name,select,edge") == expected
+    assert goals.q().slice("name,select,edge") == expected
     assert len(messages) == 1

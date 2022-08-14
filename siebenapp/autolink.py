@@ -91,7 +91,7 @@ class AutoLink(Graph):
 
     def accept_Delete(self, command: Delete) -> None:
         selected_id: int = command.goal_id or self.settings("selection")
-        edges: Dict[int, Any] = self.goaltree.q("edge").slice("edge")
+        edges: Dict[int, Any] = self.goaltree.q().slice("edge")
         goals_to_check: List[int] = [selected_id]
         while goals_to_check:
             goal_id: int = goals_to_check.pop()
@@ -112,14 +112,14 @@ class AutoLink(Graph):
             return
         self_children: Dict[int, List[int]] = {
             goal_id: [e[0] for e in attrs["edge"]]
-            for goal_id, attrs in self.goaltree.q("edge").slice("edge").items()
+            for goal_id, attrs in self.goaltree.q().slice("edge").items()
         }
         for add_to in matching_goals:
             if target_goal not in self_children[add_to]:
                 self.goaltree.accept(ToggleLink(add_to, target_goal, EdgeType.BLOCKER))
 
     def q(self, keys: str = "name") -> RenderResult:
-        goals: Dict[GoalId, Any] = self.goaltree.q(keys).graph
+        goals: Dict[GoalId, Any] = self.goaltree.q().graph
         new_goals: Dict[GoalId, Any] = {k: v for k, v in goals.items()}
         for keyword, goal_id in self.keywords.items():
             pseudo_id: int = -(goal_id + 10)

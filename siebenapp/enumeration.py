@@ -48,7 +48,7 @@ class Enumeration(Graph):
     def _id_mapping(
         self, keys: str = "name"
     ) -> Tuple[Dict[GoalId, Any], BidirectionalIndex]:
-        goals = self.goaltree.q(keys).graph
+        goals = self.goaltree.q().graph
         return goals, BidirectionalIndex(goals)
 
     def settings(self, key: str) -> Any:

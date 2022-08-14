@@ -34,7 +34,7 @@ class Zoom(Graph):
             self.events().append(("unzoom", last_zoom))
         elif selection not in self.zoom_root:
             # try to zoom
-            origin_goals = self.goaltree.q("edge").slice("edge")
+            origin_goals = self.goaltree.q().slice("edge")
             visible_goals = self._build_visible_goals(origin_goals)
             if selection in visible_goals:
                 self.zoom_root.append(selection)
@@ -43,7 +43,7 @@ class Zoom(Graph):
                 self.error("Zooming outside of current zoom root is not allowed!")
 
     def q(self, keys: str = "name") -> RenderResult:
-        origin_goals = self.goaltree.q(keys).graph
+        origin_goals = self.goaltree.q().graph
         if self.zoom_root == [1]:
             return RenderResult(origin_goals, {})
         visible_goals = self._build_visible_goals(origin_goals)

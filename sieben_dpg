@@ -285,7 +285,7 @@ class SiebenApp:
             self.goaltree.accept(ToggleProgress())
             self.phase = "goals"
         elif app_data == 82:  # r
-            data = self.goaltree.q(keys="name,select").slice("name,select").values()
+            data = self.goaltree.q().slice("name,select").values()
             selected_text = [x["name"] for x in data if x["select"] == "select"].pop()
             self.show_dialog("Rename goal", Rename, selected_text)
         elif app_data == 84:  # t
