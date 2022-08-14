@@ -1,7 +1,7 @@
 from collections import deque
 from dataclasses import dataclass
 from enum import IntEnum
-from typing import Dict, Any, Set, Union, Tuple
+from typing import Dict, Any, Set, Union, Tuple, Optional, List
 
 
 class EdgeType(IntEnum):
@@ -25,14 +25,29 @@ class Command:
 GoalId = Union[str, int]
 
 
+@dataclass(frozen=True)
+class RenderRow:
+    """Strongly typed rendered representation of a single goal."""
+
+    goal_id: GoalId
+    raw_id: int
+    name: str
+    is_open: bool
+    is_switchable: bool
+    select: Optional[str]
+    edges: List[Tuple[GoalId, EdgeType]]
+
+
 class RenderResult:
     def __init__(
         self,
         graph: Dict[GoalId, Any] = None,
         edge_opts: Dict[str, Tuple[int, int, int]] = None,
+        rows: List[RenderRow] = None,
     ):
         self.graph = graph or {}
         self.edge_opts = edge_opts or {}
+        self.rows = rows or []
 
     def slice(self, keys: str):
         """Returns a subset of goal attributes, for the given keys only"""
