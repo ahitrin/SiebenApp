@@ -60,4 +60,4 @@ class OpenView(Graph):
             root_goal: GoalId = root_goals.pop()
             for missing_goal in not_linked:
                 result[root_goal]["edge"].append((missing_goal, EdgeType.BLOCKER))
-        return RenderResult(result, {})
+        return RenderResult(result)

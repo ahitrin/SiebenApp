@@ -124,7 +124,7 @@ class Goals(Graph):
                 "select": sel(key),
                 "switchable": self._switchable(key),
             }
-        return RenderResult(result, {})
+        return RenderResult(result)
 
     def _switchable(self, key: int) -> bool:
         if key in self.closed:

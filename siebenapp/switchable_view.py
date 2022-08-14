@@ -40,4 +40,4 @@ class SwitchableView(Graph):
             }
             for v in goals.values():
                 v["edge"] = []
-        return RenderResult(goals, {})
+        return RenderResult(goals)

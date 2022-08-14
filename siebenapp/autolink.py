@@ -138,7 +138,7 @@ class AutoLink(Graph):
                 "switchable": False,
             }
             new_goals[pseudo_id] = pseudo_goal
-        return RenderResult(new_goals, {})
+        return RenderResult(new_goals)
 
     @staticmethod
     def export(goals: "AutoLink") -> AutoLinkData:

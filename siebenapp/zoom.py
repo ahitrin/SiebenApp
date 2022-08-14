@@ -45,7 +45,7 @@ class Zoom(Graph):
     def q(self) -> RenderResult:
         origin_goals = self.goaltree.q().graph
         if self.zoom_root == [1]:
-            return RenderResult(origin_goals, {})
+            return RenderResult(origin_goals)
         visible_goals = self._build_visible_goals(origin_goals)
         zoomed_goals: Dict[GoalId, Any] = {
             k: v for k, v in origin_goals.items() if k in visible_goals
@@ -69,7 +69,7 @@ class Zoom(Graph):
                 global_root_edges.add((goal_id, EdgeType.BLOCKER))
         zoomed_goals[-1]["switchable"] = False
         zoomed_goals[-1]["edge"] = sorted(list(global_root_edges))
-        return RenderResult(zoomed_goals, {})
+        return RenderResult(zoomed_goals)
 
     def accept_ToggleClose(self, command: ToggleClose):
         if self.settings("selection") == self.zoom_root[-1]:

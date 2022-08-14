@@ -92,7 +92,7 @@ class SiebenApp:
         self.dialog_event_factory = None
         # zero -> loop [ goals -> adjust -> edges -> no_update -> ... ]
         self.phase: str = "zero"
-        self.render_result: RenderResult = RenderResult({}, {})
+        self.render_result: RenderResult = RenderResult()
         self.drawn_items: List[str] = []
         self.nodes: Dict[Tuple[int, int], Any] = {}
         self.columns: int = Renderer.DEFAULT_WIDTH

@@ -65,7 +65,7 @@ class Enumeration(Graph):
                 result[new_id]["edge"] = [
                     (index.forward(edge[0]), edge[1]) for edge in val["edge"]
                 ]
-        return RenderResult(result, {})
+        return RenderResult(result)
 
     def accept_Select(self, command: Select):
         goals, index = self._id_mapping()

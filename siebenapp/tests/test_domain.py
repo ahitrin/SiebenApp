@@ -7,7 +7,7 @@ def test_render_result_slice():
         2: {"name": "Two", "edge": [], "foo": None},
         "1_1": {"name": "Fake", "edge": [1, 2]},
     }
-    r = RenderResult(graph, {})
+    r = RenderResult(graph)
     assert r.slice("name") == {
         1: {"name": "One"},
         2: {"name": "Two"},

@@ -27,10 +27,12 @@ GoalId = Union[str, int]
 
 class RenderResult:
     def __init__(
-        self, graph: Dict[GoalId, Any], edge_opts: Dict[str, Tuple[int, int, int]]
+        self,
+        graph: Dict[GoalId, Any] = None,
+        edge_opts: Dict[str, Tuple[int, int, int]] = None,
     ):
-        self.graph = graph
-        self.edge_opts = edge_opts
+        self.graph = graph or {}
+        self.edge_opts = edge_opts or {}
 
     def slice(self, keys: str):
         """Returns a subset of goal attributes, for the given keys only"""

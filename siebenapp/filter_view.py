@@ -35,7 +35,7 @@ class FilterView(Graph):
     def q(self) -> RenderResult:
         unfiltered = self.goaltree.q().graph
         filtered = self._filter(unfiltered) if self.pattern else unfiltered
-        return RenderResult(filtered, {})
+        return RenderResult(filtered)
 
     def _filter(self, unfiltered):
         accepted_nodes = [
