@@ -30,7 +30,7 @@ class SwitchableView(Graph):
         if origin.settings("filter_switchable"):
             self.accept(ToggleSwitchableView())
 
-    def q(self, keys: str = "name") -> RenderResult:
+    def q(self) -> RenderResult:
         goals: Dict[GoalId, Any] = {k: v for k, v in self.goaltree.q().graph.items()}
         if self._only_switchable:
             goals = {

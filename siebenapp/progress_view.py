@@ -26,7 +26,7 @@ class ProgressView(Graph):
         super().reconfigure_from(origin)
         self.show_progress = origin.settings("filter_progress")
 
-    def q(self, keys: str = "name") -> RenderResult:
+    def q(self) -> RenderResult:
         if not self.show_progress:
             return self.goaltree.q()
         progress_cache: Dict[GoalId, Tuple[int, int]] = {}

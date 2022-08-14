@@ -45,9 +45,7 @@ class Enumeration(Graph):
         super().__init__(goaltree)
         self.selection_cache: List[int] = []
 
-    def _id_mapping(
-        self, keys: str = "name"
-    ) -> Tuple[Dict[GoalId, Any], BidirectionalIndex]:
+    def _id_mapping(self) -> Tuple[Dict[GoalId, Any], BidirectionalIndex]:
         goals = self.goaltree.q().graph
         return goals, BidirectionalIndex(goals)
 
@@ -57,9 +55,9 @@ class Enumeration(Graph):
             return index.forward(self.goaltree.settings("root"))
         return self.goaltree.settings(key)
 
-    def q(self, keys: str = "name") -> RenderResult:
+    def q(self) -> RenderResult:
         result: Dict[GoalId, Any] = dict()
-        goals, index = self._id_mapping(keys)
+        goals, index = self._id_mapping()
         for old_id, val in goals.items():
             new_id = index.forward(old_id)
             result[new_id] = {k: v for k, v in val.items() if k != "edge"}

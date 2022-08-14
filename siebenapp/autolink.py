@@ -118,7 +118,7 @@ class AutoLink(Graph):
             if target_goal not in self_children[add_to]:
                 self.goaltree.accept(ToggleLink(add_to, target_goal, EdgeType.BLOCKER))
 
-    def q(self, keys: str = "name") -> RenderResult:
+    def q(self) -> RenderResult:
         goals: Dict[GoalId, Any] = self.goaltree.q().graph
         new_goals: Dict[GoalId, Any] = {k: v for k, v in goals.items()}
         for keyword, goal_id in self.keywords.items():

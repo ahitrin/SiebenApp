@@ -32,7 +32,7 @@ class FilterView(Graph):
         super().reconfigure_from(origin)
         self.pattern = origin.settings("filter_pattern")
 
-    def q(self, keys: str = "name") -> RenderResult:
+    def q(self) -> RenderResult:
         unfiltered = self.goaltree.q().graph
         filtered = self._filter(unfiltered) if self.pattern else unfiltered
         return RenderResult(filtered, {})

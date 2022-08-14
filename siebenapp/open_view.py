@@ -36,7 +36,7 @@ class OpenView(Graph):
             return attrs["open"] or goal_id in self.selections() or goal_id in {1, -1}
         return True
 
-    def q(self, keys: str = "name") -> RenderResult:
+    def q(self) -> RenderResult:
         goals = self.goaltree.q().graph
         result: Dict[GoalId, Any] = {
             k: {} for k, v in goals.items() if self._is_visible(k, v)

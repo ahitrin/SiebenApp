@@ -107,7 +107,7 @@ class Goals(Graph):
         self.previous_selection = self.selection
         self._events.append(("hold_select", self.selection))
 
-    def q(self, keys: str = "name") -> RenderResult:
+    def q(self) -> RenderResult:
         def sel(x: int) -> Optional[str]:
             if x == self.selection:
                 return "select"

@@ -100,7 +100,7 @@ class Graph:
             return self.goaltree.events()
         raise NotImplementedError
 
-    def q(self, keys: str = "name") -> RenderResult:
+    def q(self) -> RenderResult:
         """Run search query against content"""
         raise NotImplementedError
 

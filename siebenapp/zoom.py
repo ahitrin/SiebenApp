@@ -42,7 +42,7 @@ class Zoom(Graph):
             else:
                 self.error("Zooming outside of current zoom root is not allowed!")
 
-    def q(self, keys: str = "name") -> RenderResult:
+    def q(self) -> RenderResult:
         origin_goals = self.goaltree.q().graph
         if self.zoom_root == [1]:
             return RenderResult(origin_goals, {})
