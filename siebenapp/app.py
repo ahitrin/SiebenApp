@@ -322,7 +322,7 @@ class SiebenApp(QMainWindow):
 
     def _current_goal_label(self):
         data = (
-            self.goals.q(keys="name,select").values().slice(keys="name,select").values()
+            self.goals.q(keys="name,select").slice(keys="name,select").values()
         )
         return [x["name"] for x in data if x["select"] == "select"].pop()
 
