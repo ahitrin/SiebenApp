@@ -53,5 +53,4 @@ class ProgressView(Graph):
             old_name = attr["name"]
             attr["name"] = f"[{progress[0]}/{progress[1]}] {old_name}"
 
-        repacked: Dict[GoalId, Any] = {k: v for k, v in result.items()}
-        return RenderResult(repacked)
+        return RenderResult(result)
