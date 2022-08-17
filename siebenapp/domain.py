@@ -49,8 +49,22 @@ class RenderResult:
         self.edge_opts = edge_opts or {}
         self.rows = rows or []
 
+    def _rows_slice(self, keys: str):
+        result = {}
+        requested_keys = keys.split(",")
+        for row in self.rows:
+            attrs: Dict[str, Any] = {}
+            if "name" in requested_keys:
+                attrs["name"] = row.name
+            if "edge" in requested_keys:
+                attrs["edge"] = row.edges
+            result[row.goal_id] = attrs
+        return result
+
     def slice(self, keys: str):
         """Returns a subset of goal attributes, for the given keys only"""
+        if self.rows:
+            return self._rows_slice(keys)
         allowed_keys = set(keys.split(","))
         return {
             goal_id: {k: v for k, v in attrs.items() if k in allowed_keys}
