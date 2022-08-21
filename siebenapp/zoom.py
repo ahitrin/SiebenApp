@@ -10,6 +10,7 @@ from siebenapp.domain import (
     GoalId,
     RenderResult,
     RenderRow,
+    blocker,
 )
 from siebenapp.goaltree import Goals
 
@@ -58,9 +59,16 @@ class Zoom(Graph):
             zoomed_goals[goal]["edge"] = [
                 g for g in zoomed_goals[goal]["edge"] if g[0] in visible_goals
             ]
-        global_root_edges: Set[Tuple[int, EdgeType]] = {
-            (self.zoom_root[-1], EdgeType.BLOCKER)
-        }
+        global_root_edges: List[Tuple[GoalId, EdgeType]] = [
+            blocker(self.zoom_root[-1])
+        ] + [
+            blocker(goal_id)
+            for goal_id in [
+                self.settings("selection"),
+                self.settings("previous_selection"),
+            ]
+            if goal_id not in visible_goals and goal_id != Goals.ROOT_ID
+        ]
         for goal_id in [
             self.settings("selection"),
             self.settings("previous_selection"),
@@ -69,9 +77,8 @@ class Zoom(Graph):
                 attrs = origin_goals[goal_id]
                 attrs["edge"] = [e for e in attrs["edge"] if e[0] in visible_goals]
                 zoomed_goals[goal_id] = attrs
-                global_root_edges.add((goal_id, EdgeType.BLOCKER))
         zoomed_goals[-1]["switchable"] = False
-        zoomed_goals[-1]["edge"] = sorted(list(global_root_edges))
+        zoomed_goals[-1]["edge"] = sorted(list(set(global_root_edges)))
         return RenderResult(zoomed_goals)
 
     def accept_ToggleClose(self, command: ToggleClose):
