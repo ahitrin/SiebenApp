@@ -203,7 +203,7 @@ def test_selection_should_not_be_changed_if_selected_goal_is_not_a_child_of_zoom
             "edge": [blocker(3), blocker(4)],
             "select": None,
         },
-        2: {"name": "Blocker", "edge": [], "select": None},
+        2: {"name": "Blocker", "edge": [child(3)], "select": None},
         3: {"name": "Previous selected", "edge": [], "select": "prev"},
         4: {"name": "Zoomed", "edge": [blocker(2)], "select": "select"},
     }
@@ -252,7 +252,7 @@ def test_selection_should_not_be_changed_on_stacked_unzoom_a_long_chain_of_block
             "select": None,
         },
         2: {"name": "A", "edge": [blocker(3)], "select": None},
-        3: {"name": "D", "edge": [], "select": "select"},
+        3: {"name": "D", "edge": [blocker(4)], "select": "select"},
         4: {"name": "E", "edge": [], "select": "prev"},
     }
     goals.verify()

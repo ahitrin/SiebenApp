@@ -45,20 +45,12 @@ class Zoom(Graph):
                 self.error("Zooming outside of current zoom root is not allowed!")
 
     def q(self) -> RenderResult:
-        render_result = self.goaltree.q()
-        rows = render_result.rows
-        origin_goals = render_result.slice("name,open,switchable,edge,select")
+        rows = self.goaltree.q().rows
+        origin_root = rows[0]
+        assert origin_root.goal_id == Goals.ROOT_ID
         if self.zoom_root == [1]:
             return RenderResult(rows=rows)
         visible_goals = self._build_visible_goals(rows)
-        zoomed_goals: Dict[GoalId, Any] = {
-            k: v for k, v in origin_goals.items() if k in visible_goals
-        }
-        zoomed_goals[-1] = origin_goals[1]
-        for goal in zoomed_goals:
-            zoomed_goals[goal]["edge"] = [
-                g for g in zoomed_goals[goal]["edge"] if g[0] in visible_goals
-            ]
         global_root_edges: List[Tuple[GoalId, EdgeType]] = [
             blocker(self.zoom_root[-1])
         ] + [
@@ -69,17 +61,32 @@ class Zoom(Graph):
             ]
             if goal_id not in visible_goals and goal_id != Goals.ROOT_ID
         ]
-        for goal_id in [
-            self.settings("selection"),
-            self.settings("previous_selection"),
-        ]:
-            if goal_id not in visible_goals and goal_id != Goals.ROOT_ID:
-                attrs = origin_goals[goal_id]
-                attrs["edge"] = [e for e in attrs["edge"] if e[0] in visible_goals]
-                zoomed_goals[goal_id] = attrs
-        zoomed_goals[-1]["switchable"] = False
-        zoomed_goals[-1]["edge"] = sorted(list(set(global_root_edges)))
-        return RenderResult(zoomed_goals)
+        visible_goals.add(self.settings("selection"))
+        visible_goals.add(self.settings("previous_selection"))
+        visible_goals.discard(Goals.ROOT_ID)
+        zoomed_rows: List[RenderRow] = [
+            RenderRow(
+                r.goal_id,
+                r.raw_id,
+                r.name,
+                r.is_open,
+                r.is_switchable,
+                r.select,
+                [e for e in r.edges if e[0] in visible_goals],
+            )
+            for r in rows
+            if r.goal_id in visible_goals
+        ]
+        fake_root = RenderRow(
+            -1,
+            -1,
+            origin_root.name,
+            origin_root.is_open,
+            False,
+            origin_root.select,
+            sorted(list(set(global_root_edges))),
+        )
+        return RenderResult(rows=zoomed_rows + [fake_root])
 
     def accept_ToggleClose(self, command: ToggleClose):
         if self.settings("selection") == self.zoom_root[-1]:
