@@ -61,3 +61,10 @@ def test_render_result_slice_with_rows():
         2: {"name": "Two", "edge": []},
         "1_1": {"name": "Fake", "edge": [(1, EdgeType.BLOCKER), (2, EdgeType.BLOCKER)]},
     }
+    assert r.slice("name,edge,open,select,switchable")[2] == {
+        "name": "Two",
+        "edge": [],
+        "open": True,
+        "select": None,
+        "switchable": True,
+    }

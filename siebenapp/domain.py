@@ -58,6 +58,12 @@ class RenderResult:
                 attrs["name"] = row.name
             if "edge" in requested_keys:
                 attrs["edge"] = row.edges
+            if "open" in requested_keys:
+                attrs["open"] = row.is_open
+            if "switchable" in requested_keys:
+                attrs["switchable"] = row.is_switchable
+            if "select" in requested_keys:
+                attrs["select"] = row.select
             result[row.goal_id] = attrs
         return result
 
