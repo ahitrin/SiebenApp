@@ -33,7 +33,7 @@ class FilterView(Graph):
         self.pattern = origin.settings("filter_pattern")
 
     def q(self) -> RenderResult:
-        unfiltered = self.goaltree.q().graph
+        unfiltered = self.goaltree.q().slice("name,open,switchable,edge,select")
         filtered = self._filter(unfiltered) if self.pattern else unfiltered
         return RenderResult(filtered)
 

@@ -119,7 +119,9 @@ class AutoLink(Graph):
                 self.goaltree.accept(ToggleLink(add_to, target_goal, EdgeType.BLOCKER))
 
     def q(self) -> RenderResult:
-        goals: Dict[GoalId, Any] = self.goaltree.q().graph
+        goals: Dict[GoalId, Any] = self.goaltree.q().slice(
+            "name,open,switchable,edge,select"
+        )
         new_goals: Dict[GoalId, Any] = {k: v for k, v in goals.items()}
         for keyword, goal_id in self.keywords.items():
             pseudo_id: int = -(goal_id + 10)

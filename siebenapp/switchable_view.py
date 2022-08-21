@@ -31,7 +31,12 @@ class SwitchableView(Graph):
             self.accept(ToggleSwitchableView())
 
     def q(self) -> RenderResult:
-        goals: Dict[GoalId, Any] = {k: v for k, v in self.goaltree.q().graph.items()}
+        goals: Dict[GoalId, Any] = {
+            k: v
+            for k, v in self.goaltree.q()
+            .slice("name,open,switchable,edge,select")
+            .items()
+        }
         if self._only_switchable:
             goals = {
                 k: v

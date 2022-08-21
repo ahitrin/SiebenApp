@@ -46,7 +46,7 @@ class Enumeration(Graph):
         self.selection_cache: List[int] = []
 
     def _id_mapping(self) -> Tuple[Dict[GoalId, Any], BidirectionalIndex]:
-        goals = self.goaltree.q().graph
+        goals = self.goaltree.q().slice("name,open,switchable,edge,select")
         return goals, BidirectionalIndex(goals)
 
     def settings(self, key: str) -> Any:
