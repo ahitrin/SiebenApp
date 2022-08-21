@@ -9,6 +9,7 @@ from siebenapp.domain import (
     Delete,
     GoalId,
     RenderResult,
+    RenderRow,
 )
 from siebenapp.goaltree import Goals
 
@@ -34,8 +35,10 @@ class Zoom(Graph):
             self.events().append(("unzoom", last_zoom))
         elif selection not in self.zoom_root:
             # try to zoom
-            origin_goals = self.goaltree.q().slice("edge")
-            visible_goals = self._build_visible_goals(origin_goals)
+            render_result = self.goaltree.q()
+            rows = render_result.rows
+            origin_goals = render_result.slice("edge")
+            visible_goals = self._build_visible_goals(origin_goals, rows)
             if selection in visible_goals:
                 self.zoom_root.append(selection)
                 self.events().append(("zoom", len(self.zoom_root), selection))
@@ -43,10 +46,12 @@ class Zoom(Graph):
                 self.error("Zooming outside of current zoom root is not allowed!")
 
     def q(self) -> RenderResult:
-        origin_goals = self.goaltree.q().slice("name,open,switchable,edge,select")
+        render_result = self.goaltree.q()
+        rows = render_result.rows
+        origin_goals = render_result.slice("name,open,switchable,edge,select")
         if self.zoom_root == [1]:
-            return RenderResult(origin_goals)
-        visible_goals = self._build_visible_goals(origin_goals)
+            return RenderResult(rows=rows)
+        visible_goals = self._build_visible_goals(origin_goals, rows)
         zoomed_goals: Dict[GoalId, Any] = {
             k: v for k, v in origin_goals.items() if k in visible_goals
         }
@@ -98,7 +103,9 @@ class Zoom(Graph):
             ids.add(-1)
         return ids
 
-    def _build_visible_goals(self, edges: Dict[GoalId, Any]) -> Set[int]:
+    def _build_visible_goals(
+        self, edges: Dict[GoalId, Any], rows: List[RenderRow]
+    ) -> Set[int]:
         current_zoom_root = self.zoom_root[-1]
         if current_zoom_root == Goals.ROOT_ID:
             return set(e for e in edges.keys() if isinstance(e, int))
