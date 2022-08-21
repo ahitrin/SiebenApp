@@ -13,6 +13,7 @@ from siebenapp.domain import (
     Delete,
     GoalId,
     RenderResult,
+    RenderRow,
 )
 from siebenapp.goaltree import Goals
 
@@ -119,19 +120,19 @@ class AutoLink(Graph):
                 self.goaltree.accept(ToggleLink(add_to, target_goal, EdgeType.BLOCKER))
 
     def q(self) -> RenderResult:
-        goals: Dict[GoalId, Any] = self.goaltree.q().slice(
-            "name,open,switchable,edge,select"
-        )
-        new_goals: Dict[GoalId, Any] = {k: v for k, v in goals.items()}
+        rows: List[RenderRow] = self.goaltree.q().rows
+        new_goals: Dict[GoalId, Any] = {
+            row.goal_id: {
+                "name": row.name,
+                "open": row.is_open,
+                "switchable": row.is_switchable,
+                "edge": self._add_pseudo_goals(row.edges),
+                "select": row.select,
+            }
+            for row in rows
+        }
         for keyword, goal_id in self.keywords.items():
             pseudo_id: int = -(goal_id + 10)
-            for real_goal, attrs in goals.items():
-                real_edges: List[Tuple[int, EdgeType]] = attrs.pop("edge")
-                new_edges: List[Tuple[int, EdgeType]] = [
-                    e if e[0] != goal_id else (pseudo_id, e[1]) for e in real_edges
-                ]
-                attrs["edge"] = new_edges
-                new_goals[real_goal] = attrs
             pseudo_goal: Dict[str, Any] = {
                 "edge": [(goal_id, EdgeType.PARENT)],
                 "name": f"Autolink: '{keyword}'",
@@ -141,6 +142,18 @@ class AutoLink(Graph):
             }
             new_goals[pseudo_id] = pseudo_goal
         return RenderResult(new_goals)
+
+    def _add_pseudo_goals(
+        self, edges: List[Tuple[GoalId, EdgeType]]
+    ) -> List[Tuple[GoalId, EdgeType]]:
+        return [
+            e if e[0] not in self.keywords.values() else (AutoLink.fake_id(e[0]), e[1])
+            for e in edges
+        ]
+
+    @staticmethod
+    def fake_id(goal_id: GoalId) -> GoalId:
+        return -(goal_id + 10) if isinstance(goal_id, int) else goal_id
 
     @staticmethod
     def export(goals: "AutoLink") -> AutoLinkData:
