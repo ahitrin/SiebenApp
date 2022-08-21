@@ -35,10 +35,8 @@ class Zoom(Graph):
             self.events().append(("unzoom", last_zoom))
         elif selection not in self.zoom_root:
             # try to zoom
-            render_result = self.goaltree.q()
-            rows = render_result.rows
-            origin_goals = render_result.slice("edge")
-            visible_goals = self._build_visible_goals(origin_goals, rows)
+            rows = self.goaltree.q().rows
+            visible_goals = self._build_visible_goals(rows)
             if selection in visible_goals:
                 self.zoom_root.append(selection)
                 self.events().append(("zoom", len(self.zoom_root), selection))
@@ -51,7 +49,7 @@ class Zoom(Graph):
         origin_goals = render_result.slice("name,open,switchable,edge,select")
         if self.zoom_root == [1]:
             return RenderResult(rows=rows)
-        visible_goals = self._build_visible_goals(origin_goals, rows)
+        visible_goals = self._build_visible_goals(rows)
         zoomed_goals: Dict[GoalId, Any] = {
             k: v for k, v in origin_goals.items() if k in visible_goals
         }
@@ -103,19 +101,18 @@ class Zoom(Graph):
             ids.add(-1)
         return ids
 
-    def _build_visible_goals(
-        self, edges: Dict[GoalId, Any], rows: List[RenderRow]
-    ) -> Set[int]:
+    def _build_visible_goals(self, rows: List[RenderRow]) -> Set[GoalId]:
         current_zoom_root = self.zoom_root[-1]
         if current_zoom_root == Goals.ROOT_ID:
-            return set(e for e in edges.keys() if isinstance(e, int))
-        visible_goals = {current_zoom_root}
-        edges_to_visit = set(edges[current_zoom_root]["edge"])
+            return set(row.goal_id for row in rows)
+        index: Dict[GoalId, RenderRow] = {row.goal_id: row for row in rows}
+        visible_goals: Set[GoalId] = {current_zoom_root}
+        edges_to_visit = set(index[current_zoom_root].edges)
         while edges_to_visit:
             edge_id, edge_type = edges_to_visit.pop()
             visible_goals.add(edge_id)
             if edge_type == EdgeType.PARENT:
-                edges_to_visit.update(edges[edge_id]["edge"])
+                edges_to_visit.update(index[edge_id].edges)
         return visible_goals
 
     def verify(self) -> None:
