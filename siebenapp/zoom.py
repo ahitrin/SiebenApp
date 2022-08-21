@@ -93,9 +93,9 @@ class Zoom(Graph):
         self.goaltree.accept(ToggleClose(self.zoom_root[-1]))
 
     def accept_Delete(self, command: Delete) -> None:
-        ids_before: Set[int] = set(self.goaltree.q().slice("name").keys())
+        ids_before: Set[int] = set(r.raw_id for r in self.goaltree.q().rows)
         self.goaltree.accept(command)
-        ids_after: Set[int] = set(self.goaltree.q().slice("name").keys())
+        ids_after: Set[int] = set(r.raw_id for r in self.goaltree.q().rows)
         removed = ids_before.difference(ids_after)
         while self.zoom_root and self.zoom_root[-1] in removed:
             last_zoom = self.zoom_root.pop(-1)
