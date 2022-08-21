@@ -120,28 +120,31 @@ class AutoLink(Graph):
                 self.goaltree.accept(ToggleLink(add_to, target_goal, EdgeType.BLOCKER))
 
     def q(self) -> RenderResult:
-        rows: List[RenderRow] = self.goaltree.q().rows
-        new_goals: Dict[GoalId, Any] = {
-            row.goal_id: {
-                "name": row.name,
-                "open": row.is_open,
-                "switchable": row.is_switchable,
-                "edge": self._add_pseudo_goals(row.edges),
-                "select": row.select,
-            }
-            for row in rows
-        }
-        for keyword, goal_id in self.keywords.items():
-            pseudo_id: int = -(goal_id + 10)
-            pseudo_goal: Dict[str, Any] = {
-                "edge": [(goal_id, EdgeType.PARENT)],
-                "name": f"Autolink: '{keyword}'",
-                "open": True,
-                "select": None,
-                "switchable": False,
-            }
-            new_goals[pseudo_id] = pseudo_goal
-        return RenderResult(new_goals)
+        rows: List[RenderRow] = [
+            RenderRow(
+                row.goal_id,
+                row.raw_id,
+                row.name,
+                row.is_open,
+                row.is_switchable,
+                row.select,
+                self._add_pseudo_goals(row.edges),
+            )
+            for row in self.goaltree.q().rows
+        ]
+        fake_rows: List[RenderRow] = [
+            RenderRow(
+                AutoLink.fake_id(goal_id),
+                -1,
+                f"Autolink: '{keyword}'",
+                True,
+                False,
+                None,
+                [(goal_id, EdgeType.PARENT)],
+            )
+            for keyword, goal_id in self.keywords.items()
+        ]
+        return RenderResult(rows=rows + fake_rows)
 
     def _add_pseudo_goals(
         self, edges: List[Tuple[GoalId, EdgeType]]
