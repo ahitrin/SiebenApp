@@ -290,26 +290,11 @@ class GoalsTest(TestCase):
             RenderRow(3, 3, "B", True, True, "select", []),
         ]
 
-    def test_view_edges(self):
-        self.goals = self.build(
-            open_(1, "Root", [2, 3]),
-            open_(2, "A", [4]),
-            open_(3, "B", blockers=[4], select=previous),
-            open_(4, "C", select=selected),
-        )
-        assert self.goals.q().slice(keys="edge,switchable") == {
-            1: {
-                "edge": [(2, EdgeType.PARENT), (3, EdgeType.PARENT)],
-                "switchable": False,
-            },
-            2: {"edge": [(4, EdgeType.PARENT)], "switchable": False},
-            3: {"edge": [(4, EdgeType.BLOCKER)], "switchable": False},
-            4: {"edge": [], "switchable": True},
-        }
-
     def test_no_link_to_self_is_allowed(self):
         self.goals.accept(ToggleLink())
-        assert self.goals.q().slice(keys="edge") == {1: {"edge": []}}
+        assert self.goals.q().rows == [
+            RenderRow(1, 1, "Root", True, True, "select", [])
+        ]
 
     def test_no_loops_allowed(self):
         self.goals = self.build(
@@ -319,12 +304,12 @@ class GoalsTest(TestCase):
             open_(4, "more", select=previous),
         )
         self.goals.accept(ToggleLink())
-        assert self.goals.q().slice(keys="edge") == {
-            1: {"edge": [(2, EdgeType.PARENT)]},
-            2: {"edge": [(3, EdgeType.PARENT)]},
-            3: {"edge": [(4, EdgeType.PARENT)]},
-            4: {"edge": []},
-        }
+        assert self.goals.q().rows == [
+            RenderRow(1, 1, "Root", True, False, "select", [(2, EdgeType.PARENT)]),
+            RenderRow(2, 2, "step", True, False, None, [(3, EdgeType.PARENT)]),
+            RenderRow(3, 3, "next", True, False, None, [(4, EdgeType.PARENT)]),
+            RenderRow(4, 4, "more", True, True, "prev", []),
+        ]
 
     def test_new_parent_link_replaces_old_one(self):
         self.goals = self.build(
@@ -334,12 +319,20 @@ class GoalsTest(TestCase):
             open_(4, "Child", select=selected),
         )
         self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
-        assert self.goals.q().slice(keys="edge") == {
-            1: {"edge": [(2, EdgeType.PARENT), (3, EdgeType.PARENT)]},
-            2: {"edge": [(4, EdgeType.BLOCKER)]},
-            3: {"edge": [(4, EdgeType.PARENT)]},
-            4: {"edge": []},
-        }
+        assert self.goals.q().rows == [
+            RenderRow(
+                1,
+                1,
+                "Root",
+                True,
+                False,
+                None,
+                [(2, EdgeType.PARENT), (3, EdgeType.PARENT)],
+            ),
+            RenderRow(2, 2, "Old parent", True, False, None, [(4, EdgeType.BLOCKER)]),
+            RenderRow(3, 3, "New parent", True, False, "prev", [(4, EdgeType.PARENT)]),
+            RenderRow(4, 4, "Child", True, True, "select", []),
+        ]
 
     def test_new_parent_link_replaces_old_one_when_changed_from_blocker(self):
         self.goals = self.build(
