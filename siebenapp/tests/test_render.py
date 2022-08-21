@@ -2,7 +2,7 @@ import pytest
 
 from siebenapp.enumeration import Enumeration
 from siebenapp.switchable_view import ToggleSwitchableView, SwitchableView
-from siebenapp.domain import EdgeType
+from siebenapp.domain import EdgeType, child, blocker
 from siebenapp.render import Renderer
 from siebenapp.tests.dsl import build_goaltree, open_, selected
 
@@ -114,13 +114,13 @@ def test_split_long_edges_using_fake_goals():
     result = Renderer(goals).build().graph
     assert get_in(result, "edge_render") == {
         5: [],
-        4: [(5, EdgeType.PARENT)],
-        "1_1": [(5, EdgeType.BLOCKER)],
-        3: [(4, EdgeType.PARENT)],
+        4: [child(5)],
+        "1_1": [blocker(5)],
+        3: [child(4)],
         "1_2": [("1_1", EdgeType.BLOCKER)],
-        2: [(3, EdgeType.PARENT)],
+        2: [child(3)],
         "1_3": [("1_2", EdgeType.BLOCKER)],
-        1: [(2, EdgeType.PARENT), ("1_3", EdgeType.BLOCKER)],
+        1: [child(2), ("1_3", EdgeType.BLOCKER)],
     }
 
 
@@ -133,9 +133,9 @@ def test_use_different_long_edge_types():
     result = Renderer(goals).build().graph
     assert get_in(result, "edge_render") == {
         3: [],
-        2: [(3, EdgeType.PARENT)],
-        "1_1": [(3, EdgeType.BLOCKER)],
-        1: [(2, EdgeType.PARENT), ("1_1", EdgeType.BLOCKER)],
+        2: [child(3)],
+        "1_1": [blocker(3)],
+        1: [child(2), ("1_1", EdgeType.BLOCKER)],
     }
 
 

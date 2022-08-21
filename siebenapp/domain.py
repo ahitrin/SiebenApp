@@ -25,6 +25,16 @@ class Command:
 GoalId = Union[str, int]
 
 
+def child(goal_id: int) -> Tuple[GoalId, EdgeType]:
+    """A more compact way of writing (goal_id, EdgeType.PARENT)"""
+    return goal_id, EdgeType.PARENT
+
+
+def blocker(goal_id: int) -> Tuple[GoalId, EdgeType]:
+    """A more compact way of writing (goal_id, EdgeType.BLOCKER)"""
+    return goal_id, EdgeType.BLOCKER
+
+
 @dataclass(frozen=True)
 class RenderRow:
     """Strongly typed rendered representation of a single goal."""

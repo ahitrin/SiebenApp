@@ -13,6 +13,8 @@ from siebenapp.domain import (
     Insert,
     Rename,
     RenderRow,
+    child,
+    blocker,
 )
 from siebenapp.tests.dsl import build_goaltree, open_, selected, previous, clos_
 
@@ -36,22 +38,14 @@ class GoalsTest(TestCase):
     def test_add_goal(self):
         self.goals.accept(Add("A"))
         assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "select", [(2, EdgeType.PARENT)]),
+            RenderRow(1, 1, "Root", True, False, "select", [child(2)]),
             RenderRow(2, 2, "A", True, True, None, []),
         ]
 
     def test_add_two_goals(self):
         self.goals.accept_all(Add("A"), Add("B"))
         assert self.goals.q().rows == [
-            RenderRow(
-                1,
-                1,
-                "Root",
-                True,
-                False,
-                "select",
-                [(2, EdgeType.PARENT), (3, EdgeType.PARENT)],
-            ),
+            RenderRow(1, 1, "Root", True, False, "select", [child(2), child(3)]),
             RenderRow(2, 2, "A", True, True, None, []),
             RenderRow(3, 3, "B", True, True, None, []),
         ]
@@ -59,29 +53,29 @@ class GoalsTest(TestCase):
     def test_add_two_goals_in_a_chain(self):
         self.goals.accept_all(Add("A"), Add("AA", 2))
         assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "select", [(2, EdgeType.PARENT)]),
-            RenderRow(2, 2, "A", True, False, None, [(3, EdgeType.PARENT)]),
+            RenderRow(1, 1, "Root", True, False, "select", [child(2)]),
+            RenderRow(2, 2, "A", True, False, None, [child(3)]),
             RenderRow(3, 3, "AA", True, True, None, []),
         ]
 
     def test_rename_goal(self):
         self.goals.accept_all(Add("Boom"), Select(2), Rename("A"))
         assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "prev", [(2, EdgeType.PARENT)]),
+            RenderRow(1, 1, "Root", True, False, "prev", [child(2)]),
             RenderRow(2, 2, "A", True, True, "select", []),
         ]
 
     def test_insert_goal_in_the_middle(self):
         self.goals.accept_all(Add("B"), HoldSelect(), Select(2))
         assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "prev", [(2, EdgeType.PARENT)]),
+            RenderRow(1, 1, "Root", True, False, "prev", [child(2)]),
             RenderRow(2, 2, "B", True, True, "select", []),
         ]
         self.goals.accept(Insert("A"))
         assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "prev", [(3, EdgeType.PARENT)]),
+            RenderRow(1, 1, "Root", True, False, "prev", [child(3)]),
             RenderRow(2, 2, "B", True, True, "select", []),
-            RenderRow(3, 3, "A", True, False, None, [(2, EdgeType.PARENT)]),
+            RenderRow(3, 3, "A", True, False, None, [child(2)]),
         ]
 
     def test_insert_goal_between_independent_goals(self):
@@ -92,18 +86,10 @@ class GoalsTest(TestCase):
         )
         self.goals.accept(Insert("Wow"))
         assert self.goals.q().rows == [
-            RenderRow(
-                1,
-                1,
-                "Root",
-                True,
-                False,
-                None,
-                [(2, EdgeType.PARENT), (3, EdgeType.PARENT)],
-            ),
-            RenderRow(2, 2, "A", True, False, "prev", [(4, EdgeType.BLOCKER)]),
+            RenderRow(1, 1, "Root", True, False, None, [child(2), child(3)]),
+            RenderRow(2, 2, "A", True, False, "prev", [blocker(4)]),
             RenderRow(3, 3, "B", True, True, "select", []),
-            RenderRow(4, 4, "Wow", True, False, None, [(3, EdgeType.BLOCKER)]),
+            RenderRow(4, 4, "Wow", True, False, None, [blocker(3)]),
         ]
 
     def test_reverse_insertion(self):
@@ -115,8 +101,8 @@ class GoalsTest(TestCase):
         self.goals.accept(Insert("Intermediate?"))
         # No, it's not intermediate
         assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "select", [(2, EdgeType.PARENT)]),
-            RenderRow(2, 2, "Selected", True, False, "prev", [(3, EdgeType.BLOCKER)]),
+            RenderRow(1, 1, "Root", True, False, "select", [child(2)]),
+            RenderRow(2, 2, "Selected", True, False, "prev", [blocker(3)]),
             RenderRow(3, 3, "Intermediate?", True, True, None, []),
         ]
 
@@ -132,12 +118,12 @@ class GoalsTest(TestCase):
     def test_reopen_goal(self):
         self.goals = self.build(open_(1, "Root", [2]), clos_(2, "A", select=selected))
         assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, True, None, [(2, EdgeType.PARENT)]),
+            RenderRow(1, 1, "Root", True, True, None, [child(2)]),
             RenderRow(2, 2, "A", False, True, "select", []),
         ]
         self.goals.accept(ToggleClose())
         assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, None, [(2, EdgeType.PARENT)]),
+            RenderRow(1, 1, "Root", True, False, None, [child(2)]),
             RenderRow(2, 2, "A", True, True, "select", []),
         ]
 
@@ -149,20 +135,20 @@ class GoalsTest(TestCase):
         )
         self.goals.accept_all(Select(2), ToggleClose())
         assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, True, "select", [(2, EdgeType.PARENT)]),
-            RenderRow(2, 2, "A", False, True, None, [(3, EdgeType.PARENT)]),
+            RenderRow(1, 1, "Root", True, True, "select", [child(2)]),
+            RenderRow(2, 2, "A", False, True, None, [child(3)]),
             RenderRow(3, 3, "Ab", False, False, None, []),
         ]
         self.goals.accept_all(Select(2), ToggleClose())
         assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "prev", [(2, EdgeType.PARENT)]),
-            RenderRow(2, 2, "A", True, True, "select", [(3, EdgeType.PARENT)]),
+            RenderRow(1, 1, "Root", True, False, "prev", [child(2)]),
+            RenderRow(2, 2, "A", True, True, "select", [child(3)]),
             RenderRow(3, 3, "Ab", False, True, None, []),
         ]
         self.goals.accept_all(Select(2), ToggleClose())
         assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, True, "select", [(2, EdgeType.PARENT)]),
-            RenderRow(2, 2, "A", False, True, None, [(3, EdgeType.PARENT)]),
+            RenderRow(1, 1, "Root", True, True, "select", [child(2)]),
+            RenderRow(2, 2, "A", False, True, None, [child(3)]),
             RenderRow(3, 3, "Ab", False, False, None, []),
         ]
 
@@ -171,15 +157,15 @@ class GoalsTest(TestCase):
             open_(1, "Root", [2], select=selected), clos_(2, "A", [3]), clos_(3, "B")
         )
         assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, True, "select", [(2, EdgeType.PARENT)]),
-            RenderRow(2, 2, "A", False, True, None, [(3, EdgeType.PARENT)]),
+            RenderRow(1, 1, "Root", True, True, "select", [child(2)]),
+            RenderRow(2, 2, "A", False, True, None, [child(3)]),
             RenderRow(3, 3, "B", False, False, None, []),
         ]
         self.goals.accept_all(Select(3), ToggleClose())
         # nothing should change except select
         assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, True, "prev", [(2, EdgeType.PARENT)]),
-            RenderRow(2, 2, "A", False, True, None, [(3, EdgeType.PARENT)]),
+            RenderRow(1, 1, "Root", True, True, "prev", [child(2)]),
+            RenderRow(2, 2, "A", False, True, None, [child(3)]),
             RenderRow(3, 3, "B", False, False, "select", []),
         ]
 
@@ -192,17 +178,9 @@ class GoalsTest(TestCase):
         )
         self.goals.accept(ToggleClose())
         assert self.goals.q().rows == [
-            RenderRow(
-                1,
-                1,
-                "Root",
-                True,
-                False,
-                None,
-                [(2, EdgeType.PARENT), (3, EdgeType.PARENT)],
-            ),
-            RenderRow(2, 2, "A", True, False, None, [(4, EdgeType.BLOCKER)]),
-            RenderRow(3, 3, "B", True, False, "select", [(4, EdgeType.PARENT)]),
+            RenderRow(1, 1, "Root", True, False, None, [child(2), child(3)]),
+            RenderRow(2, 2, "A", True, False, None, [blocker(4)]),
+            RenderRow(3, 3, "B", True, False, "select", [child(4)]),
             RenderRow(4, 4, "C", True, True, None, []),
         ]
 
@@ -219,7 +197,7 @@ class GoalsTest(TestCase):
         )
         self.goals.accept(Delete())
         assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "select", [(3, EdgeType.PARENT)]),
+            RenderRow(1, 1, "Root", True, False, "select", [child(3)]),
             RenderRow(3, 3, "B", True, True, None, []),
         ]
 
@@ -240,7 +218,7 @@ class GoalsTest(TestCase):
         )
         self.goals.accept(Delete())
         assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "select", [(3, EdgeType.BLOCKER)]),
+            RenderRow(1, 1, "Root", True, False, "select", [blocker(3)]),
             RenderRow(3, 3, "B", True, True, None, []),
         ]
 
@@ -252,7 +230,7 @@ class GoalsTest(TestCase):
         )
         self.goals.accept(Delete())
         assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, None, [(2, EdgeType.PARENT)]),
+            RenderRow(1, 1, "Root", True, False, None, [child(2)]),
             RenderRow(2, 2, "Parent", True, True, "select", []),
         ]
 
@@ -263,30 +241,14 @@ class GoalsTest(TestCase):
             open_(3, "B", select=selected),
         )
         assert self.goals.q().rows == [
-            RenderRow(
-                1,
-                1,
-                "Root",
-                True,
-                False,
-                None,
-                [(2, EdgeType.PARENT), (3, EdgeType.PARENT)],
-            ),
+            RenderRow(1, 1, "Root", True, False, None, [child(2), child(3)]),
             RenderRow(2, 2, "A", True, True, "prev", []),
             RenderRow(3, 3, "B", True, True, "select", []),
         ]
         self.goals.accept(ToggleLink())
         assert self.goals.q().rows == [
-            RenderRow(
-                1,
-                1,
-                "Root",
-                True,
-                False,
-                None,
-                [(2, EdgeType.PARENT), (3, EdgeType.PARENT)],
-            ),
-            RenderRow(2, 2, "A", True, False, "prev", [(3, EdgeType.BLOCKER)]),
+            RenderRow(1, 1, "Root", True, False, None, [child(2), child(3)]),
+            RenderRow(2, 2, "A", True, False, "prev", [blocker(3)]),
             RenderRow(3, 3, "B", True, True, "select", []),
         ]
 
@@ -305,9 +267,9 @@ class GoalsTest(TestCase):
         )
         self.goals.accept(ToggleLink())
         assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "select", [(2, EdgeType.PARENT)]),
-            RenderRow(2, 2, "step", True, False, None, [(3, EdgeType.PARENT)]),
-            RenderRow(3, 3, "next", True, False, None, [(4, EdgeType.PARENT)]),
+            RenderRow(1, 1, "Root", True, False, "select", [child(2)]),
+            RenderRow(2, 2, "step", True, False, None, [child(3)]),
+            RenderRow(3, 3, "next", True, False, None, [child(4)]),
             RenderRow(4, 4, "more", True, True, "prev", []),
         ]
 
@@ -320,17 +282,9 @@ class GoalsTest(TestCase):
         )
         self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
         assert self.goals.q().rows == [
-            RenderRow(
-                1,
-                1,
-                "Root",
-                True,
-                False,
-                None,
-                [(2, EdgeType.PARENT), (3, EdgeType.PARENT)],
-            ),
-            RenderRow(2, 2, "Old parent", True, False, None, [(4, EdgeType.BLOCKER)]),
-            RenderRow(3, 3, "New parent", True, False, "prev", [(4, EdgeType.PARENT)]),
+            RenderRow(1, 1, "Root", True, False, None, [child(2), child(3)]),
+            RenderRow(2, 2, "Old parent", True, False, None, [blocker(4)]),
+            RenderRow(3, 3, "New parent", True, False, "prev", [child(4)]),
             RenderRow(4, 4, "Child", True, True, "select", []),
         ]
 
@@ -342,17 +296,9 @@ class GoalsTest(TestCase):
         )
         self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
         assert self.goals.q().rows == [
-            RenderRow(
-                1,
-                1,
-                "Root",
-                True,
-                False,
-                None,
-                [(2, EdgeType.BLOCKER), (3, EdgeType.PARENT)],
-            ),
+            RenderRow(1, 1, "Root", True, False, None, [blocker(2), child(3)]),
             RenderRow(2, 2, "A", True, True, "select", []),
-            RenderRow(3, 3, "B", True, False, "prev", [(2, EdgeType.PARENT)]),
+            RenderRow(3, 3, "B", True, False, "prev", [child(2)]),
         ]
 
     def test_remove_link_between_goals(self):
@@ -363,15 +309,7 @@ class GoalsTest(TestCase):
         )
         self.goals.accept(ToggleLink(edge_type=EdgeType.BLOCKER))
         assert self.goals.q().rows == [
-            RenderRow(
-                1,
-                1,
-                "Root",
-                True,
-                False,
-                None,
-                [(2, EdgeType.PARENT), (3, EdgeType.PARENT)],
-            ),
+            RenderRow(1, 1, "Root", True, False, None, [child(2), child(3)]),
             RenderRow(2, 2, "A", True, True, "prev", []),
             RenderRow(3, 3, "B", True, True, "select", []),
         ]
@@ -381,17 +319,17 @@ class GoalsTest(TestCase):
             open_(1, "Root", [2], select=previous), open_(2, "Top", [], select=selected)
         )
         assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "prev", [(2, EdgeType.PARENT)]),
+            RenderRow(1, 1, "Root", True, False, "prev", [child(2)]),
             RenderRow(2, 2, "Top", True, True, "select", []),
         ]
         self.goals.accept(ToggleLink())
         assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "prev", [(2, EdgeType.BLOCKER)]),
+            RenderRow(1, 1, "Root", True, False, "prev", [blocker(2)]),
             RenderRow(2, 2, "Top", True, True, "select", []),
         ]
         self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
         assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "prev", [(2, EdgeType.PARENT)]),
+            RenderRow(1, 1, "Root", True, False, "prev", [child(2)]),
             RenderRow(2, 2, "Top", True, True, "select", []),
         ]
 
@@ -403,23 +341,15 @@ class GoalsTest(TestCase):
             open_(4, "C", select=selected),
         )
         assert self.goals.q().rows == [
-            RenderRow(
-                1,
-                1,
-                "Root",
-                True,
-                False,
-                None,
-                [(2, EdgeType.PARENT), (3, EdgeType.PARENT)],
-            ),
-            RenderRow(2, 2, "A", True, False, None, [(4, EdgeType.PARENT)]),
-            RenderRow(3, 3, "B", True, False, None, [(4, EdgeType.BLOCKER)]),
+            RenderRow(1, 1, "Root", True, False, None, [child(2), child(3)]),
+            RenderRow(2, 2, "A", True, False, None, [child(4)]),
+            RenderRow(3, 3, "B", True, False, None, [blocker(4)]),
             RenderRow(4, 4, "C", True, True, "select", []),
         ]
         self.goals.accept_all(Select(3), Delete())
         assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "select", [(2, EdgeType.PARENT)]),
-            RenderRow(2, 2, "A", True, False, None, [(4, EdgeType.PARENT)]),
+            RenderRow(1, 1, "Root", True, False, "select", [child(2)]),
+            RenderRow(2, 2, "A", True, False, None, [child(4)]),
             RenderRow(4, 4, "C", True, True, None, []),
         ]
 
@@ -429,20 +359,12 @@ class GoalsTest(TestCase):
         ]
         self.goals.accept(Add("A"))
         assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "select", [(2, EdgeType.PARENT)]),
+            RenderRow(1, 1, "Root", True, False, "select", [child(2)]),
             RenderRow(2, 2, "A", True, True, None, []),
         ]
         self.goals.accept(Add("B"))
         assert self.goals.q().rows == [
-            RenderRow(
-                1,
-                1,
-                "Root",
-                True,
-                False,
-                "select",
-                [(2, EdgeType.PARENT), (3, EdgeType.PARENT)],
-            ),
+            RenderRow(1, 1, "Root", True, False, "select", [child(2), child(3)]),
             RenderRow(2, 2, "A", True, True, None, []),
             RenderRow(3, 3, "B", True, True, None, []),
         ]
@@ -450,13 +372,13 @@ class GoalsTest(TestCase):
     def test_new_goal_is_added_to_the_selected_node(self):
         self.goals.accept_all(Add("A"), Select(2))
         assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "prev", [(2, EdgeType.PARENT)]),
+            RenderRow(1, 1, "Root", True, False, "prev", [child(2)]),
             RenderRow(2, 2, "A", True, True, "select", []),
         ]
         self.goals.accept(Add("B"))
         assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "prev", [(2, EdgeType.PARENT)]),
-            RenderRow(2, 2, "A", True, False, "select", [(3, EdgeType.PARENT)]),
+            RenderRow(1, 1, "Root", True, False, "prev", [child(2)]),
+            RenderRow(2, 2, "A", True, False, "select", [child(3)]),
             RenderRow(3, 3, "B", True, True, None, []),
         ]
 
@@ -469,15 +391,7 @@ class GoalsTest(TestCase):
         )
         self.goals.accept(ToggleClose())
         assert self.goals.q().rows == [
-            RenderRow(
-                1,
-                1,
-                "Root",
-                True,
-                False,
-                None,
-                [(2, EdgeType.PARENT), (3, EdgeType.PARENT), (4, EdgeType.PARENT)],
-            ),
+            RenderRow(1, 1, "Root", True, False, None, [child(2), child(3), child(4)]),
             RenderRow(2, 2, "A", False, True, None, []),
             RenderRow(3, 3, "B", True, True, "select", []),
             RenderRow(4, 4, "C", True, True, None, []),
@@ -492,15 +406,7 @@ class GoalsTest(TestCase):
         )
         self.goals.accept(ToggleClose())
         assert self.goals.q().rows == [
-            RenderRow(
-                1,
-                1,
-                "Root",
-                True,
-                False,
-                None,
-                [(2, EdgeType.PARENT), (3, EdgeType.PARENT), (4, EdgeType.PARENT)],
-            ),
+            RenderRow(1, 1, "Root", True, False, None, [child(2), child(3), child(4)]),
             RenderRow(2, 2, "A", False, True, None, []),
             RenderRow(3, 3, "B", True, True, None, []),
             RenderRow(4, 4, "C", True, True, "select", []),
@@ -516,28 +422,9 @@ class GoalsTest(TestCase):
         )
         self.goals.accept(ToggleClose(3))
         assert self.goals.q().rows == [
-            RenderRow(
-                1,
-                1,
-                "Root",
-                True,
-                False,
-                None,
-                [(2, EdgeType.PARENT), (3, EdgeType.PARENT)],
-            ),
+            RenderRow(1, 1, "Root", True, False, None, [child(2), child(3)]),
             RenderRow(2, 2, "Should not be selected", True, True, None, []),
-            RenderRow(
-                3,
-                3,
-                "Subroot",
-                True,
-                False,
-                None,
-                [
-                    (4, EdgeType.PARENT),
-                    (5, EdgeType.PARENT),
-                ],
-            ),
+            RenderRow(3, 3, "Subroot", True, False, None, [child(4), child(5)]),
             RenderRow(4, 4, "Must be selected", True, True, "select", []),
             RenderRow(5, 5, "Closing", False, True, None, []),
         ]
@@ -553,29 +440,10 @@ class GoalsTest(TestCase):
         )
         self.goals.accept(ToggleClose(3))
         assert self.goals.q().rows == [
-            RenderRow(
-                1,
-                1,
-                "Root",
-                True,
-                False,
-                None,
-                [(2, EdgeType.PARENT), (3, EdgeType.PARENT)],
-            ),
+            RenderRow(1, 1, "Root", True, False, None, [child(2), child(3)]),
             RenderRow(2, 2, "Should not be selected", True, True, None, []),
-            RenderRow(
-                3,
-                3,
-                "Subroot",
-                True,
-                False,
-                None,
-                [
-                    (4, EdgeType.PARENT),
-                    (5, EdgeType.PARENT),
-                ],
-            ),
-            RenderRow(4, 4, "Intermediate", True, False, None, [(6, EdgeType.PARENT)]),
+            RenderRow(3, 3, "Subroot", True, False, None, [child(4), child(5)]),
+            RenderRow(4, 4, "Intermediate", True, False, None, [child(6)]),
             RenderRow(5, 5, "Closing", False, True, None, []),
             RenderRow(6, 6, "Must be selected", True, True, "select", []),
         ]
@@ -619,16 +487,16 @@ class GoalsTest(TestCase):
                 False,
                 "prev",
                 [
-                    (2, EdgeType.PARENT),
-                    (3, EdgeType.PARENT),
-                    (4, EdgeType.PARENT),
-                    (5, EdgeType.PARENT),
-                    (6, EdgeType.PARENT),
-                    (7, EdgeType.PARENT),
-                    (8, EdgeType.PARENT),
-                    (9, EdgeType.PARENT),
-                    (10, EdgeType.PARENT),
-                    (11, EdgeType.PARENT),
+                    child(2),
+                    child(3),
+                    child(4),
+                    child(5),
+                    child(6),
+                    child(7),
+                    child(8),
+                    child(9),
+                    child(10),
+                    child(11),
                 ],
             ),
             RenderRow(2, 2, "A", True, True, "select", []),
@@ -652,16 +520,16 @@ class GoalsTest(TestCase):
                 False,
                 "prev",
                 [
-                    (2, EdgeType.PARENT),
-                    (3, EdgeType.PARENT),
-                    (4, EdgeType.PARENT),
-                    (5, EdgeType.PARENT),
-                    (6, EdgeType.PARENT),
-                    (7, EdgeType.PARENT),
-                    (8, EdgeType.PARENT),
-                    (9, EdgeType.PARENT),
-                    (10, EdgeType.PARENT),
-                    (11, EdgeType.PARENT),
+                    child(2),
+                    child(3),
+                    child(4),
+                    child(5),
+                    child(6),
+                    child(7),
+                    child(8),
+                    child(9),
+                    child(10),
+                    child(11),
                 ],
             ),
             RenderRow(2, 2, "A", True, True, None, []),

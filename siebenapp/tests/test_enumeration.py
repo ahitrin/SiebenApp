@@ -1,6 +1,6 @@
 import pytest
 
-from siebenapp.domain import EdgeType, Add, Select
+from siebenapp.domain import EdgeType, Add, Select, child, blocker
 from siebenapp.enumeration import Enumeration, BidirectionalIndex
 from siebenapp.goaltree import Goals
 from siebenapp.layers import all_layers
@@ -43,8 +43,8 @@ def test_simple_enumeration_is_not_changed():
         )
     )
     assert e.q().slice(keys="name,edge") == {
-        1: {"name": "a", "edge": [(2, EdgeType.PARENT), (3, EdgeType.PARENT)]},
-        2: {"name": "b", "edge": [(3, EdgeType.BLOCKER)]},
+        1: {"name": "a", "edge": [child(2), child(3)]},
+        2: {"name": "b", "edge": [blocker(3)]},
         3: {"name": "c", "edge": []},
     }
     assert e.settings("root") == Goals.ROOT_ID
@@ -53,15 +53,15 @@ def test_simple_enumeration_is_not_changed():
 def test_apply_mapping_for_the_10th_element(goal_chain_10):
     e = Enumeration(goal_chain_10)
     assert e.q().slice(keys="name,edge") == {
-        1: {"name": "a", "edge": [(2, EdgeType.PARENT)]},
-        2: {"name": "b", "edge": [(3, EdgeType.PARENT)]},
-        3: {"name": "c", "edge": [(4, EdgeType.PARENT)]},
-        4: {"name": "d", "edge": [(5, EdgeType.PARENT)]},
-        5: {"name": "e", "edge": [(6, EdgeType.PARENT)]},
-        6: {"name": "f", "edge": [(7, EdgeType.PARENT)]},
-        7: {"name": "g", "edge": [(8, EdgeType.PARENT)]},
-        8: {"name": "h", "edge": [(9, EdgeType.PARENT)]},
-        9: {"name": "i", "edge": [(0, EdgeType.PARENT)]},
+        1: {"name": "a", "edge": [child(2)]},
+        2: {"name": "b", "edge": [child(3)]},
+        3: {"name": "c", "edge": [child(4)]},
+        4: {"name": "d", "edge": [child(5)]},
+        5: {"name": "e", "edge": [child(6)]},
+        6: {"name": "f", "edge": [child(7)]},
+        7: {"name": "g", "edge": [child(8)]},
+        8: {"name": "h", "edge": [child(9)]},
+        9: {"name": "i", "edge": [child(0)]},
         0: {"name": "j", "edge": []},
     }
     assert e.settings("root") == Goals.ROOT_ID
@@ -70,16 +70,16 @@ def test_apply_mapping_for_the_10th_element(goal_chain_10):
 def test_apply_mapping_for_the_11th_element(goal_chain_11):
     e = Enumeration(goal_chain_11)
     assert e.q().slice(keys="name,edge") == {
-        11: {"name": "a", "edge": [(12, EdgeType.PARENT)]},
-        12: {"name": "b", "edge": [(13, EdgeType.PARENT)]},
-        13: {"name": "c", "edge": [(14, EdgeType.PARENT)]},
-        14: {"name": "d", "edge": [(15, EdgeType.PARENT)]},
-        15: {"name": "e", "edge": [(16, EdgeType.PARENT)]},
-        16: {"name": "f", "edge": [(17, EdgeType.PARENT)]},
-        17: {"name": "g", "edge": [(18, EdgeType.PARENT)]},
-        18: {"name": "h", "edge": [(19, EdgeType.PARENT)]},
-        19: {"name": "i", "edge": [(10, EdgeType.PARENT)]},
-        10: {"name": "j", "edge": [(21, EdgeType.PARENT)]},
+        11: {"name": "a", "edge": [child(12)]},
+        12: {"name": "b", "edge": [child(13)]},
+        13: {"name": "c", "edge": [child(14)]},
+        14: {"name": "d", "edge": [child(15)]},
+        15: {"name": "e", "edge": [child(16)]},
+        16: {"name": "f", "edge": [child(17)]},
+        17: {"name": "g", "edge": [child(18)]},
+        18: {"name": "h", "edge": [child(19)]},
+        19: {"name": "i", "edge": [child(10)]},
+        10: {"name": "j", "edge": [child(21)]},
         21: {"name": "k", "edge": []},
     }
     assert e.settings("root") == 11
@@ -258,14 +258,14 @@ def test_do_not_enumerate_goals_with_negative_id():
     )
     g.accept(ToggleZoom())
     assert g.q().slice("name,select,edge") == {
-        -1: {"name": "Root", "select": None, "edge": [(2, EdgeType.BLOCKER)]},
-        2: {"name": "Zoomed", "select": "select", "edge": [(3, EdgeType.PARENT)]},
+        -1: {"name": "Root", "select": None, "edge": [blocker(2)]},
+        2: {"name": "Zoomed", "select": "select", "edge": [child(3)]},
         3: {"name": "Top", "select": None, "edge": []},
     }
     e = Enumeration(g)
     assert e.q().slice("name,select,edge") == {
-        -1: {"name": "Root", "select": None, "edge": [(1, EdgeType.BLOCKER)]},
-        1: {"name": "Zoomed", "select": "select", "edge": [(2, EdgeType.PARENT)]},
+        -1: {"name": "Root", "select": None, "edge": [blocker(1)]},
+        1: {"name": "Zoomed", "select": "select", "edge": [child(2)]},
         2: {"name": "Top", "select": None, "edge": []},
     }
 

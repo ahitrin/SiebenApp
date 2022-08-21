@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Dict, Any, Set, List, Tuple
 
-from siebenapp.domain import Command, Graph, EdgeType, RenderResult, GoalId
+from siebenapp.domain import Command, Graph, EdgeType, RenderResult, GoalId, blocker
 
 
 @dataclass(frozen=True)

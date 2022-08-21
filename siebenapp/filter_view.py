@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Dict, Any
 
-from siebenapp.domain import Graph, Command, EdgeType, RenderResult
+from siebenapp.domain import Graph, Command, EdgeType, RenderResult, blocker
 
 
 @dataclass(frozen=True)
@@ -56,8 +56,8 @@ class FilterView(Graph):
             if goal_id in accepted_nodes:
                 attrs["edge"] = [e for e in attrs["edge"] if e[0] in accepted_nodes]
                 if goal_id > 1:
-                    filtered[-2]["edge"].append((goal_id, EdgeType.BLOCKER))
+                    filtered[-2]["edge"].append(blocker(goal_id))
                 else:
-                    attrs["edge"].insert(0, (-2, EdgeType.BLOCKER))
+                    attrs["edge"].insert(0, blocker(-2))
                 filtered[goal_id] = attrs
         return filtered

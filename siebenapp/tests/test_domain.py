@@ -1,4 +1,4 @@
-from siebenapp.domain import RenderResult, RenderRow, EdgeType
+from siebenapp.domain import RenderResult, RenderRow, EdgeType, blocker
 
 
 def test_render_result_slice():
@@ -44,7 +44,7 @@ def test_render_result_slice_with_rows():
             goal_id="1_1",
             raw_id=-123,
             name="Fake",
-            edges=[(1, EdgeType.BLOCKER), (2, EdgeType.BLOCKER)],
+            edges=[blocker(1), blocker(2)],
             is_open=True,
             is_switchable=False,
             select=None,
@@ -59,7 +59,7 @@ def test_render_result_slice_with_rows():
     assert r.slice("name,edge") == {
         1: {"name": "One", "edge": []},
         2: {"name": "Two", "edge": []},
-        "1_1": {"name": "Fake", "edge": [(1, EdgeType.BLOCKER), (2, EdgeType.BLOCKER)]},
+        "1_1": {"name": "Fake", "edge": [blocker(1), blocker(2)]},
     }
     assert r.slice("name,edge,open,select,switchable")[2] == {
         "name": "Two",

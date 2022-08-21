@@ -6,7 +6,7 @@ from approvaltests import verify, Options  # type: ignore
 from approvaltests.reporters import GenericDiffReporterFactory  # type: ignore
 from approvaltests.reporters.generic_diff_reporter import GenericDiffReporter  # type: ignore
 
-from siebenapp.domain import Select, EdgeType
+from siebenapp.domain import Select, EdgeType, child
 from siebenapp.enumeration import Enumeration
 from siebenapp.layers import all_layers, persistent_layers
 from siebenapp.manage import main, dot_export, extract_subtree
@@ -227,6 +227,6 @@ def test_extract_misordered():
     )
     result = extract_subtree(source, 3)
     assert result.q().slice("name,edge") == {
-        1: {"name": "Extraction root", "edge": [(2, EdgeType.PARENT)]},
+        1: {"name": "Extraction root", "edge": [child(2)]},
         2: {"name": "Top", "edge": []},
     }

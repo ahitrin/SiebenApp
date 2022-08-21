@@ -1,6 +1,6 @@
 import pytest
 
-from siebenapp.domain import Select, ToggleClose, EdgeType, HoldSelect
+from siebenapp.domain import Select, ToggleClose, EdgeType, HoldSelect, child, blocker
 from siebenapp.open_view import ToggleOpenView, OpenView
 from siebenapp.tests.dsl import build_goaltree, open_, selected, clos_, previous
 
@@ -44,7 +44,7 @@ def test_closed_goal_is_not_shown_by_default(two_goals):
 def test_closed_goal_is_shown_after_switch(two_goals):
     two_goals.accept(ToggleOpenView())
     assert two_goals.q().slice("name,open,edge") == {
-        1: {"name": "Open", "open": True, "edge": [(2, EdgeType.PARENT)]},
+        1: {"name": "Open", "open": True, "edge": [child(2)]},
         2: {"name": "Closed", "open": False, "edge": []},
     }
     two_goals.accept(ToggleOpenView())
@@ -66,7 +66,7 @@ def test_simple_open_enumeration_workflow():
             "name": "Root",
             "select": "prev",
             "open": True,
-            "edge": [(2, EdgeType.PARENT), (3, EdgeType.PARENT)],
+            "edge": [child(2), child(3)],
         },
         2: {"name": "1", "select": "select", "open": True, "edge": []},
         3: {"name": "2", "select": None, "open": True, "edge": []},
@@ -77,7 +77,7 @@ def test_simple_open_enumeration_workflow():
             "name": "Root",
             "select": "select",
             "open": True,
-            "edge": [(3, EdgeType.PARENT)],
+            "edge": [child(3)],
         },
         3: {"name": "2", "select": None, "open": True, "edge": []},
     }
@@ -117,7 +117,7 @@ def test_build_fake_links_to_far_closed_goals():
         )
     )
     assert v.q().slice("select,edge") == {
-        1: {"select": "prev", "edge": [(3, EdgeType.BLOCKER)]},
+        1: {"select": "prev", "edge": [blocker(3)]},
         3: {"select": "select", "edge": []},
     }
 
@@ -130,6 +130,6 @@ def test_still_show_root_when_it_is_closed_and_unselected():
         )
     )
     assert v.q().slice("select,open,edge") == {
-        1: {"select": None, "open": False, "edge": [(2, EdgeType.PARENT)]},
+        1: {"select": None, "open": False, "edge": [child(2)]},
         2: {"select": "select", "open": False, "edge": []},
     }
