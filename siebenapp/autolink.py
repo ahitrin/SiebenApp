@@ -92,8 +92,8 @@ class AutoLink(Graph):
 
     def accept_Delete(self, command: Delete) -> None:
         selected_id: int = command.goal_id or self.settings("selection")
-        edges: Dict[GoalId, List[Tuple[GoalId, EdgeType]]] = {
-            row.goal_id: row.edges for row in self.goaltree.q().rows
+        edges: Dict[int, List[Tuple[GoalId, EdgeType]]] = {
+            row.raw_id: row.edges for row in self.goaltree.q().rows
         }
         goals_to_check: List[int] = [selected_id]
         while goals_to_check:
@@ -115,8 +115,8 @@ class AutoLink(Graph):
     def _make_links(self, matching_goals: List[int], target_goal: int) -> None:
         if not matching_goals:
             return
-        self_children: Dict[GoalId, List[GoalId]] = {
-            row.goal_id: [e[0] for e in row.edges] for row in self.goaltree.q().rows
+        self_children: Dict[int, List[GoalId]] = {
+            row.raw_id: [e[0] for e in row.edges] for row in self.goaltree.q().rows
         }
         for add_to in matching_goals:
             if target_goal not in self_children[add_to]:
