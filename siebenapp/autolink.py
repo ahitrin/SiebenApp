@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, Any, List, Union, Tuple, Optional, Set
+from typing import Dict, List, Union, Tuple, Optional, Set
 
 from siebenapp.domain import (
     Graph,
@@ -92,12 +92,16 @@ class AutoLink(Graph):
 
     def accept_Delete(self, command: Delete) -> None:
         selected_id: int = command.goal_id or self.settings("selection")
-        edges: Dict[int, Any] = self.goaltree.q().slice("edge")
+        edges: Dict[GoalId, List[Tuple[GoalId, EdgeType]]] = {
+            row.goal_id: row.edges for row in self.goaltree.q().rows
+        }
         goals_to_check: List[int] = [selected_id]
         while goals_to_check:
             goal_id: int = goals_to_check.pop()
             goals_to_check.extend(
-                e[0] for e in edges[goal_id]["edge"] if e[1] == EdgeType.PARENT
+                e[0]
+                for e in edges[goal_id]
+                if e[1] == EdgeType.PARENT and isinstance(e[0], int)
             )
             if goal_id in self.back_kw:
                 added_kw: str = self.back_kw.pop(goal_id)
