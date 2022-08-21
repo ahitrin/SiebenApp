@@ -111,9 +111,8 @@ class AutoLink(Graph):
     def _make_links(self, matching_goals: List[int], target_goal: int) -> None:
         if not matching_goals:
             return
-        self_children: Dict[int, List[int]] = {
-            goal_id: [e[0] for e in attrs["edge"]]
-            for goal_id, attrs in self.goaltree.q().slice("edge").items()
+        self_children: Dict[GoalId, List[GoalId]] = {
+            row.goal_id: [e[0] for e in row.edges] for row in self.goaltree.q().rows
         }
         for add_to in matching_goals:
             if target_goal not in self_children[add_to]:
