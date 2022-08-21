@@ -51,19 +51,17 @@ class Zoom(Graph):
         if self.zoom_root == [1]:
             return RenderResult(rows=rows)
         visible_goals = self._build_visible_goals(rows)
+        selected_goals: Set[int] = {
+            self.settings("selection"),
+            self.settings("previous_selection"),
+        }.difference({Goals.ROOT_ID})
         global_root_edges: List[Tuple[GoalId, EdgeType]] = [
             blocker(self.zoom_root[-1])
         ] + [
             blocker(goal_id)
-            for goal_id in [
-                self.settings("selection"),
-                self.settings("previous_selection"),
-            ]
-            if goal_id not in visible_goals and goal_id != Goals.ROOT_ID
+            for goal_id in selected_goals
+            if goal_id not in visible_goals
         ]
-        visible_goals.add(self.settings("selection"))
-        visible_goals.add(self.settings("previous_selection"))
-        visible_goals.discard(Goals.ROOT_ID)
         zoomed_rows: List[RenderRow] = [
             RenderRow(
                 r.goal_id,
@@ -72,10 +70,10 @@ class Zoom(Graph):
                 r.is_open,
                 r.is_switchable,
                 r.select,
-                [e for e in r.edges if e[0] in visible_goals],
+                [e for e in r.edges if e[0] in visible_goals.union(selected_goals)],
             )
             for r in rows
-            if r.goal_id in visible_goals
+            if r.goal_id in visible_goals.union(selected_goals)
         ]
         fake_root = RenderRow(
             -1,
