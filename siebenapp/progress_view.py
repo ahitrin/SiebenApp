@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Dict, Any, Tuple, List
 
-from siebenapp.domain import Graph, Command, EdgeType, GoalId, RenderResult
+from siebenapp.domain import Graph, Command, EdgeType, GoalId, RenderResult, RenderRow
 
 
 @dataclass(frozen=True)
@@ -27,30 +27,37 @@ class ProgressView(Graph):
         self.show_progress = origin.settings("filter_progress")
 
     def q(self) -> RenderResult:
+        render_result = self.goaltree.q()
         if not self.show_progress:
-            return self.goaltree.q()
+            return render_result
         progress_cache: Dict[GoalId, Tuple[int, int]] = {}
-        result = self.goaltree.q().slice("name,open,switchable,edge,select")
-        queue: List[GoalId] = list(result.keys())
+        rows = render_result.rows
+        queue: List[RenderRow] = list(rows)
         while queue:
-            goal_id = queue.pop(0)
-            children = [
-                x[0] for x in result[goal_id]["edge"] if x[1] == EdgeType.PARENT
-            ]
-            open_count = 0 if result[goal_id]["open"] else 1
+            row = queue.pop(0)
+            children = [x[0] for x in row.edges if x[1] == EdgeType.PARENT]
+            open_count = 0 if row.is_open else 1
             if not children:
-                progress_cache[goal_id] = (open_count, 1)
+                progress_cache[row.goal_id] = (open_count, 1)
             elif all(g in progress_cache for g in children):
-                progress_cache[goal_id] = (
+                progress_cache[row.goal_id] = (
                     sum(progress_cache[x][0] for x in children) + open_count,
                     sum(progress_cache[x][1] for x in children) + 1,
                 )
             else:
-                queue.append(goal_id)
+                queue.append(row)
 
-        for goal_id, attr in result.items():
-            progress = progress_cache[goal_id]
-            old_name = attr["name"]
-            attr["name"] = f"[{progress[0]}/{progress[1]}] {old_name}"
+        result_rows: List[RenderRow] = [
+            RenderRow(
+                row.goal_id,
+                row.raw_id,
+                f"[{progress_cache[row.goal_id][0]}/{progress_cache[row.goal_id][1]}] {row.name}",
+                row.is_open,
+                row.is_switchable,
+                row.select,
+                row.edges,
+            )
+            for row in rows
+        ]
 
-        return RenderResult(result)
+        return RenderResult(rows=result_rows)
