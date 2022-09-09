@@ -56,7 +56,7 @@ class Renderer:
 
     def __init__(self, goals: Graph, width_limit=DEFAULT_WIDTH) -> None:
         self.width_limit = width_limit
-        original_graph: Dict[int, Any] = goals.q().slice(
+        original_graph: Dict[GoalId, Any] = goals.q().slice(
             keys="name,edge,open,select,switchable"
         )
         self.graph: Dict[GoalId, Any] = {k: v for k, v in original_graph.items()}
