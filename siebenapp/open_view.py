@@ -1,7 +1,14 @@
 from dataclasses import dataclass
-from typing import Dict, Any, Set, List, Tuple
+from typing import Dict, Any, Set, List
 
-from siebenapp.domain import Command, Graph, EdgeType, RenderResult, GoalId, blocker
+from siebenapp.domain import (
+    Command,
+    Graph,
+    EdgeType,
+    RenderResult,
+    GoalId,
+    RenderRow,
+)
 
 
 @dataclass(frozen=True)
@@ -30,34 +37,33 @@ class OpenView(Graph):
         if not origin.settings("filter_open"):
             self.accept(ToggleOpenView())
 
-    def _is_visible(self, goal_id: GoalId, attrs) -> bool:
-        if self._open:
-            # Here we know something about other layers (Zoom). I do not like it
-            return attrs["open"] or goal_id in self.selections() or goal_id in {1, -1}
-        return True
+    def _is_visible(self, row: RenderRow) -> bool:
+        # Here we know something about other layers (Zoom). I do not like it
+        return row.is_open or row.goal_id in self.selections() or row.goal_id in {1, -1}
 
     def q(self) -> RenderResult:
-        goals = self.goaltree.q().slice("name,open,switchable,edge,select")
-        result: Dict[GoalId, Any] = {
-            k: {} for k, v in goals.items() if self._is_visible(k, v)
+        render_result = self.goaltree.q()
+        if not self._open:
+            return RenderResult(rows=render_result.rows)
+        visible_rows: Dict[GoalId, RenderRow] = {
+            row.goal_id: row for row in render_result.rows if self._is_visible(row)
         }
-        # goals without parents
-        not_linked: Set[GoalId] = set(
-            g for g in result.keys() if isinstance(g, int) and g > 1
+        rows: List[RenderRow] = [
+            RenderRow(
+                row.goal_id,
+                row.raw_id,
+                row.name,
+                row.is_open,
+                row.is_switchable,
+                row.select,
+                [e for e in row.edges if e[0] in visible_rows],
+            )
+            for row in visible_rows.values()
+        ]
+        dangling: Set[GoalId] = (
+            set(visible_rows.keys())
+            .difference(set(e[0] for row in rows for e in row.edges))
+            .difference({1, -1})
         )
-        for goal_id in result:
-            val = goals[goal_id]
-            result[goal_id] = {k: v for k, v in val.items() if k != "edge"}
-            filtered_edges: List[Tuple[int, EdgeType]] = []
-            for edge in val["edge"]:
-                if edge[0] in result:
-                    filtered_edges.append(edge)
-                    if edge[0] > 1:
-                        not_linked.discard(edge[0])
-            result[goal_id]["edge"] = filtered_edges
-        root_goals: Set[GoalId] = set(result.keys()).intersection({1, -1})
-        if root_goals:
-            root_goal: GoalId = root_goals.pop()
-            for missing_goal in not_linked:
-                result[root_goal]["edge"].append((missing_goal, EdgeType.BLOCKER))
-        return RenderResult(result)
+        rows[0].edges.extend([(goal_id, EdgeType.BLOCKER) for goal_id in dangling])
+        return RenderResult(rows=rows)
