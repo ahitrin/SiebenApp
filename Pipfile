@@ -12,7 +12,7 @@ pytest-cov = "==3.0.0"
 black = "==22.8.0"
 approvaltests-minimal = "==5.3.3"
 py-spy = "==0.3.14"
-dearpygui = "==1.6.2"
+dearpygui = "==1.7.0"
 radon = "==5.1.0"
 
 [packages]
