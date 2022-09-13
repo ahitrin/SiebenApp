@@ -1,7 +1,7 @@
 import math
-from typing import List, Dict, Tuple, Any, Iterable
+from typing import List, Tuple, Any, Iterable, Set
 
-from siebenapp.domain import Graph, Select, GoalId, RenderResult
+from siebenapp.domain import Graph, Select, GoalId, RenderResult, RenderRow
 
 
 class BidirectionalIndex:
@@ -45,37 +45,42 @@ class Enumeration(Graph):
         super().__init__(goaltree)
         self.selection_cache: List[int] = []
 
-    def _id_mapping(self) -> Tuple[Dict[GoalId, Any], BidirectionalIndex]:
-        goals = self.goaltree.q().slice("name,open,switchable,edge,select")
-        return goals, BidirectionalIndex(goals)
+    def _id_mapping(self) -> Tuple[RenderResult, BidirectionalIndex]:
+        render_result = self.goaltree.q()
+        return render_result, BidirectionalIndex(
+            [r.goal_id for r in render_result.rows]
+        )
 
     def settings(self, key: str) -> Any:
         if key == "root":
-            goals, index = self._id_mapping()
+            _, index = self._id_mapping()
             return index.forward(self.goaltree.settings("root"))
         return self.goaltree.settings(key)
 
     def q(self) -> RenderResult:
-        result: Dict[GoalId, Any] = dict()
-        goals, index = self._id_mapping()
-        for old_id, val in goals.items():
-            new_id = index.forward(old_id)
-            result[new_id] = {k: v for k, v in val.items() if k != "edge"}
-            if "edge" in val:
-                result[new_id]["edge"] = [
-                    (index.forward(edge[0]), edge[1]) for edge in val["edge"]
-                ]
-        return RenderResult(result)
+        render_result, index = self._id_mapping()
+        rows: List[RenderRow] = [
+            RenderRow(
+                index.forward(row.goal_id),
+                row.raw_id,
+                row.name,
+                row.is_open,
+                row.is_switchable,
+                row.select,
+                [(index.forward(e[0]), e[1]) for e in row.edges],
+            )
+            for row in render_result.rows
+        ]
+        return RenderResult(rows=rows)
 
     def accept_Select(self, command: Select):
-        goals, index = self._id_mapping()
+        render_result, index = self._id_mapping()
+        goals: Set[GoalId] = {row.goal_id for row in render_result.rows}
         if (goal_id := command.goal_id) >= 10:
             self.selection_cache = []
         if self.selection_cache:
             goal_id = 10 * self.selection_cache.pop() + goal_id
-            if goal_id > max(
-                index.forward(k) for k in goals.keys() if isinstance(k, int)
-            ):
+            if goal_id > max(index.forward(k) for k in goals if isinstance(k, int)):
                 goal_id %= int(pow(10, int(math.log(goal_id, 10))))
         if (original_id := index.backward(goal_id)) != BidirectionalIndex.NOT_FOUND:
             self.goaltree.accept(Select(original_id))
