@@ -321,8 +321,8 @@ class SiebenApp(QMainWindow):
         self.goals.accept(ToggleAutoLink(text))
 
     def _current_goal_label(self):
-        data = self.goals.q().slice(keys="name,select").values()
-        return [x["name"] for x in data if x["select"] == "select"].pop()
+        current_row = [r for r in self.goals.q().rows if r.select == "select"].pop()
+        return current_row.name
 
     def with_refresh(self, fn, *args, **kwargs):
         def inner():
