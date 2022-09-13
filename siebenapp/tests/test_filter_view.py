@@ -95,7 +95,7 @@ def test_zoomed_parent_goal_must_not_be_filtered_out(zoomed_goaltree):
     assert zoomed_goaltree.q().slice("name,edge,select") == {
         -1: {
             "name": "Alpha",
-            "edge": [blocker(-2), blocker(2)],
+            "edge": [blocker(2), blocker(-2)],
             "select": "prev",
         },
         -2: {
@@ -123,7 +123,7 @@ def test_filter_is_case_insensitive(goaltree):
     assert goaltree.q().slice("name,edge,select") == {
         1: {
             "name": "Alpha",
-            "edge": [blocker(-2), child(2)],
+            "edge": [child(2), blocker(-2)],
             "select": "select",
         },
         -2: {

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-from typing import Dict, Any
+from typing import Any, List, Set
 
-from siebenapp.domain import Graph, Command, EdgeType, RenderResult, blocker
+from siebenapp.domain import Graph, Command, RenderResult, blocker, RenderRow, GoalId
 
 
 @dataclass(frozen=True)
@@ -23,7 +23,7 @@ class FilterView(Graph):
         if key == "filter_pattern":
             return self.pattern
         if key == "root" and self.pattern:
-            goals = self.q().slice("edge")
+            goals: Set[GoalId] = {row.goal_id for row in self.q().rows}
             old_root = self.goaltree.settings("root")
             return old_root if old_root in goals else -2
         return self.goaltree.settings(key)
@@ -33,31 +33,41 @@ class FilterView(Graph):
         self.pattern = origin.settings("filter_pattern")
 
     def q(self) -> RenderResult:
-        unfiltered = self.goaltree.q().slice("name,open,switchable,edge,select")
-        filtered = self._filter(unfiltered) if self.pattern else unfiltered
-        return RenderResult(filtered)
-
-    def _filter(self, unfiltered):
-        accepted_nodes = [
-            goal_id
-            for goal_id, attrs in unfiltered.items()
-            if self.pattern in attrs["name"].lower() or goal_id in self.selections()
-        ]
-        filtered: Dict[int, Any] = {
-            -2: {
-                "name": f"Filter by '{self.pattern}'",
-                "edge": [],
-                "select": None,
-                "switchable": False,
-                "open": True,
-            },
+        render_result = self.goaltree.q()
+        if not self.pattern:
+            return render_result
+        accepted_ids: Set[GoalId] = {
+            row.goal_id
+            for row in render_result.rows
+            if self.pattern in row.name.lower() or row.goal_id in self.selections()
         }
-        for goal_id, attrs in unfiltered.items():
-            if goal_id in accepted_nodes:
-                attrs["edge"] = [e for e in attrs["edge"] if e[0] in accepted_nodes]
-                if goal_id > 1:
-                    filtered[-2]["edge"].append(blocker(goal_id))
-                else:
-                    attrs["edge"].insert(0, blocker(-2))
-                filtered[goal_id] = attrs
-        return filtered
+        rows: List[RenderRow] = [
+            RenderRow(
+                row.goal_id,
+                row.raw_id,
+                row.name,
+                row.is_open,
+                row.is_switchable,
+                row.select,
+                [e for e in row.edges if e[0] in accepted_ids]
+                + ([blocker(-2)] if row.goal_id in {1, -1} else []),
+            )
+            for row in render_result.rows
+            if row.goal_id in accepted_ids
+        ]
+        fake_rows: List[RenderRow] = [
+            RenderRow(
+                -2,
+                -2,
+                f"Filter by '{self.pattern}'",
+                True,
+                False,
+                None,
+                [
+                    blocker(goal_id)
+                    for goal_id in accepted_ids
+                    if isinstance(goal_id, int) and goal_id > 1
+                ],
+            ),
+        ]
+        return RenderResult(rows=rows + fake_rows)
