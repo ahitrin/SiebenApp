@@ -95,6 +95,11 @@ class RenderResult:
             if isinstance(goal_id, int)
         ]
 
+    def by_id(self, goal_id: GoalId) -> RenderRow:
+        result = [r for r in self.rows if r.goal_id == goal_id]
+        assert len(result) == 1
+        return result[0]
+
 
 class Graph:
     """Base interface definition"""

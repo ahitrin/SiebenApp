@@ -1,8 +1,9 @@
 from argparse import ArgumentParser
 from html import escape
+from operator import attrgetter
 from os import path
 from siebenapp.cli import IO, ConsoleIO
-from siebenapp.domain import EdgeType, Graph
+from siebenapp.domain import EdgeType, Graph, RenderRow
 from siebenapp.goaltree import Goals, GoalsData, EdgesData, OptionsData
 from siebenapp.layers import get_root, persistent_layers
 from siebenapp.open_view import ToggleOpenView
@@ -100,61 +101,64 @@ def main(argv: Optional[List[str]] = None, io: Optional[IO] = None):
         parser.print_help()
 
 
-def _format_name(num: int, goal: Dict[str, str]) -> str:
-    goal_name = escape(goal["name"])
-    label = f'"{num}: {goal_name}"' if num >= 0 else f'"{goal_name}"'
+def _format_name(row: RenderRow) -> str:
+    goal_name = escape(row.name)
+    label = (
+        f'"{row.goal_id}: {goal_name}"'
+        if isinstance(row.goal_id, int) and row.goal_id >= 0
+        else f'"{goal_name}"'
+    )
     return split_long(label)
 
 
 def dot_export(goals):
-    data = goals.q().slice(keys="open,name,edge,switchable")
-    lines = []
-    for num in sorted(data.keys()):
-        goal = data[num]
+    render_result = goals.q()
+    node_lines = []
+    edge_lines = []
+    for row in sorted(render_result.rows, key=attrgetter("goal_id")):
         attributes = {
-            "label": _format_name(num, goal),
-            "color": "red" if goal["open"] else "green",
+            "label": _format_name(row),
+            "color": "red" if row.is_open else "green",
         }
-        if goal["switchable"] and goal["open"]:
+        if row.is_switchable and row.is_open:
             attributes["style"] = "bold"
         attributes_str = ", ".join(
             f"{k}={attributes[k]}"
             for k in ["label", "color", "style", "fillcolor"]
             if k in attributes and attributes[k]
         )
-        lines.append(f"{num} [{attributes_str}];")
-    for num in sorted(data.keys()):
-        for edge in data[num]["edge"]:
-            color = "black" if data[edge[0]]["open"] else "gray"
+        node_lines.append(f"{row.goal_id} [{attributes_str}];")
+        for edge in row.edges:
+            color = "black" if render_result.by_id(edge[0]).is_open else "gray"
             line_attrs = f"color={color}"
             if edge[1] == EdgeType.BLOCKER:
                 line_attrs += ", style=dashed"
-            lines.append(f"{edge[0]} -> {num} [{line_attrs}];")
-    body = "\n".join(lines)
+            edge_lines.append(f"{edge[0]} -> {row.goal_id} [{line_attrs}];")
+    body = "\n".join(node_lines + edge_lines)
     return f"digraph g {{\nnode [shape=box];\n{body}\n}}"
 
 
 def markdown_export(goals):
-    data = goals.q().slice(keys="open,name,edge,switchable")
+    render_result = goals.q()
     output: List[str] = []
-    for k, v in data.items():
-        output.append(_format_md_row(k, v))
+    for row in render_result.rows:
+        output.append(_format_md_row(row))
     return "\n".join(output)
 
 
-def _format_md_row(goal_id: int, goal_attrs: Dict[str, Any]) -> str:
-    open_status = " " if goal_attrs["open"] else "x"
-    blockers: List[str] = [
-        f"**{e[0]}**" for e in goal_attrs["edge"] if e[1] == EdgeType.BLOCKER
-    ]
+def _format_md_row(row: RenderRow) -> str:
+    open_status = " " if row.is_open else "x"
+    blockers: List[str] = [f"**{e[0]}**" for e in row.edges if e[1] == EdgeType.BLOCKER]
     blocked_status = "" if not blockers else f" (blocked by {', '.join(blockers)})"
-    return f"* [{open_status}] **{goal_id}** {goal_attrs['name']}{blocked_status}"
+    return f"* [{open_status}] **{row.goal_id}** {row.name}{blocked_status}"
 
 
 def extract_subtree(source_goals: Graph, goal_id: int) -> Graph:
     root_goaltree: Goals = get_root(source_goals)
-    source_data = root_goaltree.q().slice(keys="name,edge,open")
-    assert goal_id in source_data.keys(), f"Cannot find goal with id {goal_id}"
+    render_result = root_goaltree.q()
+    assert (
+        render_result.by_id(goal_id) is not None
+    ), f"Cannot find goal with id {goal_id}"
     target_goals: Set[int] = set()
     goals_to_add: Set[int] = {goal_id}
     goals_data: GoalsData = []
@@ -162,15 +166,21 @@ def extract_subtree(source_goals: Graph, goal_id: int) -> Graph:
     options_data: OptionsData = []
     while goals_to_add:
         goal = goals_to_add.pop()
-        attrs = source_data[goal]
+        row = render_result.by_id(goal)
         target_goals.add(goal)
-        goals_data.append((goal, attrs["name"], attrs["open"]))
-        edges_data.extend((goal, target_, type_) for target_, type_ in attrs["edge"])
+        goals_data.append((goal, row.name, row.is_open))
+        edges_data.extend(
+            (goal, target_, type_)
+            for target_, type_ in row.edges
+            if isinstance(goal, int) and isinstance(target_, int)
+        )
         goals_to_add.update(
             set(
                 edge[0]
-                for edge in attrs["edge"]
-                if edge[1] == EdgeType.PARENT and edge[0] not in target_goals
+                for edge in row.edges
+                if edge[1] == EdgeType.PARENT
+                and edge[0] not in target_goals
+                and isinstance(edge[0], int)
             )
         )
     edges_data = [edge for edge in edges_data if edge[1] in target_goals]

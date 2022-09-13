@@ -244,15 +244,15 @@ def test_selection_cache_should_avoid_overflow(goal_chain_11):
         return result[0]
 
     e = Enumeration(goal_chain_11)
-    assert by_id(e.q().rows, 11).select == "select"
+    assert e.q().by_id(11).select == "select"
     e.accept(Select(5))
-    assert by_id(e.q().rows, 11).select == "select"
+    assert e.q().by_id(11).select == "select"
     e.accept(Select(1))
-    assert by_id(e.q().rows, 11).select == "select"
-    assert by_id(e.q().rows, 14).select is None
+    assert e.q().by_id(11).select == "select"
+    assert e.q().by_id(14).select is None
     e.accept(Select(4))
-    assert by_id(e.q().rows, 11).select == "prev"
-    assert by_id(e.q().rows, 14).select == "select"
+    assert e.q().by_id(11).select == "prev"
+    assert e.q().by_id(14).select == "select"
 
 
 def test_do_not_enumerate_goals_with_negative_id():
