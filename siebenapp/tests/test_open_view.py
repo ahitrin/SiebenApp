@@ -1,6 +1,6 @@
 import pytest
 
-from siebenapp.domain import Select, ToggleClose, EdgeType, HoldSelect, child, blocker
+from siebenapp.domain import Select, ToggleClose, HoldSelect, child, blocker, RenderRow
 from siebenapp.open_view import ToggleOpenView, OpenView
 from siebenapp.tests.dsl import build_goaltree, open_, selected, clos_, previous
 
@@ -18,12 +18,16 @@ def two_goals():
 
 
 def test_open_goal_is_shown_by_default(trivial):
-    assert trivial.q().slice("name") == {1: {"name": "Start"}}
+    assert trivial.q().rows == [
+        RenderRow(1, 1, "Start", True, True, "select", []),
+    ]
 
 
 def test_open_goal_is_shown_after_switch(trivial):
     trivial.accept(ToggleOpenView())
-    assert trivial.q().slice("name") == {1: {"name": "Start"}}
+    assert trivial.q().rows == [
+        RenderRow(1, 1, "Start", True, True, "select", []),
+    ]
 
 
 def test_filter_open_setting_is_set_by_default(trivial):
@@ -36,21 +40,21 @@ def test_filter_open_setting_is_changed_after_switch(trivial):
 
 
 def test_closed_goal_is_not_shown_by_default(two_goals):
-    assert two_goals.q().slice("name,open,edge") == {
-        1: {"name": "Open", "open": True, "edge": []}
-    }
+    assert two_goals.q().rows == [
+        RenderRow(1, 1, "Open", True, True, "select", []),
+    ]
 
 
 def test_closed_goal_is_shown_after_switch(two_goals):
     two_goals.accept(ToggleOpenView())
-    assert two_goals.q().slice("name,open,edge") == {
-        1: {"name": "Open", "open": True, "edge": [child(2)]},
-        2: {"name": "Closed", "open": False, "edge": []},
-    }
+    assert two_goals.q().rows == [
+        RenderRow(1, 1, "Open", True, True, "select", [child(2)]),
+        RenderRow(2, 2, "Closed", False, True, None, []),
+    ]
     two_goals.accept(ToggleOpenView())
-    assert two_goals.q().slice("name,open,edge") == {
-        1: {"name": "Open", "open": True, "edge": []}
-    }
+    assert two_goals.q().rows == [
+        RenderRow(1, 1, "Open", True, True, "select", []),
+    ]
 
 
 def test_simple_open_enumeration_workflow():
@@ -61,26 +65,16 @@ def test_simple_open_enumeration_workflow():
             open_(3, "2"),
         )
     )
-    assert e.q().slice(keys="name,select,open,edge") == {
-        1: {
-            "name": "Root",
-            "select": "prev",
-            "open": True,
-            "edge": [child(2), child(3)],
-        },
-        2: {"name": "1", "select": "select", "open": True, "edge": []},
-        3: {"name": "2", "select": None, "open": True, "edge": []},
-    }
+    assert e.q().rows == [
+        RenderRow(1, 1, "Root", True, False, "prev", [child(2), child(3)]),
+        RenderRow(2, 2, "1", True, True, "select", []),
+        RenderRow(3, 3, "2", True, True, None, []),
+    ]
     e.accept(ToggleClose())
-    assert e.q().slice(keys="name,select,open,edge") == {
-        1: {
-            "name": "Root",
-            "select": "select",
-            "open": True,
-            "edge": [child(3)],
-        },
-        3: {"name": "2", "select": None, "open": True, "edge": []},
-    }
+    assert e.q().rows == [
+        RenderRow(1, 1, "Root", True, False, "select", [child(3)]),
+        RenderRow(3, 3, "2", True, True, None, []),
+    ]
 
 
 def test_closed_goals_are_shown_when_selected():
@@ -93,19 +87,19 @@ def test_closed_goals_are_shown_when_selected():
         )
     )
     v.accept_all(ToggleOpenView(), Select(2), HoldSelect(), Select(3))
-    assert v.q().slice("name,select,open") == {
-        1: {"name": "Root", "open": True, "select": None},
-        2: {"name": "closed", "open": False, "select": "prev"},
-        3: {"name": "closed too", "open": False, "select": "select"},
-        4: {"name": "closed and not selected", "open": False, "select": None},
-    }
+    assert v.q().rows == [
+        RenderRow(1, 1, "Root", True, True, None, [child(2), child(3)]),
+        RenderRow(2, 2, "closed", False, True, "prev", []),
+        RenderRow(3, 3, "closed too", False, True, "select", [child(4)]),
+        RenderRow(4, 4, "closed and not selected", False, False, None, []),
+    ]
     v.accept(ToggleOpenView())
     # Still show: open goals, selected goals
-    assert v.q().slice("name,select,open") == {
-        1: {"name": "Root", "open": True, "select": None},
-        2: {"name": "closed", "open": False, "select": "prev"},
-        3: {"name": "closed too", "open": False, "select": "select"},
-    }
+    assert v.q().rows == [
+        RenderRow(1, 1, "Root", True, True, None, [child(2), child(3)]),
+        RenderRow(2, 2, "closed", False, True, "prev", []),
+        RenderRow(3, 3, "closed too", False, True, "select", []),
+    ]
 
 
 def test_build_fake_links_to_far_closed_goals():
@@ -116,10 +110,10 @@ def test_build_fake_links_to_far_closed_goals():
             clos_(3, "Top", select=selected),
         )
     )
-    assert v.q().slice("select,edge") == {
-        1: {"select": "prev", "edge": [blocker(3)]},
-        3: {"select": "select", "edge": []},
-    }
+    assert v.q().rows == [
+        RenderRow(1, 1, "Root", True, True, "prev", [blocker(3)]),
+        RenderRow(3, 3, "Top", False, False, "select", []),
+    ]
 
 
 def test_still_show_root_when_it_is_closed_and_unselected():
@@ -129,7 +123,7 @@ def test_still_show_root_when_it_is_closed_and_unselected():
             clos_(2, "Visible", select=selected),
         )
     )
-    assert v.q().slice("select,open,edge") == {
-        1: {"select": None, "open": False, "edge": [child(2)]},
-        2: {"select": "select", "open": False, "edge": []},
-    }
+    assert v.q().rows == [
+        RenderRow(1, 1, "Hidden root", False, True, None, [child(2)]),
+        RenderRow(2, 2, "Visible", False, False, "select", []),
+    ]
