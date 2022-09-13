@@ -1,4 +1,4 @@
-from siebenapp.domain import Add, Select, HoldSelect
+from siebenapp.domain import Add, Select, HoldSelect, RenderRow, child
 from siebenapp.goaltree import Goals
 from siebenapp.layers import persistent_layers
 from siebenapp.switchable_view import ToggleSwitchableView, SwitchableView
@@ -13,22 +13,22 @@ def test_toggle_hide_non_switchable_goals():
         open_(3, "Switchable 2"),
     )
     e = SwitchableView(g)
-    assert e.q().slice(keys="name,switchable,select") == {
-        1: {"name": "Root", "switchable": False, "select": None},
-        2: {"name": "Switchable 1", "switchable": True, "select": "select"},
-        3: {"name": "Switchable 2", "switchable": True, "select": None},
-    }
+    assert e.q().rows == [
+        RenderRow(1, 1, "Root", True, False, None, [child(2), child(3)]),
+        RenderRow(2, 2, "Switchable 1", True, True, "select", []),
+        RenderRow(3, 3, "Switchable 2", True, True, None, []),
+    ]
     e.accept(ToggleSwitchableView())
-    assert e.q().slice(keys="name,switchable,select") == {
-        2: {"name": "Switchable 1", "switchable": True, "select": "select"},
-        3: {"name": "Switchable 2", "switchable": True, "select": None},
-    }
+    assert e.q().rows == [
+        RenderRow(2, 2, "Switchable 1", True, True, "select", []),
+        RenderRow(3, 3, "Switchable 2", True, True, None, []),
+    ]
     e.accept(ToggleSwitchableView())
-    assert e.q().slice(keys="name,switchable,select") == {
-        1: {"name": "Root", "switchable": False, "select": None},
-        2: {"name": "Switchable 1", "switchable": True, "select": "select"},
-        3: {"name": "Switchable 2", "switchable": True, "select": None},
-    }
+    assert e.q().rows == [
+        RenderRow(1, 1, "Root", True, False, None, [child(2), child(3)]),
+        RenderRow(2, 2, "Switchable 1", True, True, "select", []),
+        RenderRow(3, 3, "Switchable 2", True, True, None, []),
+    ]
 
 
 def test_do_not_hide_unswitchable_goals_when_they_have_selection():
@@ -40,26 +40,26 @@ def test_do_not_hide_unswitchable_goals_when_they_have_selection():
         )
     )
     v.accept_all(ToggleSwitchableView())
-    assert v.q().slice("name,switchable,select") == {
-        1: {"name": "Selected", "switchable": False, "select": "select"},
-        2: {"name": "Prev-selected", "switchable": False, "select": "prev"},
-        3: {"name": "Switchable", "switchable": True, "select": None},
-    }
+    assert v.q().rows == [
+        RenderRow(1, 1, "Selected", True, False, "select", []),
+        RenderRow(2, 2, "Prev-selected", True, False, "prev", []),
+        RenderRow(3, 3, "Switchable", True, True, None, []),
+    ]
 
 
 def test_non_switchable_goals_disappear_on_selection_change():
     e = SwitchableView(Goals("root"))
     e.accept_all(Add("1"), Add("2"), Select(2), ToggleSwitchableView(), Select(2))
-    assert e.q().slice("name,switchable,select") == {
-        1: {"name": "root", "switchable": False, "select": "prev"},
-        2: {"name": "1", "switchable": True, "select": "select"},
-        3: {"name": "2", "switchable": True, "select": None},
-    }
+    assert e.q().rows == [
+        RenderRow(1, 1, "root", True, False, "prev", []),
+        RenderRow(2, 2, "1", True, True, "select", []),
+        RenderRow(3, 3, "2", True, True, None, []),
+    ]
     e.accept(HoldSelect())
-    assert e.q().slice("name,switchable,select") == {
-        2: {"name": "1", "switchable": True, "select": "select"},
-        3: {"name": "2", "switchable": True, "select": None},
-    }
+    assert e.q().rows == [
+        RenderRow(2, 2, "1", True, True, "select", []),
+        RenderRow(3, 3, "2", True, True, None, []),
+    ]
 
 
 def test_how_should_we_deal_with_zooming():
@@ -70,16 +70,16 @@ def test_how_should_we_deal_with_zooming():
     )
     v = SwitchableView(persistent_layers(g))
     v.accept_all(ToggleZoom(), ToggleSwitchableView())
-    assert v.q().slice("name,select") == {
-        2: {"name": "Zoomed", "select": "select"},
-        3: {"name": "Ex-top", "select": None},
-    }
+    assert v.q().rows == [
+        RenderRow(2, 2, "Zoomed", True, False, "select", []),
+        RenderRow(3, 3, "Ex-top", True, True, None, []),
+    ]
     v.accept(Add("Unexpectedly hidden"))
-    assert v.q().slice("name,select") == {
-        2: {"name": "Zoomed", "select": "select"},
-        3: {"name": "Ex-top", "select": None},
-        4: {"name": "Unexpectedly hidden", "select": None},
-    }
+    assert v.q().rows == [
+        RenderRow(2, 2, "Zoomed", True, False, "select", []),
+        RenderRow(3, 3, "Ex-top", True, True, None, []),
+        RenderRow(4, 4, "Unexpectedly hidden", True, True, None, []),
+    ]
 
 
 def test_filter_switchable_setting_is_not_set_by_default():
