@@ -1,12 +1,12 @@
 from tempfile import NamedTemporaryFile
 
 import pytest
-from approvaltests.namer import get_default_namer  # type: ignore
 from approvaltests import verify, Options  # type: ignore
+from approvaltests.namer import get_default_namer  # type: ignore
 from approvaltests.reporters import GenericDiffReporterFactory  # type: ignore
 from approvaltests.reporters.generic_diff_reporter import GenericDiffReporter  # type: ignore
 
-from siebenapp.domain import Select, EdgeType, child
+from siebenapp.domain import Select, child, RenderRow
 from siebenapp.enumeration import Enumeration
 from siebenapp.layers import all_layers, persistent_layers
 from siebenapp.manage import main, dot_export, extract_subtree
@@ -201,18 +201,14 @@ def test_extract_wrong_goal_id(extract_source):
 
 def test_extract_successful(extract_source, extract_target):
     result = extract_subtree(extract_source, 2)
-    assert extract_target.q().slice(
-        keys="name,edge,open,selection"
-    ) == result.q().slice(keys="name,edge,open,selection")
+    assert extract_target.q() == result.q()
 
 
 def test_zoom_after_extract(extract_source, extract_target):
     result = extract_subtree(extract_source, 2)
     result.accept_all(Select(3), ToggleZoom())
     extract_target.accept_all(Select(3), ToggleZoom())
-    assert extract_target.q().slice(
-        keys="name,edge,open,selection"
-    ) == result.q().slice(keys="name,edge,open,selection")
+    assert extract_target.q() == result.q()
 
 
 def test_extract_misordered():
@@ -226,7 +222,7 @@ def test_extract_misordered():
         )
     )
     result = extract_subtree(source, 3)
-    assert result.q().slice("name,edge") == {
-        1: {"name": "Extraction root", "edge": [child(2)]},
-        2: {"name": "Top", "edge": []},
-    }
+    assert result.q().rows == [
+        RenderRow(1, 1, "Extraction root", True, False, "select", [child(2)]),
+        RenderRow(2, 2, "Top", True, True, None, []),
+    ]
