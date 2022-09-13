@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-from typing import Dict, Any
+from typing import Any, List
 
-from siebenapp.domain import Command, Graph, RenderResult, GoalId
+from siebenapp.domain import Command, Graph, RenderResult, RenderRow
 
 
 @dataclass(frozen=True)
@@ -31,18 +31,20 @@ class SwitchableView(Graph):
             self.accept(ToggleSwitchableView())
 
     def q(self) -> RenderResult:
-        goals: Dict[GoalId, Any] = {
-            k: v
-            for k, v in self.goaltree.q()
-            .slice("name,open,switchable,edge,select")
-            .items()
-        }
-        if self._only_switchable:
-            goals = {
-                k: v
-                for k, v in goals.items()
-                if v["switchable"] or k in self.selections()
-            }
-            for v in goals.values():
-                v["edge"] = []
-        return RenderResult(goals)
+        render_result = self.goaltree.q()
+        if not self._only_switchable:
+            return render_result
+        rows: List[RenderRow] = [
+            RenderRow(
+                row.goal_id,
+                row.raw_id,
+                row.name,
+                row.is_open,
+                row.is_switchable,
+                row.select,
+                [],
+            )
+            for row in render_result.rows
+            if row.is_switchable or row.goal_id in self.selections()
+        ]
+        return RenderResult(rows=rows)
