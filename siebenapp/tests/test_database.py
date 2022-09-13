@@ -80,8 +80,7 @@ def test_restore_goals_from_db():
         HoldSelect(),
         Select(2),
     )
-    keys = "name,edge,open,select"
-    assert expected_goals.q().slice(keys=keys) == actual_goals.q().slice(keys=keys)
+    assert expected_goals.q() == actual_goals.q()
     assert not actual_goals.events()
 
 
@@ -89,9 +88,7 @@ def test_load_from_missing_file():
     file_name = NamedTemporaryFile().name
     expected_goals = Goals("Rename me")
     new_goals = load(file_name)
-    assert new_goals.q().slice(
-        keys="open,name,edge,select"
-    ) == expected_goals.q().slice(keys="open,name,edge,select")
+    assert new_goals.q() == expected_goals.q()
 
 
 def test_save_into_sqlite3_database():
@@ -145,9 +142,7 @@ def test_save_and_load():
     new_goals = load(file_name)
     goals.accept_all(ToggleOpenView())
     new_goals.accept_all(ToggleOpenView())
-    assert goals.q().slice(
-        keys="open,name,edge,select,switchable"
-    ) == new_goals.q().slice(keys="open,name,edge,select,switchable")
+    assert goals.q() == new_goals.q()
 
 
 def test_multiple_saves_works_fine():
@@ -157,7 +152,7 @@ def test_multiple_saves_works_fine():
     goals.accept(Add("Next"))
     save(goals, file_name)
     new_goals = load(file_name)
-    assert goals.q().slice("name") == new_goals.q().slice("name")
+    assert goals.q() == new_goals.q()
 
 
 def test_do_not_load_from_broken_data():

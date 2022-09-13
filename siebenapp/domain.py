@@ -48,6 +48,7 @@ class RenderRow:
     edges: List[Tuple[GoalId, EdgeType]]
 
 
+@dataclass
 class RenderResult:
     def __init__(
         self,
