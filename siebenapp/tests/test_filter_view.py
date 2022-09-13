@@ -1,6 +1,6 @@
 from _pytest.fixtures import fixture
 
-from siebenapp.domain import EdgeType, Select, HoldSelect, child, blocker
+from siebenapp.domain import Select, HoldSelect, child, blocker, RenderRow
 from siebenapp.filter_view import FilterBy, FilterView
 from siebenapp.goaltree import Goals
 from siebenapp.tests.dsl import build_goaltree, open_, selected
@@ -33,103 +33,73 @@ def zoomed_goaltree():
 
 def test_empty_string_means_no_filter(goaltree):
     goaltree.accept(FilterBy(""))
-    assert goaltree.q().slice("name,edge,select") == {
-        1: {"name": "Alpha", "edge": [child(2)], "select": "select"},
-        2: {"name": "Beta", "edge": [child(3)], "select": None},
-        3: {"name": "Gamma", "edge": [], "select": None},
-    }
+    assert goaltree.q().rows == [
+        RenderRow(1, 1, "Alpha", True, False, "select", [child(2)]),
+        RenderRow(2, 2, "Beta", True, False, None, [child(3)]),
+        RenderRow(3, 3, "Gamma", True, True, None, []),
+    ]
     assert goaltree.settings("root") == Goals.ROOT_ID
 
 
 def test_filter_by_substring(goaltree):
     goaltree.accept(FilterBy("ph"))
-    assert goaltree.q().slice("name,edge,select,open,switchable") == {
-        1: {
-            "name": "Alpha",
-            "edge": [blocker(-2)],
-            "select": "select",
-            "open": True,
-            "switchable": False,
-        },
-        -2: {
-            "name": "Filter by 'ph'",
-            "edge": [],
-            "select": None,
-            "open": True,
-            "switchable": False,
-        },
-    }
+    assert goaltree.q().rows == [
+        RenderRow(1, 1, "Alpha", True, False, "select", [blocker(-2)]),
+        RenderRow(-2, -2, "Filter by 'ph'", True, False, None, []),
+    ]
     assert goaltree.settings("root") == 1
 
 
 def test_selected_goal_must_not_be_filtered_out(goaltree):
     goaltree.accept_all(Select(3), HoldSelect(), FilterBy("Be"))
-    assert goaltree.q().slice("name,edge,select") == {
-        -2: {
-            "name": "Filter by 'be'",
-            "edge": [blocker(2), blocker(3)],
-            "select": None,
-        },
-        2: {"name": "Beta", "edge": [child(3)], "select": None},
-        3: {"name": "Gamma", "edge": [], "select": "select"},
-    }
+    assert goaltree.q().rows == [
+        RenderRow(2, 2, "Beta", True, False, None, [child(3)]),
+        RenderRow(3, 3, "Gamma", True, True, "select", []),
+        RenderRow(
+            -2, -2, "Filter by 'be'", True, False, None, [blocker(2), blocker(3)]
+        ),
+    ]
     assert goaltree.settings("root") == -2
 
 
 def test_previously_selected_goal_must_not_be_filtered_out(goaltree):
     goaltree.accept_all(Select(3), FilterBy("matching no one"))
-    assert goaltree.q().slice("name,edge,select") == {
-        1: {"name": "Alpha", "edge": [blocker(-2)], "select": "prev"},
-        -2: {
-            "name": "Filter by 'matching no one'",
-            "edge": [blocker(3)],
-            "select": None,
-        },
-        3: {"name": "Gamma", "edge": [], "select": "select"},
-    }
+    assert goaltree.q().rows == [
+        RenderRow(1, 1, "Alpha", True, False, "prev", [blocker(-2)]),
+        RenderRow(3, 3, "Gamma", True, True, "select", []),
+        RenderRow(
+            -2, -2, "Filter by 'matching no one'", True, False, None, [blocker(3)]
+        ),
+    ]
     assert goaltree.settings("root") == 1
 
 
 def test_zoomed_parent_goal_must_not_be_filtered_out(zoomed_goaltree):
     zoomed_goaltree.accept_all(HoldSelect(), Select(2), ToggleZoom(), FilterBy("mm"))
-    assert zoomed_goaltree.q().slice("name,edge,select") == {
-        -1: {
-            "name": "Alpha",
-            "edge": [blocker(2), blocker(-2)],
-            "select": "prev",
-        },
-        -2: {
-            "name": "Filter by 'mm'",
-            "edge": [blocker(2), blocker(3)],
-            "select": None,
-        },
-        2: {"name": "Beta", "edge": [child(3)], "select": "select"},
-        3: {"name": "Gamma", "edge": [], "select": None},
-    }
+    assert zoomed_goaltree.q().rows == [
+        RenderRow(2, 2, "Beta", True, False, "select", [child(3)]),
+        RenderRow(3, 3, "Gamma", True, True, None, []),
+        RenderRow(-1, -1, "Alpha", True, False, "prev", [blocker(2), blocker(-2)]),
+        RenderRow(
+            -2, -2, "Filter by 'mm'", True, False, None, [blocker(2), blocker(3)]
+        ),
+    ]
     assert zoomed_goaltree.settings("root") == -1
 
 
 def test_empty_filter_string_means_resetting(goaltree):
     goaltree.accept_all(FilterBy("B"), FilterBy(""))
-    assert goaltree.q().slice("name,edge,select") == {
-        1: {"name": "Alpha", "edge": [child(2)], "select": "select"},
-        2: {"name": "Beta", "edge": [child(3)], "select": None},
-        3: {"name": "Gamma", "edge": [], "select": None},
-    }
+    assert goaltree.q().rows == [
+        RenderRow(1, 1, "Alpha", True, False, "select", [child(2)]),
+        RenderRow(2, 2, "Beta", True, False, None, [child(3)]),
+        RenderRow(3, 3, "Gamma", True, True, None, []),
+    ]
 
 
 def test_filter_is_case_insensitive(goaltree):
     goaltree.accept(FilterBy("ETA"))
-    assert goaltree.q().slice("name,edge,select") == {
-        1: {
-            "name": "Alpha",
-            "edge": [child(2), blocker(-2)],
-            "select": "select",
-        },
-        -2: {
-            "name": "Filter by 'eta'",
-            "edge": [blocker(2)],
-            "select": None,
-        },
-        2: {"name": "Beta", "edge": [], "select": None},
-    }
+    assert goaltree.q().rows == [
+        RenderRow(1, 1, "Alpha", True, False, "select", [child(2), blocker(-2)]),
+        RenderRow(2, 2, "Beta", True, False, None, []),
+        RenderRow(-2, -2, "Filter by 'eta'", True, False, None, [blocker(2)]),
+    ]
