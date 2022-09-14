@@ -56,6 +56,7 @@ class Renderer:
 
     def __init__(self, goals: Graph, width_limit=DEFAULT_WIDTH) -> None:
         self.width_limit = width_limit
+        self.rows = goals.q().rows
         self.graph: Dict[GoalId, Any] = {
             row.goal_id: {
                 "name": row.name,
@@ -64,7 +65,7 @@ class Renderer:
                 "select": row.select,
                 "edge": row.edges,
             }
-            for row in goals.q().rows
+            for row in self.rows
         }
         self.edges: Dict[GoalId, List[GoalId]] = {
             key: [e[0] for e in values["edge"]] for key, values in self.graph.items()
@@ -83,7 +84,7 @@ class Renderer:
         self.reorder()
         self.update_graph()
         self.build_index()
-        return RenderResult(self.graph, self.result_edge_options)
+        return RenderResult(self.graph, self.result_edge_options, rows=self.rows)
 
     def split_by_layers(self) -> None:
         unsorted_goals: Dict[GoalId, List[GoalId]] = dict(self.edges)
