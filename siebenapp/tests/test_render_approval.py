@@ -52,7 +52,7 @@ def test_render_example():
     lines = render_lines(gp, result)
     with io.StringIO() as out:
         print("== Graph\n", file=out)
-        pprint(result.graph, out)
+        pprint(result.for_pprint(), out)
         print("\n== Geometry change after adjust\n", file=out)
         total_delta = Point(0, 0)
         for goal_id in g.goals:
