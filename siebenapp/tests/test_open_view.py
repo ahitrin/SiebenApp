@@ -3,6 +3,7 @@ import pytest
 from siebenapp.domain import Select, ToggleClose, HoldSelect, child, blocker, RenderRow
 from siebenapp.open_view import ToggleOpenView, OpenView
 from siebenapp.tests.dsl import build_goaltree, open_, selected, clos_, previous
+from siebenapp.zoom import Zoom, ToggleZoom
 
 
 @pytest.fixture
@@ -126,4 +127,25 @@ def test_still_show_root_when_it_is_closed_and_unselected():
     assert v.q().rows == [
         RenderRow(1, 1, "Hidden root", False, True, None, [child(2)]),
         RenderRow(2, 2, "Visible", False, False, "select", []),
+    ]
+
+
+def test_add_dangling_goals_to_old_root_on_zoom():
+    v = OpenView(
+        Zoom(
+            build_goaltree(
+                open_(1, "Root", [2]),
+                open_(2, "Zoom root", [3, 5], select=selected),
+                clos_(3, "Transitive", [4]),
+                clos_(4, "Previous top", select=previous),
+                open_(5, "Current top"),
+            )
+        )
+    )
+    v.accept(ToggleZoom())
+    assert v.q().rows == [
+        RenderRow(2, 2, "Zoom root", True, False, "select", [child(5)]),
+        RenderRow(4, 4, "Previous top", False, False, "prev", []),
+        RenderRow(5, 5, "Current top", True, True, None, []),
+        RenderRow(-1, -1, "Root", True, False, None, [blocker(2), blocker(4)]),
     ]

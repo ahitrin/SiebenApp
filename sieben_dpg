@@ -285,7 +285,9 @@ class SiebenApp:
             self.goaltree.accept(ToggleProgress())
             self.phase = "goals"
         elif app_data == 82:  # r
-            current_row = [r for r in self.goaltree.q().rows if r.select == "select"].pop()
+            current_row = [
+                r for r in self.goaltree.q().rows if r.select == "select"
+            ].pop()
             self.show_dialog("Rename goal", Rename, current_row.name)
         elif app_data == 84:  # t
             self.goaltree.accept(ToggleSwitchableView())
