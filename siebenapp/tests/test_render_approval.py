@@ -63,8 +63,6 @@ def test_render_example():
         avg_dx = total_delta.x // len(g.goals)
         avg_dy = total_delta.y // len(g.goals)
         print(f"Avg: dx={avg_dx}, dy={avg_dy}", file=out)
-        print("\n== Edge options\n", file=out)
-        pprint(result.edge_opts, out)
         print("\n== Lines", file=out)
         pprint(lines, out)
         verify(
