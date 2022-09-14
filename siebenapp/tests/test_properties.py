@@ -26,6 +26,7 @@ from siebenapp.domain import (
     Insert,
     Rename,
     Command,
+    GoalId,
 )
 from siebenapp.filter_view import FilterBy
 from siebenapp.goaltree import Goals
@@ -82,15 +83,17 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     @rule(d=data())
     def select_random_goal(self, d):
         event("select")
-        max_key = max(self.goaltree.q().slice("name").keys())
+        max_key = max(
+            [r.goal_id for r in self.goaltree.q().rows if isinstance(r.goal_id, int)]
+        )
         assume(max_key >= 1)
         event("valid select 1")
         random_goal = d.draw(integers(min_value=1, max_value=max_key))
-        assume(random_goal in self.goaltree.q().slice("name"))
+        assume(random_goal in {r.goal_id for r in self.goaltree.q().rows})
         event("valid select 2")
         self._accept(Select(random_goal))
         # Any valid goal must be selectable
-        assert self.goaltree.q().slice("select")[random_goal]["select"] == "select"
+        assert self.goaltree.q().by_id(random_goal).select == "select"
 
     @rule()
     def hold_selection(self):
@@ -99,14 +102,12 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 
     @rule(d=data())
     # Ignore trivial trees (without any subgoal)
-    @precondition(lambda self: len(self.goaltree.q().slice("name")) > 1)
+    @precondition(lambda self: len(self.goaltree.q().rows) > 1)
     def insert(self, d):
         event("insert")
         candidates = sorted(
             list(
-                goal_id
-                for goal_id, attrs in self.goaltree.q().slice("select").items()
-                if attrs["select"] != "select"
+                row.goal_id for row in self.goaltree.q().rows if row.select != "select"
             )
         )
         random_goal = d.draw(sampled_from(candidates))
@@ -114,11 +115,11 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 
     @rule(b=booleans(), d=data())
     # Ignore trivial trees (without any subgoal)
-    @precondition(lambda self: len(self.goaltree.q().slice("name")) > 1)
+    @precondition(lambda self: len(self.goaltree.q().rows) > 1)
     def toggle_link(self, b, d):
         event("toggle link")
         goal_keys = sorted(
-            list(k for k in self.goaltree.q().slice("name").keys() if k > 0)
+            list(row.goal_id for row in self.goaltree.q().rows if row.goal_id > 0)
         )
         assume(len(goal_keys) > 1)
         selection = d.draw(sampled_from(goal_keys))
@@ -132,7 +133,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 
     @rule(c=sampled_from(" abcit"))
     # Ignore trivial trees (without any subgoal)
-    @precondition(lambda self: len(self.goaltree.q().slice("name")) > 1)
+    @precondition(lambda self: len(self.goaltree.q().rows) > 1)
     def add_autolink(self, c):
         event("autolink")
         event("valid autolink")
@@ -179,25 +180,23 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 
     @invariant()
     def there_is_always_at_least_one_goal(self):
-        assert self.goaltree.q().slice("name")
+        assert self.goaltree.q().rows
 
     @invariant()
     @precondition(lambda self: not self.goaltree.settings("filter_switchable"))
     def only_one_root_is_allowed_in_tree_mode(self):
-        shown = self.goaltree.q().slice("edge")
-        goals: Set[int] = set(shown.keys())
-        goals_with_parent: Set[int] = set(
-            e[0] for attrs in shown.values() for e in attrs["edge"]
-        )
+        rows = self.goaltree.q().rows
+        goals: Set[GoalId] = {row.goal_id for row in rows}
+        goals_with_parent: Set[GoalId] = set(e[0] for row in rows for e in row.edges)
         goals_without_parent = goals.difference(goals_with_parent)
         assert len(goals_without_parent) == 1
 
     @invariant()
     def fake_goals_should_never_be_switchable(self):
         fake_goals = [
-            (g, a["switchable"])
-            for g, a in self.goaltree.q().slice("switchable").items()
-            if g < 0
+            (row.goal_id, row.is_switchable)
+            for row in self.goaltree.q().rows
+            if isinstance(row.goal_id, int) and row.goal_id < 0
         ]
         switchable_fakes = [g for g, sw in fake_goals if sw]
         assert not switchable_fakes, f"Switchable fake goals: {switchable_fakes}"
@@ -208,10 +207,10 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 
     @invariant()
     def there_is_always_one_selected_goal_and_at_most_one_previous(self):
-        selects = self.goaltree.q().slice("select")
-        counter = Counter(s["select"] for s in selects.values())
-        assert counter["select"] == 1, str(selects)
-        assert counter["prev"] <= 1, str(selects)
+        rows = self.goaltree.q().rows
+        counter = Counter(row.select for row in rows)
+        assert counter["select"] == 1, str(rows)
+        assert counter["prev"] <= 1, str(rows)
 
     @invariant()
     @precondition(lambda self: self.db_is_ready)
@@ -222,8 +221,8 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         ng = build_goals(self.database)
         ng.reconfigure_from(self.goaltree)
         keys = "name,open,edge,select,switchable"
-        q1 = self.goaltree.q().slice(keys)
-        q2 = ng.q().slice(keys)
+        q1 = self.goaltree.q()
+        q2 = ng.q()
         assert q1 == q2
 
 
