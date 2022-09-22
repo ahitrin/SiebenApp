@@ -1,4 +1,4 @@
-from siebenapp.domain import RenderResult, RenderRow, EdgeType, blocker
+from siebenapp.domain import RenderResult, RenderRow, RenderResult, EdgeType, blocker
 
 
 def test_render_result_slice():

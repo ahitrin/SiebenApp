@@ -1,6 +1,14 @@
 from _pytest.fixtures import fixture
 
-from siebenapp.domain import Select, ToggleClose, RenderRow, child, blocker
+from siebenapp.domain import (
+    Select,
+    ToggleClose,
+    RenderRow,
+    RenderResult,
+    RenderResult,
+    child,
+    blocker,
+)
 from siebenapp.progress_view import ProgressView, ToggleProgress
 from siebenapp.tests.dsl import build_goaltree, selected, open_
 
@@ -18,46 +26,56 @@ def goaltree():
 
 
 def test_no_progress_by_default(goaltree):
-    assert goaltree.q().rows == [
-        RenderRow(1, 1, "Root", True, False, "select", [child(2), child(3)]),
-        RenderRow(2, 2, "With blocker", True, False, None, [blocker(4)]),
-        RenderRow(3, 3, "With subgoal", True, False, None, [child(4)]),
-        RenderRow(4, 4, "Top goal", True, True, None, []),
-    ]
+    assert goaltree.q() == RenderResult(
+        rows=[
+            RenderRow(1, 1, "Root", True, False, "select", [child(2), child(3)]),
+            RenderRow(2, 2, "With blocker", True, False, None, [blocker(4)]),
+            RenderRow(3, 3, "With subgoal", True, False, None, [child(4)]),
+            RenderRow(4, 4, "Top goal", True, True, None, []),
+        ]
+    )
 
 
 def test_show_progress(goaltree):
     goaltree.accept(ToggleProgress())
-    assert goaltree.q().rows == [
-        RenderRow(1, 1, "[0/4] Root", True, False, "select", [child(2), child(3)]),
-        RenderRow(2, 2, "[0/1] With blocker", True, False, None, [blocker(4)]),
-        RenderRow(3, 3, "[0/2] With subgoal", True, False, None, [child(4)]),
-        RenderRow(4, 4, "[0/1] Top goal", True, True, None, []),
-    ]
+    assert goaltree.q() == RenderResult(
+        rows=[
+            RenderRow(1, 1, "[0/4] Root", True, False, "select", [child(2), child(3)]),
+            RenderRow(2, 2, "[0/1] With blocker", True, False, None, [blocker(4)]),
+            RenderRow(3, 3, "[0/2] With subgoal", True, False, None, [child(4)]),
+            RenderRow(4, 4, "[0/1] Top goal", True, True, None, []),
+        ]
+    )
 
 
 def test_toggle_hide_progress(goaltree):
     goaltree.accept_all(ToggleProgress(), ToggleProgress())
-    assert goaltree.q().rows == [
-        RenderRow(1, 1, "Root", True, False, "select", [child(2), child(3)]),
-        RenderRow(2, 2, "With blocker", True, False, None, [blocker(4)]),
-        RenderRow(3, 3, "With subgoal", True, False, None, [child(4)]),
-        RenderRow(4, 4, "Top goal", True, True, None, []),
-    ]
+    assert goaltree.q() == RenderResult(
+        rows=[
+            RenderRow(1, 1, "Root", True, False, "select", [child(2), child(3)]),
+            RenderRow(2, 2, "With blocker", True, False, None, [blocker(4)]),
+            RenderRow(3, 3, "With subgoal", True, False, None, [child(4)]),
+            RenderRow(4, 4, "Top goal", True, True, None, []),
+        ]
+    )
 
 
 def test_change_progress_on_close(goaltree):
     goaltree.accept_all(ToggleProgress(), Select(4), ToggleClose())
-    assert goaltree.q().rows == [
-        RenderRow(1, 1, "[1/4] Root", True, False, "select", [child(2), child(3)]),
-        RenderRow(2, 2, "[0/1] With blocker", True, True, None, [blocker(4)]),
-        RenderRow(3, 3, "[1/2] With subgoal", True, True, None, [child(4)]),
-        RenderRow(4, 4, "[1/1] Top goal", False, True, None, []),
-    ]
+    assert goaltree.q() == RenderResult(
+        rows=[
+            RenderRow(1, 1, "[1/4] Root", True, False, "select", [child(2), child(3)]),
+            RenderRow(2, 2, "[0/1] With blocker", True, True, None, [blocker(4)]),
+            RenderRow(3, 3, "[1/2] With subgoal", True, True, None, [child(4)]),
+            RenderRow(4, 4, "[1/1] Top goal", False, True, None, []),
+        ]
+    )
     goaltree.accept_all(Select(2), ToggleClose())
-    assert goaltree.q().rows == [
-        RenderRow(1, 1, "[2/4] Root", True, False, "select", [child(2), child(3)]),
-        RenderRow(2, 2, "[1/1] With blocker", False, True, None, [blocker(4)]),
-        RenderRow(3, 3, "[1/2] With subgoal", True, True, None, [child(4)]),
-        RenderRow(4, 4, "[1/1] Top goal", False, True, None, []),
-    ]
+    assert goaltree.q() == RenderResult(
+        rows=[
+            RenderRow(1, 1, "[2/4] Root", True, False, "select", [child(2), child(3)]),
+            RenderRow(2, 2, "[1/1] With blocker", False, True, None, [blocker(4)]),
+            RenderRow(3, 3, "[1/2] With subgoal", True, True, None, [child(4)]),
+            RenderRow(4, 4, "[1/1] Top goal", False, True, None, []),
+        ]
+    )

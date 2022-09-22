@@ -6,7 +6,7 @@ from approvaltests.namer import get_default_namer  # type: ignore
 from approvaltests.reporters import GenericDiffReporterFactory  # type: ignore
 from approvaltests.reporters.generic_diff_reporter import GenericDiffReporter  # type: ignore
 
-from siebenapp.domain import Select, child, RenderRow
+from siebenapp.domain import Select, child, RenderRow, RenderResult
 from siebenapp.enumeration import Enumeration
 from siebenapp.layers import all_layers, persistent_layers
 from siebenapp.manage import main, dot_export, extract_subtree
@@ -222,7 +222,9 @@ def test_extract_misordered():
         )
     )
     result = extract_subtree(source, 3)
-    assert result.q().rows == [
-        RenderRow(1, 1, "Extraction root", True, False, "select", [child(2)]),
-        RenderRow(2, 2, "Top", True, True, None, []),
-    ]
+    assert result.q() == RenderResult(
+        rows=[
+            RenderRow(1, 1, "Extraction root", True, False, "select", [child(2)]),
+            RenderRow(2, 2, "Top", True, True, None, []),
+        ]
+    )

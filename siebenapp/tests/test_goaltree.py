@@ -13,6 +13,7 @@ from siebenapp.domain import (
     Insert,
     Rename,
     RenderRow,
+    RenderResult,
     child,
     blocker,
 )
@@ -31,52 +32,64 @@ class GoalsTest(TestCase):
         return build_goaltree(*goal_prototypes, message_fn=self._register_message)
 
     def test_there_is_one_goal_at_start(self):
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, True, "select", [])
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[RenderRow(1, 1, "Root", True, True, "select", [])]
+        )
 
     def test_add_goal(self):
         self.goals.accept(Add("A"))
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "select", [child(2)]),
-            RenderRow(2, 2, "A", True, True, None, []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, False, "select", [child(2)]),
+                RenderRow(2, 2, "A", True, True, None, []),
+            ]
+        )
 
     def test_add_two_goals(self):
         self.goals.accept_all(Add("A"), Add("B"))
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "select", [child(2), child(3)]),
-            RenderRow(2, 2, "A", True, True, None, []),
-            RenderRow(3, 3, "B", True, True, None, []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, False, "select", [child(2), child(3)]),
+                RenderRow(2, 2, "A", True, True, None, []),
+                RenderRow(3, 3, "B", True, True, None, []),
+            ]
+        )
 
     def test_add_two_goals_in_a_chain(self):
         self.goals.accept_all(Add("A"), Add("AA", 2))
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "select", [child(2)]),
-            RenderRow(2, 2, "A", True, False, None, [child(3)]),
-            RenderRow(3, 3, "AA", True, True, None, []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, False, "select", [child(2)]),
+                RenderRow(2, 2, "A", True, False, None, [child(3)]),
+                RenderRow(3, 3, "AA", True, True, None, []),
+            ]
+        )
 
     def test_rename_goal(self):
         self.goals.accept_all(Add("Boom"), Select(2), Rename("A"))
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "prev", [child(2)]),
-            RenderRow(2, 2, "A", True, True, "select", []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, False, "prev", [child(2)]),
+                RenderRow(2, 2, "A", True, True, "select", []),
+            ]
+        )
 
     def test_insert_goal_in_the_middle(self):
         self.goals.accept_all(Add("B"), HoldSelect(), Select(2))
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "prev", [child(2)]),
-            RenderRow(2, 2, "B", True, True, "select", []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, False, "prev", [child(2)]),
+                RenderRow(2, 2, "B", True, True, "select", []),
+            ]
+        )
         self.goals.accept(Insert("A"))
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "prev", [child(3)]),
-            RenderRow(2, 2, "B", True, True, "select", []),
-            RenderRow(3, 3, "A", True, False, None, [child(2)]),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, False, "prev", [child(3)]),
+                RenderRow(2, 2, "B", True, True, "select", []),
+                RenderRow(3, 3, "A", True, False, None, [child(2)]),
+            ]
+        )
 
     def test_insert_goal_between_independent_goals(self):
         self.goals = self.build(
@@ -85,12 +98,14 @@ class GoalsTest(TestCase):
             open_(3, "B", select=selected),
         )
         self.goals.accept(Insert("Wow"))
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, None, [child(2), child(3)]),
-            RenderRow(2, 2, "A", True, False, "prev", [blocker(4)]),
-            RenderRow(3, 3, "B", True, True, "select", []),
-            RenderRow(4, 4, "Wow", True, False, None, [blocker(3)]),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, False, None, [child(2), child(3)]),
+                RenderRow(2, 2, "A", True, False, "prev", [blocker(4)]),
+                RenderRow(3, 3, "B", True, True, "select", []),
+                RenderRow(4, 4, "Wow", True, False, None, [blocker(3)]),
+            ]
+        )
 
     def test_reverse_insertion(self):
         """Not sure whether such trick should be legal"""
@@ -100,32 +115,38 @@ class GoalsTest(TestCase):
         )
         self.goals.accept(Insert("Intermediate?"))
         # No, it's not intermediate
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "select", [child(2)]),
-            RenderRow(2, 2, "Selected", True, False, "prev", [blocker(3)]),
-            RenderRow(3, 3, "Intermediate?", True, True, None, []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, False, "select", [child(2)]),
+                RenderRow(2, 2, "Selected", True, False, "prev", [blocker(3)]),
+                RenderRow(3, 3, "Intermediate?", True, True, None, []),
+            ]
+        )
 
     def test_close_single_goal(self):
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, True, "select", [])
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[RenderRow(1, 1, "Root", True, True, "select", [])]
+        )
         self.goals.accept(ToggleClose())
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", False, True, "select", [])
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[RenderRow(1, 1, "Root", False, True, "select", [])]
+        )
 
     def test_reopen_goal(self):
         self.goals = self.build(open_(1, "Root", [2]), clos_(2, "A", select=selected))
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, True, None, [child(2)]),
-            RenderRow(2, 2, "A", False, True, "select", []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, True, None, [child(2)]),
+                RenderRow(2, 2, "A", False, True, "select", []),
+            ]
+        )
         self.goals.accept(ToggleClose())
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, None, [child(2)]),
-            RenderRow(2, 2, "A", True, True, "select", []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, False, None, [child(2)]),
+                RenderRow(2, 2, "A", True, True, "select", []),
+            ]
+        )
 
     def test_close_goal_again(self):
         self.goals = self.build(
@@ -134,40 +155,50 @@ class GoalsTest(TestCase):
             clos_(3, "Ab"),
         )
         self.goals.accept_all(Select(2), ToggleClose())
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, True, "select", [child(2)]),
-            RenderRow(2, 2, "A", False, True, None, [child(3)]),
-            RenderRow(3, 3, "Ab", False, False, None, []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, True, "select", [child(2)]),
+                RenderRow(2, 2, "A", False, True, None, [child(3)]),
+                RenderRow(3, 3, "Ab", False, False, None, []),
+            ]
+        )
         self.goals.accept_all(Select(2), ToggleClose())
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "prev", [child(2)]),
-            RenderRow(2, 2, "A", True, True, "select", [child(3)]),
-            RenderRow(3, 3, "Ab", False, True, None, []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, False, "prev", [child(2)]),
+                RenderRow(2, 2, "A", True, True, "select", [child(3)]),
+                RenderRow(3, 3, "Ab", False, True, None, []),
+            ]
+        )
         self.goals.accept_all(Select(2), ToggleClose())
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, True, "select", [child(2)]),
-            RenderRow(2, 2, "A", False, True, None, [child(3)]),
-            RenderRow(3, 3, "Ab", False, False, None, []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, True, "select", [child(2)]),
+                RenderRow(2, 2, "A", False, True, None, [child(3)]),
+                RenderRow(3, 3, "Ab", False, False, None, []),
+            ]
+        )
 
     def test_closed_leaf_goal_could_not_be_reopened(self):
         self.goals = self.build(
             open_(1, "Root", [2], select=selected), clos_(2, "A", [3]), clos_(3, "B")
         )
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, True, "select", [child(2)]),
-            RenderRow(2, 2, "A", False, True, None, [child(3)]),
-            RenderRow(3, 3, "B", False, False, None, []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, True, "select", [child(2)]),
+                RenderRow(2, 2, "A", False, True, None, [child(3)]),
+                RenderRow(3, 3, "B", False, False, None, []),
+            ]
+        )
         self.goals.accept_all(Select(3), ToggleClose())
         # nothing should change except select
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, True, "prev", [child(2)]),
-            RenderRow(2, 2, "A", False, True, None, [child(3)]),
-            RenderRow(3, 3, "B", False, False, "select", []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, True, "prev", [child(2)]),
+                RenderRow(2, 2, "A", False, True, None, [child(3)]),
+                RenderRow(3, 3, "B", False, False, "select", []),
+            ]
+        )
 
     def test_goal_in_the_middle_could_not_be_closed(self):
         self.goals = self.build(
@@ -177,38 +208,44 @@ class GoalsTest(TestCase):
             open_(4, "C"),
         )
         self.goals.accept(ToggleClose())
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, None, [child(2), child(3)]),
-            RenderRow(2, 2, "A", True, False, None, [blocker(4)]),
-            RenderRow(3, 3, "B", True, False, "select", [child(4)]),
-            RenderRow(4, 4, "C", True, True, None, []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, False, None, [child(2), child(3)]),
+                RenderRow(2, 2, "A", True, False, None, [blocker(4)]),
+                RenderRow(3, 3, "B", True, False, "select", [child(4)]),
+                RenderRow(4, 4, "C", True, True, None, []),
+            ]
+        )
 
     def test_delete_single_goal(self):
         self.goals = self.build(open_(1, "Root", [2]), open_(2, "A", select=selected))
         self.goals.accept(Delete())
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, True, "select", [])
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[RenderRow(1, 1, "Root", True, True, "select", [])]
+        )
 
     def test_enumeration_should_not_be_changed_after_delete(self):
         self.goals = self.build(
             open_(1, "Root", [2, 3]), open_(2, "A", select=selected), open_(3, "B")
         )
         self.goals.accept(Delete())
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "select", [child(3)]),
-            RenderRow(3, 3, "B", True, True, None, []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, False, "select", [child(3)]),
+                RenderRow(3, 3, "B", True, True, None, []),
+            ]
+        )
 
     def test_remove_goal_chain_with_children(self):
         self.goals = self.build(
             open_(1, "Root", [2]), open_(2, "A", [3], select=selected), open_(3, "B")
         )
         self.goals.accept(Delete())
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, True, "select", []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, True, "select", []),
+            ]
+        )
 
     def test_relink_goal_chain_with_blockers(self):
         self.goals = self.build(
@@ -217,10 +254,12 @@ class GoalsTest(TestCase):
             open_(3, "B"),
         )
         self.goals.accept(Delete())
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "select", [blocker(3)]),
-            RenderRow(3, 3, "B", True, True, None, []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, False, "select", [blocker(3)]),
+                RenderRow(3, 3, "B", True, True, None, []),
+            ]
+        )
 
     def test_select_parent_after_delete(self):
         self.goals = self.build(
@@ -229,10 +268,12 @@ class GoalsTest(TestCase):
             open_(3, "Delete me", select=selected),
         )
         self.goals.accept(Delete())
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, None, [child(2)]),
-            RenderRow(2, 2, "Parent", True, True, "select", []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, False, None, [child(2)]),
+                RenderRow(2, 2, "Parent", True, True, "select", []),
+            ]
+        )
 
     def test_add_link_between_goals(self):
         self.goals = self.build(
@@ -240,23 +281,27 @@ class GoalsTest(TestCase):
             open_(2, "A", select=previous),
             open_(3, "B", select=selected),
         )
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, None, [child(2), child(3)]),
-            RenderRow(2, 2, "A", True, True, "prev", []),
-            RenderRow(3, 3, "B", True, True, "select", []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, False, None, [child(2), child(3)]),
+                RenderRow(2, 2, "A", True, True, "prev", []),
+                RenderRow(3, 3, "B", True, True, "select", []),
+            ]
+        )
         self.goals.accept(ToggleLink())
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, None, [child(2), child(3)]),
-            RenderRow(2, 2, "A", True, False, "prev", [blocker(3)]),
-            RenderRow(3, 3, "B", True, True, "select", []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, False, None, [child(2), child(3)]),
+                RenderRow(2, 2, "A", True, False, "prev", [blocker(3)]),
+                RenderRow(3, 3, "B", True, True, "select", []),
+            ]
+        )
 
     def test_no_link_to_self_is_allowed(self):
         self.goals.accept(ToggleLink())
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, True, "select", [])
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[RenderRow(1, 1, "Root", True, True, "select", [])]
+        )
 
     def test_no_loops_allowed(self):
         self.goals = self.build(
@@ -266,12 +311,14 @@ class GoalsTest(TestCase):
             open_(4, "more", select=previous),
         )
         self.goals.accept(ToggleLink())
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "select", [child(2)]),
-            RenderRow(2, 2, "step", True, False, None, [child(3)]),
-            RenderRow(3, 3, "next", True, False, None, [child(4)]),
-            RenderRow(4, 4, "more", True, True, "prev", []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, False, "select", [child(2)]),
+                RenderRow(2, 2, "step", True, False, None, [child(3)]),
+                RenderRow(3, 3, "next", True, False, None, [child(4)]),
+                RenderRow(4, 4, "more", True, True, "prev", []),
+            ]
+        )
 
     def test_new_parent_link_replaces_old_one(self):
         self.goals = self.build(
@@ -281,12 +328,14 @@ class GoalsTest(TestCase):
             open_(4, "Child", select=selected),
         )
         self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, None, [child(2), child(3)]),
-            RenderRow(2, 2, "Old parent", True, False, None, [blocker(4)]),
-            RenderRow(3, 3, "New parent", True, False, "prev", [child(4)]),
-            RenderRow(4, 4, "Child", True, True, "select", []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, False, None, [child(2), child(3)]),
+                RenderRow(2, 2, "Old parent", True, False, None, [blocker(4)]),
+                RenderRow(3, 3, "New parent", True, False, "prev", [child(4)]),
+                RenderRow(4, 4, "Child", True, True, "select", []),
+            ]
+        )
 
     def test_new_parent_link_replaces_old_one_when_changed_from_blocker(self):
         self.goals = self.build(
@@ -295,11 +344,13 @@ class GoalsTest(TestCase):
             open_(3, "B", blockers=[2], select=previous),
         )
         self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, None, [blocker(2), child(3)]),
-            RenderRow(2, 2, "A", True, True, "select", []),
-            RenderRow(3, 3, "B", True, False, "prev", [child(2)]),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, False, None, [blocker(2), child(3)]),
+                RenderRow(2, 2, "A", True, True, "select", []),
+                RenderRow(3, 3, "B", True, False, "prev", [child(2)]),
+            ]
+        )
 
     def test_remove_link_between_goals(self):
         self.goals = self.build(
@@ -308,30 +359,38 @@ class GoalsTest(TestCase):
             open_(3, "B", select=selected),
         )
         self.goals.accept(ToggleLink(edge_type=EdgeType.BLOCKER))
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, None, [child(2), child(3)]),
-            RenderRow(2, 2, "A", True, True, "prev", []),
-            RenderRow(3, 3, "B", True, True, "select", []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, False, None, [child(2), child(3)]),
+                RenderRow(2, 2, "A", True, True, "prev", []),
+                RenderRow(3, 3, "B", True, True, "select", []),
+            ]
+        )
 
     def test_change_link_type(self):
         self.goals = self.build(
             open_(1, "Root", [2], select=previous), open_(2, "Top", [], select=selected)
         )
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "prev", [child(2)]),
-            RenderRow(2, 2, "Top", True, True, "select", []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, False, "prev", [child(2)]),
+                RenderRow(2, 2, "Top", True, True, "select", []),
+            ]
+        )
         self.goals.accept(ToggleLink())
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "prev", [blocker(2)]),
-            RenderRow(2, 2, "Top", True, True, "select", []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, False, "prev", [blocker(2)]),
+                RenderRow(2, 2, "Top", True, True, "select", []),
+            ]
+        )
         self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "prev", [child(2)]),
-            RenderRow(2, 2, "Top", True, True, "select", []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, False, "prev", [child(2)]),
+                RenderRow(2, 2, "Top", True, True, "select", []),
+            ]
+        )
 
     def test_remove_blocked_goal_without_children(self):
         self.goals = self.build(
@@ -340,47 +399,61 @@ class GoalsTest(TestCase):
             open_(3, "B", blockers=[4]),
             open_(4, "C", select=selected),
         )
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, None, [child(2), child(3)]),
-            RenderRow(2, 2, "A", True, False, None, [child(4)]),
-            RenderRow(3, 3, "B", True, False, None, [blocker(4)]),
-            RenderRow(4, 4, "C", True, True, "select", []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, False, None, [child(2), child(3)]),
+                RenderRow(2, 2, "A", True, False, None, [child(4)]),
+                RenderRow(3, 3, "B", True, False, None, [blocker(4)]),
+                RenderRow(4, 4, "C", True, True, "select", []),
+            ]
+        )
         self.goals.accept_all(Select(3), Delete())
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "select", [child(2)]),
-            RenderRow(2, 2, "A", True, False, None, [child(4)]),
-            RenderRow(4, 4, "C", True, True, None, []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, False, "select", [child(2)]),
+                RenderRow(2, 2, "A", True, False, None, [child(4)]),
+                RenderRow(4, 4, "C", True, True, None, []),
+            ]
+        )
 
     def test_root_goal_is_selected_by_default(self):
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, True, "select", []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, True, "select", []),
+            ]
+        )
         self.goals.accept(Add("A"))
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "select", [child(2)]),
-            RenderRow(2, 2, "A", True, True, None, []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, False, "select", [child(2)]),
+                RenderRow(2, 2, "A", True, True, None, []),
+            ]
+        )
         self.goals.accept(Add("B"))
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "select", [child(2), child(3)]),
-            RenderRow(2, 2, "A", True, True, None, []),
-            RenderRow(3, 3, "B", True, True, None, []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, False, "select", [child(2), child(3)]),
+                RenderRow(2, 2, "A", True, True, None, []),
+                RenderRow(3, 3, "B", True, True, None, []),
+            ]
+        )
 
     def test_new_goal_is_added_to_the_selected_node(self):
         self.goals.accept_all(Add("A"), Select(2))
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "prev", [child(2)]),
-            RenderRow(2, 2, "A", True, True, "select", []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, False, "prev", [child(2)]),
+                RenderRow(2, 2, "A", True, True, "select", []),
+            ]
+        )
         self.goals.accept(Add("B"))
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, "prev", [child(2)]),
-            RenderRow(2, 2, "A", True, False, "select", [child(3)]),
-            RenderRow(3, 3, "B", True, True, None, []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, False, "prev", [child(2)]),
+                RenderRow(2, 2, "A", True, False, "select", [child(3)]),
+                RenderRow(3, 3, "B", True, True, None, []),
+            ]
+        )
 
     def test_move_selection_to_another_open_goal_after_closing(self):
         self.goals = self.build(
@@ -390,12 +463,16 @@ class GoalsTest(TestCase):
             open_(4, "C"),
         )
         self.goals.accept(ToggleClose())
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, None, [child(2), child(3), child(4)]),
-            RenderRow(2, 2, "A", False, True, None, []),
-            RenderRow(3, 3, "B", True, True, "select", []),
-            RenderRow(4, 4, "C", True, True, None, []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(
+                    1, 1, "Root", True, False, None, [child(2), child(3), child(4)]
+                ),
+                RenderRow(2, 2, "A", False, True, None, []),
+                RenderRow(3, 3, "B", True, True, "select", []),
+                RenderRow(4, 4, "C", True, True, None, []),
+            ]
+        )
 
     def test_move_selection_to_previously_selected_goal_after_closing(self):
         self.goals = self.build(
@@ -405,12 +482,16 @@ class GoalsTest(TestCase):
             open_(4, "C", select=previous),
         )
         self.goals.accept(ToggleClose())
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, None, [child(2), child(3), child(4)]),
-            RenderRow(2, 2, "A", False, True, None, []),
-            RenderRow(3, 3, "B", True, True, None, []),
-            RenderRow(4, 4, "C", True, True, "select", []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(
+                    1, 1, "Root", True, False, None, [child(2), child(3), child(4)]
+                ),
+                RenderRow(2, 2, "A", False, True, None, []),
+                RenderRow(3, 3, "B", True, True, None, []),
+                RenderRow(4, 4, "C", True, True, "select", []),
+            ]
+        )
 
     def test_move_selection_to_another_open_goal_with_given_root_after_closing(self):
         self.goals = self.build(
@@ -421,13 +502,15 @@ class GoalsTest(TestCase):
             open_(5, "Closing", select=selected),
         )
         self.goals.accept(ToggleClose(3))
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, None, [child(2), child(3)]),
-            RenderRow(2, 2, "Should not be selected", True, True, None, []),
-            RenderRow(3, 3, "Subroot", True, False, None, [child(4), child(5)]),
-            RenderRow(4, 4, "Must be selected", True, True, "select", []),
-            RenderRow(5, 5, "Closing", False, True, None, []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, False, None, [child(2), child(3)]),
+                RenderRow(2, 2, "Should not be selected", True, True, None, []),
+                RenderRow(3, 3, "Subroot", True, False, None, [child(4), child(5)]),
+                RenderRow(4, 4, "Must be selected", True, True, "select", []),
+                RenderRow(5, 5, "Closing", False, True, None, []),
+            ]
+        )
 
     def test_do_not_select_unswitchable_goal_after_closing(self):
         self.goals = self.build(
@@ -439,29 +522,33 @@ class GoalsTest(TestCase):
             open_(6, "Must be selected"),
         )
         self.goals.accept(ToggleClose(3))
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, False, None, [child(2), child(3)]),
-            RenderRow(2, 2, "Should not be selected", True, True, None, []),
-            RenderRow(3, 3, "Subroot", True, False, None, [child(4), child(5)]),
-            RenderRow(4, 4, "Intermediate", True, False, None, [child(6)]),
-            RenderRow(5, 5, "Closing", False, True, None, []),
-            RenderRow(6, 6, "Must be selected", True, True, "select", []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, False, None, [child(2), child(3)]),
+                RenderRow(2, 2, "Should not be selected", True, True, None, []),
+                RenderRow(3, 3, "Subroot", True, False, None, [child(4), child(5)]),
+                RenderRow(4, 4, "Intermediate", True, False, None, [child(6)]),
+                RenderRow(5, 5, "Closing", False, True, None, []),
+                RenderRow(6, 6, "Must be selected", True, True, "select", []),
+            ]
+        )
 
     def test_ignore_wrong_selection(self):
         self.goals.accept(Select(2))
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, True, "select", [])
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[RenderRow(1, 1, "Root", True, True, "select", [])]
+        )
 
     def test_do_not_select_deleted_goals(self):
         self.goals = self.build(
             open_(1, "Root", [2]), open_(2, "broken", select=selected)
         )
         self.goals.accept_all(Delete(), Select(2))
-        assert self.goals.q().rows == [
-            RenderRow(1, 1, "Root", True, True, "select", []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(1, 1, "Root", True, True, "select", []),
+            ]
+        )
 
     def test_selection_should_be_instant(self):
         self.goals = self.build(
@@ -478,71 +565,75 @@ class GoalsTest(TestCase):
             open_(11, "J"),
         )
         self.goals.accept(Select(2))
-        assert self.goals.q().rows == [
-            RenderRow(
-                1,
-                1,
-                "Root",
-                True,
-                False,
-                "prev",
-                [
-                    child(2),
-                    child(3),
-                    child(4),
-                    child(5),
-                    child(6),
-                    child(7),
-                    child(8),
-                    child(9),
-                    child(10),
-                    child(11),
-                ],
-            ),
-            RenderRow(2, 2, "A", True, True, "select", []),
-            RenderRow(3, 3, "B", True, True, None, []),
-            RenderRow(4, 4, "C", True, True, None, []),
-            RenderRow(5, 5, "D", True, True, None, []),
-            RenderRow(6, 6, "E", True, True, None, []),
-            RenderRow(7, 7, "F", True, True, None, []),
-            RenderRow(8, 8, "G", True, True, None, []),
-            RenderRow(9, 9, "H", True, True, None, []),
-            RenderRow(10, 10, "I", True, True, None, []),
-            RenderRow(11, 11, "J", True, True, None, []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(
+                    1,
+                    1,
+                    "Root",
+                    True,
+                    False,
+                    "prev",
+                    [
+                        child(2),
+                        child(3),
+                        child(4),
+                        child(5),
+                        child(6),
+                        child(7),
+                        child(8),
+                        child(9),
+                        child(10),
+                        child(11),
+                    ],
+                ),
+                RenderRow(2, 2, "A", True, True, "select", []),
+                RenderRow(3, 3, "B", True, True, None, []),
+                RenderRow(4, 4, "C", True, True, None, []),
+                RenderRow(5, 5, "D", True, True, None, []),
+                RenderRow(6, 6, "E", True, True, None, []),
+                RenderRow(7, 7, "F", True, True, None, []),
+                RenderRow(8, 8, "G", True, True, None, []),
+                RenderRow(9, 9, "H", True, True, None, []),
+                RenderRow(10, 10, "I", True, True, None, []),
+                RenderRow(11, 11, "J", True, True, None, []),
+            ]
+        )
         self.goals.accept(Select(11))
-        assert self.goals.q().rows == [
-            RenderRow(
-                1,
-                1,
-                "Root",
-                True,
-                False,
-                "prev",
-                [
-                    child(2),
-                    child(3),
-                    child(4),
-                    child(5),
-                    child(6),
-                    child(7),
-                    child(8),
-                    child(9),
-                    child(10),
-                    child(11),
-                ],
-            ),
-            RenderRow(2, 2, "A", True, True, None, []),
-            RenderRow(3, 3, "B", True, True, None, []),
-            RenderRow(4, 4, "C", True, True, None, []),
-            RenderRow(5, 5, "D", True, True, None, []),
-            RenderRow(6, 6, "E", True, True, None, []),
-            RenderRow(7, 7, "F", True, True, None, []),
-            RenderRow(8, 8, "G", True, True, None, []),
-            RenderRow(9, 9, "H", True, True, None, []),
-            RenderRow(10, 10, "I", True, True, None, []),
-            RenderRow(11, 11, "J", True, True, "select", []),
-        ]
+        assert self.goals.q() == RenderResult(
+            rows=[
+                RenderRow(
+                    1,
+                    1,
+                    "Root",
+                    True,
+                    False,
+                    "prev",
+                    [
+                        child(2),
+                        child(3),
+                        child(4),
+                        child(5),
+                        child(6),
+                        child(7),
+                        child(8),
+                        child(9),
+                        child(10),
+                        child(11),
+                    ],
+                ),
+                RenderRow(2, 2, "A", True, True, None, []),
+                RenderRow(3, 3, "B", True, True, None, []),
+                RenderRow(4, 4, "C", True, True, None, []),
+                RenderRow(5, 5, "D", True, True, None, []),
+                RenderRow(6, 6, "E", True, True, None, []),
+                RenderRow(7, 7, "F", True, True, None, []),
+                RenderRow(8, 8, "G", True, True, None, []),
+                RenderRow(9, 9, "H", True, True, None, []),
+                RenderRow(10, 10, "I", True, True, None, []),
+                RenderRow(11, 11, "J", True, True, "select", []),
+            ]
+        )
 
     def test_add_events(self):
         assert self.goals.events().pop() == ("add", 1, "Root", True)
