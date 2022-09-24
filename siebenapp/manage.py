@@ -153,16 +153,20 @@ def markdown_export(goals):
 
 def _md_tree(render_result, root_id, shift):
     row = render_result.by_id(root_id)
-    result = [_format_md_row(row, shift)]
+    result = [_format_md_row(render_result, row, shift)]
     for edge in row.edges:
         if edge[1] == EdgeType.PARENT:
             result.extend(_md_tree(render_result, edge[0], shift + 1))
     return result
 
 
-def _format_md_row(row: RenderRow, shift: int) -> str:
+def _format_md_row(render_result, row: RenderRow, shift: int) -> str:
     open_status = " " if row.is_open else "x"
-    blockers: List[str] = [f"**{e[0]}**" for e in row.edges if e[1] == EdgeType.BLOCKER]
+    blockers: List[str] = [
+        f"**{e[0]}**"
+        for e in row.edges
+        if e[1] == EdgeType.BLOCKER and render_result.by_id(e[0]).is_open
+    ]
     blocked_status = "" if not blockers else f" (blocked by {', '.join(blockers)})"
     spaces = " " * shift * 2
     return f"{spaces}* [{open_status}] **{row.goal_id}** {row.name}{blocked_status}"
