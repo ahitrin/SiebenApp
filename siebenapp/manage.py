@@ -140,10 +140,24 @@ def dot_export(goals):
 
 def markdown_export(goals):
     render_result = goals.q()
+    all_ids = {r.goal_id for r in render_result.rows}
+    non_roots = {
+        e[0] for r in render_result.rows for e in r.edges if e[1] == EdgeType.PARENT
+    }
+    roots = all_ids.difference(non_roots)
     output: List[str] = []
-    for row in render_result.rows:
-        output.append(_format_md_row(row))
+    for root_id in sorted(list(roots)):
+        output.extend(_md_tree(render_result, root_id, 0))
     return "\n".join(output)
+
+
+def _md_tree(render_result, root_id, shift):
+    row = render_result.by_id(root_id)
+    result = [_format_md_row(row)]
+    for edge in row.edges:
+        if edge[1] == EdgeType.PARENT:
+            result.extend(_md_tree(render_result, edge[0], shift + 1))
+    return result
 
 
 def _format_md_row(row: RenderRow) -> str:
