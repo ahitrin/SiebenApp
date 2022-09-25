@@ -1,6 +1,8 @@
 import io
+import sys
 from pprint import pprint
 
+import pytest
 from approvaltests import verify  # type: ignore
 from approvaltests.reporters import GenericDiffReporterFactory  # type: ignore
 
@@ -34,7 +36,17 @@ class FakeGeometry(GeometryProvider):
         return self.bottom_left(row, col) + self.width(row, col)
 
 
+@pytest.mark.skipif(sys.version_info >= (3, 10), reason="old python output format")
 def test_render_example():
+    _run_render_test()
+
+
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="new python output format")
+def test_render_example_310():
+    _run_render_test()
+
+
+def _run_render_test():
     g = build_goaltree(
         open_(1, "Root", [2, 3, 4, 5, 6], [7, 8]),
         clos_(2, "Closed", blockers=[7]),
