@@ -120,7 +120,7 @@ class AutoLink(Graph):
         }
         for add_to in matching_goals:
             if target_goal not in self_children[add_to]:
-                self.goaltree.accept(ToggleLink(add_to, target_goal, EdgeType.BLOCKER))
+                self.goaltree.accept(ToggleLink(add_to, target_goal, EdgeType.PARENT))
 
     def q(self) -> RenderResult:
         rows: List[RenderRow] = [
