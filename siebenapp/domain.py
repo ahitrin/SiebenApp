@@ -50,6 +50,10 @@ class RenderRow:
 
 @dataclass
 class RenderResult:
+    graph: Dict[GoalId, Any]
+    edge_opts: Dict[str, Tuple[int, int, int]]
+    rows: List[RenderRow]
+
     def __init__(
         self,
         graph: Dict[GoalId, Any] = None,
