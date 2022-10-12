@@ -135,18 +135,21 @@ class AutoLink(Graph):
             )
             for row in self.goaltree.q().rows
         ]
-        fake_rows: List[RenderRow] = [
-            RenderRow(
-                AutoLink.fake_id(goal_id),
-                -1,
-                f"Autolink: '{keyword}'",
-                True,
-                False,
-                None,
-                [(goal_id, EdgeType.PARENT)],
-            )
-            for keyword, goal_id in self.keywords.items()
-        ]
+        fake_rows: List[RenderRow] = sorted(
+            [
+                RenderRow(
+                    AutoLink.fake_id(goal_id),
+                    -1,
+                    f"Autolink: '{keyword}'",
+                    True,
+                    False,
+                    None,
+                    [(goal_id, EdgeType.PARENT)],
+                )
+                for keyword, goal_id in self.keywords.items()
+            ],
+            key=lambda r: int(r.goal_id),
+        )
         return RenderResult(rows=rows + fake_rows)
 
     def _add_pseudo_goals(

@@ -451,8 +451,8 @@ def test_autolink_on_all_matching_goals(tree_3v_goals):
             ),
             RenderRow(2, 2, "Autolink on me", True, True, "prev", []),
             RenderRow(3, 3, "Another subgoal", True, True, "select", []),
-            RenderRow(-12, -1, "Autolink: 'me'", True, False, None, [child(2)]),
             RenderRow(-13, -1, "Autolink: 'plea'", True, False, None, [child(3)]),
+            RenderRow(-12, -1, "Autolink: 'me'", True, False, None, [child(2)]),
         ]
     )
     # add 2-mathing goal
@@ -471,7 +471,7 @@ def test_autolink_on_all_matching_goals(tree_3v_goals):
             RenderRow(2, 2, "Autolink on me", True, False, "prev", [blocker(4)]),
             RenderRow(3, 3, "Another subgoal", True, False, None, [child(4)]),
             RenderRow(4, 4, "Link me to both please", True, True, None, []),
-            RenderRow(-12, -1, "Autolink: 'me'", True, False, None, [child(2)]),
             RenderRow(-13, -1, "Autolink: 'plea'", True, False, None, [child(3)]),
+            RenderRow(-12, -1, "Autolink: 'me'", True, False, None, [child(2)]),
         ]
     )
