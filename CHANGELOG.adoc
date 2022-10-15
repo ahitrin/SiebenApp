@@ -82,18 +82,18 @@ Other improvements:
 * Add sample DB to examples
 * Better notification on errors in properties tests
 * Add new target into `Makefile`: CI-like properties tests
-* Add new dependency: dearpygui (related to https://github.com/ahitrin/SiebenApp/issues/255[#255])
-* Update dependencies (thx to dependabot):
-approvaltests (3.3.2 to 5.2.0),
-black (22.12b0 to 22.3.0),
-hypothesis (6.34.1 to 6.46.11),
-mypy (0.930 to 0.961),
-py-spy (0.3.11 to 0.3.12),
-pytest (6.2.5 to 7.1.2)
+* Add new dependency: `dearpygui` (related to https://github.com/ahitrin/SiebenApp/issues/255[#255])
+* Update dependencies (thx to @dependabot):
+`approvaltests` (3.3.2 to 5.2.0),
+`black` (22.12b0 to 22.3.0),
+`hypothesis` (6.34.1 to 6.46.11),
+`mypy` (0.930 to 0.961),
+`py-spy` (0.3.11 to 0.3.12),
+`pytest` (6.2.5 to 7.1.2)
 
 Compatibility breaks:
 
-* Remove pytest-approvaltests dependency (not needed in new versions of approvaltests)
+* Remove `pytest-approvaltests` dependency (not needed in new versions of `approvaltests`)
 
 == Alpha version 0.9
 2022-01-09
@@ -115,24 +115,24 @@ Refactoring/cleanup:
 
 * Use Python 3.8+ syntax (walrus operator et al)
 * Use Python 3.10 on CI
-* Move rendering geometry logic from app.py to render.py and make it framework-agnostic, and cover it with tests
-* Use type aliases in render.py (WIP)
+* Move rendering geometry logic from `app.py` to `render.py` and make it framework-agnostic, and cover it with tests
+* Use type aliases in `render.py` (WIP)
 * Move some common logic into the base Graph class in order to simplify all its children
-* Introduce @with_key decorator in order to simplify logic in all views
+* Introduce `@with_key` decorator in order to simplify logic in all views
 
 Other improvements:
 
 * Cover CLI with tests
-* Add py-spy development dependency (for easier profiling)
+* Add `py-spy` development dependency (for easier profiling)
 * Migrate from Travis CI to Github Actions
-* Update dependencies: pytest, pytest-cov, hypothesis, approvaltests, mypy, pyqt5, black (thx to @dependabot)
+* Update dependencies: `pytest`, `pytest-cov`, `hypothesis`, `approvaltests`, `mypy`, `pyqt5`, `black` (thx to @dependabot)
 * Update blog Jekyll dependencies
 * Update copyright @ 2022
 
 Compatibility breaks:
 
 * Drop support for Python 3.7
-* Get rid of pylint (mypy+black should be enough)
+* Get rid of `pylint` (`mypy` + `black` should be enough)
 
 == Alpha version 0.8
 2021-05-02
@@ -154,9 +154,9 @@ Other improvements:
 
 * Renew Readme/screenshots
 * Move tutorial into separate file
-* Update runtime dependencies: pyqt5
-* Update dev dependencies: hypothesis, pylint, pytest, mypy, black (thx @dependabot!)
-* Add approval tests and pytest-cov to ensure better quality
+* Update runtime dependencies: `pyqt5`
+* Update dev dependencies: `hypothesis`, `pylint`, `pytest`, `mypy`, `black` (thx @dependabot!)
+* Add approval tests and `pytest-cov` to ensure better quality
 * Upgrade to GitHub-native Dependabot
 * Move from travis-ci.org to travis-ci.com
 * Many small improvements in code
@@ -193,9 +193,9 @@ Compatibility breaks:
 
 Other improvements:
 
-* Move from requirements.txt to Pipenv
-* Update dependencies: PyQt5, Hypothesis, Pytest, Mypy, Pylint
-* Add Black for formatting
+* Move from `requirements.txt` to `Pipenv`
+* Update dependencies: `PyQt5`, `hypothesis`, `pytest`, `mypy`, `pylint`
+* Add `black` for formatting
 * Fix some Mypy warnings
 
 == Alpha version 0.6
@@ -214,7 +214,7 @@ Other improvements:
 * Few improvements for Travis builds
 * Extract common interface to the Goals class (WIP) https://github.com/ahitrin/SiebenApp/issues/68[#68]
 * Reorganize blog: move from branch to directory
-* Update dependencies: pytest, hypothesis, mypy, pyqt5 (thx to @dependabot)
+* Update dependencies: `pytest`, `hypothesis`, `mypy`, `pyqt5` (thx to @dependabot)
 
 == Alpha version 0.5.1
 2019-11-25
@@ -239,9 +239,9 @@ Other improvements:
 
 * Add support for Python 3.7 & 3.8
 * Update all dependencies (thx to @dependabot)
-* More strict pylint checks
+* More strict `pylint` checks
 * Add a lot of type annotations
-* Start to extract common interfaces (domain.py)
+* Start to extract common interfaces (`domain.py`)
 
 Compatibility breaks:
 
@@ -268,7 +268,7 @@ Bug fixes:
 
 Other improvements:
 
- * Setup pylint code style check
+ * Setup `pylint` code style check
  * Introduce DSL for simper goal tree creation in test
 
 Compatibility breaks:
@@ -301,7 +301,7 @@ Bug fixes:
 Other improvements:
 
  * Add support for Python 3.6
- * Update PyQt version: 5.7->5.8.2
+ * Update `PyQt` version: 5.7->5.8.2
  * Use special Hypothesis profile for CI
 
 == Alpha version 0.2
