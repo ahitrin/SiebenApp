@@ -39,6 +39,7 @@ Compatibility breaks:
 
 * `approvaltests` dependency was replaced with `approvaltests-minimal`.
 * Autolink: create child relation instead of blocker https://github.com/ahitrin/SiebenApp/issues/181[#181]
+* Removed `@with_key` decorator
 
 == Alpha version 0.10
 2022-06-20
