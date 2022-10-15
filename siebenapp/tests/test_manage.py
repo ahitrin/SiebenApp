@@ -1,11 +1,6 @@
 from tempfile import NamedTemporaryFile
-from typing import Optional, Any
 
 import pytest
-from approvaltests import verify, Options  # type: ignore
-from approvaltests.namer import get_default_namer  # type: ignore
-from approvaltests.reporters import GenericDiffReporterFactory  # type: ignore
-from approvaltests.reporters.generic_diff_reporter import GenericDiffReporter  # type: ignore
 
 from siebenapp.domain import Select, child, RenderRow, RenderResult
 from siebenapp.enumeration import Enumeration
@@ -13,16 +8,8 @@ from siebenapp.layers import all_layers, persistent_layers
 from siebenapp.manage import main, dot_export, extract_subtree
 from siebenapp.system import save
 from siebenapp.tests.dsl import build_goaltree, open_, clos_, selected, previous
-from siebenapp.tests.test_cli import DummyIO
+from siebenapp.tests.test_cli import DummyIO, verify_file
 from siebenapp.zoom import ToggleZoom
-
-
-def verify_file(content: Any, extension: Optional[str]) -> None:
-    verify(
-        content,
-        GenericDiffReporterFactory().get_first_working(),
-        namer=get_default_namer(extension) if extension else None,
-    )
 
 
 def test_print_dot_empty_file():

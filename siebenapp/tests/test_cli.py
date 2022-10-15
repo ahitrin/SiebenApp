@@ -1,6 +1,7 @@
-from typing import List
+from typing import List, Any, Optional
 
 from approvaltests import verify, Options  # type: ignore
+from approvaltests.namer import get_default_namer  # type: ignore
 from approvaltests.reporters import GenericDiffReporterFactory  # type: ignore
 from approvaltests.reporters.generic_diff_reporter import GenericDiffReporter  # type: ignore
 
@@ -29,6 +30,14 @@ class DummyIO(IO):
         return "\n".join(self.log)
 
 
+def verify_file(content: Any, extension: Optional[str] = None) -> None:
+    verify(
+        content,
+        GenericDiffReporterFactory().get_first_working(),
+        namer=get_default_namer(extension) if extension else None,
+    )
+
+
 def test_simple_scenario():
     commands = [
         "r Approval testing",
@@ -42,7 +51,7 @@ def test_simple_scenario():
     db_name = ":memory:"
     goals = load(db_name, update_message)
     loop(io, goals, db_name)
-    verify(io, reporter=GenericDiffReporterFactory().get_first_working())
+    verify_file(io)
 
 
 def test_complex_scenario():
@@ -84,4 +93,4 @@ def test_complex_scenario():
     db_name = ":memory:"
     goals = load(db_name, update_message)
     loop(io, goals, db_name)
-    verify(io, reporter=GenericDiffReporterFactory().get_first_working())
+    verify_file(io)
