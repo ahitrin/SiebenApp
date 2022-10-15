@@ -1,4 +1,5 @@
 from tempfile import NamedTemporaryFile
+from typing import Optional, Any
 
 import pytest
 from approvaltests import verify, Options  # type: ignore
@@ -16,15 +17,19 @@ from siebenapp.tests.test_cli import DummyIO
 from siebenapp.zoom import ToggleZoom
 
 
+def verify_file(content: Any, extension: Optional[str]) -> None:
+    verify(
+        content,
+        GenericDiffReporterFactory().get_first_working(),
+        namer=get_default_namer(extension) if extension else None,
+    )
+
+
 def test_print_dot_empty_file():
     file_name = NamedTemporaryFile().name
     io = DummyIO()
     main(["dot", file_name], io)
-    verify(
-        "\n".join(io.log),
-        GenericDiffReporterFactory().get_first_working(),
-        get_default_namer(".dot"),
-    )
+    verify_file(io, ".dot")
 
 
 @pytest.fixture
@@ -50,41 +55,25 @@ def complex_goaltree_file():
 def test_print_dot_complex_tree(complex_goaltree_file):
     io = DummyIO()
     main(["dot", complex_goaltree_file], io)
-    verify(
-        io,
-        GenericDiffReporterFactory().get_first_working(),
-        get_default_namer(".dot"),
-    )
+    verify_file(io, ".dot")
 
 
 def test_print_dot_complex_tree_with_closed(complex_goaltree_file):
     io = DummyIO()
     main(["dot", "-n", complex_goaltree_file], io)
-    verify(
-        io,
-        GenericDiffReporterFactory().get_first_working(),
-        get_default_namer(".dot"),
-    )
+    verify_file(io, ".dot")
 
 
 def test_print_dot_complex_tree_with_progress(complex_goaltree_file):
     io = DummyIO()
     main(["dot", "-p", complex_goaltree_file], io)
-    verify(
-        io,
-        GenericDiffReporterFactory().get_first_working(),
-        get_default_namer(".dot"),
-    )
+    verify_file(io, ".dot")
 
 
 def test_print_dot_complex_tree_only_switchable(complex_goaltree_file):
     io = DummyIO()
     main(["dot", "-t", complex_goaltree_file], io)
-    verify(
-        io,
-        GenericDiffReporterFactory().get_first_working(),
-        get_default_namer(".dot"),
-    )
+    verify_file(io, ".dot")
 
 
 def test_dot_export():
@@ -101,62 +90,38 @@ def test_dot_export():
         clos_(6, "!@#$%^&*()\\/,.?"),
         open_(7, ";:[{}]<>", select=previous),
     )
-    verify(
-        dot_export(goals),
-        GenericDiffReporterFactory().get_first_working(),
-        get_default_namer(".dot"),
-    )
+    verify_file(dot_export(goals), ".dot")
 
 
 def test_print_md_empty_file():
     file_name = NamedTemporaryFile().name
     io = DummyIO()
     main(["md", file_name], io)
-    verify(
-        io,
-        GenericDiffReporterFactory().get_first_working(),
-        get_default_namer(".md"),
-    )
+    verify_file(io, ".md")
 
 
 def test_print_md_complex_tree(complex_goaltree_file):
     io = DummyIO()
     main(["md", complex_goaltree_file], io)
-    verify(
-        io,
-        GenericDiffReporterFactory().get_first_working(),
-        get_default_namer(".md"),
-    )
+    verify_file(io, ".md")
 
 
 def test_print_md_complex_tree_with_closed(complex_goaltree_file):
     io = DummyIO()
     main(["md", "-n", complex_goaltree_file], io)
-    verify(
-        io,
-        GenericDiffReporterFactory().get_first_working(),
-        get_default_namer(".md"),
-    )
+    verify_file(io, ".md")
 
 
 def test_print_md_complex_tree_with_progress(complex_goaltree_file):
     io = DummyIO()
     main(["md", "-p", complex_goaltree_file], io)
-    verify(
-        io,
-        GenericDiffReporterFactory().get_first_working(),
-        get_default_namer(".md"),
-    )
+    verify_file(io, ".md")
 
 
 def test_print_md_complex_tree_only_switchable(complex_goaltree_file):
     io = DummyIO()
     main(["md", "-t", complex_goaltree_file], io)
-    verify(
-        io,
-        GenericDiffReporterFactory().get_first_working(),
-        get_default_namer(".md"),
-    )
+    verify_file(io, ".md")
 
 
 @pytest.fixture()
