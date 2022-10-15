@@ -5,7 +5,7 @@ from os import path
 from siebenapp.cli import IO, ConsoleIO
 from siebenapp.domain import EdgeType, Graph, RenderRow
 from siebenapp.goaltree import Goals, GoalsData, EdgesData, OptionsData
-from siebenapp.layers import get_root, persistent_layers
+from siebenapp.layers import get_root, persistent_layers, all_layers
 from siebenapp.open_view import ToggleOpenView
 from siebenapp.progress_view import ToggleProgress
 from siebenapp.switchable_view import ToggleSwitchableView
@@ -45,6 +45,37 @@ def extract(args, io: IO):
     assert not path.exists(args.target_db), f"File {args.target_db} already exists!"
     result = extract_subtree(tree, args.goal_id)
     save(result, args.target_db)
+
+
+def merge(args, io: IO):
+    sources = args.source_db
+    assert not path.exists(args.target_db), f"File {args.target_db} already exists!"
+    assert (
+        len(sources) >= 2
+    ), f"There should be at least 2 files to merge, but I see {len(sources)}."
+    for source_db in sources:
+        assert path.exists(source_db), f"File {source_db} is missing."
+
+    merged_db = Goals("Merged")
+    delta = 1
+    for source_db in sources:
+        source_root = get_root(load(source_db))
+        merged_db.goals.update(
+            {goal_id + delta: name for goal_id, name in source_root.goals.items()}
+        )
+        merged_db.edges.update(
+            {
+                (edge[0] + delta, edge[1] + delta): edge_type
+                for edge, edge_type in source_root.edges.items()
+            }
+        )
+        merged_db.edges[
+            Goals.ROOT_ID, min(source_root.goals.keys()) + delta
+        ] = EdgeType.PARENT
+        merged_db.closed.update({goal_id + delta for goal_id in source_root.closed})
+        delta = max(merged_db.goals.keys())
+
+    save(all_layers(merged_db), args.target_db)
 
 
 def _flag(parser, key, description) -> None:
@@ -92,6 +123,16 @@ def main(argv: Optional[List[str]] = None, io: Optional[IO] = None):
         "The simplest way to find a real id of a goal is to run `sieben-manage dot` on the source file.",
     )
     parser_extract.set_defaults(func=extract)
+
+    parser_merge = subparsers.add_parser("merge")
+    parser_merge.add_argument(
+        "target_db",
+        help="File where merged results will be written into. Should not exist beforhand.",
+    )
+    parser_merge.add_argument(
+        "source_db", nargs="+", help="Files to merge (at least 2)."
+    )
+    parser_merge.set_defaults(func=merge)
 
     args = parser.parse_args(argv)
     io = io or ConsoleIO("> ")
