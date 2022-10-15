@@ -3,8 +3,6 @@ import sys
 from pprint import pprint
 
 import pytest
-from approvaltests import verify  # type: ignore
-from approvaltests.reporters import GenericDiffReporterFactory  # type: ignore
 
 from siebenapp.render import (
     Renderer,
@@ -14,6 +12,7 @@ from siebenapp.render import (
     adjust_graph,
 )
 from siebenapp.tests.dsl import build_goaltree, open_, clos_, selected, previous
+from siebenapp.tests.test_cli import verify_file
 
 
 class FakeGeometry(GeometryProvider):
@@ -77,6 +76,4 @@ def _run_render_test():
         print(f"Avg: dx={avg_dx}, dy={avg_dy}", file=out)
         print("\n== Lines", file=out)
         pprint(lines, out)
-        verify(
-            out.getvalue(), reporter=GenericDiffReporterFactory().get_first_working()
-        )
+        verify_file(out.getvalue())
