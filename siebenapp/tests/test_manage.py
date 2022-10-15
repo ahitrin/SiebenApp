@@ -51,7 +51,7 @@ def test_print_dot_complex_tree(complex_goaltree_file):
     io = DummyIO()
     main(["dot", complex_goaltree_file], io)
     verify(
-        "\n".join(io.log),
+        io,
         GenericDiffReporterFactory().get_first_working(),
         get_default_namer(".dot"),
     )
@@ -61,7 +61,7 @@ def test_print_dot_complex_tree_with_closed(complex_goaltree_file):
     io = DummyIO()
     main(["dot", "-n", complex_goaltree_file], io)
     verify(
-        "\n".join(io.log),
+        io,
         GenericDiffReporterFactory().get_first_working(),
         get_default_namer(".dot"),
     )
@@ -71,7 +71,7 @@ def test_print_dot_complex_tree_with_progress(complex_goaltree_file):
     io = DummyIO()
     main(["dot", "-p", complex_goaltree_file], io)
     verify(
-        "\n".join(io.log),
+        io,
         GenericDiffReporterFactory().get_first_working(),
         get_default_namer(".dot"),
     )
@@ -81,7 +81,7 @@ def test_print_dot_complex_tree_only_switchable(complex_goaltree_file):
     io = DummyIO()
     main(["dot", "-t", complex_goaltree_file], io)
     verify(
-        "\n".join(io.log),
+        io,
         GenericDiffReporterFactory().get_first_working(),
         get_default_namer(".dot"),
     )
@@ -113,7 +113,7 @@ def test_print_md_empty_file():
     io = DummyIO()
     main(["md", file_name], io)
     verify(
-        "\n".join(io.log),
+        io,
         GenericDiffReporterFactory().get_first_working(),
         get_default_namer(".md"),
     )
@@ -123,7 +123,7 @@ def test_print_md_complex_tree(complex_goaltree_file):
     io = DummyIO()
     main(["md", complex_goaltree_file], io)
     verify(
-        "\n".join(io.log),
+        io,
         GenericDiffReporterFactory().get_first_working(),
         get_default_namer(".md"),
     )
@@ -133,7 +133,7 @@ def test_print_md_complex_tree_with_closed(complex_goaltree_file):
     io = DummyIO()
     main(["md", "-n", complex_goaltree_file], io)
     verify(
-        "\n".join(io.log),
+        io,
         GenericDiffReporterFactory().get_first_working(),
         get_default_namer(".md"),
     )
@@ -143,7 +143,7 @@ def test_print_md_complex_tree_with_progress(complex_goaltree_file):
     io = DummyIO()
     main(["md", "-p", complex_goaltree_file], io)
     verify(
-        "\n".join(io.log),
+        io,
         GenericDiffReporterFactory().get_first_working(),
         get_default_namer(".md"),
     )
@@ -153,7 +153,7 @@ def test_print_md_complex_tree_only_switchable(complex_goaltree_file):
     io = DummyIO()
     main(["md", "-t", complex_goaltree_file], io)
     verify(
-        "\n".join(io.log),
+        io,
         GenericDiffReporterFactory().get_first_working(),
         get_default_namer(".md"),
     )

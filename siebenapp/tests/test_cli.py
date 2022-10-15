@@ -25,6 +25,9 @@ class DummyIO(IO):
         self.log.append("*USER BREAK*")
         raise EOFError("Commands list is empty")
 
+    def __str__(self) -> str:
+        return "\n".join(self.log)
+
 
 def test_simple_scenario():
     commands = [
@@ -39,7 +42,7 @@ def test_simple_scenario():
     db_name = ":memory:"
     goals = load(db_name, update_message)
     loop(io, goals, db_name)
-    verify("\n".join(io.log), reporter=GenericDiffReporterFactory().get_first_working())
+    verify(io, reporter=GenericDiffReporterFactory().get_first_working())
 
 
 def test_complex_scenario():
@@ -81,4 +84,4 @@ def test_complex_scenario():
     db_name = ":memory:"
     goals = load(db_name, update_message)
     loop(io, goals, db_name)
-    verify("\n".join(io.log), reporter=GenericDiffReporterFactory().get_first_working())
+    verify(io, reporter=GenericDiffReporterFactory().get_first_working())
