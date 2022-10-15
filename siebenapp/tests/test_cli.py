@@ -1,9 +1,8 @@
 from typing import List, Any, Optional
 
-from approvaltests import verify, Options  # type: ignore
+from approvaltests import verify  # type: ignore
 from approvaltests.namer import get_default_namer  # type: ignore
 from approvaltests.reporters import GenericDiffReporterFactory  # type: ignore
-from approvaltests.reporters.generic_diff_reporter import GenericDiffReporter  # type: ignore
 
 from siebenapp.cli import IO, update_message, loop
 from siebenapp.system import load
