@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "559b876cb435b686f627a10f341dc64b821091b05f223451aa21063b5485ce57"
+            "sha256": "f702784cc02f69aca485d40b14cad2d0944666dce67f7e7381e2521f93667828"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -64,11 +64,11 @@
     "develop": {
         "approvaltests-minimal": {
             "hashes": [
-                "sha256:06dd52aceeeb9ade2321f652b1a03cc667b4770cac1e11662f57dca50fe7dd57",
-                "sha256:2e3bfbd89aeabaa0293b8ac9c451e152991a531b693a3468e906eaa16b7893e5"
+                "sha256:5ceef036e773746708909f3a5c8c9e7fb213d3eed40d8af09256ec2e1aa002e6",
+                "sha256:6e9781c93323d9d6603cb209219156aac48d485cb892e95c9a0fddb3e1bb88ff"
             ],
             "index": "pypi",
-            "version": "==7.1.0"
+            "version": "==7.2.0"
         },
         "attrs": {
             "hashes": [
@@ -110,7 +110,7 @@
                 "sha256:0d9c601124e5a6ba9712dbc60d9c53c21e34f5f641fe83002317394311bdce14",
                 "sha256:90c1a32f1d68f940488354e36370f6cca89f0f106db09518524c88d6ed83f382"
             ],
-            "markers": "python_full_version >= '3.6.0'",
+            "markers": "python_version >= '3.6'",
             "version": "==2022.9.24"
         },
         "charset-normalizer": {
@@ -118,7 +118,7 @@
                 "sha256:5a3d016c7c547f69d6f81fb0db9449ce888b418b5b9952cc5e6e66843e9dd845",
                 "sha256:83e9a75d1911279afd89352c68b45348559d1fc0506b054b346651b5e7fee29f"
             ],
-            "markers": "python_full_version >= '3.6.0'",
+            "markers": "python_version >= '3.6'",
             "version": "==2.1.1"
         },
         "click": {
@@ -312,7 +312,7 @@
                 "sha256:dd47c42927d89ab911e606518907cc2d3a1f38bbd026385970643f9c5b8ecfeb",
                 "sha256:ef103e05f519cdc783ae24ea4e2e0f508a9c99b2d4969652eed6a2e1ea5bd522"
             ],
-            "markers": "python_full_version >= '3.6.0'",
+            "markers": "python_version >= '3.6'",
             "version": "==21.3"
         },
         "pathspec": {
@@ -336,7 +336,7 @@
                 "sha256:4224373bacce55f955a878bf9cfa763c1e360858e330072059e10bad68531159",
                 "sha256:74134bbf457f031a36d68416e1509f34bd5ccc019f0bcc952c7b909d06b37bd3"
             ],
-            "markers": "python_full_version >= '3.6.0'",
+            "markers": "python_version >= '3.6'",
             "version": "==1.0.0"
         },
         "py": {
