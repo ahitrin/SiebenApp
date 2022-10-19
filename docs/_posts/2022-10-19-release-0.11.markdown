@@ -1,0 +1,165 @@
+---
+layout: post
+title:  "Version 0.11 is released"
+date:   2022-10-19
+tags: news
+---
+
+This release was mostly focused on improvements in `sieben-manage` tool and internal refactorings.
+A major code restructurization in [#329](https://github.com/ahitrin/SiebenApp/issues/329) should open a door for many important changes in future releases.
+Let's see.
+
+## New features
+
+### Merge goal trees [#179](https://github.com/ahitrin/SiebenApp/issues/179)
+
+Sometimes it might be useful to join two or more sieben files together into a single file.
+It could be done via new `sieben-manage` CLI command (I do not definitely want to overload GUI for such tasks).
+The command looks the following:
+
+```(bash)
+$ sieben-manage merge target.db source1.db source2.db ...
+```
+
+Here, `target.db` is a name of the file that will contain merged goal tree.
+It **must not** exist beforehand.
+And `sourceN.db` files are files that will be joined together.
+You could join as many files as you need.
+None of "source files" will be modified during this operation.
+It's safe for experimenting!
+
+### Markdown export [#311](https://github.com/ahitrin/SiebenApp/issues/311)
+
+Now it's also possible to export your current goal trees into [GitHub Flavored Markdown](https://github.github.com/gfm/) text.
+With nested sublists and cure checkboxes.
+
+Say we have a following simple goal tree:
+
+![simple goal tree](/SiebenApp/images/2022-10-19-release-0.11/markdown-sample.jpg)
+
+Using `sieben-manage`, we could export it into Markdown text:
+
+```(bash)
+$ sieben-manage md example.md
+* [ ] **1** Markdown export
+  * [ ] **2** Motivation
+    * [ ] **5** Simplify data export into external docs
+    * [ ] **6** Make fun
+  * [ ] **3** Restrictions
+    * [ ] **4** Not showing "switchable" status (blocked by **6**)
+```
+
+Now you could copy & paste this text and insert it into some GitHub ticket or wiki page.
+It would be nicely rendered:
+
+* [ ] **1** Markdown export
+  * [ ] **2** Motivation
+    * [ ] **5** Simplify data export into external docs
+    * [ ] **6** Make fun
+  * [ ] **3** Restrictions
+    * [ ] **4** Not showing "switchable" status (blocked by **6**)
+
+By default, closed goals are hidden (like in `sieben` iteslf).
+But you could also manage such visualization aspects using additional command line agruments.
+That's covered in the next section.
+
+### Consider layers in dot (and markdown) export [#310](https://github.com/ahitrin/SiebenApp/issues/310)
+
+Behavior of two export commands (`sieben-manage dot` and `sieben-manage md`) has been standardized and aligned with behavior of `sieben` itself:
+
+1. By default, closed subgoals are hidden.
+But they could be revealed using `n` hotkey on GUI or `-n` flag in export tool.
+
+2. By default, goals are shown in tree.
+By using `t` hotkey on GUI or `-t` flag in export tool, it could be possible to show only "switchable" goals (not blocked by other open goals).
+
+3. By default, progress status is not shown.
+This could be changed by using `p` hotkey on GUI or `-p` flag in export tool.
+
+4. Export tools now respect zoom status and do not show the whole goal tree.
+This makes possible to export only chosen excerpts of some big tree.
+
+Back to an example above, that's how export of the same file may look depending on different arguments:
+
+```(bash)
+$ sieben-manage md example.md       # default view
+* [ ] **1** Markdown export
+  * [ ] **2** Motivation
+    * [ ] **5** Simplify data export into external docs
+    * [ ] **6** Make fun
+  * [ ] **3** Restrictions
+    * [ ] **4** Not showing "switchable" status (blocked by **6**)
+
+$ sieben-manage md -n example.md    # with closed goals
+* [ ] **1** Markdown export
+  * [ ] **2** Motivation
+    * [ ] **6** Simplify data export into external docs
+    * [ ] **7** Make fun
+  * [ ] **3** Restrictions
+    * [ ] **4** Not showing "switchable" status (blocked by **7**)
+    * [x] **5** Hide some irrelevant edges
+
+$ sieben-manage md -t example.md    # only switchable goals
+* [ ] **1** Simplify data export into external docs
+* [ ] **2** Make fun
+
+$ sieben-manage md -np example.md   # with closed goals and progress status
+* [ ] **1** [1/7] Markdown export
+  * [ ] **2** [0/3] Motivation
+    * [ ] **6** [0/1] Simplify data export into external docs
+    * [ ] **7** [0/1] Make fun
+  * [ ] **3** [1/3] Restrictions
+    * [ ] **4** [0/1] Not showing "switchable" status (blocked by **7**)
+    * [x] **5** [1/1] Hide some irrelevant edges
+```
+
+Alas, there are still few incompatibilities in behavior.
+For example, export tools ignore goal filtering (since filters are not stored in a file).
+If this become problem, we'll mitigate it.
+
+### Other
+
+More changes are available in the [changelog file](https://github.com/ahitrin/SiebenApp/blob/master/CHANGELOG.adoc#alpha-version-011).
+
+## Behavior changes
+
+### Autolink: create child relation by default [#181](https://github.com/ahitrin/SiebenApp/issues/181)
+
+Behavior of autolink feature was changed to be more "natural" one (IMHO).
+
+My typical workflow on complex tasks looks the following.
+I create two big subgoals of the root goal: **[Questions]** and **[Actions]**.
+For the first one, I create autolink on **q:** pattern.
+This could look like on the following picture:
+
+![before autolink](/SiebenApp/images/2022-10-19-release-0.11/autolink-1.jpg)
+
+Next I usually zoom into **[Actions]** subgoal (or even into one of its nested subgoals).
+It's always easier to work when your context is restricted only by the nearest needs.
+
+At some moment I may understand that something is blocking my work on the current task.
+And I want to transform it into a new _question_.
+To do this, I use my pattern **q:** defined earlier.
+
+![focused on a goal](/SiebenApp/images/2022-10-19-release-0.11/autolink-2.jpg)
+
+A new subgoal is created, but it's not a subgoal of my current goal!
+It's only a _blocker_ of it.
+
+![create blocker](/SiebenApp/images/2022-10-19-release-0.11/autolink-3.jpg)
+
+The real parent is a goal I've added autolink to, a **[Questions]** goal.
+
+![blocker belongs to another goal](/SiebenApp/images/2022-10-19-release-0.11/autolink-4.jpg)
+
+In case you also use SiebenApp with autolink feature, please make me know about your opinion.
+
+## Future plans
+
+In the next version, I plan to implement several important changes that may affect overall goal tree view.
+I have an ambitious plan to get rid of "fake goals" that're used in filtering and autolink features.
+Fake goals is a cheap trick that should be replaced with more coherent solution.
+
+Also, there are some refactorings planned that should open the way to performance speedups during rendering.
+
+I'm sure, SiebenApp 0.12 will be even better than 0.11.
