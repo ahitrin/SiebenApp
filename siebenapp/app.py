@@ -187,15 +187,16 @@ class SiebenApp(QMainWindow):
         render_result = Renderer(self.goals, self.columns).build()
         if "setupData" in dir(self.scrollAreaWidgetContents):
             self.scrollAreaWidgetContents.setupData(render_result)
-        for goal_id, attributes in render_result.graph.items():
-            if isinstance(goal_id, int):
-                widget = GoalWidget()
-                self.scrollAreaWidgetContents.layout().addWidget(
-                    widget, attributes["row"], attributes["col"]
-                )
-                widget.setup_data(goal_id, attributes, render_result.select)
-                widget.clicked.connect(self.select_number(goal_id))
-                widget.check_open.clicked.connect(self.close_goal(goal_id))
+        for row in render_result.rows:
+            goal_id = row.goal_id
+            attributes = render_result.graph[goal_id]
+            widget = GoalWidget()
+            self.scrollAreaWidgetContents.layout().addWidget(
+                widget, attributes["row"], attributes["col"]
+            )
+            widget.setup_data(goal_id, attributes, render_result.select)
+            widget.clicked.connect(self.select_number(goal_id))
+            widget.check_open.clicked.connect(self.close_goal(goal_id))
         self.scrollAreaWidgetContents.update()
 
     def keyPressEvent(self, event):
