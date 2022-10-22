@@ -1,7 +1,7 @@
 from collections import deque
 from dataclasses import dataclass
 from enum import IntEnum
-from typing import Dict, Any, Set, Union, Tuple, Optional, List
+from typing import Dict, Any, Union, Tuple, List
 
 
 class EdgeType(IntEnum):
