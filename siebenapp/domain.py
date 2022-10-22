@@ -45,7 +45,6 @@ class RenderRow:
     is_open: bool
     is_switchable: bool
     edges: List[Tuple[GoalId, EdgeType]]
-    select: Optional[str] = None
 
 
 @dataclass

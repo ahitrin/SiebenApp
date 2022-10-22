@@ -132,7 +132,6 @@ class AutoLink(Graph):
                 row.is_open,
                 row.is_switchable,
                 self._add_pseudo_goals(row.edges),
-                row.select,
             )
             for row in render_result.rows
         ]
@@ -145,7 +144,6 @@ class AutoLink(Graph):
                     True,
                     False,
                     [(goal_id, EdgeType.PARENT)],
-                    None,
                 )
                 for keyword, goal_id in self.keywords.items()
             ],

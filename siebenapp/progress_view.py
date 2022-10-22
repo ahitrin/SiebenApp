@@ -55,7 +55,6 @@ class ProgressView(Graph):
                 row.is_open,
                 row.is_switchable,
                 row.edges,
-                row.select,
             )
             for row in rows
         ]

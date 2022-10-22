@@ -501,9 +501,7 @@ class GoalsTest(TestCase):
         self.goals.accept(ToggleClose())
         assert self.goals.q() == RenderResult(
             rows=[
-                RenderRow(
-                    1, 1, "Root", True, False, [child(2), child(3), child(4)], None
-                ),
+                RenderRow(1, 1, "Root", True, False, [child(2), child(3), child(4)]),
                 RenderRow(2, 2, "A", False, True, []),
                 RenderRow(3, 3, "B", True, True, []),
                 RenderRow(4, 4, "C", True, True, []),
@@ -521,9 +519,7 @@ class GoalsTest(TestCase):
         self.goals.accept(ToggleClose())
         assert self.goals.q() == RenderResult(
             rows=[
-                RenderRow(
-                    1, 1, "Root", True, False, [child(2), child(3), child(4)], None
-                ),
+                RenderRow(1, 1, "Root", True, False, [child(2), child(3), child(4)]),
                 RenderRow(2, 2, "A", False, True, []),
                 RenderRow(3, 3, "B", True, True, []),
                 RenderRow(4, 4, "C", True, True, []),

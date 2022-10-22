@@ -62,9 +62,7 @@ def test_selected_goal_must_not_be_filtered_out(goaltree):
         rows=[
             RenderRow(2, 2, "Beta", True, False, [child(3)]),
             RenderRow(3, 3, "Gamma", True, True, []),
-            RenderRow(
-                -2, -2, "Filter by 'be'", True, False, [blocker(2), blocker(3)], None
-            ),
+            RenderRow(-2, -2, "Filter by 'be'", True, False, [blocker(2), blocker(3)]),
         ],
         select=(3, 3),
     )
@@ -77,9 +75,7 @@ def test_previously_selected_goal_must_not_be_filtered_out(goaltree):
         rows=[
             RenderRow(1, 1, "Alpha", True, False, [blocker(-2)]),
             RenderRow(3, 3, "Gamma", True, True, []),
-            RenderRow(
-                -2, -2, "Filter by 'matching no one'", True, False, [blocker(3)], None
-            ),
+            RenderRow(-2, -2, "Filter by 'matching no one'", True, False, [blocker(3)]),
         ],
         select=(3, 1),
     )
@@ -93,9 +89,7 @@ def test_zoomed_parent_goal_must_not_be_filtered_out(zoomed_goaltree):
             RenderRow(2, 2, "Beta", True, False, [child(3)]),
             RenderRow(3, 3, "Gamma", True, True, []),
             RenderRow(-1, -1, "Alpha", True, False, [blocker(2), blocker(-2)]),
-            RenderRow(
-                -2, -2, "Filter by 'mm'", True, False, [blocker(2), blocker(3)], None
-            ),
+            RenderRow(-2, -2, "Filter by 'mm'", True, False, [blocker(2), blocker(3)]),
         ],
         select=(2, -1),
     )
