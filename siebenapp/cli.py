@@ -15,6 +15,8 @@ from siebenapp.domain import (
     Insert,
     Rename,
     Graph,
+    RenderResult,
+    RenderRow,
 )
 from siebenapp.progress_view import ToggleProgress
 from siebenapp.filter_view import FilterBy
@@ -54,28 +56,23 @@ def update_message(message=""):
     USER_MESSAGE = message
 
 
-def fmt(render_result, goal_id, goal_vars, id_width):
-    show_id = goal_id
-    if -10 <= goal_id < 0:
-        show_id = " " * id_width
-    name = goal_vars["name"]
-    op = " " if goal_vars["open"] else "x"
-    status = f"[{op}]" if goal_vars["switchable"] else f" {op} "
+def fmt(render_result: RenderResult, row: RenderRow, id_width):
+    show_id = " " * id_width if -10 <= int(row.goal_id) < 0 else row.goal_id
+    op = " " if row.is_open else "x"
+    status = f"[{op}]" if row.is_switchable else f" {op} "
     selection = " "
-    if render_result.select[0] == goal_id:
+    if render_result.select[0] == row.goal_id:
         selection = ">"
-    elif render_result.select[1] == goal_id:
+    elif render_result.select[1] == row.goal_id:
         selection = "_"
     children = ""
-    if goal_vars["edge"]:
-        child_list = ",".join(
-            str(e[0]) for e in goal_vars["edge"] if e[1] == EdgeType.PARENT
-        )
+    if row.edges:
+        child_list = ",".join(str(e[0]) for e in row.edges if e[1] == EdgeType.PARENT)
         blocker_list = ",".join(
-            str(e[0]) for e in goal_vars["edge"] if e[1] == EdgeType.BLOCKER
+            str(e[0]) for e in row.edges if e[1] == EdgeType.BLOCKER
         )
         children = f" [{child_list} / {blocker_list}]"
-    return f"{show_id}{status}{selection}{name}{children}"
+    return f"{show_id}{status}{selection}{row.name}{children}"
 
 
 def build_actions(command):
@@ -111,21 +108,23 @@ def loop(io: IO, goals: Graph, db_name: str):
     cmd = ""
     while cmd != "q":
         render_result = Renderer(goals, 100).build()
-        rows = render_result.graph
+        rows = render_result.rows
         index = sorted(
             [
-                (goal_id, goal_vars["row"], goal_vars["col"])
-                for goal_id, goal_vars in rows.items()
-                if isinstance(goal_id, int)
+                (
+                    row,
+                    render_result.graph[row.goal_id]["row"],
+                    render_result.graph[row.goal_id]["col"],
+                )
+                for row in rows
             ],
             key=itemgetter(1, 2),
             reverse=True,
         )
-        id_width = len(str(max(g for g in rows.keys() if isinstance(g, int))))
+        id_width = len(str(max(r.goal_id for r in rows)))
         for item in index:
-            goal_id = item[0]
-            goal_vars = rows[goal_id]
-            io.write(fmt(render_result, goal_id, goal_vars, id_width))
+            row = item[0]
+            io.write(fmt(render_result, row, id_width))
         if USER_MESSAGE:
             io.write(USER_MESSAGE)
         update_message()
