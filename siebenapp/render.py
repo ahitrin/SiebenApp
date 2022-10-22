@@ -58,12 +58,7 @@ class Renderer:
         self.render_result = goals.q()
         self.width_limit = width_limit
         self.rows = self.render_result.rows
-        self.graph: Dict[GoalId, Any] = {
-            row.goal_id: {
-                "edge": row.edges,
-            }
-            for row in self.rows
-        }
+        self.graph: Dict[GoalId, Any] = {row.goal_id: {} for row in self.rows}
         self.edges: Dict[GoalId, List[GoalId]] = {
             row.goal_id: [e[0] for e in row.edges] for row in self.render_result.rows
         }
@@ -187,7 +182,6 @@ class Renderer:
                 else:
                     self.graph[goal_id] = {
                         "col": col,
-                        "edge": [],
                         "edge_render": [],
                     }
                 self.graph[goal_id].update(
