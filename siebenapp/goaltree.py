@@ -109,13 +109,6 @@ class Goals(Graph):
         self._events.append(("hold_select", self.selection))
 
     def q(self) -> RenderResult:
-        def sel(x: int) -> Optional[str]:
-            if x == self.selection:
-                return "select"
-            if x == self.previous_selection:
-                return "prev"
-            return None
-
         rows: List[RenderRow] = []
         for key, name in ((k, n) for k, n in self.goals.items() if n is not None):
             edges: List[Tuple[GoalId, EdgeType]] = sorted(
