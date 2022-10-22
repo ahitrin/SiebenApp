@@ -286,21 +286,14 @@ def test_selection_cache_should_be_reset_after_view_switch(goal_chain_11):
 
 
 def test_selection_cache_should_avoid_overflow(goal_chain_11):
-    def by_id(rows: List[RenderRow], id: GoalId) -> RenderRow:
-        result = [r for r in rows if r.goal_id == id]
-        assert len(result) == 1
-        return result[0]
-
     e = Enumeration(goal_chain_11)
-    assert e.q().by_id(11).select == "select"
+    assert e.q().select == (11, 11)
     e.accept(Select(5))
-    assert e.q().by_id(11).select == "select"
+    assert e.q().select == (11, 11)
     e.accept(Select(1))
-    assert e.q().by_id(11).select == "select"
-    assert e.q().by_id(14).select is None
+    assert e.q().select == (11, 11)
     e.accept(Select(4))
-    assert e.q().by_id(11).select == "prev"
-    assert e.q().by_id(14).select == "select"
+    assert e.q().select == (14, 11)
 
 
 def test_do_not_enumerate_goals_with_negative_id():

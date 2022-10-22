@@ -93,7 +93,8 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         event("valid select 2")
         self._accept(Select(random_goal))
         # Any valid goal must be selectable
-        assert self.goaltree.q().by_id(random_goal).select == "select"
+        render_result = self.goaltree.q()
+        assert render_result.by_id(random_goal).goal_id == render_result.select[0]
 
     @rule()
     def hold_selection(self):
@@ -105,9 +106,12 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     @precondition(lambda self: len(self.goaltree.q().rows) > 1)
     def insert(self, d):
         event("insert")
+        render_result = self.goaltree.q()
         candidates = sorted(
             list(
-                row.goal_id for row in self.goaltree.q().rows if row.select != "select"
+                row.goal_id
+                for row in render_result.rows
+                if row.goal_id != render_result.select[0]
             )
         )
         random_goal = d.draw(sampled_from(candidates))
@@ -207,10 +211,9 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 
     @invariant()
     def there_is_always_one_selected_goal_and_at_most_one_previous(self):
-        rows = self.goaltree.q().rows
-        counter = Counter(row.select for row in rows)
-        assert counter["select"] == 1, str(rows)
-        assert counter["prev"] <= 1, str(rows)
+        render_result = self.goaltree.q()
+        assert render_result.select[0] != 0, str(render_result.select)
+        assert render_result.select[1] != 0, str(render_result.select)
 
     @invariant()
     @precondition(lambda self: self.db_is_ready)
