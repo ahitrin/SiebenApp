@@ -148,9 +148,9 @@ class SiebenApp:
                                 )
                             dpg.add_text(str(goal_id), color=status_color)
                             dpg.add_text(goal_text)
-                    if attrs["select"] == "select":
+                    if self.render_result.select[0] == goal_id:
                         dpg.highlight_table_row(table_id, 0, (128, 128, 128, 255))
-                    elif attrs["select"] == "prev":
+                    elif self.render_result.select[1] == goal_id:
                         dpg.highlight_table_row(table_id, 0, (192, 192, 192, 255))
 
             dpg.bind_item_handler_registry(widget_tag, "goals_handler")

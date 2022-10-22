@@ -47,14 +47,14 @@ class GoalWidget(QWidget, Ui_GoalBody):
         self.is_real = True
         self.widget_id = None
 
-    def setup_data(self, number, attributes):
+    def setup_data(self, number, attributes, selection):
         self.widget_id = number
         self.label_goal_name.setText(split_long(attributes["name"]))
         self.check_open.setVisible(attributes["switchable"])
         self.is_real = isinstance(number, int)
-        if (selection := attributes["select"]) == "select":
+        if selection[0] == number:
             self.setStyleSheet("background-color:#808080;")
-        elif selection == "prev":
+        elif selection[1] == number:
             self.setStyleSheet("background-color:#C0C0C0;")
         if self.is_real:
             frame_color = "red" if attributes["open"] else "green"
@@ -193,7 +193,7 @@ class SiebenApp(QMainWindow):
                 self.scrollAreaWidgetContents.layout().addWidget(
                     widget, attributes["row"], attributes["col"]
                 )
-                widget.setup_data(goal_id, attributes)
+                widget.setup_data(goal_id, attributes, render_result.select)
                 widget.clicked.connect(self.select_number(goal_id))
                 widget.check_open.clicked.connect(self.close_goal(goal_id))
         self.scrollAreaWidgetContents.update()

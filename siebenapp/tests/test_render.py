@@ -22,7 +22,6 @@ def test_render_simplest_goal_tree():
             "edge_render": [],
             "name": "Alone",
             "open": True,
-            "select": None,
             "switchable": True,
         }
     }

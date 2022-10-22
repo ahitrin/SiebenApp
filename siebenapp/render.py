@@ -63,7 +63,6 @@ class Renderer:
                 "name": row.name,
                 "open": row.is_open,
                 "switchable": row.is_switchable,
-                "select": row.select,
                 "edge": row.edges,
             }
             for row in self.rows
@@ -195,7 +194,6 @@ class Renderer:
                         "edge": [],
                         "edge_render": [],
                         "switchable": False,
-                        "select": None,
                         "open": True,
                     }
                 self.graph[goal_id].update(
