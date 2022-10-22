@@ -60,7 +60,6 @@ class Renderer:
         self.rows = self.render_result.rows
         self.graph: Dict[GoalId, Any] = {
             row.goal_id: {
-                "name": row.name,
                 "open": row.is_open,
                 "switchable": row.is_switchable,
                 "edge": row.edges,
@@ -189,7 +188,6 @@ class Renderer:
                     real_col += 1
                 else:
                     self.graph[goal_id] = {
-                        "name": "",
                         "col": col,
                         "edge": [],
                         "edge_render": [],
