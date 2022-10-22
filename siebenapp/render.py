@@ -60,7 +60,6 @@ class Renderer:
         self.rows = self.render_result.rows
         self.graph: Dict[GoalId, Any] = {
             row.goal_id: {
-                "switchable": row.is_switchable,
                 "edge": row.edges,
             }
             for row in self.rows
@@ -190,7 +189,6 @@ class Renderer:
                         "col": col,
                         "edge": [],
                         "edge_render": [],
-                        "switchable": False,
                     }
                 self.graph[goal_id].update(
                     {
