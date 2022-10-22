@@ -118,19 +118,20 @@ class SiebenApp:
             previous_tag = self.drawn_items.pop()
             dpg.delete_item(previous_tag)
         add_to_nodes = {}
-        for goal_id, attrs in self.render_result.goals():
-            goal_text = split_long(attrs["name"])
+        for render_row in self.render_result.rows:
+            goal_text = split_long(render_row.name)
+            attrs = self.render_result.graph[render_row.goal_id]
             row, col = attrs["row"], attrs["col"]
             pos = (-1000, -1000)
-            status_color = (255, 0, 0, 255) if attrs["open"] else (0, 255, 0, 255)
-            widget_tag = f"goal_{goal_id}"
+            status_color = (255, 0, 0, 255) if render_row.is_open else (0, 255, 0, 255)
+            widget_tag = f"goal_{render_row.goal_id}"
             self.drawn_items.append(widget_tag)
             add_to_nodes[(row, col)] = widget_tag
             with dpg.group(pos=pos, parent="primary", tag=widget_tag):
                 widget_width = (
-                    self.text_width(goal_text) + self.text_width(str(goal_id)) + 20
+                        self.text_width(goal_text) + self.text_width(str(render_row.goal_id)) + 20
                 )
-                if attrs["switchable"]:
+                if render_row.is_switchable:
                     widget_width += 50
                 with dpg.table(
                     header_row=False,
@@ -141,21 +142,21 @@ class SiebenApp:
                     dpg.add_table_column()
                     with dpg.table_row():
                         with dpg.group(horizontal=True):
-                            if attrs["switchable"]:
+                            if render_row.is_switchable:
                                 dpg.add_checkbox(
-                                    default_value=not attrs["open"],
-                                    tag=f"switch_{goal_id}",
+                                    default_value=not render_row.is_open,
+                                    tag=f"switch_{render_row.goal_id}",
                                 )
-                            dpg.add_text(str(goal_id), color=status_color)
+                            dpg.add_text(str(render_row.goal_id), color=status_color)
                             dpg.add_text(goal_text)
-                    if self.render_result.select[0] == goal_id:
+                    if self.render_result.select[0] == render_row.goal_id:
                         dpg.highlight_table_row(table_id, 0, (128, 128, 128, 255))
-                    elif self.render_result.select[1] == goal_id:
+                    elif self.render_result.select[1] == render_row.goal_id:
                         dpg.highlight_table_row(table_id, 0, (192, 192, 192, 255))
 
             dpg.bind_item_handler_registry(widget_tag, "goals_handler")
-            if attrs["switchable"]:
-                dpg.bind_item_handler_registry(f"switch_{goal_id}", "switch_handler")
+            if render_row.is_switchable:
+                dpg.bind_item_handler_registry(f"switch_{render_row.goal_id}", "switch_handler")
         self.nodes.update(add_to_nodes)
         self.phase = "adjust"
 
