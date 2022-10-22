@@ -53,16 +53,19 @@ class RenderResult:
     graph: Dict[GoalId, Any]
     edge_opts: Dict[str, Tuple[int, int, int]]
     rows: List[RenderRow]
+    select: Tuple[GoalId, GoalId]
 
     def __init__(
         self,
         graph: Dict[GoalId, Any] = None,
         edge_opts: Dict[str, Tuple[int, int, int]] = None,
         rows: List[RenderRow] = None,
+        select: Tuple[GoalId, GoalId] = None,
     ):
         self.graph = graph or {}
         self.edge_opts = edge_opts or {}
         self.rows = rows or []
+        self.select = select or (0, 0)
 
     def _rows_slice(self, keys: str) -> Dict[GoalId, Any]:
         result = {}
