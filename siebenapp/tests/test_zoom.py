@@ -518,7 +518,6 @@ def test_do_not_duplicate_parent_prev_selection():
         ],
         select=(2, -1),
     )
-    assert goals.selections() == {-1, 2}
 
 
 def test_zoom_root_must_not_be_switchable():

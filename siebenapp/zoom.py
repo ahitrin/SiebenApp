@@ -113,13 +113,6 @@ class Zoom(Graph):
             return -1
         return self.goaltree.settings(key)
 
-    def selections(self) -> Set[int]:
-        ids = self.goaltree.selections()
-        if len(self.zoom_root) > 1 and Goals.ROOT_ID in ids:
-            ids.remove(Goals.ROOT_ID)
-            ids.add(-1)
-        return ids
-
     def _build_visible_goals(self, rows: List[RenderRow]) -> Set[GoalId]:
         current_zoom_root = self.zoom_root[-1]
         if current_zoom_root == Goals.ROOT_ID:

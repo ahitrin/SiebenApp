@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, Any, Set, List
+from typing import Dict, Any, Set, List, Tuple
 
 from siebenapp.domain import (
     Command,
@@ -37,16 +37,18 @@ class OpenView(Graph):
         if not origin.settings("filter_open"):
             self.accept(ToggleOpenView())
 
-    def _is_visible(self, row: RenderRow) -> bool:
+    def _is_visible(self, row: RenderRow, selections: Tuple[GoalId, GoalId]) -> bool:
         # Here we know something about other layers (Zoom). I do not like it
-        return row.is_open or row.goal_id in self.selections() or row.goal_id in {1, -1}
+        return row.is_open or row.goal_id in list(selections) or row.goal_id in {1, -1}
 
     def q(self) -> RenderResult:
         render_result = self.goaltree.q()
         if not self._open:
             return render_result
         visible_rows: Dict[GoalId, RenderRow] = {
-            row.goal_id: row for row in render_result.rows if self._is_visible(row)
+            row.goal_id: row
+            for row in render_result.rows
+            if self._is_visible(row, render_result.select)
         }
         rows: List[RenderRow] = [
             RenderRow(

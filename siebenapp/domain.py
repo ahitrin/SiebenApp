@@ -124,12 +124,6 @@ class Graph:
         if self.goaltree:
             self.goaltree.reconfigure_from(origin)
 
-    def selections(self) -> Set[int]:
-        """Return ids of special 'selection' goals"""
-        if self.goaltree:
-            return self.goaltree.selections()
-        raise NotImplementedError
-
     def events(self) -> deque:
         """Returns queue of applied actions.
         Note: this queue is modifiable -- you may push new events into it. But this

@@ -39,7 +39,8 @@ class FilterView(Graph):
         accepted_ids: Set[GoalId] = {
             row.goal_id
             for row in render_result.rows
-            if self.pattern in row.name.lower() or row.goal_id in self.selections()
+            if self.pattern in row.name.lower()
+            or row.goal_id in list(render_result.select)
         }
         rows: List[RenderRow] = [
             RenderRow(
