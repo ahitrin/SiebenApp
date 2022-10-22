@@ -176,8 +176,8 @@ def test_extract_misordered():
     result = extract_subtree(source, 3)
     assert result.q() == RenderResult(
         rows=[
-            RenderRow(1, 1, "Extraction root", True, False, "select", [child(2)]),
-            RenderRow(2, 2, "Top", True, True, None, []),
+            RenderRow(1, 1, "Extraction root", True, False, [child(2)], "select"),
+            RenderRow(2, 2, "Top", True, True, [], None),
         ],
         select=(1, 1),
     )

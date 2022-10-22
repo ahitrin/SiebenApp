@@ -54,8 +54,8 @@ class ProgressView(Graph):
                 f"[{progress_cache[row.goal_id][0]}/{progress_cache[row.goal_id][1]}] {row.name}",
                 row.is_open,
                 row.is_switchable,
-                row.select,
                 row.edges,
+                row.select,
             )
             for row in rows
         ]

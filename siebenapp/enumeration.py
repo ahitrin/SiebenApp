@@ -66,8 +66,8 @@ class Enumeration(Graph):
                 row.name,
                 row.is_open,
                 row.is_switchable,
-                row.select,
                 [(index.forward(e[0]), e[1]) for e in row.edges],
+                row.select,
             )
             for row in render_result.rows
         ]

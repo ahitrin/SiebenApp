@@ -67,8 +67,8 @@ class Zoom(Graph):
                 r.name,
                 r.is_open,
                 r.is_switchable,
-                r.select,
                 [e for e in r.edges if e[0] in visible_goals.union(selected_goals)],
+                r.select,
             )
             for r in rows
             if r.goal_id in visible_goals.union(selected_goals)
@@ -79,7 +79,6 @@ class Zoom(Graph):
             origin_root.name,
             origin_root.is_open,
             False,
-            origin_root.select,
             sorted(
                 list(
                     blocker(goal_id)
@@ -88,6 +87,7 @@ class Zoom(Graph):
                     )
                 )
             ),
+            origin_root.select,
         )
         new_select = (
             _replace_with_fake(render_result.select[0]),

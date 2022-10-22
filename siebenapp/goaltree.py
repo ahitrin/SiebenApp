@@ -128,8 +128,8 @@ class Goals(Graph):
                     name,
                     key not in self.closed,
                     self._switchable(key),
-                    sel(key),
                     edges,
+                    sel(key),
                 )
             )
         return RenderResult(rows=rows, select=(self.selection, self.previous_selection))

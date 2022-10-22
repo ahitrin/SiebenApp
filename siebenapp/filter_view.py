@@ -48,9 +48,9 @@ class FilterView(Graph):
                 row.name,
                 row.is_open,
                 row.is_switchable,
-                row.select,
                 [e for e in row.edges if e[0] in accepted_ids]
                 + ([blocker(-2)] if row.goal_id in {1, -1} else []),
+                row.select,
             )
             for row in render_result.rows
             if row.goal_id in accepted_ids
@@ -62,12 +62,12 @@ class FilterView(Graph):
                 f"Filter by '{self.pattern}'",
                 True,
                 False,
-                None,
                 [
                     blocker(goal_id)
                     for goal_id in accepted_ids
                     if isinstance(goal_id, int) and goal_id > 1
                 ],
+                None,
             ),
         ]
         return RenderResult(rows=rows + fake_rows, select=render_result.select)
