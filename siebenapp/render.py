@@ -65,14 +65,14 @@ class Renderer:
             for row in self.rows
         }
         self.edges: Dict[GoalId, List[GoalId]] = {
-            key: [e[0] for e in values["edge"]] for key, values in self.graph.items()
+            row.goal_id: [e[0] for e in row.edges] for row in self.render_result.rows
         }
         self.layers: Dict[int, Layer] = defaultdict(list)
         self.positions: Dict[GoalId, int] = {}
         self.edge_types: Dict[Tuple[GoalId, GoalId], EdgeType] = {
             (parent, child): edge_type
             for parent in self.graph
-            for child, edge_type in self.graph[parent]["edge"]
+            for child, edge_type in self.render_result.by_id(parent).edges
         }
         self.result_edge_options: Dict[str, Tuple[int, int, int]] = {}
 
