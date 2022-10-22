@@ -54,16 +54,17 @@ def update_message(message=""):
     USER_MESSAGE = message
 
 
-def fmt(goal_id, goal_vars, id_width):
+def fmt(render_result, goal_id, goal_vars, id_width):
+    show_id = goal_id
     if -10 <= goal_id < 0:
-        goal_id = " " * id_width
+        show_id = " " * id_width
     name = goal_vars["name"]
     op = " " if goal_vars["open"] else "x"
     status = f"[{op}]" if goal_vars["switchable"] else f" {op} "
     selection = " "
-    if goal_vars["select"] == "select":
+    if render_result.select[0] == goal_id:
         selection = ">"
-    elif goal_vars["select"] == "prev":
+    elif render_result.select[1] == goal_id:
         selection = "_"
     children = ""
     if goal_vars["edge"]:
@@ -74,7 +75,7 @@ def fmt(goal_id, goal_vars, id_width):
             str(e[0]) for e in goal_vars["edge"] if e[1] == EdgeType.BLOCKER
         )
         children = f" [{child_list} / {blocker_list}]"
-    return f"{goal_id}{status}{selection}{name}{children}"
+    return f"{show_id}{status}{selection}{name}{children}"
 
 
 def build_actions(command):
@@ -124,7 +125,7 @@ def loop(io: IO, goals: Graph, db_name: str):
         for item in index:
             goal_id = item[0]
             goal_vars = rows[goal_id]
-            io.write(fmt(goal_id, goal_vars, id_width))
+            io.write(fmt(render_result, goal_id, goal_vars, id_width))
         if USER_MESSAGE:
             io.write(USER_MESSAGE)
         update_message()

@@ -29,7 +29,7 @@ def two_goals():
 def test_open_goal_is_shown_by_default(trivial):
     assert trivial.q() == RenderResult(
         rows=[
-            RenderRow(1, 1, "Start", True, True, [], "select"),
+            RenderRow(1, 1, "Start", True, True, []),
         ],
         select=(1, 1),
     )
@@ -39,7 +39,7 @@ def test_open_goal_is_shown_after_switch(trivial):
     trivial.accept(ToggleOpenView())
     assert trivial.q() == RenderResult(
         rows=[
-            RenderRow(1, 1, "Start", True, True, [], "select"),
+            RenderRow(1, 1, "Start", True, True, []),
         ],
         select=(1, 1),
     )
@@ -57,7 +57,7 @@ def test_filter_open_setting_is_changed_after_switch(trivial):
 def test_closed_goal_is_not_shown_by_default(two_goals):
     assert two_goals.q() == RenderResult(
         rows=[
-            RenderRow(1, 1, "Open", True, True, [], "select"),
+            RenderRow(1, 1, "Open", True, True, []),
         ],
         select=(1, 1),
     )
@@ -67,7 +67,7 @@ def test_closed_goal_is_shown_after_switch(two_goals):
     two_goals.accept(ToggleOpenView())
     assert two_goals.q() == RenderResult(
         rows=[
-            RenderRow(1, 1, "Open", True, True, [child(2)], "select"),
+            RenderRow(1, 1, "Open", True, True, [child(2)]),
             RenderRow(2, 2, "Closed", False, True, []),
         ],
         select=(1, 1),
@@ -75,7 +75,7 @@ def test_closed_goal_is_shown_after_switch(two_goals):
     two_goals.accept(ToggleOpenView())
     assert two_goals.q() == RenderResult(
         rows=[
-            RenderRow(1, 1, "Open", True, True, [], "select"),
+            RenderRow(1, 1, "Open", True, True, []),
         ],
         select=(1, 1),
     )
@@ -91,8 +91,8 @@ def test_simple_open_enumeration_workflow():
     )
     assert e.q() == RenderResult(
         rows=[
-            RenderRow(1, 1, "Root", True, False, [child(2), child(3)], "prev"),
-            RenderRow(2, 2, "1", True, True, [], "select"),
+            RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
+            RenderRow(2, 2, "1", True, True, []),
             RenderRow(3, 3, "2", True, True, []),
         ],
         select=(2, 1),
@@ -100,7 +100,7 @@ def test_simple_open_enumeration_workflow():
     e.accept(ToggleClose())
     assert e.q() == RenderResult(
         rows=[
-            RenderRow(1, 1, "Root", True, False, [child(3)], "select"),
+            RenderRow(1, 1, "Root", True, False, [child(3)]),
             RenderRow(3, 3, "2", True, True, []),
         ],
         select=(1, 1),
@@ -120,8 +120,8 @@ def test_closed_goals_are_shown_when_selected():
     assert v.q() == RenderResult(
         rows=[
             RenderRow(1, 1, "Root", True, True, [child(2), child(3)]),
-            RenderRow(2, 2, "closed", False, True, [], "prev"),
-            RenderRow(3, 3, "closed too", False, True, [child(4)], "select"),
+            RenderRow(2, 2, "closed", False, True, []),
+            RenderRow(3, 3, "closed too", False, True, [child(4)]),
             RenderRow(4, 4, "closed and not selected", False, False, []),
         ],
         select=(3, 2),
@@ -131,8 +131,8 @@ def test_closed_goals_are_shown_when_selected():
     assert v.q() == RenderResult(
         rows=[
             RenderRow(1, 1, "Root", True, True, [child(2), child(3)]),
-            RenderRow(2, 2, "closed", False, True, [], "prev"),
-            RenderRow(3, 3, "closed too", False, True, [], "select"),
+            RenderRow(2, 2, "closed", False, True, []),
+            RenderRow(3, 3, "closed too", False, True, []),
         ],
         select=(3, 2),
     )
@@ -148,8 +148,8 @@ def test_build_fake_links_to_far_closed_goals():
     )
     assert v.q() == RenderResult(
         rows=[
-            RenderRow(1, 1, "Root", True, True, [blocker(3)], "prev"),
-            RenderRow(3, 3, "Top", False, False, [], "select"),
+            RenderRow(1, 1, "Root", True, True, [blocker(3)]),
+            RenderRow(3, 3, "Top", False, False, []),
         ],
         select=(3, 1),
     )
@@ -165,7 +165,7 @@ def test_still_show_root_when_it_is_closed_and_unselected():
     assert v.q() == RenderResult(
         rows=[
             RenderRow(1, 1, "Hidden root", False, True, [child(2)]),
-            RenderRow(2, 2, "Visible", False, False, [], "select"),
+            RenderRow(2, 2, "Visible", False, False, []),
         ],
         select=(2, 2),
     )
@@ -186,8 +186,8 @@ def test_add_dangling_goals_to_old_root_on_zoom():
     v.accept(ToggleZoom())
     assert v.q() == RenderResult(
         rows=[
-            RenderRow(2, 2, "Zoom root", True, False, [child(5)], "select"),
-            RenderRow(4, 4, "Previous top", False, False, [], "prev"),
+            RenderRow(2, 2, "Zoom root", True, False, [child(5)]),
+            RenderRow(4, 4, "Previous top", False, False, []),
             RenderRow(5, 5, "Current top", True, True, []),
             RenderRow(-1, -1, "Root", True, False, [blocker(2), blocker(4)]),
         ],
