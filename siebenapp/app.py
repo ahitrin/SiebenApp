@@ -28,6 +28,7 @@ from siebenapp.domain import (
     Select,
     Insert,
     Rename,
+    RenderRow,
 )
 from siebenapp.switchable_view import ToggleSwitchableView
 from siebenapp.open_view import ToggleOpenView
@@ -47,23 +48,23 @@ class GoalWidget(QWidget, Ui_GoalBody):
         self.is_real = True
         self.widget_id = None
 
-    def setup_data(self, number, attributes, selection):
-        self.widget_id = number
-        self.label_goal_name.setText(split_long(attributes["name"]))
-        self.check_open.setVisible(attributes["switchable"])
-        self.is_real = isinstance(number, int)
-        if selection[0] == number:
+    def setup_data(self, row: RenderRow, selection):
+        self.widget_id = row.goal_id
+        self.label_goal_name.setText(split_long(row.name))
+        self.check_open.setVisible(row.is_switchable)
+        self.is_real = isinstance(row.goal_id, int)
+        if selection[0] == row.goal_id:
             self.setStyleSheet("background-color:#808080;")
-        elif selection[1] == number:
+        elif selection[1] == row.goal_id:
             self.setStyleSheet("background-color:#C0C0C0;")
         if self.is_real:
-            frame_color = "red" if attributes["open"] else "green"
-            border = 2 if attributes["switchable"] else 1
+            frame_color = "red" if row.is_open else "green"
+            border = 2 if row.is_switchable else 1
             self.frame.setStyleSheet(
                 f".QFrame{{ border: {border}px solid {frame_color} }}"
             )
-            if number >= 0:
-                self.label_number.setText(str(number))
+            if isinstance(row.goal_id, int) and row.goal_id >= 0:
+                self.label_number.setText(str(row.goal_id))
         else:
             self.setStyleSheet("color: #EEEEEE; border: #EEEEEE")
 
@@ -188,15 +189,14 @@ class SiebenApp(QMainWindow):
         if "setupData" in dir(self.scrollAreaWidgetContents):
             self.scrollAreaWidgetContents.setupData(render_result)
         for row in render_result.rows:
-            goal_id = row.goal_id
-            attributes = render_result.graph[goal_id]
+            attributes = render_result.graph[row.goal_id]
             widget = GoalWidget()
             self.scrollAreaWidgetContents.layout().addWidget(
                 widget, attributes["row"], attributes["col"]
             )
-            widget.setup_data(goal_id, attributes, render_result.select)
-            widget.clicked.connect(self.select_number(goal_id))
-            widget.check_open.clicked.connect(self.close_goal(goal_id))
+            widget.setup_data(row, render_result.select)
+            widget.clicked.connect(self.select_number(row.goal_id))
+            widget.check_open.clicked.connect(self.close_goal(row.goal_id))
         self.scrollAreaWidgetContents.update()
 
     def keyPressEvent(self, event):
