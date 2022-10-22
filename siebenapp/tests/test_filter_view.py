@@ -38,7 +38,8 @@ def test_empty_string_means_no_filter(goaltree):
             RenderRow(1, 1, "Alpha", True, False, "select", [child(2)]),
             RenderRow(2, 2, "Beta", True, False, None, [child(3)]),
             RenderRow(3, 3, "Gamma", True, True, None, []),
-        ]
+        ],
+        select=(1, 1),
     )
     assert goaltree.settings("root") == Goals.ROOT_ID
 
@@ -49,7 +50,8 @@ def test_filter_by_substring(goaltree):
         rows=[
             RenderRow(1, 1, "Alpha", True, False, "select", [blocker(-2)]),
             RenderRow(-2, -2, "Filter by 'ph'", True, False, None, []),
-        ]
+        ],
+        select=(1, 1),
     )
     assert goaltree.settings("root") == 1
 
@@ -63,7 +65,8 @@ def test_selected_goal_must_not_be_filtered_out(goaltree):
             RenderRow(
                 -2, -2, "Filter by 'be'", True, False, None, [blocker(2), blocker(3)]
             ),
-        ]
+        ],
+        select=(3, 3),
     )
     assert goaltree.settings("root") == -2
 
@@ -77,7 +80,8 @@ def test_previously_selected_goal_must_not_be_filtered_out(goaltree):
             RenderRow(
                 -2, -2, "Filter by 'matching no one'", True, False, None, [blocker(3)]
             ),
-        ]
+        ],
+        select=(3, 1),
     )
     assert goaltree.settings("root") == 1
 
@@ -92,7 +96,8 @@ def test_zoomed_parent_goal_must_not_be_filtered_out(zoomed_goaltree):
             RenderRow(
                 -2, -2, "Filter by 'mm'", True, False, None, [blocker(2), blocker(3)]
             ),
-        ]
+        ],
+        select=(2, -1),
     )
     assert zoomed_goaltree.settings("root") == -1
 
@@ -104,7 +109,8 @@ def test_empty_filter_string_means_resetting(goaltree):
             RenderRow(1, 1, "Alpha", True, False, "select", [child(2)]),
             RenderRow(2, 2, "Beta", True, False, None, [child(3)]),
             RenderRow(3, 3, "Gamma", True, True, None, []),
-        ]
+        ],
+        select=(1, 1),
     )
 
 
@@ -115,5 +121,6 @@ def test_filter_is_case_insensitive(goaltree):
             RenderRow(1, 1, "Alpha", True, False, "select", [child(2), blocker(-2)]),
             RenderRow(2, 2, "Beta", True, False, None, []),
             RenderRow(-2, -2, "Filter by 'eta'", True, False, None, [blocker(2)]),
-        ]
+        ],
+        select=(1, 1),
     )

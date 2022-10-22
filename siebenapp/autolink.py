@@ -123,6 +123,7 @@ class AutoLink(Graph):
                 self.goaltree.accept(ToggleLink(add_to, target_goal, EdgeType.PARENT))
 
     def q(self) -> RenderResult:
+        render_result = self.goaltree.q()
         rows: List[RenderRow] = [
             RenderRow(
                 row.goal_id,
@@ -133,7 +134,7 @@ class AutoLink(Graph):
                 row.select,
                 self._add_pseudo_goals(row.edges),
             )
-            for row in self.goaltree.q().rows
+            for row in render_result.rows
         ]
         fake_rows: List[RenderRow] = sorted(
             [
@@ -150,7 +151,7 @@ class AutoLink(Graph):
             ],
             key=lambda r: int(r.goal_id),
         )
-        return RenderResult(rows=rows + fake_rows)
+        return RenderResult(rows=rows + fake_rows, select=render_result.select)
 
     def _add_pseudo_goals(
         self, edges: List[Tuple[GoalId, EdgeType]]

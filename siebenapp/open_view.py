@@ -44,7 +44,7 @@ class OpenView(Graph):
     def q(self) -> RenderResult:
         render_result = self.goaltree.q()
         if not self._open:
-            return RenderResult(rows=render_result.rows)
+            return render_result
         visible_rows: Dict[GoalId, RenderRow] = {
             row.goal_id: row for row in render_result.rows if self._is_visible(row)
         }
@@ -66,7 +66,7 @@ class OpenView(Graph):
             .difference({1, -1})
         )
         root_id: GoalId = min(visible_rows)
-        result = RenderResult(rows=rows)
+        result = RenderResult(rows=rows, select=render_result.select)
         result.by_id(root_id).edges.extend(
             [(goal_id, EdgeType.BLOCKER) for goal_id in dangling]
         )

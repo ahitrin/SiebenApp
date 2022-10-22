@@ -178,5 +178,6 @@ def test_extract_misordered():
         rows=[
             RenderRow(1, 1, "Extraction root", True, False, "select", [child(2)]),
             RenderRow(2, 2, "Top", True, True, None, []),
-        ]
+        ],
+        select=(1, 1),
     )

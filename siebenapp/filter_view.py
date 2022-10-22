@@ -70,4 +70,4 @@ class FilterView(Graph):
                 ],
             ),
         ]
-        return RenderResult(rows=rows + fake_rows)
+        return RenderResult(rows=rows + fake_rows, select=render_result.select)

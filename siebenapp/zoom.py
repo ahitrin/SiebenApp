@@ -23,6 +23,10 @@ class ToggleZoom(Command):
 ZoomData = List[Tuple[int, int]]
 
 
+def _replace_with_fake(goal_id: GoalId):
+    return goal_id if goal_id != Goals.ROOT_ID else -1
+
+
 class Zoom(Graph):
     def __init__(self, goaltree: Graph, zoom_data: Optional[ZoomData] = None) -> None:
         super().__init__(goaltree)
@@ -45,11 +49,12 @@ class Zoom(Graph):
                 self.error("Zooming outside of current zoom root is not allowed!")
 
     def q(self) -> RenderResult:
-        rows = self.goaltree.q().rows
+        render_result = self.goaltree.q()
+        rows = render_result.rows
         origin_root = rows[0]
         assert origin_root.goal_id == Goals.ROOT_ID
         if self.zoom_root == [1]:
-            return RenderResult(rows=rows)
+            return RenderResult(rows=rows, select=render_result.select)
         visible_goals = self._build_visible_goals(rows)
         selected_goals: Set[int] = {
             self.settings("selection"),
@@ -84,7 +89,11 @@ class Zoom(Graph):
                 )
             ),
         )
-        return RenderResult(rows=zoomed_rows + [fake_root])
+        new_select = (
+            _replace_with_fake(render_result.select[0]),
+            _replace_with_fake(render_result.select[1]),
+        )
+        return RenderResult(rows=zoomed_rows + [fake_root], select=new_select)
 
     def accept_ToggleClose(self, command: ToggleClose):
         if self.settings("selection") == self.zoom_root[-1]:

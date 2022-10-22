@@ -58,7 +58,8 @@ def test_simple_enumeration_is_not_changed():
             RenderRow(1, 1, "a", True, False, None, [child(2), child(3)]),
             RenderRow(2, 2, "b", True, False, "prev", [blocker(3)]),
             RenderRow(3, 3, "c", True, True, "select", []),
-        ]
+        ],
+        select=(3, 2),
     )
     assert e.settings("root") == Goals.ROOT_ID
 
@@ -77,7 +78,8 @@ def test_apply_mapping_for_the_10th_element(goal_chain_10):
             RenderRow(8, 8, "h", True, False, None, [child(9)]),
             RenderRow(9, 9, "i", True, False, None, [child(0)]),
             RenderRow(0, 10, "j", True, True, None, []),
-        ]
+        ],
+        select=(1, 1),
     )
     assert e.settings("root") == Goals.ROOT_ID
 
@@ -97,7 +99,8 @@ def test_apply_mapping_for_the_11th_element(goal_chain_11):
             RenderRow(19, 9, "i", True, False, None, [child(10)]),
             RenderRow(10, 10, "j", True, False, None, [child(21)]),
             RenderRow(21, 11, "k", True, True, None, []),
-        ]
+        ],
+        select=(11, 11),
     )
     assert e.settings("root") == 11
 
@@ -117,7 +120,8 @@ def test_use_mapping_in_selection(goal_chain_10):
             RenderRow(8, 8, "h", True, False, None, [child(9)]),
             RenderRow(9, 9, "i", True, False, None, [child(0)]),
             RenderRow(0, 10, "j", True, True, "select", []),
-        ]
+        ],
+        select=(0, 1),
     )
 
 
@@ -138,7 +142,8 @@ def test_do_not_select_goal_by_partial_id(goal_chain_11):
             RenderRow(19, 9, "i", True, False, None, [child(10)]),
             RenderRow(10, 10, "j", True, False, None, [child(21)]),
             RenderRow(21, 11, "k", True, True, None, []),
-        ]
+        ],
+        select=(11, 11),
     )
 
 
@@ -158,7 +163,8 @@ def test_select_goal_by_id_parts(goal_chain_11):
             RenderRow(19, 9, "i", True, False, None, [child(10)]),
             RenderRow(10, 10, "j", True, False, None, [child(21)]),
             RenderRow(21, 11, "k", True, True, None, []),
-        ]
+        ],
+        select=(16, 11),
     )
 
 
@@ -177,7 +183,8 @@ def test_select_goal_by_full_id(goal_chain_11):
             RenderRow(19, 9, "i", True, False, None, [child(10)]),
             RenderRow(10, 10, "j", True, False, None, [child(21)]),
             RenderRow(21, 11, "k", True, True, None, []),
-        ]
+        ],
+        select=(11, 11),
     )
     e.accept(Select(13))
     assert e.q() == RenderResult(
@@ -193,7 +200,8 @@ def test_select_goal_by_full_id(goal_chain_11):
             RenderRow(19, 9, "i", True, False, None, [child(10)]),
             RenderRow(10, 10, "j", True, False, None, [child(21)]),
             RenderRow(21, 11, "k", True, True, None, []),
-        ]
+        ],
+        select=(13, 11),
     )
 
 
@@ -212,7 +220,8 @@ def test_select_goal_by_full_id_with_non_empty_cache(goal_chain_11):
             RenderRow(19, 9, "i", True, False, None, [child(10)]),
             RenderRow(10, 10, "j", True, False, None, [child(21)]),
             RenderRow(21, 11, "k", True, True, None, []),
-        ]
+        ],
+        select=(11, 11),
     )
     e.accept_all(Select(2), Select(13))
     assert e.q() == RenderResult(
@@ -228,7 +237,8 @@ def test_select_goal_by_full_id_with_non_empty_cache(goal_chain_11):
             RenderRow(19, 9, "i", True, False, None, [child(10)]),
             RenderRow(10, 10, "j", True, False, None, [child(21)]),
             RenderRow(21, 11, "k", True, True, None, []),
-        ]
+        ],
+        select=(13, 11),
     )
 
 
@@ -243,7 +253,8 @@ def test_enumerated_goals_must_have_the_same_dimension():
             RenderRow(1, 1, "a", True, False, "select", [child(2), child(3)]),
             RenderRow(2, 2, "b", True, True, None, []),
             RenderRow(3, 20, "x", True, True, None, []),
-        ]
+        ],
+        select=(1, 1),
     )
 
 
@@ -258,7 +269,8 @@ def test_selection_cache_should_be_reset_after_view_switch(goal_chain_11):
             RenderRow(1, 1, "a", True, False, "select", []),
             RenderRow(2, 11, "k", True, True, None, []),
             RenderRow(3, 12, "Also top", True, True, None, []),
-        ]
+        ],
+        select=(1, 1),
     )
     # Select(2) is being applied without any effect from the previous selection
     # This happens because selection cache was reset
@@ -268,7 +280,8 @@ def test_selection_cache_should_be_reset_after_view_switch(goal_chain_11):
             RenderRow(1, 1, "a", True, False, "prev", []),
             RenderRow(2, 11, "k", True, True, "select", []),
             RenderRow(3, 12, "Also top", True, True, None, []),
-        ]
+        ],
+        select=(2, 1),
     )
 
 
@@ -304,7 +317,8 @@ def test_do_not_enumerate_goals_with_negative_id():
             RenderRow(2, 2, "Zoomed", True, False, "select", [child(3)]),
             RenderRow(3, 3, "Top", True, True, None, []),
             RenderRow(-1, -1, "Root", True, False, None, [blocker(2)]),
-        ]
+        ],
+        select=(2, 2),
     )
     e = Enumeration(g)
     assert e.q() == RenderResult(
@@ -312,7 +326,8 @@ def test_do_not_enumerate_goals_with_negative_id():
             RenderRow(1, 2, "Zoomed", True, False, "select", [child(2)]),
             RenderRow(2, 3, "Top", True, True, None, []),
             RenderRow(-1, -1, "Root", True, False, None, [blocker(1)]),
-        ]
+        ],
+        select=(1, 1),
     )
 
 
