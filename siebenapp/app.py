@@ -45,28 +45,21 @@ class GoalWidget(QWidget, Ui_GoalBody):
         super().__init__()
         self._click_in_progress = False
         self.setupUi(self)
-        self.is_real = True
         self.widget_id = None
 
     def setup_data(self, row: RenderRow, selection):
         self.widget_id = row.goal_id
         self.label_goal_name.setText(split_long(row.name))
         self.check_open.setVisible(row.is_switchable)
-        self.is_real = isinstance(row.goal_id, int)
         if selection[0] == row.goal_id:
             self.setStyleSheet("background-color:#808080;")
         elif selection[1] == row.goal_id:
             self.setStyleSheet("background-color:#C0C0C0;")
-        if self.is_real:
-            frame_color = "red" if row.is_open else "green"
-            border = 2 if row.is_switchable else 1
-            self.frame.setStyleSheet(
-                f".QFrame{{ border: {border}px solid {frame_color} }}"
-            )
-            if isinstance(row.goal_id, int) and row.goal_id >= 0:
-                self.label_number.setText(str(row.goal_id))
-        else:
-            self.setStyleSheet("color: #EEEEEE; border: #EEEEEE")
+        frame_color = "red" if row.is_open else "green"
+        border = 2 if row.is_switchable else 1
+        self.frame.setStyleSheet(f".QFrame{{ border: {border}px solid {frame_color} }}")
+        if isinstance(row.goal_id, int) and row.goal_id >= 0:
+            self.label_number.setText(str(row.goal_id))
 
     def mousePressEvent(self, event):
         self._click_in_progress = True
