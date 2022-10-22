@@ -129,7 +129,9 @@ class SiebenApp:
             add_to_nodes[(row, col)] = widget_tag
             with dpg.group(pos=pos, parent="primary", tag=widget_tag):
                 widget_width = (
-                        self.text_width(goal_text) + self.text_width(str(render_row.goal_id)) + 20
+                    self.text_width(goal_text)
+                    + self.text_width(str(render_row.goal_id))
+                    + 20
                 )
                 if render_row.is_switchable:
                     widget_width += 50
@@ -156,7 +158,9 @@ class SiebenApp:
 
             dpg.bind_item_handler_registry(widget_tag, "goals_handler")
             if render_row.is_switchable:
-                dpg.bind_item_handler_registry(f"switch_{render_row.goal_id}", "switch_handler")
+                dpg.bind_item_handler_registry(
+                    f"switch_{render_row.goal_id}", "switch_handler"
+                )
         self.nodes.update(add_to_nodes)
         self.phase = "adjust"
 
