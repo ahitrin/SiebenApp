@@ -67,24 +67,6 @@ class RenderResult:
         self.rows = rows or []
         self.select = select or (0, 0)
 
-    def _rows_slice(self, keys: str) -> Dict[GoalId, Any]:
-        result = {}
-        requested_keys = keys.split(",")
-        for row in self.rows:
-            attrs: Dict[str, Any] = {}
-            if "name" in requested_keys:
-                attrs["name"] = row.name
-            if "edge" in requested_keys:
-                attrs["edge"] = row.edges
-            if "open" in requested_keys:
-                attrs["open"] = row.is_open
-            if "switchable" in requested_keys:
-                attrs["switchable"] = row.is_switchable
-            if "select" in requested_keys:
-                attrs["select"] = row.select
-            result[row.goal_id] = attrs
-        return result
-
     def goals(self):
         return [
             (goal_id, attrs)
