@@ -15,9 +15,9 @@ def test_toggle_hide_non_switchable_goals():
     e = SwitchableView(g)
     assert e.q() == RenderResult(
         rows=[
-            RenderRow(1, 1, "Root", True, False, [child(2), child(3)], None),
+            RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
             RenderRow(2, 2, "Switchable 1", True, True, [], "select"),
-            RenderRow(3, 3, "Switchable 2", True, True, [], None),
+            RenderRow(3, 3, "Switchable 2", True, True, []),
         ],
         select=(2, 2),
     )
@@ -25,16 +25,16 @@ def test_toggle_hide_non_switchable_goals():
     assert e.q() == RenderResult(
         rows=[
             RenderRow(2, 2, "Switchable 1", True, True, [], "select"),
-            RenderRow(3, 3, "Switchable 2", True, True, [], None),
+            RenderRow(3, 3, "Switchable 2", True, True, []),
         ],
         select=(2, 2),
     )
     e.accept(ToggleSwitchableView())
     assert e.q() == RenderResult(
         rows=[
-            RenderRow(1, 1, "Root", True, False, [child(2), child(3)], None),
+            RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
             RenderRow(2, 2, "Switchable 1", True, True, [], "select"),
-            RenderRow(3, 3, "Switchable 2", True, True, [], None),
+            RenderRow(3, 3, "Switchable 2", True, True, []),
         ],
         select=(2, 2),
     )
@@ -53,7 +53,7 @@ def test_do_not_hide_unswitchable_goals_when_they_have_selection():
         rows=[
             RenderRow(1, 1, "Selected", True, False, [], "select"),
             RenderRow(2, 2, "Prev-selected", True, False, [], "prev"),
-            RenderRow(3, 3, "Switchable", True, True, [], None),
+            RenderRow(3, 3, "Switchable", True, True, []),
         ],
         select=(1, 2),
     )
@@ -66,7 +66,7 @@ def test_non_switchable_goals_disappear_on_selection_change():
         rows=[
             RenderRow(1, 1, "root", True, False, [], "prev"),
             RenderRow(2, 2, "1", True, True, [], "select"),
-            RenderRow(3, 3, "2", True, True, [], None),
+            RenderRow(3, 3, "2", True, True, []),
         ],
         select=(2, 1),
     )
@@ -74,7 +74,7 @@ def test_non_switchable_goals_disappear_on_selection_change():
     assert e.q() == RenderResult(
         rows=[
             RenderRow(2, 2, "1", True, True, [], "select"),
-            RenderRow(3, 3, "2", True, True, [], None),
+            RenderRow(3, 3, "2", True, True, []),
         ],
         select=(2, 2),
     )
@@ -91,7 +91,7 @@ def test_how_should_we_deal_with_zooming():
     assert v.q() == RenderResult(
         rows=[
             RenderRow(2, 2, "Zoomed", True, False, [], "select"),
-            RenderRow(3, 3, "Ex-top", True, True, [], None),
+            RenderRow(3, 3, "Ex-top", True, True, []),
         ],
         select=(2, 2),
     )
@@ -99,8 +99,8 @@ def test_how_should_we_deal_with_zooming():
     assert v.q() == RenderResult(
         rows=[
             RenderRow(2, 2, "Zoomed", True, False, [], "select"),
-            RenderRow(3, 3, "Ex-top", True, True, [], None),
-            RenderRow(4, 4, "Unexpectedly hidden", True, True, [], None),
+            RenderRow(3, 3, "Ex-top", True, True, []),
+            RenderRow(4, 4, "Unexpectedly hidden", True, True, []),
         ],
         select=(2, 2),
     )

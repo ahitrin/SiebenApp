@@ -41,7 +41,7 @@ class GoalsTest(TestCase):
         assert self.goals.q() == RenderResult(
             rows=[
                 RenderRow(1, 1, "Root", True, False, [child(2)], "select"),
-                RenderRow(2, 2, "A", True, True, [], None),
+                RenderRow(2, 2, "A", True, True, []),
             ],
             select=(1, 1),
         )
@@ -51,8 +51,8 @@ class GoalsTest(TestCase):
         assert self.goals.q() == RenderResult(
             rows=[
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3)], "select"),
-                RenderRow(2, 2, "A", True, True, [], None),
-                RenderRow(3, 3, "B", True, True, [], None),
+                RenderRow(2, 2, "A", True, True, []),
+                RenderRow(3, 3, "B", True, True, []),
             ],
             select=(1, 1),
         )
@@ -62,8 +62,8 @@ class GoalsTest(TestCase):
         assert self.goals.q() == RenderResult(
             rows=[
                 RenderRow(1, 1, "Root", True, False, [child(2)], "select"),
-                RenderRow(2, 2, "A", True, False, [child(3)], None),
-                RenderRow(3, 3, "AA", True, True, [], None),
+                RenderRow(2, 2, "A", True, False, [child(3)]),
+                RenderRow(3, 3, "AA", True, True, []),
             ],
             select=(1, 1),
         )
@@ -92,7 +92,7 @@ class GoalsTest(TestCase):
             rows=[
                 RenderRow(1, 1, "Root", True, False, [child(3)], "prev"),
                 RenderRow(2, 2, "B", True, True, [], "select"),
-                RenderRow(3, 3, "A", True, False, [child(2)], None),
+                RenderRow(3, 3, "A", True, False, [child(2)]),
             ],
             select=(2, 1),
         )
@@ -106,10 +106,10 @@ class GoalsTest(TestCase):
         self.goals.accept(Insert("Wow"))
         assert self.goals.q() == RenderResult(
             rows=[
-                RenderRow(1, 1, "Root", True, False, [child(2), child(3)], None),
+                RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
                 RenderRow(2, 2, "A", True, False, [blocker(4)], "prev"),
                 RenderRow(3, 3, "B", True, True, [], "select"),
-                RenderRow(4, 4, "Wow", True, False, [blocker(3)], None),
+                RenderRow(4, 4, "Wow", True, False, [blocker(3)]),
             ],
             select=(3, 2),
         )
@@ -126,7 +126,7 @@ class GoalsTest(TestCase):
             rows=[
                 RenderRow(1, 1, "Root", True, False, [child(2)], "select"),
                 RenderRow(2, 2, "Selected", True, False, [blocker(3)], "prev"),
-                RenderRow(3, 3, "Intermediate?", True, True, [], None),
+                RenderRow(3, 3, "Intermediate?", True, True, []),
             ],
             select=(1, 2),
         )
@@ -144,7 +144,7 @@ class GoalsTest(TestCase):
         self.goals = self.build(open_(1, "Root", [2]), clos_(2, "A", select=selected))
         assert self.goals.q() == RenderResult(
             rows=[
-                RenderRow(1, 1, "Root", True, True, [child(2)], None),
+                RenderRow(1, 1, "Root", True, True, [child(2)]),
                 RenderRow(2, 2, "A", False, True, [], "select"),
             ],
             select=(2, 2),
@@ -152,7 +152,7 @@ class GoalsTest(TestCase):
         self.goals.accept(ToggleClose())
         assert self.goals.q() == RenderResult(
             rows=[
-                RenderRow(1, 1, "Root", True, False, [child(2)], None),
+                RenderRow(1, 1, "Root", True, False, [child(2)]),
                 RenderRow(2, 2, "A", True, True, [], "select"),
             ],
             select=(2, 2),
@@ -168,8 +168,8 @@ class GoalsTest(TestCase):
         assert self.goals.q() == RenderResult(
             rows=[
                 RenderRow(1, 1, "Root", True, True, [child(2)], "select"),
-                RenderRow(2, 2, "A", False, True, [child(3)], None),
-                RenderRow(3, 3, "Ab", False, False, [], None),
+                RenderRow(2, 2, "A", False, True, [child(3)]),
+                RenderRow(3, 3, "Ab", False, False, []),
             ],
             select=(1, 1),
         )
@@ -178,7 +178,7 @@ class GoalsTest(TestCase):
             rows=[
                 RenderRow(1, 1, "Root", True, False, [child(2)], "prev"),
                 RenderRow(2, 2, "A", True, True, [child(3)], "select"),
-                RenderRow(3, 3, "Ab", False, True, [], None),
+                RenderRow(3, 3, "Ab", False, True, []),
             ],
             select=(2, 1),
         )
@@ -186,8 +186,8 @@ class GoalsTest(TestCase):
         assert self.goals.q() == RenderResult(
             rows=[
                 RenderRow(1, 1, "Root", True, True, [child(2)], "select"),
-                RenderRow(2, 2, "A", False, True, [child(3)], None),
-                RenderRow(3, 3, "Ab", False, False, [], None),
+                RenderRow(2, 2, "A", False, True, [child(3)]),
+                RenderRow(3, 3, "Ab", False, False, []),
             ],
             select=(1, 1),
         )
@@ -199,8 +199,8 @@ class GoalsTest(TestCase):
         assert self.goals.q() == RenderResult(
             rows=[
                 RenderRow(1, 1, "Root", True, True, [child(2)], "select"),
-                RenderRow(2, 2, "A", False, True, [child(3)], None),
-                RenderRow(3, 3, "B", False, False, [], None),
+                RenderRow(2, 2, "A", False, True, [child(3)]),
+                RenderRow(3, 3, "B", False, False, []),
             ],
             select=(1, 1),
         )
@@ -209,7 +209,7 @@ class GoalsTest(TestCase):
         assert self.goals.q() == RenderResult(
             rows=[
                 RenderRow(1, 1, "Root", True, True, [child(2)], "prev"),
-                RenderRow(2, 2, "A", False, True, [child(3)], None),
+                RenderRow(2, 2, "A", False, True, [child(3)]),
                 RenderRow(3, 3, "B", False, False, [], "select"),
             ],
             select=(3, 1),
@@ -225,10 +225,10 @@ class GoalsTest(TestCase):
         self.goals.accept(ToggleClose())
         assert self.goals.q() == RenderResult(
             rows=[
-                RenderRow(1, 1, "Root", True, False, [child(2), child(3)], None),
-                RenderRow(2, 2, "A", True, False, [blocker(4)], None),
+                RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
+                RenderRow(2, 2, "A", True, False, [blocker(4)]),
                 RenderRow(3, 3, "B", True, False, [child(4)], "select"),
-                RenderRow(4, 4, "C", True, True, [], None),
+                RenderRow(4, 4, "C", True, True, []),
             ],
             select=(3, 3),
         )
@@ -248,7 +248,7 @@ class GoalsTest(TestCase):
         assert self.goals.q() == RenderResult(
             rows=[
                 RenderRow(1, 1, "Root", True, False, [child(3)], "select"),
-                RenderRow(3, 3, "B", True, True, [], None),
+                RenderRow(3, 3, "B", True, True, []),
             ],
             select=(1, 1),
         )
@@ -275,7 +275,7 @@ class GoalsTest(TestCase):
         assert self.goals.q() == RenderResult(
             rows=[
                 RenderRow(1, 1, "Root", True, False, [blocker(3)], "select"),
-                RenderRow(3, 3, "B", True, True, [], None),
+                RenderRow(3, 3, "B", True, True, []),
             ],
             select=(1, 1),
         )
@@ -289,7 +289,7 @@ class GoalsTest(TestCase):
         self.goals.accept(Delete())
         assert self.goals.q() == RenderResult(
             rows=[
-                RenderRow(1, 1, "Root", True, False, [child(2)], None),
+                RenderRow(1, 1, "Root", True, False, [child(2)]),
                 RenderRow(2, 2, "Parent", True, True, [], "select"),
             ],
             select=(2, 2),
@@ -303,7 +303,7 @@ class GoalsTest(TestCase):
         )
         assert self.goals.q() == RenderResult(
             rows=[
-                RenderRow(1, 1, "Root", True, False, [child(2), child(3)], None),
+                RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
                 RenderRow(2, 2, "A", True, True, [], "prev"),
                 RenderRow(3, 3, "B", True, True, [], "select"),
             ],
@@ -312,7 +312,7 @@ class GoalsTest(TestCase):
         self.goals.accept(ToggleLink())
         assert self.goals.q() == RenderResult(
             rows=[
-                RenderRow(1, 1, "Root", True, False, [child(2), child(3)], None),
+                RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
                 RenderRow(2, 2, "A", True, False, [blocker(3)], "prev"),
                 RenderRow(3, 3, "B", True, True, [], "select"),
             ],
@@ -336,8 +336,8 @@ class GoalsTest(TestCase):
         assert self.goals.q() == RenderResult(
             rows=[
                 RenderRow(1, 1, "Root", True, False, [child(2)], "select"),
-                RenderRow(2, 2, "step", True, False, [child(3)], None),
-                RenderRow(3, 3, "next", True, False, [child(4)], None),
+                RenderRow(2, 2, "step", True, False, [child(3)]),
+                RenderRow(3, 3, "next", True, False, [child(4)]),
                 RenderRow(4, 4, "more", True, True, [], "prev"),
             ],
             select=(1, 4),
@@ -353,8 +353,8 @@ class GoalsTest(TestCase):
         self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
         assert self.goals.q() == RenderResult(
             rows=[
-                RenderRow(1, 1, "Root", True, False, [child(2), child(3)], None),
-                RenderRow(2, 2, "Old parent", True, False, [blocker(4)], None),
+                RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
+                RenderRow(2, 2, "Old parent", True, False, [blocker(4)]),
                 RenderRow(3, 3, "New parent", True, False, [child(4)], "prev"),
                 RenderRow(4, 4, "Child", True, True, [], "select"),
             ],
@@ -370,7 +370,7 @@ class GoalsTest(TestCase):
         self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
         assert self.goals.q() == RenderResult(
             rows=[
-                RenderRow(1, 1, "Root", True, False, [blocker(2), child(3)], None),
+                RenderRow(1, 1, "Root", True, False, [blocker(2), child(3)]),
                 RenderRow(2, 2, "A", True, True, [], "select"),
                 RenderRow(3, 3, "B", True, False, [child(2)], "prev"),
             ],
@@ -386,7 +386,7 @@ class GoalsTest(TestCase):
         self.goals.accept(ToggleLink(edge_type=EdgeType.BLOCKER))
         assert self.goals.q() == RenderResult(
             rows=[
-                RenderRow(1, 1, "Root", True, False, [child(2), child(3)], None),
+                RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
                 RenderRow(2, 2, "A", True, True, [], "prev"),
                 RenderRow(3, 3, "B", True, True, [], "select"),
             ],
@@ -430,9 +430,9 @@ class GoalsTest(TestCase):
         )
         assert self.goals.q() == RenderResult(
             rows=[
-                RenderRow(1, 1, "Root", True, False, [child(2), child(3)], None),
-                RenderRow(2, 2, "A", True, False, [child(4)], None),
-                RenderRow(3, 3, "B", True, False, [blocker(4)], None),
+                RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
+                RenderRow(2, 2, "A", True, False, [child(4)]),
+                RenderRow(3, 3, "B", True, False, [blocker(4)]),
                 RenderRow(4, 4, "C", True, True, [], "select"),
             ],
             select=(4, 4),
@@ -441,8 +441,8 @@ class GoalsTest(TestCase):
         assert self.goals.q() == RenderResult(
             rows=[
                 RenderRow(1, 1, "Root", True, False, [child(2)], "select"),
-                RenderRow(2, 2, "A", True, False, [child(4)], None),
-                RenderRow(4, 4, "C", True, True, [], None),
+                RenderRow(2, 2, "A", True, False, [child(4)]),
+                RenderRow(4, 4, "C", True, True, []),
             ],
             select=(1, 1),
         )
@@ -458,7 +458,7 @@ class GoalsTest(TestCase):
         assert self.goals.q() == RenderResult(
             rows=[
                 RenderRow(1, 1, "Root", True, False, [child(2)], "select"),
-                RenderRow(2, 2, "A", True, True, [], None),
+                RenderRow(2, 2, "A", True, True, []),
             ],
             select=(1, 1),
         )
@@ -466,8 +466,8 @@ class GoalsTest(TestCase):
         assert self.goals.q() == RenderResult(
             rows=[
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3)], "select"),
-                RenderRow(2, 2, "A", True, True, [], None),
-                RenderRow(3, 3, "B", True, True, [], None),
+                RenderRow(2, 2, "A", True, True, []),
+                RenderRow(3, 3, "B", True, True, []),
             ],
             select=(1, 1),
         )
@@ -486,7 +486,7 @@ class GoalsTest(TestCase):
             rows=[
                 RenderRow(1, 1, "Root", True, False, [child(2)], "prev"),
                 RenderRow(2, 2, "A", True, False, [child(3)], "select"),
-                RenderRow(3, 3, "B", True, True, [], None),
+                RenderRow(3, 3, "B", True, True, []),
             ],
             select=(2, 1),
         )
@@ -504,9 +504,9 @@ class GoalsTest(TestCase):
                 RenderRow(
                     1, 1, "Root", True, False, [child(2), child(3), child(4)], None
                 ),
-                RenderRow(2, 2, "A", False, True, [], None),
+                RenderRow(2, 2, "A", False, True, []),
                 RenderRow(3, 3, "B", True, True, [], "select"),
-                RenderRow(4, 4, "C", True, True, [], None),
+                RenderRow(4, 4, "C", True, True, []),
             ],
             select=(3, 3),
         )
@@ -524,8 +524,8 @@ class GoalsTest(TestCase):
                 RenderRow(
                     1, 1, "Root", True, False, [child(2), child(3), child(4)], None
                 ),
-                RenderRow(2, 2, "A", False, True, [], None),
-                RenderRow(3, 3, "B", True, True, [], None),
+                RenderRow(2, 2, "A", False, True, []),
+                RenderRow(3, 3, "B", True, True, []),
                 RenderRow(4, 4, "C", True, True, [], "select"),
             ],
             select=(4, 4),
@@ -542,11 +542,11 @@ class GoalsTest(TestCase):
         self.goals.accept(ToggleClose(3))
         assert self.goals.q() == RenderResult(
             rows=[
-                RenderRow(1, 1, "Root", True, False, [child(2), child(3)], None),
-                RenderRow(2, 2, "Should not be selected", True, True, [], None),
-                RenderRow(3, 3, "Subroot", True, False, [child(4), child(5)], None),
+                RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
+                RenderRow(2, 2, "Should not be selected", True, True, []),
+                RenderRow(3, 3, "Subroot", True, False, [child(4), child(5)]),
                 RenderRow(4, 4, "Must be selected", True, True, [], "select"),
-                RenderRow(5, 5, "Closing", False, True, [], None),
+                RenderRow(5, 5, "Closing", False, True, []),
             ],
             select=(4, 4),
         )
@@ -563,11 +563,11 @@ class GoalsTest(TestCase):
         self.goals.accept(ToggleClose(3))
         assert self.goals.q() == RenderResult(
             rows=[
-                RenderRow(1, 1, "Root", True, False, [child(2), child(3)], None),
-                RenderRow(2, 2, "Should not be selected", True, True, [], None),
-                RenderRow(3, 3, "Subroot", True, False, [child(4), child(5)], None),
-                RenderRow(4, 4, "Intermediate", True, False, [child(6)], None),
-                RenderRow(5, 5, "Closing", False, True, [], None),
+                RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
+                RenderRow(2, 2, "Should not be selected", True, True, []),
+                RenderRow(3, 3, "Subroot", True, False, [child(4), child(5)]),
+                RenderRow(4, 4, "Intermediate", True, False, [child(6)]),
+                RenderRow(5, 5, "Closing", False, True, []),
                 RenderRow(6, 6, "Must be selected", True, True, [], "select"),
             ],
             select=(6, 6),
@@ -629,15 +629,15 @@ class GoalsTest(TestCase):
                     "prev",
                 ),
                 RenderRow(2, 2, "A", True, True, [], "select"),
-                RenderRow(3, 3, "B", True, True, [], None),
-                RenderRow(4, 4, "C", True, True, [], None),
-                RenderRow(5, 5, "D", True, True, [], None),
-                RenderRow(6, 6, "E", True, True, [], None),
-                RenderRow(7, 7, "F", True, True, [], None),
-                RenderRow(8, 8, "G", True, True, [], None),
-                RenderRow(9, 9, "H", True, True, [], None),
-                RenderRow(10, 10, "I", True, True, [], None),
-                RenderRow(11, 11, "J", True, True, [], None),
+                RenderRow(3, 3, "B", True, True, []),
+                RenderRow(4, 4, "C", True, True, []),
+                RenderRow(5, 5, "D", True, True, []),
+                RenderRow(6, 6, "E", True, True, []),
+                RenderRow(7, 7, "F", True, True, []),
+                RenderRow(8, 8, "G", True, True, []),
+                RenderRow(9, 9, "H", True, True, []),
+                RenderRow(10, 10, "I", True, True, []),
+                RenderRow(11, 11, "J", True, True, []),
             ],
             select=(2, 1),
         )
@@ -664,15 +664,15 @@ class GoalsTest(TestCase):
                     ],
                     "prev",
                 ),
-                RenderRow(2, 2, "A", True, True, [], None),
-                RenderRow(3, 3, "B", True, True, [], None),
-                RenderRow(4, 4, "C", True, True, [], None),
-                RenderRow(5, 5, "D", True, True, [], None),
-                RenderRow(6, 6, "E", True, True, [], None),
-                RenderRow(7, 7, "F", True, True, [], None),
-                RenderRow(8, 8, "G", True, True, [], None),
-                RenderRow(9, 9, "H", True, True, [], None),
-                RenderRow(10, 10, "I", True, True, [], None),
+                RenderRow(2, 2, "A", True, True, []),
+                RenderRow(3, 3, "B", True, True, []),
+                RenderRow(4, 4, "C", True, True, []),
+                RenderRow(5, 5, "D", True, True, []),
+                RenderRow(6, 6, "E", True, True, []),
+                RenderRow(7, 7, "F", True, True, []),
+                RenderRow(8, 8, "G", True, True, []),
+                RenderRow(9, 9, "H", True, True, []),
+                RenderRow(10, 10, "I", True, True, []),
                 RenderRow(11, 11, "J", True, True, [], "select"),
             ],
             select=(11, 1),

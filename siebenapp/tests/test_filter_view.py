@@ -36,8 +36,8 @@ def test_empty_string_means_no_filter(goaltree):
     assert goaltree.q() == RenderResult(
         rows=[
             RenderRow(1, 1, "Alpha", True, False, [child(2)], "select"),
-            RenderRow(2, 2, "Beta", True, False, [child(3)], None),
-            RenderRow(3, 3, "Gamma", True, True, [], None),
+            RenderRow(2, 2, "Beta", True, False, [child(3)]),
+            RenderRow(3, 3, "Gamma", True, True, []),
         ],
         select=(1, 1),
     )
@@ -49,7 +49,7 @@ def test_filter_by_substring(goaltree):
     assert goaltree.q() == RenderResult(
         rows=[
             RenderRow(1, 1, "Alpha", True, False, [blocker(-2)], "select"),
-            RenderRow(-2, -2, "Filter by 'ph'", True, False, [], None),
+            RenderRow(-2, -2, "Filter by 'ph'", True, False, []),
         ],
         select=(1, 1),
     )
@@ -60,7 +60,7 @@ def test_selected_goal_must_not_be_filtered_out(goaltree):
     goaltree.accept_all(Select(3), HoldSelect(), FilterBy("Be"))
     assert goaltree.q() == RenderResult(
         rows=[
-            RenderRow(2, 2, "Beta", True, False, [child(3)], None),
+            RenderRow(2, 2, "Beta", True, False, [child(3)]),
             RenderRow(3, 3, "Gamma", True, True, [], "select"),
             RenderRow(
                 -2, -2, "Filter by 'be'", True, False, [blocker(2), blocker(3)], None
@@ -91,7 +91,7 @@ def test_zoomed_parent_goal_must_not_be_filtered_out(zoomed_goaltree):
     assert zoomed_goaltree.q() == RenderResult(
         rows=[
             RenderRow(2, 2, "Beta", True, False, [child(3)], "select"),
-            RenderRow(3, 3, "Gamma", True, True, [], None),
+            RenderRow(3, 3, "Gamma", True, True, []),
             RenderRow(-1, -1, "Alpha", True, False, [blocker(2), blocker(-2)], "prev"),
             RenderRow(
                 -2, -2, "Filter by 'mm'", True, False, [blocker(2), blocker(3)], None
@@ -107,8 +107,8 @@ def test_empty_filter_string_means_resetting(goaltree):
     assert goaltree.q() == RenderResult(
         rows=[
             RenderRow(1, 1, "Alpha", True, False, [child(2)], "select"),
-            RenderRow(2, 2, "Beta", True, False, [child(3)], None),
-            RenderRow(3, 3, "Gamma", True, True, [], None),
+            RenderRow(2, 2, "Beta", True, False, [child(3)]),
+            RenderRow(3, 3, "Gamma", True, True, []),
         ],
         select=(1, 1),
     )
@@ -119,8 +119,8 @@ def test_filter_is_case_insensitive(goaltree):
     assert goaltree.q() == RenderResult(
         rows=[
             RenderRow(1, 1, "Alpha", True, False, [child(2), blocker(-2)], "select"),
-            RenderRow(2, 2, "Beta", True, False, [], None),
-            RenderRow(-2, -2, "Filter by 'eta'", True, False, [blocker(2)], None),
+            RenderRow(2, 2, "Beta", True, False, []),
+            RenderRow(-2, -2, "Filter by 'eta'", True, False, [blocker(2)]),
         ],
         select=(1, 1),
     )

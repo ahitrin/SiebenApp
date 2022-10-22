@@ -177,7 +177,7 @@ def test_extract_misordered():
     assert result.q() == RenderResult(
         rows=[
             RenderRow(1, 1, "Extraction root", True, False, [child(2)], "select"),
-            RenderRow(2, 2, "Top", True, True, [], None),
+            RenderRow(2, 2, "Top", True, True, []),
         ],
         select=(1, 1),
     )
