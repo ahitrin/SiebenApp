@@ -164,8 +164,9 @@ class SiebenApp:
         # Do not use real coordinates of widgets because they're currently off-screen
         gp = DPGGeometry(self.nodes, False)
         adjust_graph(self.render_result, gp)
-        for goal_id, attrs in self.render_result.goals():
-            widget_tag = f"goal_{goal_id}"
+        for row in self.render_result.rows:
+            widget_tag = f"goal_{row.goal_id}"
+            attrs = self.render_result.graph[row.goal_id]
             dpg.set_item_pos(widget_tag, [attrs["x"], attrs["y"]])
         self.phase = "edges"
 
