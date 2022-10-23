@@ -131,33 +131,20 @@ class AutoLink(Graph):
                 row.name,
                 row.is_open,
                 row.is_switchable,
-                self._add_pseudo_goals(row.edges),
+                row.edges,
+                {
+                    # We could use `r.attrs | (...)` in Python 3.9+
+                    **row.attrs,
+                    **(
+                        {"Autolink": self.back_kw[int(row.goal_id)]}
+                        if row.goal_id in self.back_kw
+                        else {}
+                    ),
+                },
             )
             for row in render_result.rows
         ]
-        fake_rows: List[RenderRow] = sorted(
-            [
-                RenderRow(
-                    AutoLink.fake_id(goal_id),
-                    -1,
-                    f"Autolink: '{keyword}'",
-                    True,
-                    False,
-                    [(goal_id, EdgeType.PARENT)],
-                )
-                for keyword, goal_id in self.keywords.items()
-            ],
-            key=lambda r: int(r.goal_id),
-        )
-        return RenderResult(rows=rows + fake_rows, select=render_result.select)
-
-    def _add_pseudo_goals(
-        self, edges: List[Tuple[GoalId, EdgeType]]
-    ) -> List[Tuple[GoalId, EdgeType]]:
-        return [
-            e if e[0] not in self.keywords.values() else (AutoLink.fake_id(e[0]), e[1])
-            for e in edges
-        ]
+        return RenderResult(rows=rows, select=render_result.select)
 
     @staticmethod
     def fake_id(goal_id: GoalId) -> GoalId:
