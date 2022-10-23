@@ -127,9 +127,10 @@ class SiebenApp:
             widget_tag = f"goal_{render_row.goal_id}"
             self.drawn_items.append(widget_tag)
             add_to_nodes[(row, col)] = widget_tag
+            attrs_text = [f"{k}: {render_row.attrs[k]}" for k in sorted(render_row.attrs)]
             with dpg.group(pos=pos, parent="primary", tag=widget_tag):
                 widget_width = (
-                    self.text_width(goal_text)
+                    max([self.text_width(goal_text)] + [len(s) for s in attrs_text])
                     + self.text_width(str(render_row.goal_id))
                     + 20
                 )
@@ -151,6 +152,9 @@ class SiebenApp:
                                 )
                             dpg.add_text(str(render_row.goal_id), color=status_color)
                             dpg.add_text(goal_text)
+                    if attrs_text:
+                        with dpg.table_row():
+                            dpg.add_text("\n".join(attrs_text))
                     if self.render_result.select[0] == render_row.goal_id:
                         dpg.highlight_table_row(table_id, 0, (128, 128, 128, 255))
                     elif self.render_result.select[1] == render_row.goal_id:
