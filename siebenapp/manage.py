@@ -144,12 +144,13 @@ def main(argv: Optional[List[str]] = None, io: Optional[IO] = None):
 
 def _format_name(row: RenderRow) -> str:
     goal_name = escape(row.name)
-    label = (
-        f'"{row.goal_id}: {goal_name}"'
+    label = split_long(
+        f"{row.goal_id}: {goal_name}"
         if isinstance(row.goal_id, int) and row.goal_id >= 0
-        else f'"{goal_name}"'
+        else f"{goal_name}"
     )
-    return split_long(label)
+    attrs: List[str] = [f"{k}: {v}" for k, v in row.attrs.items()]
+    return '"' + "\n".join([label] + attrs) + '"'
 
 
 def dot_export(goals):
