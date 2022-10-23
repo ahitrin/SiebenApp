@@ -1,5 +1,5 @@
-* [ ] **1** [2/6] Root
-  * [ ] **2** [0/1] Simply 3 (blocked by **4**)
-  * [ ] **3** [0/1] Also 4 (blocked by **4**)
-  * [ ] **4** [0/1] Now 5
-* [x] **5** [5/5] Lucky 7
+* [ ] **1** Root [Progress: 2/6]
+  * [ ] **2** Simply 3 (blocked by **4**) [Progress: 0/1]
+  * [ ] **3** Also 4 (blocked by **4**) [Progress: 0/1]
+  * [ ] **4** Now 5 [Progress: 0/1]
+* [x] **5** Lucky 7 [Progress: 5/5]

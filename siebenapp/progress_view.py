@@ -9,6 +9,12 @@ class ToggleProgress(Command):
     pass
 
 
+def _progress_status(
+    row: RenderRow, progress_cache: Dict[GoalId, Tuple[int, int]]
+) -> str:
+    return f"{progress_cache[row.goal_id][0]}/{progress_cache[row.goal_id][1]}"
+
+
 class ProgressView(Graph):
     def __init__(self, goaltree: Graph):
         super().__init__(goaltree)
@@ -51,11 +57,15 @@ class ProgressView(Graph):
             RenderRow(
                 row.goal_id,
                 row.raw_id,
-                f"[{progress_cache[row.goal_id][0]}/{progress_cache[row.goal_id][1]}] {row.name}",
+                row.name,
                 row.is_open,
                 row.is_switchable,
                 row.edges,
-                row.attrs,
+                {
+                    # We could use `r.attrs | (...)` in Python 3.9+
+                    **row.attrs,
+                    **{"Progress": _progress_status(row, progress_cache)},
+                },
             )
             for row in rows
         ]

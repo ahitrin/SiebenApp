@@ -134,50 +134,50 @@
 3[x] Toggle show open/closed goals
 > p
 
-1    [2/6] Cover all current features [2,3,4,5,6 / ]
-2[ ]>[0/1] Filter view [ / 6]
-6[x] [1/1] Toggle zoom and unzoom
-5[ ] [0/1] Toggle show switchable goals
-4[ ] [0/1] Toggle show goal progress
-3[x] [1/1] Toggle show open/closed goals
+1    Cover all current features [2,3,4,5,6 / ] [Progress: 2/6]
+2[ ]>Filter view [ / 6] [Progress: 0/1]
+6[x] Toggle zoom and unzoom [Progress: 1/1]
+5[ ] Toggle show switchable goals [Progress: 0/1]
+4[ ] Toggle show goal progress [Progress: 0/1]
+3[x] Toggle show open/closed goals [Progress: 1/1]
 > t
 
-5[x] [1/1] Toggle zoom and unzoom
-4[ ] [0/1] Toggle show switchable goals
-3[ ] [0/1] Toggle show goal progress
-2[x] [1/1] Toggle show open/closed goals
-1[ ]>[0/1] Filter view
+5[x] Toggle zoom and unzoom [Progress: 1/1]
+4[ ] Toggle show switchable goals [Progress: 0/1]
+3[ ] Toggle show goal progress [Progress: 0/1]
+2[x] Toggle show open/closed goals [Progress: 1/1]
+1[ ]>Filter view [Progress: 0/1]
 > n
 
-3[ ] [0/1] Toggle show switchable goals
-2[ ] [0/1] Toggle show goal progress
-1[ ]>[0/1] Filter view
+3[ ] Toggle show switchable goals [Progress: 0/1]
+2[ ] Toggle show goal progress [Progress: 0/1]
+1[ ]>Filter view [Progress: 0/1]
 > t
 
-1    [2/6] Cover all current features [2,3,4 / ]
-4[ ] [0/1] Toggle show switchable goals
-3[ ] [0/1] Toggle show goal progress
-2[ ]>[0/1] Filter view
+1    Cover all current features [2,3,4 / ] [Progress: 2/6]
+4[ ] Toggle show switchable goals [Progress: 0/1]
+3[ ] Toggle show goal progress [Progress: 0/1]
+2[ ]>Filter view [Progress: 0/1]
 > 4
 
-1    [2/6] Cover all current features [2,3,4 / ]
-4[ ]>[0/1] Toggle show switchable goals
-3[ ] [0/1] Toggle show goal progress
-2[ ]_[0/1] Filter view
+1    Cover all current features [2,3,4 / ] [Progress: 2/6]
+4[ ]>Toggle show switchable goals [Progress: 0/1]
+3[ ] Toggle show goal progress [Progress: 0/1]
+2[ ]_Filter view [Progress: 0/1]
 > c
 
-1    [3/6] Cover all current features [2,3 / ]
-3[ ] [0/1] Toggle show goal progress
-2[ ]>[0/1] Filter view
+1    Cover all current features [2,3 / ] [Progress: 3/6]
+3[ ] Toggle show goal progress [Progress: 0/1]
+2[ ]>Filter view [Progress: 0/1]
 > 2
 
-1    [3/6] Cover all current features [2,3 / ]
-3[ ] [0/1] Toggle show goal progress
-2[ ]>[0/1] Filter view
+1    Cover all current features [2,3 / ] [Progress: 3/6]
+3[ ] Toggle show goal progress [Progress: 0/1]
+2[ ]>Filter view [Progress: 0/1]
 > c
 
-1    [4/6] Cover all current features [2 / ]
-2[ ]>[0/1] Toggle show goal progress
+1    Cover all current features [2 / ] [Progress: 4/6]
+2[ ]>Toggle show goal progress [Progress: 0/1]
 > p
 
 1    Cover all current features [2 / ]
