@@ -210,8 +210,13 @@ def _format_md_row(render_result, row: RenderRow, shift: int) -> str:
         if e[1] == EdgeType.BLOCKER and render_result.by_id(e[0]).is_open
     ]
     blocked_status = "" if not blockers else f" (blocked by {', '.join(blockers)})"
+    attributes = (
+        ""
+        if not row.attrs
+        else f" [{','.join(f'{k}: {row.attrs[k]}' for k in sorted(row.attrs.keys()))}]"
+    )
     spaces = " " * shift * 2
-    return f"{spaces}* [{open_status}] **{row.goal_id}** {row.name}{blocked_status}"
+    return f"{spaces}* [{open_status}] **{row.goal_id}** {row.name}{blocked_status}{attributes}"
 
 
 def extract_subtree(source_goals: Graph, goal_id: int) -> Graph:
