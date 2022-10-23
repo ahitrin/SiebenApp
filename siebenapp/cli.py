@@ -72,7 +72,12 @@ def fmt(render_result: RenderResult, row: RenderRow, id_width):
             str(e[0]) for e in row.edges if e[1] == EdgeType.BLOCKER
         )
         children = f" [{child_list} / {blocker_list}]"
-    return f"{show_id}{status}{selection}{row.name}{children}"
+    attributes = (
+        f" [{','.join(f'{k}: {row.attrs[k]}' for k in sorted(row.attrs))}]"
+        if row.attrs
+        else ""
+    )
+    return f"{show_id}{status}{selection}{row.name}{children}{attributes}"
 
 
 def build_actions(command):

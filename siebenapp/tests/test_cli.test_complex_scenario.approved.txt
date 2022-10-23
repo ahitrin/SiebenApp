@@ -75,17 +75,17 @@
 > z
 
      Cover all current features [ / 1]
-1   >Filter view [ / 2]
+1   >Filter view [ / 2] [Zoom: root]
 2[ ] Toggle zoom and unzoom
 > 2
 
      Cover all current features [ / 1]
-1   _Filter view [ / 2]
+1   _Filter view [ / 2] [Zoom: root]
 2[ ]>Toggle zoom and unzoom
 > c
 
      Cover all current features [ / 1]
-1[ ]>Filter view
+1[ ]>Filter view [Zoom: root]
 > z
 
 1    Cover all current features [2,3,4,5 / ]
