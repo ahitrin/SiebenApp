@@ -6,7 +6,7 @@ from siebenapp.domain import Select, child, RenderRow, RenderResult
 from siebenapp.enumeration import Enumeration
 from siebenapp.layers import all_layers, persistent_layers
 from siebenapp.manage import main, dot_export, extract_subtree
-from siebenapp.system import save
+from siebenapp.system import save, load
 from siebenapp.tests.dsl import build_goaltree, open_, clos_, selected, previous
 from siebenapp.tests.test_cli import DummyIO, verify_file
 from siebenapp.zoom import ToggleZoom
@@ -39,6 +39,15 @@ def complex_goaltree_file():
     return file_name
 
 
+@pytest.fixture
+def zoomed_complex_goaltree_file(complex_goaltree_file):
+    g = load(complex_goaltree_file)
+    g.accept(ToggleZoom())
+    file_name = NamedTemporaryFile().name
+    save(g, file_name)
+    return file_name
+
+
 def test_print_dot_complex_tree(complex_goaltree_file):
     io = DummyIO()
     main(["dot", complex_goaltree_file], io)
@@ -48,6 +57,12 @@ def test_print_dot_complex_tree(complex_goaltree_file):
 def test_print_dot_complex_tree_with_closed(complex_goaltree_file):
     io = DummyIO()
     main(["dot", "-n", complex_goaltree_file], io)
+    verify_file(io, ".dot")
+
+
+def test_print_dot_zoomed_complex_tree_with_closed(zoomed_complex_goaltree_file):
+    io = DummyIO()
+    main(["dot", "-n", zoomed_complex_goaltree_file], io)
     verify_file(io, ".dot")
 
 

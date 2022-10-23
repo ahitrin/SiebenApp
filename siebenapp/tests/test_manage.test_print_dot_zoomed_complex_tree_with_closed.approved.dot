@@ -1,0 +1,17 @@
+digraph g {
+node [shape=box];
+-1 [label="Root", color=red];
+1 [label="1: Also 4", color=red];
+2 [label="2: Now 5", color=red, style=bold];
+3 [label="3: Same 6", color=green];
+4 [label="4: Lucky 7", color=green];
+5 [label="5: Finally 8", color=green];
+1 -> -1 [color=black, style=dashed];
+2 -> 1 [color=black, style=dashed];
+3 -> 1 [color=gray, style=dashed];
+4 -> 1 [color=gray, style=dashed];
+5 -> 1 [color=gray, style=dashed];
+3 -> 2 [color=gray, style=dashed];
+4 -> 3 [color=gray, style=dashed];
+5 -> 4 [color=gray];
+}
