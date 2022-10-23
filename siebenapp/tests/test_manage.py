@@ -114,6 +114,12 @@ def test_print_md_complex_tree_with_closed(complex_goaltree_file):
     verify_file(io, ".md")
 
 
+def test_print_md_zoomed_complex_tree_with_closed(zoomed_complex_goaltree_file):
+    io = DummyIO()
+    main(["md", "-n", zoomed_complex_goaltree_file], io)
+    verify_file(io, ".md")
+
+
 def test_print_md_complex_tree_with_progress(complex_goaltree_file):
     io = DummyIO()
     main(["md", "-p", complex_goaltree_file], io)
