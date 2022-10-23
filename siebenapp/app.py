@@ -60,6 +60,12 @@ class GoalWidget(QWidget, Ui_GoalBody):
         self.frame.setStyleSheet(f".QFrame{{ border: {border}px solid {frame_color} }}")
         if isinstance(row.goal_id, int) and row.goal_id >= 0:
             self.label_number.setText(str(row.goal_id))
+        if row.attrs:
+            row_text = "\n".join(f"{k}: {row.attrs[k]}" for k in row.attrs)
+            self.label_attrs.setText(row_text)
+            self.label_attrs.setVisible(True)
+        else:
+            self.label_attrs.setVisible(False)
 
     def mousePressEvent(self, event):
         self._click_in_progress = True
