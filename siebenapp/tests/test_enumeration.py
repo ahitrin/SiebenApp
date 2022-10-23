@@ -316,7 +316,7 @@ def test_do_not_enumerate_goals_with_negative_id():
     e = Enumeration(g)
     assert e.q() == RenderResult(
         rows=[
-            RenderRow(1, 2, "Zoomed", True, False, [child(2)]),
+            RenderRow(1, 2, "Zoomed", True, False, [child(2)], {"Zoom": "root"}),
             RenderRow(2, 3, "Top", True, True, []),
             RenderRow(-1, -1, "Root", True, False, [blocker(1)]),
         ],
