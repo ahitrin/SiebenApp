@@ -127,7 +127,9 @@ class SiebenApp:
             widget_tag = f"goal_{render_row.goal_id}"
             self.drawn_items.append(widget_tag)
             add_to_nodes[(row, col)] = widget_tag
-            attrs_text = [f"{k}: {render_row.attrs[k]}" for k in sorted(render_row.attrs)]
+            attrs_text = [
+                f"{k}: {render_row.attrs[k]}" for k in sorted(render_row.attrs)
+            ]
             with dpg.group(pos=pos, parent="primary", tag=widget_tag):
                 widget_width = (
                     max([self.text_width(goal_text)] + [len(s) for s in attrs_text])
