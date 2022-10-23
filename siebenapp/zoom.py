@@ -68,7 +68,11 @@ class Zoom(Graph):
                 r.is_open,
                 r.is_switchable,
                 [e for e in r.edges if e[0] in visible_goals.union(selected_goals)],
-                {"Zoom": "root"} if r.goal_id == self.zoom_root[-1] else {},
+                {
+                    # We could use `r.attrs | (...)` in Python 3.9+
+                    **r.attrs,
+                    **({"Zoom": "root"} if r.goal_id == self.zoom_root[-1] else {}),
+                },
             )
             for r in rows
             if r.goal_id in visible_goals.union(selected_goals)
