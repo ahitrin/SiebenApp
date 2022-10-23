@@ -1,5 +1,5 @@
 from collections import deque
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import IntEnum
 from typing import Dict, Any, Union, Tuple, List
 
@@ -45,6 +45,7 @@ class RenderRow:
     is_open: bool
     is_switchable: bool
     edges: List[Tuple[GoalId, EdgeType]]
+    attrs: Dict[str, str] = field(default_factory=lambda: {})
 
 
 @dataclass

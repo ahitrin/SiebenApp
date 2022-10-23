@@ -86,14 +86,14 @@
                    'edge_render': [(6, <EdgeType.BLOCKER: 1>),
                                    ('4_2', <EdgeType.BLOCKER: 1>)],
                    'row': 3}},
- 'rows': [RenderRow(goal_id=1, raw_id=1, name='Root', is_open=True, is_switchable=False, edges=[(2, <EdgeType.PARENT: 2>), (3, <EdgeType.PARENT: 2>), (4, <EdgeType.PARENT: 2>), (5, <EdgeType.PARENT: 2>), (6, <EdgeType.PARENT: 2>), (7, <EdgeType.BLOCKER: 1>), (8, <EdgeType.BLOCKER: 1>)]),
-          RenderRow(goal_id=2, raw_id=2, name='Closed', is_open=False, is_switchable=True, edges=[(7, <EdgeType.BLOCKER: 1>)]),
-          RenderRow(goal_id=3, raw_id=3, name='Simply 3', is_open=True, is_switchable=False, edges=[(5, <EdgeType.BLOCKER: 1>), (8, <EdgeType.BLOCKER: 1>)]),
-          RenderRow(goal_id=4, raw_id=4, name='Also 4', is_open=True, is_switchable=False, edges=[(5, <EdgeType.BLOCKER: 1>), (6, <EdgeType.BLOCKER: 1>), (7, <EdgeType.BLOCKER: 1>), (8, <EdgeType.BLOCKER: 1>)]),
-          RenderRow(goal_id=5, raw_id=5, name='Now 5', is_open=True, is_switchable=True, edges=[(6, <EdgeType.BLOCKER: 1>)]),
-          RenderRow(goal_id=6, raw_id=6, name='Same 6', is_open=False, is_switchable=True, edges=[(7, <EdgeType.BLOCKER: 1>)]),
-          RenderRow(goal_id=7, raw_id=7, name='Lucky 7', is_open=False, is_switchable=True, edges=[(8, <EdgeType.PARENT: 2>)]),
-          RenderRow(goal_id=8, raw_id=8, name='Finally 8', is_open=False, is_switchable=True, edges=[])]}
+ 'rows': [RenderRow(goal_id=1, raw_id=1, name='Root', is_open=True, is_switchable=False, edges=[(2, <EdgeType.PARENT: 2>), (3, <EdgeType.PARENT: 2>), (4, <EdgeType.PARENT: 2>), (5, <EdgeType.PARENT: 2>), (6, <EdgeType.PARENT: 2>), (7, <EdgeType.BLOCKER: 1>), (8, <EdgeType.BLOCKER: 1>)], attrs={}),
+          RenderRow(goal_id=2, raw_id=2, name='Closed', is_open=False, is_switchable=True, edges=[(7, <EdgeType.BLOCKER: 1>)], attrs={}),
+          RenderRow(goal_id=3, raw_id=3, name='Simply 3', is_open=True, is_switchable=False, edges=[(5, <EdgeType.BLOCKER: 1>), (8, <EdgeType.BLOCKER: 1>)], attrs={}),
+          RenderRow(goal_id=4, raw_id=4, name='Also 4', is_open=True, is_switchable=False, edges=[(5, <EdgeType.BLOCKER: 1>), (6, <EdgeType.BLOCKER: 1>), (7, <EdgeType.BLOCKER: 1>), (8, <EdgeType.BLOCKER: 1>)], attrs={}),
+          RenderRow(goal_id=5, raw_id=5, name='Now 5', is_open=True, is_switchable=True, edges=[(6, <EdgeType.BLOCKER: 1>)], attrs={}),
+          RenderRow(goal_id=6, raw_id=6, name='Same 6', is_open=False, is_switchable=True, edges=[(7, <EdgeType.BLOCKER: 1>)], attrs={}),
+          RenderRow(goal_id=7, raw_id=7, name='Lucky 7', is_open=False, is_switchable=True, edges=[(8, <EdgeType.PARENT: 2>)], attrs={}),
+          RenderRow(goal_id=8, raw_id=8, name='Finally 8', is_open=False, is_switchable=True, edges=[], attrs={})]}
 
 == Geometry change after adjust
 
