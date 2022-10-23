@@ -90,7 +90,7 @@ def test_how_should_we_deal_with_zooming():
     v.accept_all(ToggleZoom(), ToggleSwitchableView())
     assert v.q() == RenderResult(
         rows=[
-            RenderRow(2, 2, "Zoomed", True, False, []),
+            RenderRow(2, 2, "Zoomed", True, False, [], {"Zoom": "root"}),
             RenderRow(3, 3, "Ex-top", True, True, []),
         ],
         select=(2, 2),
@@ -98,7 +98,7 @@ def test_how_should_we_deal_with_zooming():
     v.accept(Add("Unexpectedly hidden"))
     assert v.q() == RenderResult(
         rows=[
-            RenderRow(2, 2, "Zoomed", True, False, []),
+            RenderRow(2, 2, "Zoomed", True, False, [], {"Zoom": "root"}),
             RenderRow(3, 3, "Ex-top", True, True, []),
             RenderRow(4, 4, "Unexpectedly hidden", True, True, []),
         ],

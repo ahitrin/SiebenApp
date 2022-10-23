@@ -42,6 +42,7 @@ class SwitchableView(Graph):
                 row.is_open,
                 row.is_switchable,
                 [],
+                row.attrs,
             )
             for row in render_result.rows
             if row.is_switchable or row.goal_id in list(render_result.select)
