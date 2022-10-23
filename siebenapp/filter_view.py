@@ -51,6 +51,7 @@ class FilterView(Graph):
                 row.is_switchable,
                 [e for e in row.edges if e[0] in accepted_ids]
                 + ([blocker(-2)] if row.goal_id in {1, -1} else []),
+                row.attrs,
             )
             for row in render_result.rows
             if row.goal_id in accepted_ids
