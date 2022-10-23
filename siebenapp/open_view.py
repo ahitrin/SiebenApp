@@ -58,6 +58,7 @@ class OpenView(Graph):
                 row.is_open,
                 row.is_switchable,
                 [e for e in row.edges if e[0] in visible_rows],
+                row.attrs,
             )
             for row in visible_rows.values()
         ]

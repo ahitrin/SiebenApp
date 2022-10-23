@@ -307,7 +307,7 @@ def test_do_not_enumerate_goals_with_negative_id():
     g.accept(ToggleZoom())
     assert g.q() == RenderResult(
         rows=[
-            RenderRow(2, 2, "Zoomed", True, False, [child(3)]),
+            RenderRow(2, 2, "Zoomed", True, False, [child(3)], {"Zoom": "root"}),
             RenderRow(3, 3, "Top", True, True, []),
             RenderRow(-1, -1, "Root", True, False, [blocker(2)]),
         ],

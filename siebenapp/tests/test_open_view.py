@@ -186,7 +186,7 @@ def test_add_dangling_goals_to_old_root_on_zoom():
     v.accept(ToggleZoom())
     assert v.q() == RenderResult(
         rows=[
-            RenderRow(2, 2, "Zoom root", True, False, [child(5)]),
+            RenderRow(2, 2, "Zoom root", True, False, [child(5)], {"Zoom": "root"}),
             RenderRow(4, 4, "Previous top", False, False, []),
             RenderRow(5, 5, "Current top", True, True, []),
             RenderRow(-1, -1, "Root", True, False, [blocker(2), blocker(4)]),
