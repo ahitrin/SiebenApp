@@ -40,8 +40,8 @@ class FilterView(Graph):
             row.goal_id
             for row in render_result.rows
             if self.pattern in row.name.lower()
-            or row.goal_id in list(render_result.select)
         }
+        all_ids: Set[GoalId] = accepted_ids.union(render_result.select)
         rows: List[RenderRow] = [
             RenderRow(
                 row.goal_id,
@@ -49,12 +49,16 @@ class FilterView(Graph):
                 row.name,
                 row.is_open,
                 row.is_switchable,
-                [e for e in row.edges if e[0] in accepted_ids]
+                [e for e in row.edges if e[0] in all_ids]
                 + ([blocker(-2)] if row.goal_id in {1, -1} else []),
-                row.attrs,
+                {
+                    # We could use `r.attrs | (...)` in Python 3.9+
+                    **row.attrs,
+                    **({"Filter": self.pattern} if row.goal_id in accepted_ids else {}),
+                },
             )
             for row in render_result.rows
-            if row.goal_id in accepted_ids
+            if row.goal_id in all_ids
         ]
         fake_rows: List[RenderRow] = [
             RenderRow(
@@ -65,7 +69,7 @@ class FilterView(Graph):
                 False,
                 [
                     blocker(goal_id)
-                    for goal_id in accepted_ids
+                    for goal_id in all_ids
                     if isinstance(goal_id, int) and goal_id > 1
                 ],
             ),
