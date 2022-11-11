@@ -12,7 +12,10 @@ class ToggleProgress(Command):
 def _progress_status(
     row: RenderRow, progress_cache: Dict[GoalId, Tuple[int, int]]
 ) -> str:
-    return f"{progress_cache[row.goal_id][0]}/{progress_cache[row.goal_id][1]}"
+    dividend = progress_cache[row.goal_id][0]
+    divisor = progress_cache[row.goal_id][1]
+    percent = int(100.0 * dividend / divisor)
+    return f"{percent}% ({dividend}/{divisor})"
 
 
 class ProgressView(Graph):

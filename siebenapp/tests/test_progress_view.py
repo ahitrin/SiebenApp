@@ -42,15 +42,27 @@ def test_show_progress(goaltree):
     assert goaltree.q() == RenderResult(
         rows=[
             RenderRow(
-                1, 1, "Root", True, False, [child(2), child(3)], {"Progress": "0/4"}
+                1,
+                1,
+                "Root",
+                True,
+                False,
+                [child(2), child(3)],
+                {"Progress": "0% (0/4)"},
             ),
             RenderRow(
-                2, 2, "With blocker", True, False, [blocker(4)], {"Progress": "0/1"}
+                2,
+                2,
+                "With blocker",
+                True,
+                False,
+                [blocker(4)],
+                {"Progress": "0% (0/1)"},
             ),
             RenderRow(
-                3, 3, "With subgoal", True, False, [child(4)], {"Progress": "0/2"}
+                3, 3, "With subgoal", True, False, [child(4)], {"Progress": "0% (0/2)"}
             ),
-            RenderRow(4, 4, "Top goal", True, True, [], {"Progress": "0/1"}),
+            RenderRow(4, 4, "Top goal", True, True, [], {"Progress": "0% (0/1)"}),
         ],
         select=(1, 1),
     )
@@ -74,15 +86,21 @@ def test_change_progress_on_close(goaltree):
     assert goaltree.q() == RenderResult(
         rows=[
             RenderRow(
-                1, 1, "Root", True, False, [child(2), child(3)], {"Progress": "1/4"}
+                1,
+                1,
+                "Root",
+                True,
+                False,
+                [child(2), child(3)],
+                {"Progress": "25% (1/4)"},
             ),
             RenderRow(
-                2, 2, "With blocker", True, True, [blocker(4)], {"Progress": "0/1"}
+                2, 2, "With blocker", True, True, [blocker(4)], {"Progress": "0% (0/1)"}
             ),
             RenderRow(
-                3, 3, "With subgoal", True, True, [child(4)], {"Progress": "1/2"}
+                3, 3, "With subgoal", True, True, [child(4)], {"Progress": "50% (1/2)"}
             ),
-            RenderRow(4, 4, "Top goal", False, True, [], {"Progress": "1/1"}),
+            RenderRow(4, 4, "Top goal", False, True, [], {"Progress": "100% (1/1)"}),
         ],
         select=(1, 1),
     )
@@ -90,15 +108,27 @@ def test_change_progress_on_close(goaltree):
     assert goaltree.q() == RenderResult(
         rows=[
             RenderRow(
-                1, 1, "Root", True, False, [child(2), child(3)], {"Progress": "2/4"}
+                1,
+                1,
+                "Root",
+                True,
+                False,
+                [child(2), child(3)],
+                {"Progress": "50% (2/4)"},
             ),
             RenderRow(
-                2, 2, "With blocker", False, True, [blocker(4)], {"Progress": "1/1"}
+                2,
+                2,
+                "With blocker",
+                False,
+                True,
+                [blocker(4)],
+                {"Progress": "100% (1/1)"},
             ),
             RenderRow(
-                3, 3, "With subgoal", True, True, [child(4)], {"Progress": "1/2"}
+                3, 3, "With subgoal", True, True, [child(4)], {"Progress": "50% (1/2)"}
             ),
-            RenderRow(4, 4, "Top goal", False, True, [], {"Progress": "1/1"}),
+            RenderRow(4, 4, "Top goal", False, True, [], {"Progress": "100% (1/1)"}),
         ],
         select=(1, 1),
     )
