@@ -1,7 +1,7 @@
 # coding: utf-8
 import sqlite3
 from os import path
-from typing import Callable, List
+from typing import Callable, List, Optional
 
 from siebenapp.autolink import AutoLink, AutoLinkData
 from siebenapp.domain import Graph
@@ -181,7 +181,9 @@ def save_updates(goals: Graph, connection: sqlite3.Connection) -> None:
     connection.commit()
 
 
-def load(filename: str, message_fn: Callable[[str], None] = None) -> Enumeration:
+def load(
+    filename: str, message_fn: Optional[Callable[[str], None]] = None
+) -> Enumeration:
     zoom_data: ZoomData = []
     autolink_data: AutoLinkData = []
     if path.isfile(filename):
@@ -203,10 +205,11 @@ def load(filename: str, message_fn: Callable[[str], None] = None) -> Enumeration
 
 
 def run_migrations(
-    conn: sqlite3.Connection, migrations: List[List[str]] = None
+    conn: sqlite3.Connection, migrations_to_run: Optional[List[List[str]]] = None
 ) -> None:
-    if migrations is None:
-        migrations = MIGRATIONS
+    migrations: List[List[str]] = (
+        MIGRATIONS if migrations_to_run is None else migrations_to_run
+    )
     cur = conn.cursor()
     try:
         cur.execute("select version from migrations")

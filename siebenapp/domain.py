@@ -1,7 +1,7 @@
 from collections import deque
 from dataclasses import dataclass, field
 from enum import IntEnum
-from typing import Dict, Any, Union, Tuple, List
+from typing import Dict, Any, Union, Tuple, List, Optional
 
 
 class EdgeType(IntEnum):
@@ -57,10 +57,10 @@ class RenderResult:
 
     def __init__(
         self,
-        graph: Dict[GoalId, Any] = None,
-        edge_opts: Dict[str, Tuple[int, int, int]] = None,
-        rows: List[RenderRow] = None,
-        select: Tuple[GoalId, GoalId] = None,
+        graph: Optional[Dict[GoalId, Any]] = None,
+        edge_opts: Optional[Dict[str, Tuple[int, int, int]]] = None,
+        rows: Optional[List[RenderRow]] = None,
+        select: Optional[Tuple[GoalId, GoalId]] = None,
     ):
         self.graph = graph or {}
         self.edge_opts = edge_opts or {}

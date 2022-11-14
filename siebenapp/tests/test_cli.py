@@ -9,10 +9,12 @@ from siebenapp.system import load
 
 
 class DummyIO(IO):
-    def __init__(self, commands: List[str] = None, log: List[str] = None):
+    def __init__(
+        self, commands: Optional[List[str]] = None, log: Optional[List[str]] = None
+    ):
         super().__init__()
         self.commands = [] if commands is None else commands
-        self.log = [] if log is None else log
+        self.log: List[str] = [] if log is None else log
 
     def write(self, text: str, *args) -> None:
         self.log.append(" ".join([text, *args]))

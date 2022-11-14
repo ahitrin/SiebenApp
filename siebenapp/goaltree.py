@@ -27,7 +27,9 @@ OptionsData = List[Tuple[str, int]]
 class Goals(Graph):
     ROOT_ID = 1
 
-    def __init__(self, name: str, message_fn: Callable[[str], None] = None) -> None:
+    def __init__(
+        self, name: str, message_fn: Optional[Callable[[str], None]] = None
+    ) -> None:
         super().__init__()
         self.goals: Dict[int, Optional[str]] = {}
         self.edges: Dict[Tuple[int, int], EdgeType] = {}
@@ -255,7 +257,7 @@ class Goals(Graph):
         self._events.append(("unlink", lower, upper, old_edge_type))
 
     def _remove_existing_link(
-        self, lower: int, upper: int, edge_type: int = None
+        self, lower: int, upper: int, edge_type: Optional[int] = None
     ) -> None:
         if len(self._back_edges(upper)) > 1:
             self.edges.pop((lower, upper))
@@ -346,8 +348,12 @@ class Goals(Graph):
         ), "Each goal must have at most 1 parent"
 
     @staticmethod
-    def build(goals, edges, settings, message_fn=None):
-        # type: (GoalsData, EdgesData, OptionsData, Callable[[str], None]) -> Goals
+    def build(
+        goals: GoalsData,
+        edges: EdgesData,
+        settings: OptionsData,
+        message_fn: Optional[Callable[[str], None]] = None,
+    ) -> "Goals":
         result: Goals = Goals("", message_fn)
         result._events.clear()
         goals_dict: Dict[int, Optional[str]] = {g[0]: g[1] for g in goals}
