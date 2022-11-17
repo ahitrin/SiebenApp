@@ -281,7 +281,7 @@ class Goals(Graph):
         self.edges_backward[upper][lower] = edge_type
         self._events.append(("link", lower, upper, edge_type))
 
-    def _transform_old_parents_into_blocked(self, lower, upper):
+    def _transform_old_parents_into_blocked(self, lower: int, upper: int) -> None:
         old_parents: List[int] = [
             e.source
             for e in self._back_edges(upper)
