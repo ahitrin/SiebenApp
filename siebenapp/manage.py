@@ -2,6 +2,8 @@ from argparse import ArgumentParser
 from html import escape
 from operator import attrgetter
 from os import path
+from typing import List, Optional, Set
+
 from siebenapp.cli import IO, ConsoleIO
 from siebenapp.domain import EdgeType, Graph, RenderRow
 from siebenapp.goaltree import Goals, GoalsData, EdgesData, OptionsData
@@ -10,7 +12,6 @@ from siebenapp.open_view import ToggleOpenView
 from siebenapp.progress_view import ToggleProgress
 from siebenapp.switchable_view import ToggleSwitchableView
 from siebenapp.system import load, save, split_long
-from typing import List, Optional, Dict, Set, Any
 
 
 def print_dot(args, io: IO):
@@ -180,7 +181,7 @@ def dot_export(goals):
     return f"digraph g {{\nnode [shape=box];\n{body}\n}}"
 
 
-def markdown_export(goals):
+def markdown_export(goals: Graph) -> str:
     render_result = goals.q()
     all_ids = {r.goal_id for r in render_result.rows}
     non_roots = {
