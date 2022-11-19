@@ -1,5 +1,5 @@
 from collections import deque
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field
 from enum import IntEnum
 from typing import Dict, Any, Union, Tuple, List, Optional
 
@@ -78,11 +78,6 @@ class RenderResult:
         result = [r for r in self.rows if r.goal_id == goal_id]
         assert len(result) == 1
         return result[0]
-
-    def for_pprint(self) -> Dict[str, Any]:
-        """Pretty-printing for dataclasses is supported in Python 3.10+
-        See: https://bugs.python.org/issue43080"""
-        return asdict(self)
 
 
 class Graph:

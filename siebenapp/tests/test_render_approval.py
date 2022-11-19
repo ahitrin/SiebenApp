@@ -1,4 +1,5 @@
 import io
+from dataclasses import asdict
 from pprint import pprint
 
 from siebenapp.render import (
@@ -54,7 +55,7 @@ def _run_render_test():
     lines = render_lines(gp, result)
     with io.StringIO() as out:
         print("== Graph\n", file=out)
-        pprint(result.for_pprint(), out)
+        pprint(asdict(result), out)
         print("\n== Geometry change after adjust\n", file=out)
         total_delta = Point(0, 0)
         for goal_id in g.goals:
