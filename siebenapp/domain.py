@@ -57,12 +57,12 @@ class RenderResult:
 
     def __init__(
         self,
-        rows: Optional[List[RenderRow]] = None,
+        rows: List[RenderRow],
         edge_opts: Optional[Dict[str, Tuple[int, int, int]]] = None,
         select: Optional[Tuple[GoalId, GoalId]] = None,
         graph: Optional[Dict[GoalId, Any]] = None,
     ):
-        self.rows = rows or []
+        self.rows = rows
         self.edge_opts = edge_opts or {}
         self.select = select or (0, 0)
         self.graph = graph or {}

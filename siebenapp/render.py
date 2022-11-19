@@ -77,7 +77,7 @@ class Renderer:
         self.update_graph()
         self.build_index()
         return RenderResult(
-            rows=self.rows,
+            self.rows,
             edge_opts=self.result_edge_options,
             select=self.render_result.select,
             graph=self.graph,

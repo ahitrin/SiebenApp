@@ -27,7 +27,7 @@ def goaltree():
 
 def test_no_progress_by_default(goaltree) -> None:
     assert goaltree.q() == RenderResult(
-        rows=[
+        [
             RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
             RenderRow(2, 2, "With blocker", True, False, [blocker(4)]),
             RenderRow(3, 3, "With subgoal", True, False, [child(4)]),
@@ -40,7 +40,7 @@ def test_no_progress_by_default(goaltree) -> None:
 def test_show_progress(goaltree) -> None:
     goaltree.accept(ToggleProgress())
     assert goaltree.q() == RenderResult(
-        rows=[
+        [
             RenderRow(
                 1,
                 1,
@@ -71,7 +71,7 @@ def test_show_progress(goaltree) -> None:
 def test_toggle_hide_progress(goaltree) -> None:
     goaltree.accept_all(ToggleProgress(), ToggleProgress())
     assert goaltree.q() == RenderResult(
-        rows=[
+        [
             RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
             RenderRow(2, 2, "With blocker", True, False, [blocker(4)]),
             RenderRow(3, 3, "With subgoal", True, False, [child(4)]),
@@ -84,7 +84,7 @@ def test_toggle_hide_progress(goaltree) -> None:
 def test_change_progress_on_close(goaltree) -> None:
     goaltree.accept_all(ToggleProgress(), Select(4), ToggleClose())
     assert goaltree.q() == RenderResult(
-        rows=[
+        [
             RenderRow(
                 1,
                 1,
@@ -106,7 +106,7 @@ def test_change_progress_on_close(goaltree) -> None:
     )
     goaltree.accept_all(Select(2), ToggleClose())
     assert goaltree.q() == RenderResult(
-        rows=[
+        [
             RenderRow(
                 1,
                 1,

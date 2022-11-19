@@ -68,7 +68,7 @@ class OpenView(Graph):
             .difference({1, -1})
         )
         root_id: GoalId = min(visible_rows)
-        result = RenderResult(rows=rows, select=render_result.select)
+        result = RenderResult(rows, select=render_result.select)
         result.by_id(root_id).edges.extend(
             [(goal_id, EdgeType.BLOCKER) for goal_id in dangling]
         )
