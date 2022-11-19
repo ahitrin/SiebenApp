@@ -25,7 +25,8 @@ from siebenapp.domain import (
     Insert,
     Rename,
     Command,
-    GoalId, Graph,
+    GoalId,
+    Graph,
 )
 from siebenapp.filter_view import FilterBy
 from siebenapp.goaltree import Goals
