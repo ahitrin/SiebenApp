@@ -90,8 +90,8 @@ class Graph:
 
     NO_VALUE = "no value"
 
-    def __init__(self, goaltree=None):
-        self.goaltree: Graph = goaltree
+    def __init__(self, goaltree: Optional["Graph"] = None):
+        self.goaltree: Graph = goaltree or self
 
     def __getattr__(self, item):
         """When method is not found, ask nested goaltree for it"""
@@ -116,20 +116,20 @@ class Graph:
 
     def settings(self, key: str) -> Any:
         """Returns given inner value by the key"""
-        if self.goaltree is not None:
+        if self.goaltree != self:
             return self.goaltree.settings(key)
         return Graph.NO_VALUE
 
     def reconfigure_from(self, origin: "Graph") -> None:
         """Synchronize *non-persistent* settings from the given origin"""
-        if self.goaltree:
+        if self.goaltree != self:
             self.goaltree.reconfigure_from(origin)
 
     def events(self) -> deque:
         """Returns queue of applied actions.
         Note: this queue is modifiable -- you may push new events into it. But this
         behavior may be changed in future."""
-        if self.goaltree is not None:
+        if self.goaltree != self:
             return self.goaltree.events()
         raise NotImplementedError
 
@@ -139,12 +139,12 @@ class Graph:
 
     def error(self, message: str) -> None:
         """Show error message"""
-        if self.goaltree is not None:
+        if self.goaltree != self:
             self.goaltree.error(message)
 
     def verify(self) -> None:
         """Check all inner data for correctness. Raise exception on violations."""
-        if self.goaltree is not None:
+        if self.goaltree != self:
             return self.goaltree.verify()
 
 
