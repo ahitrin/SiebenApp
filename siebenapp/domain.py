@@ -50,20 +50,20 @@ class RenderRow:
 
 @dataclass
 class RenderResult:
-    edge_opts: Dict[str, Tuple[int, int, int]]
     rows: List[RenderRow]
+    edge_opts: Dict[str, Tuple[int, int, int]]
     select: Tuple[GoalId, GoalId]
     graph: Dict[GoalId, Any]
 
     def __init__(
         self,
-        edge_opts: Optional[Dict[str, Tuple[int, int, int]]] = None,
         rows: Optional[List[RenderRow]] = None,
+        edge_opts: Optional[Dict[str, Tuple[int, int, int]]] = None,
         select: Optional[Tuple[GoalId, GoalId]] = None,
         graph: Optional[Dict[GoalId, Any]] = None,
     ):
-        self.edge_opts = edge_opts or {}
         self.rows = rows or []
+        self.edge_opts = edge_opts or {}
         self.select = select or (0, 0)
         self.graph = graph or {}
 
