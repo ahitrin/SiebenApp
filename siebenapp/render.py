@@ -77,10 +77,10 @@ class Renderer:
         self.update_graph()
         self.build_index()
         return RenderResult(
-            self.graph,
             self.result_edge_options,
             rows=self.rows,
             select=self.render_result.select,
+            graph=self.graph,
         )
 
     def split_by_layers(self) -> None:
