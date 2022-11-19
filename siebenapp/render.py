@@ -58,7 +58,7 @@ class Renderer:
         self.render_result = goals.q()
         self.width_limit = width_limit
         self.rows = self.render_result.rows
-        self.graph: Dict[GoalId, Any] = {row.goal_id: {} for row in self.rows}
+        self.node_opts: Dict[GoalId, Any] = {row.goal_id: {} for row in self.rows}
         self.edges: Dict[GoalId, List[GoalId]] = {
             row.goal_id: [e[0] for e in row.edges] for row in self.render_result.rows
         }
@@ -66,7 +66,7 @@ class Renderer:
         self.positions: Dict[GoalId, int] = {}
         self.edge_types: Dict[Tuple[GoalId, GoalId], EdgeType] = {
             (parent, child): edge_type
-            for parent in self.graph
+            for parent in self.node_opts
             for child, edge_type in self.render_result.by_id(parent).edges
         }
         self.result_edge_options: Dict[str, Tuple[int, int, int]] = {}
@@ -80,7 +80,7 @@ class Renderer:
             self.rows,
             edge_opts=self.result_edge_options,
             select=self.render_result.select,
-            node_opts=self.graph,
+            node_opts=self.node_opts,
         )
 
     def split_by_layers(self) -> None:
@@ -176,15 +176,15 @@ class Renderer:
             for col, goal_id in enumerate(self.layers[row]):
                 if goal_id is None:
                     continue
-                if goal_id in self.graph:
-                    self.graph[goal_id]["col"] = real_col
+                if goal_id in self.node_opts:
+                    self.node_opts[goal_id]["col"] = real_col
                     real_col += 1
                 else:
-                    self.graph[goal_id] = {
+                    self.node_opts[goal_id] = {
                         "col": col,
                         "edge_render": [],
                     }
-                self.graph[goal_id].update(
+                self.node_opts[goal_id].update(
                     {
                         "row": row,
                         "edge_render": [
@@ -196,7 +196,7 @@ class Renderer:
 
     def build_index(self) -> None:
         result_index: Dict[int, Dict[int, GoalId]] = {}
-        for goal_id, attrs in self.graph.items():
+        for goal_id, attrs in self.node_opts.items():
             if (row := attrs["row"]) not in result_index:
                 result_index[row] = {}
             result_index[row][attrs["col"]] = goal_id
