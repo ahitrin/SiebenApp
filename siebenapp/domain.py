@@ -82,7 +82,12 @@ class RenderResult:
     def for_pprint(self) -> Dict[str, Any]:
         """Pretty-printing for dataclasses is supported in Python 3.10+
         See: https://bugs.python.org/issue43080"""
-        return {"graph": self.graph, "rows": self.rows, "edge_opts": self.edge_opts}
+        return {
+            "graph": self.graph,
+            "rows": self.rows,
+            "edge_opts": self.edge_opts,
+            "select": self.select,
+        }
 
 
 class Graph:

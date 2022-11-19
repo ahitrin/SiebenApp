@@ -151,7 +151,8 @@
                     is_open=False,
                     is_switchable=True,
                     edges=[],
-                    attrs={})]}
+                    attrs={})],
+ 'select': (4, 7)}
 
 == Geometry change after adjust
 
