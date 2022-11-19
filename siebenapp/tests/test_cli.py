@@ -39,7 +39,7 @@ def verify_file(content: Any, extension: Optional[str] = None) -> None:
     )
 
 
-def test_simple_scenario():
+def test_simple_scenario() -> None:
     commands = [
         "r Approval testing",
         "a Measure coverage",
@@ -55,7 +55,7 @@ def test_simple_scenario():
     verify_file(io)
 
 
-def test_complex_scenario():
+def test_complex_scenario() -> None:
     commands = [
         "r Cover all current features",
         "a Filter view",

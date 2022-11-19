@@ -36,12 +36,12 @@ class FakeGeometry(GeometryProvider):
 
 
 @pytest.mark.skipif(sys.version_info >= (3, 10), reason="old python output format")
-def test_render_example():
+def test_render_example() -> None:
     _run_render_test()
 
 
 @pytest.mark.skipif(sys.version_info < (3, 10), reason="new python output format")
-def test_render_example_310():
+def test_render_example_310() -> None:
     _run_render_test()
 
 

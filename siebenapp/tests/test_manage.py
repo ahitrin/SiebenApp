@@ -12,7 +12,7 @@ from siebenapp.tests.test_cli import DummyIO, verify_file
 from siebenapp.zoom import ToggleZoom
 
 
-def test_print_dot_empty_file():
+def test_print_dot_empty_file() -> None:
     file_name = NamedTemporaryFile().name
     io = DummyIO()
     main(["dot", file_name], io)
@@ -48,37 +48,39 @@ def zoomed_complex_goaltree_file(complex_goaltree_file):
     return file_name
 
 
-def test_print_dot_complex_tree(complex_goaltree_file):
+def test_print_dot_complex_tree(complex_goaltree_file) -> None:
     io = DummyIO()
     main(["dot", complex_goaltree_file], io)
     verify_file(io, ".dot")
 
 
-def test_print_dot_complex_tree_with_closed(complex_goaltree_file):
+def test_print_dot_complex_tree_with_closed(complex_goaltree_file) -> None:
     io = DummyIO()
     main(["dot", "-n", complex_goaltree_file], io)
     verify_file(io, ".dot")
 
 
-def test_print_dot_zoomed_complex_tree_with_closed(zoomed_complex_goaltree_file):
+def test_print_dot_zoomed_complex_tree_with_closed(
+    zoomed_complex_goaltree_file,
+) -> None:
     io = DummyIO()
     main(["dot", "-n", zoomed_complex_goaltree_file], io)
     verify_file(io, ".dot")
 
 
-def test_print_dot_complex_tree_with_progress(complex_goaltree_file):
+def test_print_dot_complex_tree_with_progress(complex_goaltree_file) -> None:
     io = DummyIO()
     main(["dot", "-p", complex_goaltree_file], io)
     verify_file(io, ".dot")
 
 
-def test_print_dot_complex_tree_only_switchable(complex_goaltree_file):
+def test_print_dot_complex_tree_only_switchable(complex_goaltree_file) -> None:
     io = DummyIO()
     main(["dot", "-t", complex_goaltree_file], io)
     verify_file(io, ".dot")
 
 
-def test_dot_export():
+def test_dot_export() -> None:
     goals = build_goaltree(
         open_(1, "Root", [2, 3, 4, 5], blockers=[6]),
         clos_(
@@ -95,38 +97,38 @@ def test_dot_export():
     verify_file(dot_export(goals), ".dot")
 
 
-def test_print_md_empty_file():
+def test_print_md_empty_file() -> None:
     file_name = NamedTemporaryFile().name
     io = DummyIO()
     main(["md", file_name], io)
     verify_file(io, ".md")
 
 
-def test_print_md_complex_tree(complex_goaltree_file):
+def test_print_md_complex_tree(complex_goaltree_file) -> None:
     io = DummyIO()
     main(["md", complex_goaltree_file], io)
     verify_file(io, ".md")
 
 
-def test_print_md_complex_tree_with_closed(complex_goaltree_file):
+def test_print_md_complex_tree_with_closed(complex_goaltree_file) -> None:
     io = DummyIO()
     main(["md", "-n", complex_goaltree_file], io)
     verify_file(io, ".md")
 
 
-def test_print_md_zoomed_complex_tree_with_closed(zoomed_complex_goaltree_file):
+def test_print_md_zoomed_complex_tree_with_closed(zoomed_complex_goaltree_file) -> None:
     io = DummyIO()
     main(["md", "-n", zoomed_complex_goaltree_file], io)
     verify_file(io, ".md")
 
 
-def test_print_md_complex_tree_with_progress(complex_goaltree_file):
+def test_print_md_complex_tree_with_progress(complex_goaltree_file) -> None:
     io = DummyIO()
     main(["md", "-p", complex_goaltree_file], io)
     verify_file(io, ".md")
 
 
-def test_print_md_complex_tree_only_switchable(complex_goaltree_file):
+def test_print_md_complex_tree_only_switchable(complex_goaltree_file) -> None:
     io = DummyIO()
     main(["md", "-t", complex_goaltree_file], io)
     verify_file(io, ".md")
@@ -167,24 +169,24 @@ def extract_target():
     )
 
 
-def test_extract_wrong_goal_id(extract_source):
+def test_extract_wrong_goal_id(extract_source) -> None:
     with pytest.raises(AssertionError):
         extract_subtree(extract_source, 10)
 
 
-def test_extract_successful(extract_source, extract_target):
+def test_extract_successful(extract_source, extract_target) -> None:
     result = extract_subtree(extract_source, 2)
     assert extract_target.q() == result.q()
 
 
-def test_zoom_after_extract(extract_source, extract_target):
+def test_zoom_after_extract(extract_source, extract_target) -> None:
     result = extract_subtree(extract_source, 2)
     result.accept_all(Select(3), ToggleZoom())
     extract_target.accept_all(Select(3), ToggleZoom())
     assert extract_target.q() == result.q()
 
 
-def test_extract_misordered():
+def test_extract_misordered() -> None:
     source = Enumeration(
         all_layers(
             build_goaltree(

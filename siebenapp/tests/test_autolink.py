@@ -56,7 +56,7 @@ def _autolink_events(goals: Graph) -> List[Tuple]:
     return [e for e in goals.events() if "autolink" in e[0]]
 
 
-def test_show_new_pseudogoal_on_autolink_event(tree_2_goals):
+def test_show_new_pseudogoal_on_autolink_event(tree_2_goals) -> None:
     goals = tree_2_goals
     assert goals.q() == RenderResult(
         rows=[
@@ -76,7 +76,7 @@ def test_show_new_pseudogoal_on_autolink_event(tree_2_goals):
     assert _autolink_events(goals) == [("add_autolink", 2, "hello")]
 
 
-def test_replace_old_autolink_with_new_one(tree_2_goals):
+def test_replace_old_autolink_with_new_one(tree_2_goals) -> None:
     goals = tree_2_goals
     goals.accept_all(ToggleAutoLink("first"), ToggleAutoLink("second"))
     assert goals.q() == RenderResult(
@@ -93,7 +93,7 @@ def test_replace_old_autolink_with_new_one(tree_2_goals):
     ]
 
 
-def test_remove_autolink_by_sending_empty_keyword(tree_2_goals):
+def test_remove_autolink_by_sending_empty_keyword(tree_2_goals) -> None:
     goals = tree_2_goals
     goals.accept_all(ToggleAutoLink("lalala"), ToggleAutoLink(""))
     assert goals.q() == RenderResult(
@@ -109,7 +109,7 @@ def test_remove_autolink_by_sending_empty_keyword(tree_2_goals):
     ]
 
 
-def test_remove_autolink_by_sending_whitespace(tree_2_goals):
+def test_remove_autolink_by_sending_whitespace(tree_2_goals) -> None:
     goals = tree_2_goals
     goals.accept_all(ToggleAutoLink("lalala"), ToggleAutoLink(" "))
     assert goals.q() == RenderResult(
@@ -125,7 +125,7 @@ def test_remove_autolink_by_sending_whitespace(tree_2_goals):
     ]
 
 
-def test_do_not_add_autolink_on_whitespace(tree_2_goals):
+def test_do_not_add_autolink_on_whitespace(tree_2_goals) -> None:
     goals = tree_2_goals
     goals.accept_all(ToggleAutoLink(" "))
     assert goals.q() == RenderResult(
@@ -138,7 +138,7 @@ def test_do_not_add_autolink_on_whitespace(tree_2_goals):
     assert _autolink_events(goals) == []
 
 
-def test_do_not_add_autolink_to_closed_goals():
+def test_do_not_add_autolink_to_closed_goals() -> None:
     messages: List[str] = []
     goals = AutoLink(
         build_goaltree(
@@ -159,7 +159,7 @@ def test_do_not_add_autolink_to_closed_goals():
     assert _autolink_events(goals) == []
 
 
-def test_do_not_add_autolink_to_root_goal():
+def test_do_not_add_autolink_to_root_goal() -> None:
     messages: List[str] = []
     goals = AutoLink(
         build_goaltree(open_(1, "Root", select=selected), message_fn=messages.append)
@@ -175,7 +175,7 @@ def test_do_not_add_autolink_to_root_goal():
     assert _autolink_events(goals) == []
 
 
-def test_remove_autolink_on_close(tree_2_goals):
+def test_remove_autolink_on_close(tree_2_goals) -> None:
     goals = tree_2_goals
     goals.accept(ToggleAutoLink("test"))
     assert goals.q() == RenderResult(
@@ -199,7 +199,7 @@ def test_remove_autolink_on_close(tree_2_goals):
     ]
 
 
-def test_remove_autolink_on_delete(tree_2_goals):
+def test_remove_autolink_on_delete(tree_2_goals) -> None:
     goals = tree_2_goals
     goals.accept(ToggleAutoLink("test"))
     assert goals.q() == RenderResult(
@@ -222,7 +222,7 @@ def test_remove_autolink_on_delete(tree_2_goals):
     ]
 
 
-def test_remove_autolink_on_parent_delete(tree_3i_goals):
+def test_remove_autolink_on_parent_delete(tree_3i_goals) -> None:
     goals = tree_3i_goals
     goals.accept_all(Select(3), ToggleAutoLink("test"))
     assert goals.q() == RenderResult(
@@ -246,7 +246,7 @@ def test_remove_autolink_on_parent_delete(tree_3i_goals):
     ]
 
 
-def test_replace_same_autolink(tree_3v_goals):
+def test_replace_same_autolink(tree_3v_goals) -> None:
     goals = tree_3v_goals
     goals.accept_all(ToggleAutoLink("same"), Select(3), ToggleAutoLink("same"))
     assert goals.q() == RenderResult(
@@ -264,7 +264,7 @@ def test_replace_same_autolink(tree_3v_goals):
     ]
 
 
-def test_do_not_make_a_link_on_not_matching_add(tree_2_goals):
+def test_do_not_make_a_link_on_not_matching_add(tree_2_goals) -> None:
     goals = tree_2_goals
     goals.accept(ToggleAutoLink("hello"))
     # Add a goal to the root
@@ -282,7 +282,7 @@ def test_do_not_make_a_link_on_not_matching_add(tree_2_goals):
     ]
 
 
-def test_make_a_link_on_matching_add(tree_2_goals):
+def test_make_a_link_on_matching_add(tree_2_goals) -> None:
     goals = tree_2_goals
     goals.accept(ToggleAutoLink("me"))
     # Add a goal to the root
@@ -302,7 +302,7 @@ def test_make_a_link_on_matching_add(tree_2_goals):
     ]
 
 
-def test_do_not_make_a_link_on_not_old_matching_add(tree_2_goals):
+def test_do_not_make_a_link_on_not_old_matching_add(tree_2_goals) -> None:
     goals = tree_2_goals
     goals.accept_all(ToggleAutoLink("old"), ToggleAutoLink("new"))
     # Add a goal to the root
@@ -322,7 +322,7 @@ def test_do_not_make_a_link_on_not_old_matching_add(tree_2_goals):
     ]
 
 
-def test_make_a_link_on_matching_insert(tree_3v_goals):
+def test_make_a_link_on_matching_insert(tree_3v_goals) -> None:
     goals = tree_3v_goals
     goals.accept(ToggleAutoLink("me"))
     # Add a goal to the root
@@ -340,7 +340,7 @@ def test_make_a_link_on_matching_insert(tree_3v_goals):
     )
 
 
-def test_make_a_link_on_matching_rename(tree_3v_goals):
+def test_make_a_link_on_matching_rename(tree_3v_goals) -> None:
     goals = tree_3v_goals
     goals.accept(ToggleAutoLink("me"))
     goals.accept_all(Select(3), Rename("Link ME please"))
@@ -356,7 +356,7 @@ def test_make_a_link_on_matching_rename(tree_3v_goals):
     )
 
 
-def test_do_not_make_a_link_on_matching_subgoal_add(tree_2_goals):
+def test_do_not_make_a_link_on_matching_subgoal_add(tree_2_goals) -> None:
     goals = tree_2_goals
     goals.accept(ToggleAutoLink("me"))
     # Add a sub goal to the same subgoal
@@ -373,7 +373,7 @@ def test_do_not_make_a_link_on_matching_subgoal_add(tree_2_goals):
     )
 
 
-def test_do_not_make_a_link_on_matching_subgoal_insert(tree_3i_goals):
+def test_do_not_make_a_link_on_matching_subgoal_insert(tree_3i_goals) -> None:
     goals = tree_3i_goals
     goals.accept(ToggleAutoLink("me"))
     # Add a sub goal to the same subgoal
@@ -391,7 +391,7 @@ def test_do_not_make_a_link_on_matching_subgoal_insert(tree_3i_goals):
     )
 
 
-def test_do_not_make_a_link_on_matching_subgoal_rename(tree_3i_goals):
+def test_do_not_make_a_link_on_matching_subgoal_rename(tree_3i_goals) -> None:
     goals = tree_3i_goals
     goals.accept(ToggleAutoLink("me"))
     goals.accept_all(Select(3), Rename("Do NOT link me please"))
@@ -407,7 +407,7 @@ def test_do_not_make_a_link_on_matching_subgoal_rename(tree_3i_goals):
     )
 
 
-def test_autolink_on_all_matching_goals(tree_3v_goals):
+def test_autolink_on_all_matching_goals(tree_3v_goals) -> None:
     goals = tree_3v_goals
     # make 2 autolinks
     goals.accept_all(ToggleAutoLink("me"), Select(3), ToggleAutoLink("plea"))

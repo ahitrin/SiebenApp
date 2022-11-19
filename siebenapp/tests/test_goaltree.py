@@ -31,12 +31,12 @@ class GoalsTest(TestCase):
     def build(self, *goal_prototypes):
         return build_goaltree(*goal_prototypes, message_fn=self._register_message)
 
-    def test_there_is_one_goal_at_start(self):
+    def test_there_is_one_goal_at_start(self) -> None:
         assert self.goals.q() == RenderResult(
             rows=[RenderRow(1, 1, "Root", True, True, [])], select=(1, 1)
         )
 
-    def test_add_goal(self):
+    def test_add_goal(self) -> None:
         self.goals.accept(Add("A"))
         assert self.goals.q() == RenderResult(
             rows=[
@@ -46,7 +46,7 @@ class GoalsTest(TestCase):
             select=(1, 1),
         )
 
-    def test_add_two_goals(self):
+    def test_add_two_goals(self) -> None:
         self.goals.accept_all(Add("A"), Add("B"))
         assert self.goals.q() == RenderResult(
             rows=[
@@ -57,7 +57,7 @@ class GoalsTest(TestCase):
             select=(1, 1),
         )
 
-    def test_add_two_goals_in_a_chain(self):
+    def test_add_two_goals_in_a_chain(self) -> None:
         self.goals.accept_all(Add("A"), Add("AA", 2))
         assert self.goals.q() == RenderResult(
             rows=[
@@ -68,7 +68,7 @@ class GoalsTest(TestCase):
             select=(1, 1),
         )
 
-    def test_rename_goal(self):
+    def test_rename_goal(self) -> None:
         self.goals.accept_all(Add("Boom"), Select(2), Rename("A"))
         assert self.goals.q() == RenderResult(
             rows=[
@@ -78,7 +78,7 @@ class GoalsTest(TestCase):
             select=(2, 1),
         )
 
-    def test_insert_goal_in_the_middle(self):
+    def test_insert_goal_in_the_middle(self) -> None:
         self.goals.accept_all(Add("B"), HoldSelect(), Select(2))
         assert self.goals.q() == RenderResult(
             rows=[
@@ -97,7 +97,7 @@ class GoalsTest(TestCase):
             select=(2, 1),
         )
 
-    def test_insert_goal_between_independent_goals(self):
+    def test_insert_goal_between_independent_goals(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2, 3]),
             open_(2, "A", select=previous),
@@ -114,7 +114,7 @@ class GoalsTest(TestCase):
             select=(3, 2),
         )
 
-    def test_reverse_insertion(self):
+    def test_reverse_insertion(self) -> None:
         """Not sure whether such trick should be legal"""
         self.goals = self.build(
             open_(1, "Root", [2], select=selected),
@@ -131,7 +131,7 @@ class GoalsTest(TestCase):
             select=(1, 2),
         )
 
-    def test_close_single_goal(self):
+    def test_close_single_goal(self) -> None:
         assert self.goals.q() == RenderResult(
             rows=[RenderRow(1, 1, "Root", True, True, [])], select=(1, 1)
         )
@@ -140,7 +140,7 @@ class GoalsTest(TestCase):
             rows=[RenderRow(1, 1, "Root", False, True, [])], select=(1, 1)
         )
 
-    def test_reopen_goal(self):
+    def test_reopen_goal(self) -> None:
         self.goals = self.build(open_(1, "Root", [2]), clos_(2, "A", select=selected))
         assert self.goals.q() == RenderResult(
             rows=[
@@ -158,7 +158,7 @@ class GoalsTest(TestCase):
             select=(2, 2),
         )
 
-    def test_close_goal_again(self):
+    def test_close_goal_again(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2], select=selected),
             open_(2, "A", [3]),
@@ -192,7 +192,7 @@ class GoalsTest(TestCase):
             select=(1, 1),
         )
 
-    def test_closed_leaf_goal_could_not_be_reopened(self):
+    def test_closed_leaf_goal_could_not_be_reopened(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2], select=selected), clos_(2, "A", [3]), clos_(3, "B")
         )
@@ -215,7 +215,7 @@ class GoalsTest(TestCase):
             select=(3, 1),
         )
 
-    def test_goal_in_the_middle_could_not_be_closed(self):
+    def test_goal_in_the_middle_could_not_be_closed(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2, 3]),
             open_(2, "A", blockers=[4]),
@@ -233,14 +233,14 @@ class GoalsTest(TestCase):
             select=(3, 3),
         )
 
-    def test_delete_single_goal(self):
+    def test_delete_single_goal(self) -> None:
         self.goals = self.build(open_(1, "Root", [2]), open_(2, "A", select=selected))
         self.goals.accept(Delete())
         assert self.goals.q() == RenderResult(
             rows=[RenderRow(1, 1, "Root", True, True, [])], select=(1, 1)
         )
 
-    def test_enumeration_should_not_be_changed_after_delete(self):
+    def test_enumeration_should_not_be_changed_after_delete(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2, 3]), open_(2, "A", select=selected), open_(3, "B")
         )
@@ -253,7 +253,7 @@ class GoalsTest(TestCase):
             select=(1, 1),
         )
 
-    def test_remove_goal_chain_with_children(self):
+    def test_remove_goal_chain_with_children(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2]), open_(2, "A", [3], select=selected), open_(3, "B")
         )
@@ -265,7 +265,7 @@ class GoalsTest(TestCase):
             select=(1, 1),
         )
 
-    def test_relink_goal_chain_with_blockers(self):
+    def test_relink_goal_chain_with_blockers(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2]),
             open_(2, "A", blockers=[3], select=selected),
@@ -280,7 +280,7 @@ class GoalsTest(TestCase):
             select=(1, 1),
         )
 
-    def test_select_parent_after_delete(self):
+    def test_select_parent_after_delete(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2], select=previous),
             open_(2, "Parent", [3]),
@@ -295,7 +295,7 @@ class GoalsTest(TestCase):
             select=(2, 2),
         )
 
-    def test_add_link_between_goals(self):
+    def test_add_link_between_goals(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2, 3]),
             open_(2, "A", select=previous),
@@ -319,13 +319,13 @@ class GoalsTest(TestCase):
             select=(3, 2),
         )
 
-    def test_no_link_to_self_is_allowed(self):
+    def test_no_link_to_self_is_allowed(self) -> None:
         self.goals.accept(ToggleLink())
         assert self.goals.q() == RenderResult(
             rows=[RenderRow(1, 1, "Root", True, True, [])], select=(1, 1)
         )
 
-    def test_no_loops_allowed(self):
+    def test_no_loops_allowed(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2], select=selected),
             open_(2, "step", [3]),
@@ -343,7 +343,7 @@ class GoalsTest(TestCase):
             select=(1, 4),
         )
 
-    def test_new_parent_link_replaces_old_one(self):
+    def test_new_parent_link_replaces_old_one(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2, 3]),
             open_(2, "Old parent", [4]),
@@ -361,7 +361,7 @@ class GoalsTest(TestCase):
             select=(4, 3),
         )
 
-    def test_new_parent_link_replaces_old_one_when_changed_from_blocker(self):
+    def test_new_parent_link_replaces_old_one_when_changed_from_blocker(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2, 3]),
             open_(2, "A", select=selected),
@@ -377,7 +377,7 @@ class GoalsTest(TestCase):
             select=(2, 3),
         )
 
-    def test_remove_link_between_goals(self):
+    def test_remove_link_between_goals(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2, 3]),
             open_(2, "A", blockers=[3], select=previous),
@@ -393,7 +393,7 @@ class GoalsTest(TestCase):
             select=(3, 2),
         )
 
-    def test_change_link_type(self):
+    def test_change_link_type(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2], select=previous), open_(2, "Top", [], select=selected)
         )
@@ -421,7 +421,7 @@ class GoalsTest(TestCase):
             select=(2, 1),
         )
 
-    def test_remove_blocked_goal_without_children(self):
+    def test_remove_blocked_goal_without_children(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2, 3]),
             open_(2, "A", [4]),
@@ -447,7 +447,7 @@ class GoalsTest(TestCase):
             select=(1, 1),
         )
 
-    def test_root_goal_is_selected_by_default(self):
+    def test_root_goal_is_selected_by_default(self) -> None:
         assert self.goals.q() == RenderResult(
             rows=[
                 RenderRow(1, 1, "Root", True, True, []),
@@ -472,7 +472,7 @@ class GoalsTest(TestCase):
             select=(1, 1),
         )
 
-    def test_new_goal_is_added_to_the_selected_node(self):
+    def test_new_goal_is_added_to_the_selected_node(self) -> None:
         self.goals.accept_all(Add("A"), Select(2))
         assert self.goals.q() == RenderResult(
             rows=[
@@ -491,7 +491,7 @@ class GoalsTest(TestCase):
             select=(2, 1),
         )
 
-    def test_move_selection_to_another_open_goal_after_closing(self):
+    def test_move_selection_to_another_open_goal_after_closing(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2, 3, 4]),
             open_(2, "A", select=selected),
@@ -509,7 +509,7 @@ class GoalsTest(TestCase):
             select=(3, 3),
         )
 
-    def test_move_selection_to_previously_selected_goal_after_closing(self):
+    def test_move_selection_to_previously_selected_goal_after_closing(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2, 3, 4]),
             open_(2, "A", select=selected),
@@ -527,7 +527,9 @@ class GoalsTest(TestCase):
             select=(4, 4),
         )
 
-    def test_move_selection_to_another_open_goal_with_given_root_after_closing(self):
+    def test_move_selection_to_another_open_goal_with_given_root_after_closing(
+        self,
+    ) -> None:
         self.goals = self.build(
             open_(1, "Root", [2, 3]),
             open_(2, "Should not be selected"),
@@ -547,7 +549,7 @@ class GoalsTest(TestCase):
             select=(4, 4),
         )
 
-    def test_do_not_select_unswitchable_goal_after_closing(self):
+    def test_do_not_select_unswitchable_goal_after_closing(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2, 3]),
             open_(2, "Should not be selected"),
@@ -569,13 +571,13 @@ class GoalsTest(TestCase):
             select=(6, 6),
         )
 
-    def test_ignore_wrong_selection(self):
+    def test_ignore_wrong_selection(self) -> None:
         self.goals.accept(Select(2))
         assert self.goals.q() == RenderResult(
             rows=[RenderRow(1, 1, "Root", True, True, [])], select=(1, 1)
         )
 
-    def test_do_not_select_deleted_goals(self):
+    def test_do_not_select_deleted_goals(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2]), open_(2, "broken", select=selected)
         )
@@ -587,7 +589,7 @@ class GoalsTest(TestCase):
             select=(1, 1),
         )
 
-    def test_selection_should_be_instant(self):
+    def test_selection_should_be_instant(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2, 3, 4, 5, 6, 7, 8, 9, 10, 11], select=selected),
             open_(2, "A"),
@@ -672,20 +674,20 @@ class GoalsTest(TestCase):
             select=(11, 1),
         )
 
-    def test_add_events(self):
+    def test_add_events(self) -> None:
         assert self.goals.events().pop() == ("add", 1, "Root", True)
         self.goals.accept(Add("Next"))
         assert self.goals.events()[-2] == ("add", 2, "Next", True)
         assert self.goals.events()[-1] == ("link", 1, 2, EdgeType.PARENT)
 
-    def test_select_events(self):
+    def test_select_events(self) -> None:
         self.goals.accept_all(Add("Next"), Select(2))
         assert self.goals.events()[-1] == ("select", 2)
         self.goals.accept_all(HoldSelect(), Select(1))
         assert self.goals.events()[-2] == ("hold_select", 2)
         assert self.goals.events()[-1] == ("select", 1)
 
-    def test_toggle_close_events(self):
+    def test_toggle_close_events(self) -> None:
         self.goals.accept(ToggleClose())
         assert self.goals.events()[-3] == ("toggle_close", False, 1)
         assert self.goals.events()[-2] == ("select", 1)
@@ -693,17 +695,17 @@ class GoalsTest(TestCase):
         self.goals.accept(ToggleClose())
         assert self.goals.events()[-1] == ("toggle_close", True, 1)
 
-    def test_rename_event(self):
+    def test_rename_event(self) -> None:
         self.goals.accept(Rename("New"))
         assert self.goals.events()[-1] == ("rename", "New", 1)
 
-    def test_delete_events(self):
+    def test_delete_events(self) -> None:
         self.goals.accept_all(Add("Sheep"), Select(2), Delete())
         assert self.goals.events()[-3] == ("delete", 2)
         assert self.goals.events()[-2] == ("select", 1)
         assert self.goals.events()[-1] == ("hold_select", 1)
 
-    def test_link_events(self):
+    def test_link_events(self) -> None:
         self.goals.accept_all(
             Add("Next"), Add("More"), Select(2), HoldSelect(), Select(3), ToggleLink()
         )
@@ -711,7 +713,7 @@ class GoalsTest(TestCase):
         self.goals.accept(ToggleLink())
         assert self.goals.events()[-1] == ("unlink", 2, 3, EdgeType.BLOCKER)
 
-    def test_change_link_type_events(self):
+    def test_change_link_type_events(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2, 3]),
             open_(2, "Lower", blockers=[3], select=previous),
@@ -723,75 +725,75 @@ class GoalsTest(TestCase):
         assert self.goals.events()[-2] == ("link", 1, 3, EdgeType.BLOCKER)
         assert self.goals.events()[-1] == ("unlink", 1, 3, EdgeType.PARENT)
 
-    def test_no_messages_at_start(self):
+    def test_no_messages_at_start(self) -> None:
         assert self.messages == []
 
-    def test_no_message_on_good_add(self):
+    def test_no_message_on_good_add(self) -> None:
         self.goals = self.build(open_(1, "Root", select=selected))
         self.goals.accept(Add("Success"))
         assert self.messages == []
 
-    def test_message_on_wrong_add(self):
+    def test_message_on_wrong_add(self) -> None:
         self.goals = self.build(clos_(1, "Root", select=selected))
         self.goals.accept(Add("Failed"))
         assert len(self.messages) == 1
 
-    def test_no_message_on_good_insert(self):
+    def test_no_message_on_good_insert(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2], select=previous), open_(2, "Top", select=selected)
         )
         self.goals.accept(Insert("Success"))
         assert self.messages == []
 
-    def test_message_on_insert_without_two_goals(self):
+    def test_message_on_insert_without_two_goals(self) -> None:
         self.goals = self.build(open_(1, "Root", select=selected))
         self.goals.accept(Insert("Failed"))
         assert len(self.messages) == 1
 
-    def test_message_on_circular_insert(self):
+    def test_message_on_circular_insert(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2], select=selected), open_(2, "Top", [], select=previous)
         )
         self.goals.accept(Insert("Failed"))
         assert len(self.messages) == 1
 
-    def test_no_message_on_valid_closing(self):
+    def test_no_message_on_valid_closing(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2]), open_(2, "Top", [], select=selected)
         )
         self.goals.accept(ToggleClose())
         assert self.messages == []
 
-    def test_message_on_closing_blocked_goal(self):
+    def test_message_on_closing_blocked_goal(self) -> None:
         self.goals = self.build(open_(1, "Root", [2], select=selected), open_(2, "Top"))
         self.goals.accept(ToggleClose())
         assert len(self.messages) == 1
 
-    def test_no_message_on_valid_reopening(self):
+    def test_no_message_on_valid_reopening(self) -> None:
         self.goals = self.build(clos_(1, "Root", [2], select=selected), clos_(2, "Top"))
         self.goals.accept(ToggleClose())
         assert self.messages == []
 
-    def test_message_on_reopening_blocked_goal(self):
+    def test_message_on_reopening_blocked_goal(self) -> None:
         self.goals = self.build(
             clos_(1, "Root", [2]), clos_(2, "Top", [], select=selected)
         )
         self.goals.accept(ToggleClose())
         assert len(self.messages) == 1
 
-    def test_no_message_on_delete_non_root_goal(self):
+    def test_no_message_on_delete_non_root_goal(self) -> None:
         self.goals = self.build(
             clos_(1, "Root", [2]), clos_(2, "Top", [], select=selected)
         )
         self.goals.accept(Delete())
         assert self.messages == []
 
-    def test_message_on_delete_root_goal(self):
+    def test_message_on_delete_root_goal(self) -> None:
         self.goals = self.build(clos_(1, "Root", [2], select=selected), clos_(2, "Top"))
         self.goals.accept(Delete())
         assert len(self.messages) == 1
 
-    def test_no_message_on_allowed_link(self):
+    def test_no_message_on_allowed_link(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2], select=previous),
             open_(2, "Middle", [3]),
@@ -800,7 +802,7 @@ class GoalsTest(TestCase):
         self.goals.accept(ToggleLink())
         assert self.messages == []
 
-    def test_message_on_link_to_self(self):
+    def test_message_on_link_to_self(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2]),
             open_(2, "Middle", [3]),
@@ -809,7 +811,7 @@ class GoalsTest(TestCase):
         self.goals.accept(ToggleLink())
         assert len(self.messages) == 1
 
-    def test_no_message_when_remove_not_last_link(self):
+    def test_no_message_when_remove_not_last_link(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2, 3], select=previous),
             open_(2, "Middle", blockers=[3]),
@@ -818,7 +820,7 @@ class GoalsTest(TestCase):
         self.goals.accept(ToggleLink())
         assert self.messages == []
 
-    def test_message_when_remove_last_link(self):
+    def test_message_when_remove_last_link(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2]),
             open_(2, "Middle", [3], select=previous),
@@ -827,7 +829,7 @@ class GoalsTest(TestCase):
         self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
         assert len(self.messages) == 1
 
-    def test_message_when_closed_goal_is_blocked_by_open_one(self):
+    def test_message_when_closed_goal_is_blocked_by_open_one(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2, 3]),
             clos_(2, "Middle", [], select=previous),

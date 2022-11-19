@@ -45,7 +45,7 @@ def goal_chain_11(goal_chain_10):
     return goals
 
 
-def test_simple_enumeration_is_not_changed():
+def test_simple_enumeration_is_not_changed() -> None:
     e = Enumeration(
         build_goaltree(
             open_(1, "a", [2, 3]),
@@ -64,7 +64,7 @@ def test_simple_enumeration_is_not_changed():
     assert e.settings("root") == Goals.ROOT_ID
 
 
-def test_apply_mapping_for_the_10th_element(goal_chain_10):
+def test_apply_mapping_for_the_10th_element(goal_chain_10) -> None:
     e = Enumeration(goal_chain_10)
     assert e.q() == RenderResult(
         rows=[
@@ -84,7 +84,7 @@ def test_apply_mapping_for_the_10th_element(goal_chain_10):
     assert e.settings("root") == Goals.ROOT_ID
 
 
-def test_apply_mapping_for_the_11th_element(goal_chain_11):
+def test_apply_mapping_for_the_11th_element(goal_chain_11) -> None:
     e = Enumeration(goal_chain_11)
     assert e.q() == RenderResult(
         rows=[
@@ -105,7 +105,7 @@ def test_apply_mapping_for_the_11th_element(goal_chain_11):
     assert e.settings("root") == 11
 
 
-def test_use_mapping_in_selection(goal_chain_10):
+def test_use_mapping_in_selection(goal_chain_10) -> None:
     e = Enumeration(goal_chain_10)
     e.accept(Select(0))
     assert e.q() == RenderResult(
@@ -125,7 +125,7 @@ def test_use_mapping_in_selection(goal_chain_10):
     )
 
 
-def test_do_not_select_goal_by_partial_id(goal_chain_11):
+def test_do_not_select_goal_by_partial_id(goal_chain_11) -> None:
     e = Enumeration(goal_chain_11)
     # Select(1) is kept in cache, and selection is not changed yet
     e.accept_all(Select(1))
@@ -147,7 +147,7 @@ def test_do_not_select_goal_by_partial_id(goal_chain_11):
     )
 
 
-def test_select_goal_by_id_parts(goal_chain_11):
+def test_select_goal_by_id_parts(goal_chain_11) -> None:
     e = Enumeration(goal_chain_11)
     e.accept_all(Select(1), Select(6))
     assert e.q() == RenderResult(
@@ -168,7 +168,7 @@ def test_select_goal_by_id_parts(goal_chain_11):
     )
 
 
-def test_select_goal_by_full_id(goal_chain_11):
+def test_select_goal_by_full_id(goal_chain_11) -> None:
     e = Enumeration(goal_chain_11)
     assert e.q() == RenderResult(
         rows=[
@@ -205,7 +205,7 @@ def test_select_goal_by_full_id(goal_chain_11):
     )
 
 
-def test_select_goal_by_full_id_with_non_empty_cache(goal_chain_11):
+def test_select_goal_by_full_id_with_non_empty_cache(goal_chain_11) -> None:
     e = Enumeration(goal_chain_11)
     assert e.q() == RenderResult(
         rows=[
@@ -242,7 +242,7 @@ def test_select_goal_by_full_id_with_non_empty_cache(goal_chain_11):
     )
 
 
-def test_enumerated_goals_must_have_the_same_dimension():
+def test_enumerated_goals_must_have_the_same_dimension() -> None:
     e = Enumeration(
         build_goaltree(
             open_(1, "a", [2, 20], select=selected), open_(2, "b"), open_(20, "x")
@@ -258,7 +258,7 @@ def test_enumerated_goals_must_have_the_same_dimension():
     )
 
 
-def test_selection_cache_should_be_reset_after_view_switch(goal_chain_11):
+def test_selection_cache_should_be_reset_after_view_switch(goal_chain_11) -> None:
     e = Enumeration(SwitchableView(goal_chain_11))
     e.accept_all(Add("Also top"))
     e.accept(Select(1))
@@ -285,7 +285,7 @@ def test_selection_cache_should_be_reset_after_view_switch(goal_chain_11):
     )
 
 
-def test_selection_cache_should_avoid_overflow(goal_chain_11):
+def test_selection_cache_should_avoid_overflow(goal_chain_11) -> None:
     e = Enumeration(goal_chain_11)
     assert e.q().select == (11, 11)
     e.accept(Select(5))
@@ -296,7 +296,7 @@ def test_selection_cache_should_avoid_overflow(goal_chain_11):
     assert e.q().select == (14, 11)
 
 
-def test_do_not_enumerate_goals_with_negative_id():
+def test_do_not_enumerate_goals_with_negative_id() -> None:
     g = all_layers(
         build_goaltree(
             open_(1, "Root", [2]),
@@ -324,7 +324,7 @@ def test_do_not_enumerate_goals_with_negative_id():
     )
 
 
-def test_all_keys_in_enumeration_must_be_of_the_same_length():
+def test_all_keys_in_enumeration_must_be_of_the_same_length() -> None:
     items = [i + 1 for i in range(2999)]
     e = BidirectionalIndex(items)
     mapped = [e.forward(x) for x in items]

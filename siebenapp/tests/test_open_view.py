@@ -26,7 +26,7 @@ def two_goals():
     return OpenView(g)
 
 
-def test_open_goal_is_shown_by_default(trivial):
+def test_open_goal_is_shown_by_default(trivial) -> None:
     assert trivial.q() == RenderResult(
         rows=[
             RenderRow(1, 1, "Start", True, True, []),
@@ -35,7 +35,7 @@ def test_open_goal_is_shown_by_default(trivial):
     )
 
 
-def test_open_goal_is_shown_after_switch(trivial):
+def test_open_goal_is_shown_after_switch(trivial) -> None:
     trivial.accept(ToggleOpenView())
     assert trivial.q() == RenderResult(
         rows=[
@@ -45,16 +45,16 @@ def test_open_goal_is_shown_after_switch(trivial):
     )
 
 
-def test_filter_open_setting_is_set_by_default(trivial):
+def test_filter_open_setting_is_set_by_default(trivial) -> None:
     assert trivial.settings("filter_open") == 1
 
 
-def test_filter_open_setting_is_changed_after_switch(trivial):
+def test_filter_open_setting_is_changed_after_switch(trivial) -> None:
     trivial.accept(ToggleOpenView())
     assert trivial.settings("filter_open") == 0
 
 
-def test_closed_goal_is_not_shown_by_default(two_goals):
+def test_closed_goal_is_not_shown_by_default(two_goals) -> None:
     assert two_goals.q() == RenderResult(
         rows=[
             RenderRow(1, 1, "Open", True, True, []),
@@ -63,7 +63,7 @@ def test_closed_goal_is_not_shown_by_default(two_goals):
     )
 
 
-def test_closed_goal_is_shown_after_switch(two_goals):
+def test_closed_goal_is_shown_after_switch(two_goals) -> None:
     two_goals.accept(ToggleOpenView())
     assert two_goals.q() == RenderResult(
         rows=[
@@ -81,7 +81,7 @@ def test_closed_goal_is_shown_after_switch(two_goals):
     )
 
 
-def test_simple_open_enumeration_workflow():
+def test_simple_open_enumeration_workflow() -> None:
     e = OpenView(
         build_goaltree(
             open_(1, "Root", [2, 3], select=previous),
@@ -107,7 +107,7 @@ def test_simple_open_enumeration_workflow():
     )
 
 
-def test_closed_goals_are_shown_when_selected():
+def test_closed_goals_are_shown_when_selected() -> None:
     v = OpenView(
         build_goaltree(
             open_(1, "Root", [2, 3], select=selected),
@@ -138,7 +138,7 @@ def test_closed_goals_are_shown_when_selected():
     )
 
 
-def test_build_fake_links_to_far_closed_goals():
+def test_build_fake_links_to_far_closed_goals() -> None:
     v = OpenView(
         build_goaltree(
             open_(1, "Root", blockers=[2], select=previous),
@@ -155,7 +155,7 @@ def test_build_fake_links_to_far_closed_goals():
     )
 
 
-def test_still_show_root_when_it_is_closed_and_unselected():
+def test_still_show_root_when_it_is_closed_and_unselected() -> None:
     v = OpenView(
         build_goaltree(
             clos_(1, "Hidden root", [2]),
@@ -171,7 +171,7 @@ def test_still_show_root_when_it_is_closed_and_unselected():
     )
 
 
-def test_add_dangling_goals_to_old_root_on_zoom():
+def test_add_dangling_goals_to_old_root_on_zoom() -> None:
     v = OpenView(
         Zoom(
             build_goaltree(

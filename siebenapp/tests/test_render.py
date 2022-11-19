@@ -11,7 +11,7 @@ def get_in(data, column):
     return {k: v[column] for k, v in data.items()}
 
 
-def test_render_simplest_goal_tree():
+def test_render_simplest_goal_tree() -> None:
     goals = build_goaltree(open_(1, "Alone", [], select=selected))
     result = Renderer(goals).build().graph
     assert result == {
@@ -23,7 +23,7 @@ def test_render_simplest_goal_tree():
     }
 
 
-def test_render_4_subgoals_in_a_row():
+def test_render_4_subgoals_in_a_row() -> None:
     goals = build_goaltree(
         open_(1, "Root", [2, 3, 4, 5], select=selected),
         open_(2, "A"),
@@ -41,7 +41,7 @@ def test_render_4_subgoals_in_a_row():
     }
 
 
-def test_render_add_fake_vertex():
+def test_render_add_fake_vertex() -> None:
     goals = build_goaltree(
         open_(1, "Root", [2, 3], select=selected),
         open_(2, "A", blockers=[3]),
@@ -56,7 +56,7 @@ def test_render_add_fake_vertex():
     }
 
 
-def test_render_add_several_fake_vertex():
+def test_render_add_several_fake_vertex() -> None:
     goals = build_goaltree(
         open_(1, "Root", [2, 5], select=selected),
         open_(2, "A", [3]),
@@ -77,7 +77,7 @@ def test_render_add_several_fake_vertex():
     }
 
 
-def test_render_5_subgoals_in_several_rows():
+def test_render_5_subgoals_in_several_rows() -> None:
     goals = build_goaltree(
         open_(1, "One", [2, 3, 4, 5, 6], select=selected),
         open_(2, "Two"),
@@ -98,7 +98,7 @@ def test_render_5_subgoals_in_several_rows():
     }
 
 
-def test_split_long_edges_using_fake_goals():
+def test_split_long_edges_using_fake_goals() -> None:
     goals = build_goaltree(
         open_(1, "Root", [2], blockers=[5], select=selected),
         open_(2, "A", [3]),
@@ -119,7 +119,7 @@ def test_split_long_edges_using_fake_goals():
     }
 
 
-def test_use_different_long_edge_types():
+def test_use_different_long_edge_types() -> None:
     goals = build_goaltree(
         open_(1, "Root", [2], [3], select=selected),
         open_(2, "A", [3]),
@@ -134,7 +134,7 @@ def test_use_different_long_edge_types():
     }
 
 
-def test_render_in_switchable_view():
+def test_render_in_switchable_view() -> None:
     goals = build_goaltree(
         open_(1, "Uno", [2, 3, 4, 5, 6]),
         open_(2, "Dos"),
@@ -163,7 +163,7 @@ def test_render_in_switchable_view():
         ({17: 0, 16: 1, 18: 2, 22: 2, 24: 0}, [17, 24, 16, 18, 22]),
     ],
 )
-def test_place(before, after):
+def test_place(before, after) -> None:
     r = Renderer(build_goaltree(open_(1, "Root", select=selected)))
     # NB: do we still need to test internal implementation of Renderer?
     # Not sure

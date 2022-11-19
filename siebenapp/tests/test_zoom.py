@@ -23,7 +23,7 @@ def _zoom_events(goals: Graph) -> List[Tuple]:
     return [e for e in goals.events() if "zoom" in e[0]]
 
 
-def test_single_goal_could_not_be_zoomed():
+def test_single_goal_could_not_be_zoomed() -> None:
     goals = Zoom(Goals("Root"))
     assert goals.q() == RenderResult(
         rows=[RenderRow(1, 1, "Root", True, True, [])], select=(1, 1)
@@ -35,7 +35,7 @@ def test_single_goal_could_not_be_zoomed():
     assert goals.settings("root") == 1
 
 
-def test_skip_intermediate_goal_during_zoom():
+def test_skip_intermediate_goal_during_zoom() -> None:
     goals = Zoom(
         build_goaltree(
             open_(1, "Root", [2]),
@@ -54,7 +54,7 @@ def test_skip_intermediate_goal_during_zoom():
     assert goals.settings("root") == -1
 
 
-def test_hide_neighbour_goals_during_zoom():
+def test_hide_neighbour_goals_during_zoom() -> None:
     goals = Zoom(
         build_goaltree(
             open_(1, "Root", [2, 3, 4]),
@@ -73,7 +73,7 @@ def test_hide_neighbour_goals_during_zoom():
     )
 
 
-def test_do_not_hide_subgoals():
+def test_do_not_hide_subgoals() -> None:
     goals = Zoom(
         build_goaltree(
             open_(1, "Root", [2]),
@@ -102,7 +102,7 @@ def test_do_not_hide_subgoals():
     )
 
 
-def test_hide_subgoals_of_blockers():
+def test_hide_subgoals_of_blockers() -> None:
     goals = Zoom(
         build_goaltree(
             open_(1, "Root", [2, 3]),
@@ -122,7 +122,7 @@ def test_hide_subgoals_of_blockers():
     )
 
 
-def test_double_zoom_means_unzoom():
+def test_double_zoom_means_unzoom() -> None:
     goals = Zoom(
         build_goaltree(
             open_(1, "Root", [2, 3]),
@@ -149,7 +149,7 @@ def test_double_zoom_means_unzoom():
     )
 
 
-def test_stacked_zoom():
+def test_stacked_zoom() -> None:
     goals = Zoom(
         build_goaltree(
             open_(1, "Root", [2]),
@@ -184,7 +184,7 @@ def test_stacked_zoom():
     )
 
 
-def test_selection_should_not_be_changed_if_selected_goal_is_visible():
+def test_selection_should_not_be_changed_if_selected_goal_is_visible() -> None:
     goals = Zoom(
         build_goaltree(
             open_(1, "Root", [2]),
@@ -203,7 +203,7 @@ def test_selection_should_not_be_changed_if_selected_goal_is_visible():
     )
 
 
-def test_selection_should_not_be_changed_if_selected_goal_is_sibling_to_zoom_root():
+def test_selection_should_not_be_changed_if_selected_goal_is_sibling_to_zoom_root() -> None:
     goals = Zoom(
         build_goaltree(
             open_(1, "Root", [2, 3]),
@@ -223,7 +223,7 @@ def test_selection_should_not_be_changed_if_selected_goal_is_sibling_to_zoom_roo
     )
 
 
-def test_selection_should_not_be_changed_if_selected_goal_is_not_a_child_of_zoom_root():
+def test_selection_should_not_be_changed_if_selected_goal_is_not_a_child_of_zoom_root() -> None:
     goals = Zoom(
         build_goaltree(
             open_(1, "Root", [2, 4]),
@@ -245,7 +245,7 @@ def test_selection_should_not_be_changed_if_selected_goal_is_not_a_child_of_zoom
     )
 
 
-def test_previous_selection_should_not_be_changed_or_reset_after_zoom():
+def test_previous_selection_should_not_be_changed_or_reset_after_zoom() -> None:
     goals = Zoom(
         build_goaltree(
             open_(1, "", blockers=[2, 3]),
@@ -263,7 +263,7 @@ def test_previous_selection_should_not_be_changed_or_reset_after_zoom():
     goals.verify()
 
 
-def test_selection_should_not_be_changed_on_stacked_unzoom_a_long_chain_of_blockers():
+def test_selection_should_not_be_changed_on_stacked_unzoom_a_long_chain_of_blockers() -> None:
     goals = Zoom(
         build_goaltree(
             open_(1, "Root", blockers=[2]),
@@ -293,7 +293,7 @@ def test_selection_should_not_be_changed_on_stacked_unzoom_a_long_chain_of_block
     goals.verify()
 
 
-def test_unlink_for_goal_outside_of_zoomed_tree_should_not_cause_selection_change():
+def test_unlink_for_goal_outside_of_zoomed_tree_should_not_cause_selection_change() -> None:
     goals = Zoom(
         build_goaltree(
             open_(1, "Root", [2, 3]),
@@ -317,7 +317,7 @@ def test_unlink_for_goal_outside_of_zoomed_tree_should_not_cause_selection_chang
     )
 
 
-def test_closing_zoom_root_should_cause_unzoom():
+def test_closing_zoom_root_should_cause_unzoom() -> None:
     goals = Zoom(
         build_goaltree(
             open_(1, "Root", [2]),
@@ -336,7 +336,7 @@ def test_closing_zoom_root_should_cause_unzoom():
     )
 
 
-def test_goal_closing_must_not_cause_root_selection():
+def test_goal_closing_must_not_cause_root_selection() -> None:
     goals = Zoom(
         build_goaltree(
             open_(1, "Root", [2]),
@@ -364,7 +364,7 @@ def test_goal_closing_must_not_cause_root_selection():
     )
 
 
-def test_goal_reopening_must_not_change_selection():
+def test_goal_reopening_must_not_change_selection() -> None:
     goals = Zoom(
         build_goaltree(
             open_(1, "Root", [2]),
@@ -396,7 +396,7 @@ def test_goal_reopening_must_not_change_selection():
     )
 
 
-def test_deleting_zoom_root_should_cause_unzoom():
+def test_deleting_zoom_root_should_cause_unzoom() -> None:
     goals = Zoom(
         build_goaltree(
             open_(1, "Root", [2]),
@@ -414,7 +414,7 @@ def test_deleting_zoom_root_should_cause_unzoom():
     )
 
 
-def test_deleting_parent_goal_should_cause_unzoom():
+def test_deleting_parent_goal_should_cause_unzoom() -> None:
     goals = Zoom(
         build_goaltree(
             open_(1, "Root", [2]),
@@ -455,7 +455,7 @@ def test_deleting_parent_goal_should_cause_unzoom():
     ]
 
 
-def test_goal_deletion_must_not_cause_root_selection():
+def test_goal_deletion_must_not_cause_root_selection() -> None:
     goals = Zoom(
         build_goaltree(
             open_(1, "Root", [2]),
@@ -483,7 +483,7 @@ def test_goal_deletion_must_not_cause_root_selection():
     )
 
 
-def test_zoom_events():
+def test_zoom_events() -> None:
     goals = Zoom(
         build_goaltree(
             open_(1, "Root", [2]),
@@ -504,7 +504,7 @@ def test_zoom_events():
     assert goals.events()[-1] == ("select", 4)
 
 
-def test_do_not_duplicate_parent_prev_selection():
+def test_do_not_duplicate_parent_prev_selection() -> None:
     goals = Zoom(
         build_goaltree(
             open_(1, "Root", [2], select=previous),
@@ -522,7 +522,7 @@ def test_do_not_duplicate_parent_prev_selection():
     )
 
 
-def test_zoom_root_must_not_be_switchable():
+def test_zoom_root_must_not_be_switchable() -> None:
     goals = Zoom(
         build_goaltree(
             open_(1, "Root", [2], select=previous),
@@ -546,8 +546,8 @@ def test_zoom_root_must_not_be_switchable():
     )
 
 
-def test_zoom_attempt_out_of_stack():
-    messages = []
+def test_zoom_attempt_out_of_stack() -> None:
+    messages: List[str] = []
     goals = Zoom(
         build_goaltree(
             open_(1, "Root", [2, 3]),

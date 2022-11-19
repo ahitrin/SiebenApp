@@ -3,7 +3,7 @@ import pytest
 from siebenapp.tests.dsl import build_goaltree, open_
 
 
-def test_two_parents_for_one_goal_is_forbidden():
+def test_two_parents_for_one_goal_is_forbidden() -> None:
     with pytest.raises(AssertionError):
         build_goaltree(
             open_(1, "First parent of 3", [2, 3]),

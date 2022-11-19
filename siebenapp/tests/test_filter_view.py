@@ -31,7 +31,7 @@ def zoomed_goaltree():
     )
 
 
-def test_empty_string_means_no_filter(goaltree):
+def test_empty_string_means_no_filter(goaltree) -> None:
     goaltree.accept(FilterBy(""))
     assert goaltree.q() == RenderResult(
         rows=[
@@ -44,7 +44,7 @@ def test_empty_string_means_no_filter(goaltree):
     assert goaltree.settings("root") == Goals.ROOT_ID
 
 
-def test_filter_by_substring(goaltree):
+def test_filter_by_substring(goaltree) -> None:
     goaltree.accept(FilterBy("ph"))
     assert goaltree.q() == RenderResult(
         rows=[
@@ -56,7 +56,7 @@ def test_filter_by_substring(goaltree):
     assert goaltree.settings("root") == 1
 
 
-def test_selected_goal_must_not_be_filtered_out(goaltree):
+def test_selected_goal_must_not_be_filtered_out(goaltree) -> None:
     goaltree.accept_all(Select(3), HoldSelect(), FilterBy("Be"))
     assert goaltree.q() == RenderResult(
         rows=[
@@ -69,7 +69,7 @@ def test_selected_goal_must_not_be_filtered_out(goaltree):
     assert goaltree.settings("root") == -2
 
 
-def test_previously_selected_goal_must_not_be_filtered_out(goaltree):
+def test_previously_selected_goal_must_not_be_filtered_out(goaltree) -> None:
     goaltree.accept_all(Select(3), FilterBy("matching no one"))
     assert goaltree.q() == RenderResult(
         rows=[
@@ -82,7 +82,7 @@ def test_previously_selected_goal_must_not_be_filtered_out(goaltree):
     assert goaltree.settings("root") == 1
 
 
-def test_zoomed_parent_goal_must_not_be_filtered_out(zoomed_goaltree):
+def test_zoomed_parent_goal_must_not_be_filtered_out(zoomed_goaltree) -> None:
     zoomed_goaltree.accept_all(HoldSelect(), Select(2), ToggleZoom(), FilterBy("mm"))
     assert zoomed_goaltree.q() == RenderResult(
         rows=[
@@ -96,7 +96,7 @@ def test_zoomed_parent_goal_must_not_be_filtered_out(zoomed_goaltree):
     assert zoomed_goaltree.settings("root") == -1
 
 
-def test_empty_filter_string_means_resetting(goaltree):
+def test_empty_filter_string_means_resetting(goaltree) -> None:
     goaltree.accept_all(FilterBy("B"), FilterBy(""))
     assert goaltree.q() == RenderResult(
         rows=[
@@ -108,7 +108,7 @@ def test_empty_filter_string_means_resetting(goaltree):
     )
 
 
-def test_filter_is_case_insensitive(goaltree):
+def test_filter_is_case_insensitive(goaltree) -> None:
     goaltree.accept(FilterBy("ETA"))
     assert goaltree.q() == RenderResult(
         rows=[

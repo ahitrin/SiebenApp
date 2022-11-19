@@ -1,6 +1,5 @@
 import os
 import sqlite3
-from collections import Counter
 from contextlib import closing
 from typing import Set
 
@@ -26,7 +25,7 @@ from siebenapp.domain import (
     Insert,
     Rename,
     Command,
-    GoalId,
+    GoalId, Graph,
 )
 from siebenapp.filter_view import FilterBy
 from siebenapp.goaltree import Goals
@@ -50,11 +49,11 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         self.database = sqlite3.connect(":memory:")
 
     @initialize()
-    def open_db_connection(self):
+    def open_db_connection(self) -> None:
         save_connection(self.goaltree, self.database)
         self.db_is_ready = True
 
-    def teardown(self):
+    def teardown(self) -> None:
         self.database.close()
 
     def _accept_all(self, *commands: Command) -> None:
@@ -71,17 +70,17 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     #
 
     @rule()
-    def add_goal(self):
+    def add_goal(self) -> None:
         event("add")
         self._accept(Add("a"))
 
     @rule()
-    def delete_goal(self):
+    def delete_goal(self) -> None:
         event("delete")
         self._accept(Delete())
 
     @rule(d=data())
-    def select_random_goal(self, d):
+    def select_random_goal(self, d) -> None:
         event("select")
         max_key = max(
             [r.goal_id for r in self.goaltree.q().rows if isinstance(r.goal_id, int)]
@@ -97,14 +96,14 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         assert render_result.by_id(random_goal).goal_id == render_result.select[0]
 
     @rule()
-    def hold_selection(self):
+    def hold_selection(self) -> None:
         event("hold")
         self._accept(HoldSelect())
 
     @rule(d=data())
     # Ignore trivial trees (without any subgoal)
     @precondition(lambda self: len(self.goaltree.q().rows) > 1)
-    def insert(self, d):
+    def insert(self, d) -> None:
         event("insert")
         render_result = self.goaltree.q()
         candidates = sorted(
@@ -120,7 +119,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     @rule(b=booleans(), d=data())
     # Ignore trivial trees (without any subgoal)
     @precondition(lambda self: len(self.goaltree.q().rows) > 1)
-    def toggle_link(self, b, d):
+    def toggle_link(self, b, d) -> None:
         event("toggle link")
         goal_keys = sorted(
             list(row.goal_id for row in self.goaltree.q().rows if row.goal_id > 0)
@@ -138,43 +137,43 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     @rule(c=sampled_from(" abcit"))
     # Ignore trivial trees (without any subgoal)
     @precondition(lambda self: len(self.goaltree.q().rows) > 1)
-    def add_autolink(self, c):
+    def add_autolink(self, c) -> None:
         event("autolink")
         event("valid autolink")
         self._accept(ToggleAutoLink(c))
 
     @rule()
-    def close_or_open(self):
+    def close_or_open(self) -> None:
         event("close/open")
         self._accept(ToggleClose())
 
     @rule(t=text())
-    def rename(self, t):
+    def rename(self, t) -> None:
         event("rename")
         self._accept(Rename(t))
 
     @rule()
-    def zoom(self):
+    def zoom(self) -> None:
         event("zoom")
         self._accept(ToggleZoom())
 
     @rule()
-    def switchable_view(self):
+    def switchable_view(self) -> None:
         event("switchable_view")
         self._accept(ToggleSwitchableView())
 
     @rule()
-    def open_view(self):
+    def open_view(self) -> None:
         event("open_view")
         self._accept(ToggleOpenView())
 
     @rule()
-    def filter_by_text(self):
+    def filter_by_text(self) -> None:
         event("filter x")
         self._accept(FilterBy("x"))
 
     @rule()
-    def reset_filter(self):
+    def reset_filter(self) -> None:
         event("reset filter")
         self._accept(FilterBy(""))
 
@@ -183,12 +182,12 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     #
 
     @invariant()
-    def there_is_always_at_least_one_goal(self):
+    def there_is_always_at_least_one_goal(self) -> None:
         assert self.goaltree.q().rows
 
     @invariant()
     @precondition(lambda self: not self.goaltree.settings("filter_switchable"))
-    def only_one_root_is_allowed_in_tree_mode(self):
+    def only_one_root_is_allowed_in_tree_mode(self) -> None:
         rows = self.goaltree.q().rows
         goals: Set[GoalId] = {row.goal_id for row in rows}
         goals_with_parent: Set[GoalId] = set(e[0] for row in rows for e in row.edges)
@@ -196,7 +195,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         assert len(goals_without_parent) == 1
 
     @invariant()
-    def fake_goals_should_never_be_switchable(self):
+    def fake_goals_should_never_be_switchable(self) -> None:
         fake_goals = [
             (row.goal_id, row.is_switchable)
             for row in self.goaltree.q().rows
@@ -206,18 +205,18 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         assert not switchable_fakes, f"Switchable fake goals: {switchable_fakes}"
 
     @invariant()
-    def goaltree_is_always_valid(self):
+    def goaltree_is_always_valid(self) -> None:
         self.goaltree.verify()
 
     @invariant()
-    def there_is_always_one_selected_goal_and_at_most_one_previous(self):
+    def there_is_always_one_selected_goal_and_at_most_one_previous(self) -> None:
         render_result = self.goaltree.q()
         assert render_result.select[0] != 0, str(render_result.select)
         assert render_result.select[1] != 0, str(render_result.select)
 
     @invariant()
     @precondition(lambda self: self.db_is_ready)
-    def full_export_and_streaming_export_must_be_the_same(self):
+    def full_export_and_streaming_export_must_be_the_same(self) -> None:
         note(", ".join(str(e) for e in list(self.goaltree.events())[-5:]))
         save_updates(self.goaltree, self.database)
         assert not self.goaltree.events()
@@ -232,15 +231,15 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 TestGoalTreeRandomWalk = GoaltreeRandomWalk.TestCase
 
 
-def build_goals(conn):
+def build_goals(conn) -> Graph:
     with closing(conn.cursor()) as cur:
-        goals = list(cur.execute("select * from goals"))
+        goal_list = list(cur.execute("select * from goals"))
         edges = list(cur.execute("select parent, child, reltype from edges"))
         db_settings = list(cur.execute("select * from settings"))
         zoom_data = list(cur.execute("select * from zoom"))
         autolink_data = list(cur.execute("select * from autolink"))
         note(
-            f"Goals: {goals}, Edges: {edges}, Settings: {db_settings}, Zoom: {zoom_data}, Autolink: {autolink_data}"
+            f"Goals: {goal_list}, Edges: {edges}, Settings: {db_settings}, Zoom: {zoom_data}, Autolink: {autolink_data}"
         )
-        goals = Goals.build(goals, edges, db_settings)
+        goals: Goals = Goals.build(goal_list, edges, db_settings)
         return all_layers(goals, zoom_data, autolink_data)

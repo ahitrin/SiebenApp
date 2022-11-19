@@ -22,5 +22,5 @@ from siebenapp.system import split_long
         ),
     ],
 )
-def test_split_long_labels(source, result):
+def test_split_long_labels(source, result) -> None:
     assert split_long(source) == result

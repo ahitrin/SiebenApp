@@ -20,7 +20,7 @@ from siebenapp.system import MIGRATIONS, run_migrations, load, save
 from siebenapp.zoom import ToggleZoom
 
 
-def test_initial_migration_on_empty_db():
+def test_initial_migration_on_empty_db() -> None:
     with closing(sqlite3.connect(":memory:")) as conn:
         with closing(conn.cursor()) as cur:
             run_migrations(conn, MIGRATIONS[:1])
@@ -29,7 +29,7 @@ def test_initial_migration_on_empty_db():
             assert version == 0
 
 
-def test_skip_passed_migrations():
+def test_skip_passed_migrations() -> None:
     with closing(sqlite3.connect(":memory:")) as conn:
         with closing(conn.cursor()) as cur:
             run_migrations(conn, MIGRATIONS[:1])
@@ -39,7 +39,7 @@ def test_skip_passed_migrations():
             assert version == 0
 
 
-def test_last_known_migration():
+def test_last_known_migration() -> None:
     with closing(sqlite3.connect(":memory:")) as conn:
         with closing(conn.cursor()) as cur:
             run_migrations(conn)
@@ -59,7 +59,7 @@ def setup_sample_db(conn):
         conn.commit()
 
 
-def test_restore_goals_from_db():
+def test_restore_goals_from_db() -> None:
     file_name = NamedTemporaryFile().name
     with sqlite3.connect(file_name) as conn:
         run_migrations(conn)
@@ -84,14 +84,14 @@ def test_restore_goals_from_db():
     assert not actual_goals.events()
 
 
-def test_load_from_missing_file():
+def test_load_from_missing_file() -> None:
     file_name = NamedTemporaryFile().name
     expected_goals = Goals("Rename me")
     new_goals = load(file_name)
     assert new_goals.q() == expected_goals.q()
 
 
-def test_save_into_sqlite3_database():
+def test_save_into_sqlite3_database() -> None:
     file_name = NamedTemporaryFile().name
     goals = all_layers(Goals("Sample"))
     save(goals, file_name)
@@ -101,7 +101,7 @@ def test_save_into_sqlite3_database():
             assert cur.fetchone()[0] > 0
 
 
-def test_migration_must_run_on_load_from_existing_db():
+def test_migration_must_run_on_load_from_existing_db() -> None:
     file_name = NamedTemporaryFile().name
     goals = all_layers(Goals("Just a simple goal tree"))
     save(goals, file_name)
@@ -122,7 +122,7 @@ def test_migration_must_run_on_load_from_existing_db():
         MIGRATIONS.pop(-1)
 
 
-def test_save_and_load():
+def test_save_and_load() -> None:
     file_name = NamedTemporaryFile().name
     goals = Enumeration(all_layers(Goals("Root")))
     goals.accept_all(
@@ -145,7 +145,7 @@ def test_save_and_load():
     assert goals.q() == new_goals.q()
 
 
-def test_multiple_saves_works_fine():
+def test_multiple_saves_works_fine() -> None:
     file_name = NamedTemporaryFile().name
     goals = all_layers(Goals("Root"))
     save(goals, file_name)
@@ -155,7 +155,7 @@ def test_multiple_saves_works_fine():
     assert goals.q() == new_goals.q()
 
 
-def test_do_not_load_from_broken_data():
+def test_do_not_load_from_broken_data() -> None:
     file_name = NamedTemporaryFile().name
     with sqlite3.connect(file_name) as conn:
         run_migrations(conn)
