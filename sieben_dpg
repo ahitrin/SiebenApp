@@ -120,7 +120,7 @@ class SiebenApp:
         add_to_nodes = {}
         for render_row in self.render_result.rows:
             goal_text = split_long(render_row.name)
-            attrs = self.render_result.graph[render_row.goal_id]
+            attrs = self.render_result.node_opts[render_row.goal_id]
             row, col = attrs["row"], attrs["col"]
             pos = (-1000, -1000)
             status_color = (255, 0, 0, 255) if render_row.is_open else (0, 255, 0, 255)
@@ -176,7 +176,7 @@ class SiebenApp:
         adjust_graph(self.render_result, gp)
         for row in self.render_result.rows:
             widget_tag = f"goal_{row.goal_id}"
-            attrs = self.render_result.graph[row.goal_id]
+            attrs = self.render_result.node_opts[row.goal_id]
             dpg.set_item_pos(widget_tag, [attrs["x"], attrs["y"]])
         self.phase = "edges"
 

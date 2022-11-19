@@ -53,24 +53,24 @@ class RenderResult:
     rows: List[RenderRow]
     edge_opts: Dict[str, Tuple[int, int, int]]
     select: Tuple[GoalId, GoalId]
-    graph: Dict[GoalId, Any]
+    node_opts: Dict[GoalId, Any]
 
     def __init__(
         self,
         rows: List[RenderRow],
         edge_opts: Optional[Dict[str, Tuple[int, int, int]]] = None,
         select: Optional[Tuple[GoalId, GoalId]] = None,
-        graph: Optional[Dict[GoalId, Any]] = None,
+        node_opts: Optional[Dict[GoalId, Any]] = None,
     ):
         self.rows = rows
         self.edge_opts = edge_opts or {}
         self.select = select or (0, 0)
-        self.graph = graph or {}
+        self.node_opts = node_opts or {}
 
     def goals(self):
         return [
             (goal_id, attrs)
-            for goal_id, attrs in self.graph.items()
+            for goal_id, attrs in self.node_opts.items()
             if isinstance(goal_id, int)
         ]
 

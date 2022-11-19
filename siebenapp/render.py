@@ -80,7 +80,7 @@ class Renderer:
             self.rows,
             edge_opts=self.result_edge_options,
             select=self.render_result.select,
-            graph=self.graph,
+            node_opts=self.graph,
         )
 
     def split_by_layers(self) -> None:
@@ -313,9 +313,9 @@ def render_lines(
     edges = {}
     lines: List[Tuple[EdgeType, Point, Point, str]] = []
 
-    for goal_id, attrs in render_result.graph.items():
+    for goal_id, attrs in render_result.node_opts.items():
         for e_target, e_type in attrs["edge_render"]:
-            target_attrs = render_result.graph[e_target]
+            target_attrs = render_result.node_opts[e_target]
             if isinstance(goal_id, int):
                 row, col = attrs["row"], attrs["col"]
                 start = middle_point(
@@ -323,7 +323,7 @@ def render_lines(
                 )
             else:
                 left_id, p, q = render_result.edge_opts[goal_id]
-                left = render_result.graph[left_id]["col"] if left_id > 0 else -1
+                left = render_result.node_opts[left_id]["col"] if left_id > 0 else -1
                 x1 = gp.top_right(attrs["row"], left)
                 x2 = gp.top_left(attrs["row"], left + 1)
                 start = middle_point(x1, x2, p, q)
@@ -340,7 +340,7 @@ def render_lines(
                 )
             else:
                 left_id, p, q = render_result.edge_opts[e_target]
-                left = render_result.graph[left_id]["col"] if left_id > 0 else -1
+                left = render_result.node_opts[left_id]["col"] if left_id > 0 else -1
                 x1 = gp.bottom_right(target_attrs["row"], left)
                 x2 = gp.bottom_left(target_attrs["row"], left + 1)
                 end = middle_point(x1, x2, p, q)

@@ -59,7 +59,7 @@ def _run_render_test():
         print("\n== Geometry change after adjust\n", file=out)
         total_delta = Point(0, 0)
         for goal_id in g.goals:
-            goal = result.graph[goal_id]
+            goal = result.node_opts[goal_id]
             delta = gp.top_left(goal["row"], goal["col"]) - Point(goal["x"], goal["y"])
             total_delta += delta
             print(f"{goal_id}: dx={delta.x}, dy={delta.y}", file=out)

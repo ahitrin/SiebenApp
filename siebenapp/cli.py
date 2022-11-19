@@ -118,8 +118,8 @@ def loop(io: IO, goals: Graph, db_name: str):
             [
                 (
                     row,
-                    render_result.graph[row.goal_id]["row"],
-                    render_result.graph[row.goal_id]["col"],
+                    render_result.node_opts[row.goal_id]["row"],
+                    render_result.node_opts[row.goal_id]["col"],
                 )
                 for row in rows
             ],

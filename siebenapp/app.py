@@ -188,7 +188,7 @@ class SiebenApp(QMainWindow):
         if "setupData" in dir(self.scrollAreaWidgetContents):
             self.scrollAreaWidgetContents.setupData(render_result)
         for row in render_result.rows:
-            attributes = render_result.graph[row.goal_id]
+            attributes = render_result.node_opts[row.goal_id]
             widget = GoalWidget()
             self.scrollAreaWidgetContents.layout().addWidget(
                 widget, attributes["row"], attributes["col"]

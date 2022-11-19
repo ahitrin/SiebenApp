@@ -13,7 +13,7 @@ def get_in(data, column):
 
 def test_render_simplest_goal_tree() -> None:
     goals = build_goaltree(open_(1, "Alone", [], select=selected))
-    result = Renderer(goals).build().graph
+    result = Renderer(goals).build().node_opts
     assert result == {
         1: {
             "row": 0,
@@ -31,7 +31,7 @@ def test_render_4_subgoals_in_a_row() -> None:
         open_(4, "C"),
         open_(5, "D"),
     )
-    result = Renderer(goals).build().graph
+    result = Renderer(goals).build().node_opts
     assert get_in(result, "row") == {
         2: 0,
         3: 0,
@@ -47,7 +47,7 @@ def test_render_add_fake_vertex() -> None:
         open_(2, "A", blockers=[3]),
         open_(3, "B"),
     )
-    result = Renderer(goals).build().graph
+    result = Renderer(goals).build().node_opts
     assert get_in(result, "row") == {
         3: 0,
         2: 1,
@@ -64,7 +64,7 @@ def test_render_add_several_fake_vertex() -> None:
         open_(4, "C", blockers=[5]),
         open_(5, "top"),
     )
-    result = Renderer(goals).build().graph
+    result = Renderer(goals).build().node_opts
     assert get_in(result, "row") == {
         5: 0,
         4: 1,
@@ -86,7 +86,7 @@ def test_render_5_subgoals_in_several_rows() -> None:
         open_(5, "Five"),
         open_(6, "Six"),
     )
-    result = Renderer(goals).build().graph
+    result = Renderer(goals).build().node_opts
     assert get_in(result, "row") == {
         2: 0,
         3: 0,
@@ -106,7 +106,7 @@ def test_split_long_edges_using_fake_goals() -> None:
         open_(4, "C", [5]),
         open_(5, "top"),
     )
-    result = Renderer(goals).build().graph
+    result = Renderer(goals).build().node_opts
     assert get_in(result, "edge_render") == {
         5: [],
         4: [child(5)],
@@ -125,7 +125,7 @@ def test_use_different_long_edge_types() -> None:
         open_(2, "A", [3]),
         open_(3, "B", []),
     )
-    result = Renderer(goals).build().graph
+    result = Renderer(goals).build().node_opts
     assert get_in(result, "edge_render") == {
         3: [],
         2: [child(3)],
@@ -145,7 +145,7 @@ def test_render_in_switchable_view() -> None:
     )
     view = Enumeration(SwitchableView(goals))
     view.accept(ToggleSwitchableView())
-    result = Renderer(view).build().graph
+    result = Renderer(view).build().node_opts
     # Just verify that it renders fine
     assert len(result) == 5
 
