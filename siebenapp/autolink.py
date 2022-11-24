@@ -144,7 +144,9 @@ class AutoLink(Graph):
             )
             for row in render_result.rows
         ]
-        return RenderResult(rows, select=render_result.select)
+        return RenderResult(
+            rows, select=render_result.select, roots=render_result.roots
+        )
 
     @staticmethod
     def fake_id(goal_id: GoalId) -> GoalId:
