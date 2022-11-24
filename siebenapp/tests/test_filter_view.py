@@ -40,6 +40,7 @@ def test_empty_string_means_no_filter(goaltree) -> None:
             RenderRow(3, 3, "Gamma", True, True, []),
         ],
         select=(1, 1),
+        roots={1},
     )
     assert goaltree.settings("root") == Goals.ROOT_ID
 
@@ -105,6 +106,7 @@ def test_empty_filter_string_means_resetting(goaltree) -> None:
             RenderRow(3, 3, "Gamma", True, True, []),
         ],
         select=(1, 1),
+        roots={1},
     )
 
 

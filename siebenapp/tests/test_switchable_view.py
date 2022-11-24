@@ -20,6 +20,7 @@ def test_toggle_hide_non_switchable_goals() -> None:
             RenderRow(3, 3, "Switchable 2", True, True, []),
         ],
         select=(2, 2),
+        roots={1},
     )
     e.accept(ToggleSwitchableView())
     assert e.q() == RenderResult(
@@ -37,6 +38,7 @@ def test_toggle_hide_non_switchable_goals() -> None:
             RenderRow(3, 3, "Switchable 2", True, True, []),
         ],
         select=(2, 2),
+        roots={1},
     )
 
 

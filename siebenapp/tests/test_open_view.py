@@ -42,6 +42,7 @@ def test_open_goal_is_shown_after_switch(trivial) -> None:
             RenderRow(1, 1, "Start", True, True, []),
         ],
         select=(1, 1),
+        roots={1},
     )
 
 
@@ -71,6 +72,7 @@ def test_closed_goal_is_shown_after_switch(two_goals) -> None:
             RenderRow(2, 2, "Closed", False, True, []),
         ],
         select=(1, 1),
+        roots={1},
     )
     two_goals.accept(ToggleOpenView())
     assert two_goals.q() == RenderResult(
@@ -125,6 +127,7 @@ def test_closed_goals_are_shown_when_selected() -> None:
             RenderRow(4, 4, "closed and not selected", False, False, []),
         ],
         select=(3, 2),
+        roots={1},
     )
     v.accept(ToggleOpenView())
     # Still show: open goals, selected goals

@@ -34,6 +34,7 @@ def test_no_progress_by_default(goaltree) -> None:
             RenderRow(4, 4, "Top goal", True, True, []),
         ],
         select=(1, 1),
+        roots={1},
     )
 
 
@@ -78,6 +79,7 @@ def test_toggle_hide_progress(goaltree) -> None:
             RenderRow(4, 4, "Top goal", True, True, []),
         ],
         select=(1, 1),
+        roots={1},
     )
 
 
