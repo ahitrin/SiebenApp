@@ -66,6 +66,7 @@ def test_show_progress(goaltree) -> None:
             RenderRow(4, 4, "Top goal", True, True, [], {"Progress": "0% (0/1)"}),
         ],
         select=(1, 1),
+        roots={1},
     )
 
 
@@ -105,6 +106,7 @@ def test_change_progress_on_close(goaltree) -> None:
             RenderRow(4, 4, "Top goal", False, True, [], {"Progress": "100% (1/1)"}),
         ],
         select=(1, 1),
+        roots={1},
     )
     goaltree.accept_all(Select(2), ToggleClose())
     assert goaltree.q() == RenderResult(
@@ -133,4 +135,5 @@ def test_change_progress_on_close(goaltree) -> None:
             RenderRow(4, 4, "Top goal", False, True, [], {"Progress": "100% (1/1)"}),
         ],
         select=(1, 1),
+        roots={1},
     )

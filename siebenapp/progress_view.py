@@ -73,4 +73,6 @@ class ProgressView(Graph):
             for row in rows
         ]
 
-        return RenderResult(result_rows, select=render_result.select)
+        return RenderResult(
+            result_rows, select=render_result.select, roots=render_result.roots
+        )
