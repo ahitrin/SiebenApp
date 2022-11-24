@@ -1,7 +1,7 @@
 from collections import deque
 from dataclasses import dataclass, field
 from enum import IntEnum
-from typing import Dict, Any, Union, Tuple, List, Optional
+from typing import Dict, Any, Union, Tuple, List, Optional, Set
 
 
 class EdgeType(IntEnum):
@@ -54,6 +54,7 @@ class RenderResult:
     edge_opts: Dict[str, Tuple[int, int, int]]
     select: Tuple[GoalId, GoalId]
     node_opts: Dict[GoalId, Any]
+    roots: Set[GoalId]
 
     def __init__(
         self,
@@ -61,11 +62,13 @@ class RenderResult:
         edge_opts: Optional[Dict[str, Tuple[int, int, int]]] = None,
         select: Optional[Tuple[GoalId, GoalId]] = None,
         node_opts: Optional[Dict[GoalId, Any]] = None,
+        roots: Optional[Set[GoalId]] = None,
     ):
         self.rows = rows
         self.edge_opts = edge_opts or {}
         self.select = select or (0, 0)
         self.node_opts = node_opts or {}
+        self.roots = roots or set()
 
     def goals(self):
         return [
