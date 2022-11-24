@@ -203,4 +203,5 @@ def test_extract_misordered() -> None:
             RenderRow(2, 2, "Top", True, True, []),
         ],
         select=(1, 1),
+        roots={1},
     )

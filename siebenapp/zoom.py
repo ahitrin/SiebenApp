@@ -54,7 +54,9 @@ class Zoom(Graph):
         origin_root = rows[0]
         assert origin_root.goal_id == Goals.ROOT_ID
         if self.zoom_root == [1]:
-            return RenderResult(rows, select=render_result.select)
+            return RenderResult(
+                rows, select=render_result.select, roots=render_result.roots
+            )
         visible_goals = self._build_visible_goals(rows)
         selected_goals: Set[int] = {
             self.settings("selection"),
@@ -96,7 +98,9 @@ class Zoom(Graph):
             _replace_with_fake(render_result.select[0]),
             _replace_with_fake(render_result.select[1]),
         )
-        return RenderResult(zoomed_rows + [fake_root], select=new_select)
+        return RenderResult(
+            zoomed_rows + [fake_root], select=new_select, roots={self.zoom_root[-1]}
+        )
 
     def accept_ToggleClose(self, command: ToggleClose):
         if self.settings("selection") == self.zoom_root[-1]:
