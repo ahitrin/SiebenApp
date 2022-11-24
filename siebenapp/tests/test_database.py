@@ -87,7 +87,7 @@ def test_restore_goals_from_db() -> None:
 
 def test_load_from_missing_file() -> None:
     file_name = NamedTemporaryFile().name
-    expected_goals = Goals("Rename me")
+    expected_goals = Enumeration(all_layers(Goals("Rename me")))
     new_goals = load(file_name)
     assert new_goals.q() == expected_goals.q()
 
