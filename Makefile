@@ -9,7 +9,7 @@ check:
 
 venv:
 	$([ which pipenv ] || pip install pipenv)
-	pipenv install -d
+	pipenv install -d --python $(shell which python3)
 
 prepare: format test mypy
 
