@@ -66,7 +66,7 @@ def test_restore_goals_from_db() -> None:
         setup_sample_db(conn)
     actual_goals = load(file_name)
     actual_goals.accept(ToggleOpenView())
-    expected_goals = Goals("Root")
+    expected_goals = Enumeration(all_layers(Goals("Root")))
     expected_goals.accept_all(
         Add("A"),
         Add("B"),
@@ -79,6 +79,7 @@ def test_restore_goals_from_db() -> None:
         Select(1),
         HoldSelect(),
         Select(2),
+        ToggleOpenView(),
     )
     assert expected_goals.q() == actual_goals.q()
     assert not actual_goals.events()
