@@ -60,7 +60,7 @@ class Renderer:
         self.rows = self.render_result.rows
         self.node_opts: Dict[GoalId, Any] = {row.goal_id: {} for row in self.rows}
         self.edges: Dict[GoalId, List[GoalId]] = {
-            row.goal_id: [e[0] for e in row.edges] for row in self.render_result.rows
+            row.goal_id: [e[0] for e in row.edges] for row in self.rows
         }
         self.layers: Dict[int, Layer] = defaultdict(list)
         self.positions: Dict[GoalId, int] = {}
