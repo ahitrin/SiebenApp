@@ -223,7 +223,6 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         assert not self.goaltree.events()
         ng = build_goals(self.database)
         ng.reconfigure_from(self.goaltree)
-        keys = "name,open,edge,select,switchable"
         q1 = self.goaltree.q()
         q2 = ng.q()
         assert q1 == q2
