@@ -53,6 +53,7 @@ def test_filter_by_substring(goaltree) -> None:
             RenderRow(-2, -2, "Filter by 'ph'", True, False, []),
         ],
         select=(1, 1),
+        roots={-2},
     )
     assert goaltree.settings("root") == 1
 
@@ -66,6 +67,7 @@ def test_selected_goal_must_not_be_filtered_out(goaltree) -> None:
             RenderRow(-2, -2, "Filter by 'be'", True, False, [blocker(2), blocker(3)]),
         ],
         select=(3, 3),
+        roots={-2},
     )
     assert goaltree.settings("root") == -2
 
@@ -79,6 +81,7 @@ def test_previously_selected_goal_must_not_be_filtered_out(goaltree) -> None:
             RenderRow(-2, -2, "Filter by 'matching no one'", True, False, [blocker(3)]),
         ],
         select=(3, 1),
+        roots={-2},
     )
     assert goaltree.settings("root") == 1
 
@@ -93,6 +96,7 @@ def test_zoomed_parent_goal_must_not_be_filtered_out(zoomed_goaltree) -> None:
             RenderRow(-2, -2, "Filter by 'mm'", True, False, [blocker(2), blocker(3)]),
         ],
         select=(2, -1),
+        roots={-2},
     )
     assert zoomed_goaltree.settings("root") == -1
 
@@ -119,4 +123,5 @@ def test_filter_is_case_insensitive(goaltree) -> None:
             RenderRow(-2, -2, "Filter by 'eta'", True, False, [blocker(2)]),
         ],
         select=(1, 1),
+        roots={-2},
     )
