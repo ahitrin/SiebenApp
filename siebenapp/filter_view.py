@@ -74,4 +74,9 @@ class FilterView(Graph):
                 ],
             ),
         ]
-        return RenderResult(rows + fake_rows, select=render_result.select, roots={-2})
+        new_roots: Set[GoalId] = {
+            goal_id for goal_id in render_result.roots if goal_id in all_ids
+        } or {-2}
+        return RenderResult(
+            rows + fake_rows, select=render_result.select, roots=new_roots
+        )
