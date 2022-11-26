@@ -312,6 +312,7 @@ def test_do_not_enumerate_goals_with_negative_id() -> None:
             RenderRow(-1, -1, "Root", True, False, [blocker(2)]),
         ],
         select=(2, 2),
+        roots={2},
     )
     e = Enumeration(g)
     assert e.q() == RenderResult(

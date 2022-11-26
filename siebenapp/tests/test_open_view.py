@@ -32,6 +32,7 @@ def test_open_goal_is_shown_by_default(trivial) -> None:
             RenderRow(1, 1, "Start", True, True, []),
         ],
         select=(1, 1),
+        roots={1},
     )
 
 
@@ -61,6 +62,7 @@ def test_closed_goal_is_not_shown_by_default(two_goals) -> None:
             RenderRow(1, 1, "Open", True, True, []),
         ],
         select=(1, 1),
+        roots={1},
     )
 
 
@@ -80,6 +82,7 @@ def test_closed_goal_is_shown_after_switch(two_goals) -> None:
             RenderRow(1, 1, "Open", True, True, []),
         ],
         select=(1, 1),
+        roots={1},
     )
 
 
@@ -98,6 +101,7 @@ def test_simple_open_enumeration_workflow() -> None:
             RenderRow(3, 3, "2", True, True, []),
         ],
         select=(2, 1),
+        roots={1},
     )
     e.accept(ToggleClose())
     assert e.q() == RenderResult(
@@ -106,6 +110,7 @@ def test_simple_open_enumeration_workflow() -> None:
             RenderRow(3, 3, "2", True, True, []),
         ],
         select=(1, 1),
+        roots={1},
     )
 
 
@@ -138,6 +143,7 @@ def test_closed_goals_are_shown_when_selected() -> None:
             RenderRow(3, 3, "closed too", False, True, []),
         ],
         select=(3, 2),
+        roots={1},
     )
 
 
@@ -155,6 +161,7 @@ def test_build_fake_links_to_far_closed_goals() -> None:
             RenderRow(3, 3, "Top", False, False, []),
         ],
         select=(3, 1),
+        roots={1},
     )
 
 
@@ -171,6 +178,7 @@ def test_still_show_root_when_it_is_closed_and_unselected() -> None:
             RenderRow(2, 2, "Visible", False, False, []),
         ],
         select=(2, 2),
+        roots={1},
     )
 
 
@@ -195,4 +203,5 @@ def test_add_dangling_goals_to_old_root_on_zoom() -> None:
             RenderRow(-1, -1, "Root", True, False, [blocker(2), blocker(4)]),
         ],
         select=(2, 4),
+        roots={2},
     )
