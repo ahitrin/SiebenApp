@@ -216,6 +216,22 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         assert render_result.select[1] != 0, str(render_result.select)
 
     @invariant()
+    def root_goals_should_not_have_incoming_edges(self) -> None:
+        render_result = self.goaltree.q()
+        result_roots: Set[GoalId] = render_result.roots
+        has_incoming_edges: Set[GoalId] = {
+            e[0]
+            for row in render_result.rows
+            for e in row.edges
+        }
+        actual_roots: Set[GoalId] = {
+            row.goal_id
+            for row in render_result.rows
+            if row.goal_id not in has_incoming_edges
+        }
+        assert result_roots == actual_roots
+
+    @invariant()
     @precondition(lambda self: self.db_is_ready)
     def full_export_and_streaming_export_must_be_the_same(self) -> None:
         note(", ".join(str(e) for e in list(self.goaltree.events())[-5:]))
