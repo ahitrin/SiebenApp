@@ -29,6 +29,7 @@ def test_toggle_hide_non_switchable_goals() -> None:
             RenderRow(3, 3, "Switchable 2", True, True, []),
         ],
         select=(2, 2),
+        roots={2, 3},
     )
     e.accept(ToggleSwitchableView())
     assert e.q() == RenderResult(
@@ -58,6 +59,7 @@ def test_do_not_hide_unswitchable_goals_when_they_have_selection() -> None:
             RenderRow(3, 3, "Switchable", True, True, []),
         ],
         select=(1, 2),
+        roots={1, 2, 3},
     )
 
 
@@ -71,6 +73,7 @@ def test_non_switchable_goals_disappear_on_selection_change() -> None:
             RenderRow(3, 3, "2", True, True, []),
         ],
         select=(2, 1),
+        roots={1, 2, 3},
     )
     e.accept(HoldSelect())
     assert e.q() == RenderResult(
@@ -79,6 +82,7 @@ def test_non_switchable_goals_disappear_on_selection_change() -> None:
             RenderRow(3, 3, "2", True, True, []),
         ],
         select=(2, 2),
+        roots={2, 3},
     )
 
 
@@ -96,6 +100,7 @@ def test_how_should_we_deal_with_zooming() -> None:
             RenderRow(3, 3, "Ex-top", True, True, []),
         ],
         select=(2, 2),
+        roots={2, 3},
     )
     v.accept(Add("Unexpectedly hidden"))
     assert v.q() == RenderResult(
@@ -105,6 +110,7 @@ def test_how_should_we_deal_with_zooming() -> None:
             RenderRow(4, 4, "Unexpectedly hidden", True, True, []),
         ],
         select=(2, 2),
+        roots={2, 3, 4},
     )
 
 
