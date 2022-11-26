@@ -75,7 +75,11 @@ class Enumeration(Graph):
             index.forward(render_result.select[0]),
             index.forward(render_result.select[1]),
         )
-        return RenderResult(rows, select=new_select)
+        return RenderResult(
+            rows,
+            select=new_select,
+            roots={index.forward(goal_id) for goal_id in render_result.roots},
+        )
 
     def accept_Select(self, command: Select):
         render_result, index = self._id_mapping()
