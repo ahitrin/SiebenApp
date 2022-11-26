@@ -62,7 +62,6 @@ def test_simple_enumeration_is_not_changed() -> None:
         select=(3, 2),
         roots={1},
     )
-    assert e.settings("root") == Goals.ROOT_ID
 
 
 def test_apply_mapping_for_the_10th_element(goal_chain_10) -> None:
@@ -83,7 +82,6 @@ def test_apply_mapping_for_the_10th_element(goal_chain_10) -> None:
         select=(1, 1),
         roots={1},
     )
-    assert e.settings("root") == Goals.ROOT_ID
 
 
 def test_apply_mapping_for_the_11th_element(goal_chain_11) -> None:
@@ -105,7 +103,6 @@ def test_apply_mapping_for_the_11th_element(goal_chain_11) -> None:
         select=(11, 11),
         roots={11},
     )
-    assert e.settings("root") == 11
 
 
 def test_use_mapping_in_selection(goal_chain_10) -> None:

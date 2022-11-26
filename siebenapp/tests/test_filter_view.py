@@ -42,7 +42,6 @@ def test_empty_string_means_no_filter(goaltree) -> None:
         select=(1, 1),
         roots={1},
     )
-    assert goaltree.settings("root") == Goals.ROOT_ID
 
 
 def test_filter_by_substring(goaltree) -> None:
@@ -55,7 +54,6 @@ def test_filter_by_substring(goaltree) -> None:
         select=(1, 1),
         roots={1},
     )
-    assert goaltree.settings("root") == 1
 
 
 def test_selected_goal_must_not_be_filtered_out(goaltree) -> None:
@@ -69,7 +67,6 @@ def test_selected_goal_must_not_be_filtered_out(goaltree) -> None:
         select=(3, 3),
         roots={-2},
     )
-    assert goaltree.settings("root") == -2
 
 
 def test_previously_selected_goal_must_not_be_filtered_out(goaltree) -> None:
@@ -83,7 +80,6 @@ def test_previously_selected_goal_must_not_be_filtered_out(goaltree) -> None:
         select=(3, 1),
         roots={1},
     )
-    assert goaltree.settings("root") == 1
 
 
 def test_zoomed_parent_goal_must_not_be_filtered_out(zoomed_goaltree) -> None:
@@ -98,7 +94,6 @@ def test_zoomed_parent_goal_must_not_be_filtered_out(zoomed_goaltree) -> None:
         select=(2, -1),
         roots={-1},
     )
-    assert zoomed_goaltree.settings("root") == -1
 
 
 def test_empty_filter_string_means_resetting(goaltree) -> None:

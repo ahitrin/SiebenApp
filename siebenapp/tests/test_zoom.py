@@ -32,7 +32,6 @@ def test_single_goal_could_not_be_zoomed() -> None:
     assert goals.q() == RenderResult(
         [RenderRow(1, 1, "Root", True, True, [])], select=(1, 1), roots={1}
     )
-    assert goals.settings("root") == 1
 
 
 def test_skip_intermediate_goal_during_zoom() -> None:
@@ -52,7 +51,6 @@ def test_skip_intermediate_goal_during_zoom() -> None:
         select=(3, 3),
         roots={-1},
     )
-    assert goals.settings("root") == -1
 
 
 def test_hide_neighbour_goals_during_zoom() -> None:

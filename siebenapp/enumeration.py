@@ -51,12 +51,6 @@ class Enumeration(Graph):
             [r.goal_id for r in render_result.rows]
         )
 
-    def settings(self, key: str) -> Any:
-        if key == "root":
-            _, index = self._id_mapping()
-            return index.forward(self.goaltree.settings("root"))
-        return self.goaltree.settings(key)
-
     def q(self) -> RenderResult:
         render_result, index = self._id_mapping()
         rows: List[RenderRow] = [

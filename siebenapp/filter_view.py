@@ -22,10 +22,6 @@ class FilterView(Graph):
     def settings(self, key: str) -> Any:
         if key == "filter_pattern":
             return self.pattern
-        if key == "root" and self.pattern:
-            goals: Set[GoalId] = {row.goal_id for row in self.q().rows}
-            old_root = self.goaltree.settings("root")
-            return old_root if old_root in goals else -2
         return self.goaltree.settings(key)
 
     def reconfigure_from(self, origin: "Graph") -> None:
