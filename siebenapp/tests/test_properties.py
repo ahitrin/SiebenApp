@@ -220,9 +220,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         render_result = self.goaltree.q()
         result_roots: Set[GoalId] = render_result.roots
         has_incoming_edges: Set[GoalId] = {
-            e[0]
-            for row in render_result.rows
-            for e in row.edges
+            e[0] for row in render_result.rows for e in row.edges
         }
         actual_roots: Set[GoalId] = {
             row.goal_id
