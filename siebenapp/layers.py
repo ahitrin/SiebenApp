@@ -21,7 +21,7 @@ def persistent_layers(
 
 def view_layers(graph: Graph) -> Graph:
     """Wrap given graph with all standard non-persistent (view) logic layers"""
-    return FilterView(SwitchableView(OpenView(ProgressView(graph))))
+    return SwitchableView(FilterView(OpenView(ProgressView(graph))))
 
 
 def all_layers(
