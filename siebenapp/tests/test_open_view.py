@@ -203,5 +203,5 @@ def test_add_dangling_goals_to_old_root_on_zoom() -> None:
             RenderRow(-1, -1, "Root", True, False, [blocker(2), blocker(4)]),
         ],
         select=(2, 4),
-        roots={2},
+        roots={-1},
     )
