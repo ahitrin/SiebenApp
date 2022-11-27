@@ -62,6 +62,12 @@ class Renderer:
         self.edges: Dict[GoalId, List[GoalId]] = {
             row.goal_id: [e[0] for e in row.edges] for row in self.rows
         }
+        self.back_edges: Dict[GoalId, List[GoalId]] = {}
+        for row in self.rows:
+            for upper_goal, edge_type in row.edges:
+                if upper_goal not in self.back_edges:
+                    self.back_edges[upper_goal] = []
+                self.back_edges[upper_goal].append(row.goal_id)
         self.layers: Dict[int, Layer] = defaultdict(list)
         self.positions: Dict[GoalId, int] = {}
         self.edge_types: Dict[Tuple[GoalId, GoalId], EdgeType] = {
@@ -97,9 +103,7 @@ class Renderer:
                 unsorted_goals.pop(goal)
                 sorted_goals.add(goal)
                 new_layer.append(goal)
-                back_edges: List[GoalId] = [
-                    k for k, vs in self.edges.items() if goal in vs
-                ]
+                back_edges: List[GoalId] = self.back_edges.get(goal, [])
                 outgoing_edges.extend(iter(back_edges))
                 if (len(new_layer) >= self.width_limit and edges_len < 1) or (
                     len(outgoing_edges) >= self.width_limit
