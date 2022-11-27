@@ -55,6 +55,7 @@ class RenderResult:
     select: Tuple[GoalId, GoalId]
     node_opts: Dict[GoalId, Any]
     roots: Set[GoalId]
+    index: Dict[GoalId, int]
 
     def __init__(
         self,
@@ -69,6 +70,7 @@ class RenderResult:
         self.select = select or (0, 0)
         self.node_opts = node_opts or {}
         self.roots = roots or set()
+        self.index = {row.goal_id: i for i, row in enumerate(rows)}
 
     def goals(self):
         return [
@@ -78,9 +80,8 @@ class RenderResult:
         ]
 
     def by_id(self, goal_id: GoalId) -> RenderRow:
-        result = [r for r in self.rows if r.goal_id == goal_id]
-        assert len(result) == 1
-        return result[0]
+        assert goal_id in self.index
+        return self.rows[self.index[goal_id]]
 
 
 class Graph:
