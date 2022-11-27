@@ -124,6 +124,9 @@ class AutoLink(Graph):
 
     def q(self) -> RenderResult:
         render_result = self.goaltree.q()
+        if not self.back_kw:
+            # Fast exit without creating new objects
+            return render_result
         rows: List[RenderRow] = [
             RenderRow(
                 row.goal_id,
