@@ -97,17 +97,14 @@ class Renderer:
         current_layer: int = 0
         while unsorted_goals:
             new_layer: Layer = []
-            for goal, edges_len in self.candidates_for_new_layer(
-                sorted_goals, unsorted_goals
-            ):
+            candidates = self.candidates_for_new_layer(sorted_goals, unsorted_goals)
+            for goal, edges_len in candidates:
                 unsorted_goals.pop(goal)
                 sorted_goals.add(goal)
                 new_layer.append(goal)
                 back_edges: List[GoalId] = self.back_edges.get(goal, [])
                 outgoing_edges.extend(iter(back_edges))
-                if (len(new_layer) >= self.width_limit and edges_len < 1) or (
-                    len(outgoing_edges) >= self.width_limit
-                ):
+                if len(outgoing_edges) >= self.width_limit:
                     break
             incoming_edges = incoming_edges.difference(set(new_layer))
             for original_id in incoming_edges:
@@ -137,9 +134,8 @@ class Renderer:
             if g is not None
         }
 
-    @staticmethod
     def candidates_for_new_layer(
-        sorted_goals: Set[GoalId], unsorted_goals: Dict[GoalId, List[GoalId]]
+        self, sorted_goals: Set[GoalId], unsorted_goals: Dict[GoalId, List[GoalId]]
     ) -> List[Tuple[GoalId, int]]:
         candidates: List[Tuple[GoalId, int]] = [
             (goal, len(edges))
@@ -147,7 +143,7 @@ class Renderer:
             if all(v in sorted_goals for v in edges)
         ]
         candidates.sort(key=lambda x: x[1], reverse=True)
-        return candidates
+        return candidates[: self.width_limit]
 
     def reorder(self) -> None:
         for curr_layer in sorted(self.layers.keys(), reverse=True)[:-1]:
