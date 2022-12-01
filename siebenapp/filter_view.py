@@ -45,8 +45,7 @@ class FilterView(Graph):
                 row.name,
                 row.is_open,
                 row.is_switchable,
-                [e for e in row.edges if e[0] in all_ids]
-                + ([blocker(-2)] if row.goal_id in {1, -1} else []),
+                [e for e in row.edges if e[0] in all_ids],
                 {
                     # We could use `r.attrs | (...)` in Python 3.9+
                     **row.attrs,
@@ -72,7 +71,7 @@ class FilterView(Graph):
         ]
         new_roots: Set[GoalId] = {
             goal_id for goal_id in render_result.roots if goal_id in all_ids
-        } or {-2}
+        }.union({-2})
         return RenderResult(
             rows + fake_rows, select=render_result.select, roots=new_roots
         )

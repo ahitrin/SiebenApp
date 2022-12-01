@@ -187,15 +187,6 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         assert self.goaltree.q().rows
 
     @invariant()
-    @precondition(lambda self: not self.goaltree.settings("filter_switchable"))
-    def only_one_root_is_allowed_in_tree_mode(self) -> None:
-        rows = self.goaltree.q().rows
-        goals: Set[GoalId] = {row.goal_id for row in rows}
-        goals_with_parent: Set[GoalId] = set(e[0] for row in rows for e in row.edges)
-        goals_without_parent = goals.difference(goals_with_parent)
-        assert len(goals_without_parent) == 1
-
-    @invariant()
     def fake_goals_should_never_be_switchable(self) -> None:
         fake_goals = [
             (row.goal_id, row.is_switchable)
