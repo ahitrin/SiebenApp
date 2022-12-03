@@ -95,7 +95,6 @@
 2[ ]>Filter view
 > f Toggle
 
-     Filter by 'toggle' [ / 2,3,4]
 4[ ] Toggle show switchable goals [Filter: toggle]
 3[ ] Toggle show goal progress [Filter: toggle]
 2[ ] Toggle show open/closed goals [Filter: toggle]
@@ -103,26 +102,23 @@
 > n
 
 1[ ]>Filter view [ / 5]
-     Filter by 'toggle' [ / 2,3,4,5]
-5[x] Toggle zoom and unzoom [Filter: toggle]
 4[ ] Toggle show switchable goals [Filter: toggle]
 3[ ] Toggle show goal progress [Filter: toggle]
+5[x] Toggle zoom and unzoom [Filter: toggle]
 2[ ] Toggle show open/closed goals [Filter: toggle]
 > 2
 
 1[ ]_Filter view [ / 5]
-     Filter by 'toggle' [ / 2,3,4,5]
-5[x] Toggle zoom and unzoom [Filter: toggle]
 4[ ] Toggle show switchable goals [Filter: toggle]
 3[ ] Toggle show goal progress [Filter: toggle]
+5[x] Toggle zoom and unzoom [Filter: toggle]
 2[ ]>Toggle show open/closed goals [Filter: toggle]
 > c
 
 1[ ]>Filter view [ / 5]
-     Filter by 'toggle' [ / 2,3,4,5]
-5[x] Toggle zoom and unzoom [Filter: toggle]
 4[ ] Toggle show switchable goals [Filter: toggle]
 3[ ] Toggle show goal progress [Filter: toggle]
+5[x] Toggle zoom and unzoom [Filter: toggle]
 2[x] Toggle show open/closed goals [Filter: toggle]
 > f
 

@@ -55,21 +55,17 @@ class FilterView(Graph):
             for row in render_result.rows
             if row.goal_id in all_ids
         ]
-        fake_rows: List[RenderRow] = [
-            RenderRow(
+        if not accepted_ids:
+            fake_row = RenderRow(
                 -2,
                 -2,
                 f"Filter by '{self.pattern}'",
                 True,
                 False,
-                [
-                    blocker(goal_id)
-                    for goal_id in accepted_ids
-                    if isinstance(goal_id, int) and goal_id > 1
-                ],
-            ),
-        ]
-        all_rows = rows + fake_rows
-        linked_ids: Set[GoalId] = {goal_id for r in all_rows for goal_id, _ in r.edges}
-        new_roots: Set[GoalId] = all_ids.difference(linked_ids).union({-2})
-        return RenderResult(all_rows, select=render_result.select, roots=new_roots)
+                [],
+            )
+            all_ids.add(-2)
+            rows.append(fake_row)
+        linked_ids: Set[GoalId] = {goal_id for r in rows for goal_id, _ in r.edges}
+        new_roots: Set[GoalId] = all_ids.difference(linked_ids)
+        return RenderResult(rows, select=render_result.select, roots=new_roots)
