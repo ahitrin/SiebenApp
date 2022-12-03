@@ -1,5 +1,5 @@
 import math
-from typing import List, Tuple, Any, Iterable, Set
+from typing import List, Tuple, Iterable, Set
 
 from siebenapp.domain import Graph, Select, GoalId, RenderResult, RenderRow
 

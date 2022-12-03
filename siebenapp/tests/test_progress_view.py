@@ -5,7 +5,6 @@ from siebenapp.domain import (
     ToggleClose,
     RenderRow,
     RenderResult,
-    RenderResult,
     child,
     blocker,
 )

@@ -1,5 +1,3 @@
-from typing import List
-
 import pytest
 
 from siebenapp.domain import (
@@ -9,11 +7,8 @@ from siebenapp.domain import (
     blocker,
     RenderRow,
     RenderResult,
-    RenderResult,
-    GoalId,
 )
 from siebenapp.enumeration import Enumeration, BidirectionalIndex
-from siebenapp.goaltree import Goals
 from siebenapp.layers import all_layers
 from siebenapp.switchable_view import ToggleSwitchableView, SwitchableView
 from siebenapp.tests.dsl import build_goaltree, open_, previous, selected
