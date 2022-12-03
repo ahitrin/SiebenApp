@@ -37,8 +37,10 @@ class AutoLink(Graph):
                 self.back_kw[goal_id] = keyword
 
     def accept_ToggleAutoLink(self, command: ToggleAutoLink) -> None:
-        selected_id: int = self.settings("selection")
-        if selected_id in self.goaltree.closed:
+        render_result: RenderResult = self.goaltree.q()
+        selected_id: int = int(render_result.select[0])
+        selected_goal = render_result.by_id(selected_id)
+        if not selected_goal.is_open:
             self.error("Autolink cannot be set for closed goals")
             return
         if selected_id == Goals.ROOT_ID:
