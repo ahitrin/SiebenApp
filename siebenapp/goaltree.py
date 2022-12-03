@@ -308,10 +308,18 @@ class Goals(Graph):
         return lower in total
 
     def verify(self) -> None:
+        self._verify_open_goals_are_not_blocked_by_closed_goals()
+        self._verify_all_subgoals_are_accessible_from_the_root_goal()
+        self._verify_deleted_goals_have_no_dependencies()
+        self._verify_forward_and_backward_edges_match_each_other()
+        self._verify_at_most_one_parent_for_each_goal()
+
+    def _verify_open_goals_are_not_blocked_by_closed_goals(self) -> None:
         assert all(
             g.target in self.closed for p in self.closed for g in self._forward_edges(p)
         ), "Open goals could not be blocked by closed ones"
 
+    def _verify_all_subgoals_are_accessible_from_the_root_goal(self) -> None:
         queue: List[int] = [Goals.ROOT_ID]
         visited: Set[int] = set()
         while queue:
@@ -326,11 +334,13 @@ class Goals(Graph):
             x for x in self.goals if self.goals[x] is not None
         }, "All subgoals must be accessible from the root goal"
 
+    def _verify_deleted_goals_have_no_dependencies(self) -> None:
         deleted_nodes: List[int] = [g for g, v in self.goals.items() if v is None]
         assert all(
             not self._forward_edges(n) for n in deleted_nodes
         ), "Deleted goals must have no dependencies"
 
+    def _verify_forward_and_backward_edges_match_each_other(self) -> None:
         fwd_edges: Set[Tuple[int, int, EdgeType]] = set(
             (g1, g2, et) for g1, e in self.edges_forward.items() for g2, et in e.items()
         )
@@ -343,6 +353,7 @@ class Goals(Graph):
             fwd_edges == bwd_edges
         ), "Forward and backward edges must always match each other"
 
+    def _verify_at_most_one_parent_for_each_goal(self) -> None:
         parent_edges: List[Tuple[int, int]] = [
             k for k, v in self.edges.items() if v == EdgeType.PARENT
         ]
