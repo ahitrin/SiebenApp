@@ -64,14 +64,12 @@ class FilterView(Graph):
                 False,
                 [
                     blocker(goal_id)
-                    for goal_id in all_ids
+                    for goal_id in accepted_ids
                     if isinstance(goal_id, int) and goal_id > 1
                 ],
             ),
         ]
-        new_roots: Set[GoalId] = {
-            goal_id for goal_id in render_result.roots if goal_id in all_ids
-        }.union({-2})
-        return RenderResult(
-            rows + fake_rows, select=render_result.select, roots=new_roots
-        )
+        all_rows = rows + fake_rows
+        linked_ids: Set[GoalId] = {goal_id for r in all_rows for goal_id, _ in r.edges}
+        new_roots: Set[GoalId] = all_ids.difference(linked_ids).union({-2})
+        return RenderResult(all_rows, select=render_result.select, roots=new_roots)
