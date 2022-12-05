@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "d02d733a973e47ad900d33d40ba47e6383b496381a6d8c1c08ef07b5d86df0a3"
+            "sha256": "3d77d086aa5d58cc63591bfcdbee14f9972f6176ca1b250a42bd16ebf69afdeb"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -114,7 +114,7 @@
                 "sha256:0d9c601124e5a6ba9712dbc60d9c53c21e34f5f641fe83002317394311bdce14",
                 "sha256:90c1a32f1d68f940488354e36370f6cca89f0f106db09518524c88d6ed83f382"
             ],
-            "markers": "python_full_version >= '3.6.0'",
+            "markers": "python_version >= '3.6'",
             "version": "==2022.9.24"
         },
         "charset-normalizer": {
@@ -122,7 +122,7 @@
                 "sha256:5a3d016c7c547f69d6f81fb0db9449ce888b418b5b9952cc5e6e66843e9dd845",
                 "sha256:83e9a75d1911279afd89352c68b45348559d1fc0506b054b346651b5e7fee29f"
             ],
-            "markers": "python_full_version >= '3.6.0'",
+            "markers": "python_version >= '3.6'",
             "version": "==2.1.1"
         },
         "click": {
@@ -249,11 +249,11 @@
         },
         "hypothesis": {
             "hashes": [
-                "sha256:4eb2875097a07553a1006cb2b96fab21682e4359b138b2ae3c5f5d8b3f5a8bf1",
-                "sha256:af05e24b123c9413b8752bbf822105dbb112f56456fb240723d7f410eebf78bb"
+                "sha256:39c06cd49f491204380d7c7aa45389d3fb84ee80ea1e3f10afc744044aceb751",
+                "sha256:3e8a1e061a6bfa3d8c282dafec100f2c8c527ea50b6560e9a33adf0e2e5fef8f"
             ],
             "index": "pypi",
-            "version": "==6.59.0"
+            "version": "==6.60.0"
         },
         "idna": {
             "hashes": [
@@ -326,7 +326,7 @@
                 "sha256:dd47c42927d89ab911e606518907cc2d3a1f38bbd026385970643f9c5b8ecfeb",
                 "sha256:ef103e05f519cdc783ae24ea4e2e0f508a9c99b2d4969652eed6a2e1ea5bd522"
             ],
-            "markers": "python_full_version >= '3.6.0'",
+            "markers": "python_version >= '3.6'",
             "version": "==21.3"
         },
         "pathspec": {
@@ -350,7 +350,7 @@
                 "sha256:4224373bacce55f955a878bf9cfa763c1e360858e330072059e10bad68531159",
                 "sha256:74134bbf457f031a36d68416e1509f34bd5ccc019f0bcc952c7b909d06b37bd3"
             ],
-            "markers": "python_full_version >= '3.6.0'",
+            "markers": "python_version >= '3.6'",
             "version": "==1.0.0"
         },
         "py-spy": {
