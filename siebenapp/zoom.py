@@ -119,18 +119,16 @@ class Zoom(Graph):
         return self.goaltree.settings(key)
 
     def _build_visible_goals(self, render_result: RenderResult) -> Set[GoalId]:
-        rows = render_result.rows
         current_zoom_root = self.zoom_root[-1]
         if current_zoom_root == Goals.ROOT_ID:
-            return set(row.goal_id for row in rows)
-        index: Dict[GoalId, RenderRow] = {row.goal_id: row for row in rows}
+            return set(row.goal_id for row in render_result.rows)
         visible_goals: Set[GoalId] = {current_zoom_root}
-        edges_to_visit = set(index[current_zoom_root].edges)
+        edges_to_visit = set(render_result.by_id(current_zoom_root).edges)
         while edges_to_visit:
             edge_id, edge_type = edges_to_visit.pop()
             visible_goals.add(edge_id)
             if edge_type == EdgeType.PARENT:
-                edges_to_visit.update(index[edge_id].edges)
+                edges_to_visit.update(render_result.by_id(edge_id).edges)
         return visible_goals
 
     def verify(self) -> None:
