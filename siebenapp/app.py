@@ -61,7 +61,7 @@ class GoalWidget(QWidget, Ui_GoalBody):
         if isinstance(row.goal_id, int) and row.goal_id >= 0:
             self.label_number.setText(str(row.goal_id))
         if row.attrs:
-            row_text = "\n".join(f"{k}: {row.attrs[k]}" for k in row.attrs)
+            row_text = "\n".join(f"{k}: {split_long(row.attrs[k])}" for k in row.attrs)
             self.label_attrs.setText(row_text)
             self.label_attrs.setVisible(True)
         else:
