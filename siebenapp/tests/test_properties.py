@@ -1,6 +1,7 @@
 import os
 import sqlite3
 from contextlib import closing
+from dataclasses import asdict
 from typing import Set
 
 from hypothesis import settings, assume, note, event
@@ -247,4 +248,6 @@ def build_goals(conn) -> Graph:
             f"Goals: {goal_list}, Edges: {edges}, Settings: {db_settings}, Zoom: {zoom_data}, Autolink: {autolink_data}"
         )
         goals: Goals = Goals.build(goal_list, edges, db_settings)
-        return all_layers(goals, zoom_data, autolink_data)
+        wrapped = all_layers(goals, zoom_data, autolink_data)
+        note(str(asdict(wrapped.q())))
+        return wrapped
