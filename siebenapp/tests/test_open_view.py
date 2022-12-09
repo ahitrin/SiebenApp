@@ -182,7 +182,7 @@ def test_still_show_root_when_it_is_closed_and_unselected() -> None:
     )
 
 
-def test_add_dangling_goals_to_old_root_on_zoom() -> None:
+def test_do_not_add_dangling_goals_to_old_root_on_zoom() -> None:
     v = OpenView(
         Zoom(
             build_goaltree(
@@ -202,8 +202,7 @@ def test_add_dangling_goals_to_old_root_on_zoom() -> None:
             ),
             RenderRow(4, 4, "Previous top", False, False, []),
             RenderRow(5, 5, "Current top", True, True, []),
-            RenderRow(-1, -1, "Root goal", True, False, [blocker(2)]),
         ],
         select=(2, 4),
-        roots={-1, 4},
+        roots={2, 4},
     )

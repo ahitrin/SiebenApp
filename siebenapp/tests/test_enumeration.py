@@ -304,7 +304,7 @@ def test_selection_cache_should_avoid_overflow(goal_chain_11) -> None:
 def test_do_not_enumerate_goals_with_negative_id() -> None:
     g = all_layers(
         build_goaltree(
-            open_(1, "Root goal", [2]),
+            open_(1, "Root goal", [2], select=previous),
             open_(2, "Zoomed", [3], select=selected),
             open_(3, "Top"),
         )
@@ -316,7 +316,7 @@ def test_do_not_enumerate_goals_with_negative_id() -> None:
             RenderRow(3, 3, "Top", True, True, []),
             RenderRow(-1, -1, "Root goal", True, False, [blocker(2)]),
         ],
-        select=(2, 2),
+        select=(2, -1),
         roots={-1},
     )
     e = Enumeration(g)
@@ -326,7 +326,7 @@ def test_do_not_enumerate_goals_with_negative_id() -> None:
             RenderRow(2, 3, "Top", True, True, []),
             RenderRow(-1, -1, "Root goal", True, False, [blocker(1)]),
         ],
-        select=(1, 1),
+        select=(1, -1),
         roots={-1},
     )
 
