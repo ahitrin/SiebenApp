@@ -54,9 +54,10 @@ class Zoom(Graph):
             return render_result
         origin_root: RenderRow = render_result.by_id(list(render_result.roots)[0])
         assert origin_root.goal_id == Goals.ROOT_ID
-        visible_goals = self._build_visible_goals(render_result)
-        selected_goals: Set[GoalId] = set(render_result.select).difference(
-            {Goals.ROOT_ID}
+        visible_goals = (
+            self._build_visible_goals(render_result)
+            .union(set(render_result.select))
+            .difference({Goals.ROOT_ID})
         )
         rows: List[RenderRow] = [
             RenderRow(
@@ -65,7 +66,7 @@ class Zoom(Graph):
                 r.name,
                 r.is_open,
                 r.is_switchable,
-                [e for e in r.edges if e[0] in visible_goals.union(selected_goals)],
+                [e for e in r.edges if e[0] in visible_goals],
                 {
                     # We could use `r.attrs | (...)` in Python 3.9+
                     **r.attrs,
@@ -77,7 +78,7 @@ class Zoom(Graph):
                 },
             )
             for r in render_result.rows
-            if r.goal_id in visible_goals.union(selected_goals)
+            if r.goal_id in visible_goals
         ]
         if render_result.select[1] == Goals.ROOT_ID:
             rows.append(
@@ -90,7 +91,7 @@ class Zoom(Graph):
                     [
                         blocker(goal_id)
                         for goal_id, _ in origin_root.edges
-                        if goal_id in visible_goals.union(selected_goals)
+                        if goal_id in visible_goals
                     ],
                 )
             )
