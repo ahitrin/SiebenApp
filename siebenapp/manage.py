@@ -241,9 +241,9 @@ def extract_subtree(source_goals: Graph, goal_id: int) -> Graph:
         )
         goals_to_add.update(
             set(
-                edge[0]
-                for edge in row.edges
-                if edge[1] == EdgeType.PARENT and edge[0] not in target_goals
+                goal
+                for goal, edge_type in row.edges
+                if edge_type == EdgeType.PARENT and goal not in target_goals
             )
         )
     edges_data = [edge for edge in edges_data if edge[1] in target_goals]
