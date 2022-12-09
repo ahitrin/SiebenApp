@@ -5,7 +5,7 @@ from os import path
 from typing import List, Optional, Set
 
 from siebenapp.cli import IO, ConsoleIO
-from siebenapp.domain import EdgeType, Graph, RenderRow
+from siebenapp.domain import EdgeType, Graph, RenderRow, GoalId
 from siebenapp.goaltree import Goals, GoalsData, EdgesData, OptionsData
 from siebenapp.layers import get_root, persistent_layers, all_layers
 from siebenapp.open_view import ToggleOpenView
@@ -226,8 +226,8 @@ def extract_subtree(source_goals: Graph, goal_id: int) -> Graph:
     assert (
         render_result.by_id(goal_id) is not None
     ), f"Cannot find goal with id {goal_id}"
-    target_goals: Set[int] = set()
-    goals_to_add: Set[int] = {goal_id}
+    target_goals: Set[GoalId] = set()
+    goals_to_add: Set[GoalId] = {goal_id}
     goals_data: GoalsData = []
     edges_data: EdgesData = []
     options_data: OptionsData = []
@@ -235,19 +235,15 @@ def extract_subtree(source_goals: Graph, goal_id: int) -> Graph:
         goal = goals_to_add.pop()
         row = render_result.by_id(goal)
         target_goals.add(goal)
-        goals_data.append((goal, row.name, row.is_open))
+        goals_data.append((int(goal), row.name, row.is_open))
         edges_data.extend(
-            (goal, target_, type_)
-            for target_, type_ in row.edges
-            if isinstance(goal, int) and isinstance(target_, int)
+            (int(goal), int(target_), type_) for target_, type_ in row.edges
         )
         goals_to_add.update(
             set(
                 edge[0]
                 for edge in row.edges
-                if edge[1] == EdgeType.PARENT
-                and edge[0] not in target_goals
-                and isinstance(edge[0], int)
+                if edge[1] == EdgeType.PARENT and edge[0] not in target_goals
             )
         )
     edges_data = [edge for edge in edges_data if edge[1] in target_goals]
