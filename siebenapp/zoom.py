@@ -58,7 +58,7 @@ class Zoom(Graph):
         selected_goals: Set[GoalId] = set(render_result.select).difference(
             {Goals.ROOT_ID}
         )
-        zoomed_rows: List[RenderRow] = [
+        rows: List[RenderRow] = [
             RenderRow(
                 r.goal_id,
                 r.raw_id,
@@ -79,26 +79,28 @@ class Zoom(Graph):
             for r in render_result.rows
             if r.goal_id in visible_goals.union(selected_goals)
         ]
-        fake_root = RenderRow(
-            -1,
-            -1,
-            origin_root.name,
-            origin_root.is_open,
-            False,
-            sorted(
-                list(
-                    blocker(int(goal_id))
-                    for goal_id in selected_goals.difference(visible_goals).union(
-                        {self.zoom_root[-1]}
+        rows.append(
+            RenderRow(
+                -1,
+                -1,
+                origin_root.name,
+                origin_root.is_open,
+                False,
+                sorted(
+                    list(
+                        blocker(int(goal_id))
+                        for goal_id in selected_goals.difference(visible_goals).union(
+                            {self.zoom_root[-1]}
+                        )
                     )
-                )
-            ),
+                ),
+            )
         )
         new_select = (
             _replace_with_fake(render_result.select[0]),
             _replace_with_fake(render_result.select[1]),
         )
-        return RenderResult(zoomed_rows + [fake_root], select=new_select, roots={-1})
+        return RenderResult(rows, select=new_select, roots={-1})
 
     def accept_ToggleClose(self, command: ToggleClose):
         if self.settings("selection") == self.zoom_root[-1]:
