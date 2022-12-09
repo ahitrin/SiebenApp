@@ -24,20 +24,20 @@ def _zoom_events(goals: Graph) -> List[Tuple]:
 
 
 def test_single_goal_could_not_be_zoomed() -> None:
-    goals = Zoom(Goals("Root"))
+    goals = Zoom(Goals("Root goal"))
     assert goals.q() == RenderResult(
-        [RenderRow(1, 1, "Root", True, True, [])], select=(1, 1), roots={1}
+        [RenderRow(1, 1, "Root goal", True, True, [])], select=(1, 1), roots={1}
     )
     goals.accept(ToggleZoom())
     assert goals.q() == RenderResult(
-        [RenderRow(1, 1, "Root", True, True, [])], select=(1, 1), roots={1}
+        [RenderRow(1, 1, "Root goal", True, True, [])], select=(1, 1), roots={1}
     )
 
 
 def test_skip_intermediate_goal_during_zoom() -> None:
     goals = Zoom(
         build_goaltree(
-            open_(1, "Root", [2]),
+            open_(1, "Root goal", [2]),
             open_(2, "Hidden", [3]),
             open_(3, "Zoomed", select=selected),
         )
@@ -46,7 +46,7 @@ def test_skip_intermediate_goal_during_zoom() -> None:
     assert goals.q() == RenderResult(
         [
             RenderRow(3, 3, "Zoomed", True, True, [], {"Zoom": "root"}),
-            RenderRow(-1, -1, "Root", True, False, [blocker(3)]),
+            RenderRow(-1, -1, "Root goal", True, False, [blocker(3)]),
         ],
         select=(3, 3),
         roots={-1},
@@ -56,7 +56,7 @@ def test_skip_intermediate_goal_during_zoom() -> None:
 def test_hide_neighbour_goals_during_zoom() -> None:
     goals = Zoom(
         build_goaltree(
-            open_(1, "Root", [2, 3, 4]),
+            open_(1, "Root goal", [2, 3, 4]),
             open_(2, "Zoomed", select=selected),
             open_(3, "Hidden 1"),
             open_(4, "Hidden 2"),
@@ -66,7 +66,7 @@ def test_hide_neighbour_goals_during_zoom() -> None:
     assert goals.q() == RenderResult(
         [
             RenderRow(2, 2, "Zoomed", True, True, [], {"Zoom": "root"}),
-            RenderRow(-1, -1, "Root", True, False, [blocker(2)]),
+            RenderRow(-1, -1, "Root goal", True, False, [blocker(2)]),
         ],
         select=(2, 2),
         roots={-1},
@@ -76,7 +76,7 @@ def test_hide_neighbour_goals_during_zoom() -> None:
 def test_do_not_hide_subgoals() -> None:
     goals = Zoom(
         build_goaltree(
-            open_(1, "Root", [2]),
+            open_(1, "Root goal", [2]),
             open_(2, "Zoomed", [3], select=selected),
             open_(3, "Visible"),
         )
@@ -86,7 +86,7 @@ def test_do_not_hide_subgoals() -> None:
         [
             RenderRow(2, 2, "Zoomed", True, False, [child(3)], {"Zoom": "root"}),
             RenderRow(3, 3, "Visible", True, True, []),
-            RenderRow(-1, -1, "Root", True, False, [blocker(2)]),
+            RenderRow(-1, -1, "Root goal", True, False, [blocker(2)]),
         ],
         select=(2, 2),
         roots={-1},
@@ -97,7 +97,7 @@ def test_do_not_hide_subgoals() -> None:
             RenderRow(2, 2, "Zoomed", True, False, [child(3)], {"Zoom": "root"}),
             RenderRow(3, 3, "Visible", True, False, [child(4)]),
             RenderRow(4, 4, "More children", True, True, []),
-            RenderRow(-1, -1, "Root", True, False, [blocker(2)]),
+            RenderRow(-1, -1, "Root goal", True, False, [blocker(2)]),
         ],
         select=(2, 2),
         roots={-1},
@@ -107,7 +107,7 @@ def test_do_not_hide_subgoals() -> None:
 def test_hide_subgoals_of_blockers() -> None:
     goals = Zoom(
         build_goaltree(
-            open_(1, "Root", [2, 3]),
+            open_(1, "Root goal", [2, 3]),
             open_(2, "Zoomed", blockers=[3], select=selected),
             open_(3, "Blocker", [4]),
             open_(4, "Should be hidden"),
@@ -118,7 +118,7 @@ def test_hide_subgoals_of_blockers() -> None:
         [
             RenderRow(2, 2, "Zoomed", True, False, [blocker(3)], {"Zoom": "root"}),
             RenderRow(3, 3, "Blocker", True, False, []),
-            RenderRow(-1, -1, "Root", True, False, [blocker(2)]),
+            RenderRow(-1, -1, "Root goal", True, False, [blocker(2)]),
         ],
         select=(2, 2),
         roots={-1},
@@ -128,7 +128,7 @@ def test_hide_subgoals_of_blockers() -> None:
 def test_double_zoom_means_unzoom() -> None:
     goals = Zoom(
         build_goaltree(
-            open_(1, "Root", [2, 3]),
+            open_(1, "Root goal", [2, 3]),
             open_(2, "Zoomed", select=selected),
             open_(3, "Hidden"),
         )
@@ -137,7 +137,7 @@ def test_double_zoom_means_unzoom() -> None:
     assert goals.q() == RenderResult(
         [
             RenderRow(2, 2, "Zoomed", True, True, [], {"Zoom": "root"}),
-            RenderRow(-1, -1, "Root", True, False, [blocker(2)]),
+            RenderRow(-1, -1, "Root goal", True, False, [blocker(2)]),
         ],
         select=(2, 2),
         roots={-1},
@@ -145,7 +145,7 @@ def test_double_zoom_means_unzoom() -> None:
     goals.accept(ToggleZoom())
     assert goals.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
+            RenderRow(1, 1, "Root goal", True, False, [child(2), child(3)]),
             RenderRow(2, 2, "Zoomed", True, True, []),
             RenderRow(3, 3, "Hidden", True, True, []),
         ],
@@ -157,7 +157,7 @@ def test_double_zoom_means_unzoom() -> None:
 def test_stacked_zoom() -> None:
     goals = Zoom(
         build_goaltree(
-            open_(1, "Root", [2]),
+            open_(1, "Root goal", [2]),
             open_(2, "Skip me", [3]),
             open_(3, "Intermediate zoom", [4], select=selected),
             open_(4, "Next zoom", [5]),
@@ -170,7 +170,7 @@ def test_stacked_zoom() -> None:
             RenderRow(3, 3, "Intermediate zoom", True, False, [child(4)]),
             RenderRow(4, 4, "Next zoom", True, False, [child(5)], {"Zoom": "root"}),
             RenderRow(5, 5, "Top", True, True, []),
-            RenderRow(-1, -1, "Root", True, False, [blocker(3), blocker(4)]),
+            RenderRow(-1, -1, "Root goal", True, False, [blocker(3), blocker(4)]),
         ],
         select=(4, 3),
         roots={-1},
@@ -184,7 +184,7 @@ def test_stacked_zoom() -> None:
             ),
             RenderRow(4, 4, "Next zoom", True, False, [child(5)]),
             RenderRow(5, 5, "Top", True, True, []),
-            RenderRow(-1, -1, "Root", True, False, [blocker(3)]),
+            RenderRow(-1, -1, "Root goal", True, False, [blocker(3)]),
         ],
         select=(4, 3),
         roots={-1},
@@ -194,7 +194,7 @@ def test_stacked_zoom() -> None:
 def test_selection_should_not_be_changed_if_selected_goal_is_visible() -> None:
     goals = Zoom(
         build_goaltree(
-            open_(1, "Root", [2]),
+            open_(1, "Root goal", [2]),
             open_(2, "Select root", [3], select=selected),
             open_(3, "Previous selected", select=previous),
         )
@@ -204,7 +204,7 @@ def test_selection_should_not_be_changed_if_selected_goal_is_visible() -> None:
         [
             RenderRow(2, 2, "Select root", True, False, [child(3)], {"Zoom": "root"}),
             RenderRow(3, 3, "Previous selected", True, True, []),
-            RenderRow(-1, -1, "Root", True, False, [blocker(2)]),
+            RenderRow(-1, -1, "Root goal", True, False, [blocker(2)]),
         ],
         select=(2, 3),
         roots={-1},
@@ -214,7 +214,7 @@ def test_selection_should_not_be_changed_if_selected_goal_is_visible() -> None:
 def test_selection_should_not_be_changed_if_selected_goal_is_sibling_to_zoom_root() -> None:
     goals = Zoom(
         build_goaltree(
-            open_(1, "Root", [2, 3]),
+            open_(1, "Root goal", [2, 3]),
             open_(2, "Previous selected", select=previous),
             open_(3, "Zoomed", select=selected),
         )
@@ -225,7 +225,7 @@ def test_selection_should_not_be_changed_if_selected_goal_is_sibling_to_zoom_roo
         [
             RenderRow(2, 2, "Previous selected", True, True, []),
             RenderRow(3, 3, "Zoomed", True, True, [], {"Zoom": "root"}),
-            RenderRow(-1, -1, "Root", True, False, [blocker(2), blocker(3)]),
+            RenderRow(-1, -1, "Root goal", True, False, [blocker(2), blocker(3)]),
         ],
         select=(3, 2),
         roots={-1},
@@ -235,7 +235,7 @@ def test_selection_should_not_be_changed_if_selected_goal_is_sibling_to_zoom_roo
 def test_selection_should_not_be_changed_if_selected_goal_is_not_a_child_of_zoom_root() -> None:
     goals = Zoom(
         build_goaltree(
-            open_(1, "Root", [2, 4]),
+            open_(1, "Root goal", [2, 4]),
             open_(2, "Blocker", [3]),
             open_(3, "Previous selected", select=previous),
             open_(4, "Zoomed", blockers=[2], select=selected),
@@ -248,7 +248,7 @@ def test_selection_should_not_be_changed_if_selected_goal_is_not_a_child_of_zoom
             RenderRow(2, 2, "Blocker", True, False, [child(3)]),
             RenderRow(3, 3, "Previous selected", True, True, []),
             RenderRow(4, 4, "Zoomed", True, False, [blocker(2)], {"Zoom": "root"}),
-            RenderRow(-1, -1, "Root", True, False, [blocker(3), blocker(4)]),
+            RenderRow(-1, -1, "Root goal", True, False, [blocker(3), blocker(4)]),
         ],
         select=(4, 3),
         roots={-1},
@@ -276,7 +276,7 @@ def test_previous_selection_should_not_be_changed_or_reset_after_zoom() -> None:
 def test_selection_should_not_be_changed_on_stacked_unzoom_a_long_chain_of_blockers() -> None:
     goals = Zoom(
         build_goaltree(
-            open_(1, "Root", blockers=[2]),
+            open_(1, "Root goal", blockers=[2]),
             open_(2, "A", blockers=[3], select=selected),
             open_(3, "D", blockers=[4]),
             open_(4, "E"),
@@ -296,7 +296,7 @@ def test_selection_should_not_be_changed_on_stacked_unzoom_a_long_chain_of_block
             RenderRow(2, 2, "A", True, False, [blocker(3)], {"Zoom": "root"}),
             RenderRow(3, 3, "D", True, False, [blocker(4)]),
             RenderRow(4, 4, "E", True, True, []),
-            RenderRow(-1, -1, "Root", True, False, [blocker(2), blocker(4)]),
+            RenderRow(-1, -1, "Root goal", True, False, [blocker(2), blocker(4)]),
         ],
         select=(3, 4),
         roots={-1},
@@ -307,7 +307,7 @@ def test_selection_should_not_be_changed_on_stacked_unzoom_a_long_chain_of_block
 def test_unlink_for_goal_outside_of_zoomed_tree_should_not_cause_selection_change() -> None:
     goals = Zoom(
         build_goaltree(
-            open_(1, "Root", [2, 3]),
+            open_(1, "Root goal", [2, 3]),
             open_(2, "Out of zoom"),
             open_(3, "Zoom root", blockers=[2], select=selected),
         )
@@ -322,7 +322,7 @@ def test_unlink_for_goal_outside_of_zoomed_tree_should_not_cause_selection_chang
         [
             RenderRow(2, 2, "Out of zoom", True, True, []),
             RenderRow(3, 3, "Zoom root", True, True, [], {"Zoom": "root"}),
-            RenderRow(-1, -1, "Root", True, False, [blocker(2), blocker(3)]),
+            RenderRow(-1, -1, "Root goal", True, False, [blocker(2), blocker(3)]),
         ],
         select=(2, 3),
         roots={-1},
@@ -332,7 +332,7 @@ def test_unlink_for_goal_outside_of_zoomed_tree_should_not_cause_selection_chang
 def test_closing_zoom_root_should_cause_unzoom() -> None:
     goals = Zoom(
         build_goaltree(
-            open_(1, "Root", [2]),
+            open_(1, "Root goal", [2]),
             open_(2, "Intermediate", [3]),
             open_(3, "Zoom here", select=selected),
         )
@@ -340,7 +340,7 @@ def test_closing_zoom_root_should_cause_unzoom() -> None:
     goals.accept_all(ToggleZoom(), ToggleClose())
     assert goals.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, False, [child(2)]),
+            RenderRow(1, 1, "Root goal", True, False, [child(2)]),
             RenderRow(2, 2, "Intermediate", True, True, [child(3)]),
             RenderRow(3, 3, "Zoom here", False, True, []),
         ],
@@ -352,7 +352,7 @@ def test_closing_zoom_root_should_cause_unzoom() -> None:
 def test_goal_closing_must_not_cause_root_selection() -> None:
     goals = Zoom(
         build_goaltree(
-            open_(1, "Root", [2]),
+            open_(1, "Root goal", [2]),
             open_(2, "Zoom root", [3], select=selected),
             open_(3, "Close me"),
         )
@@ -362,7 +362,7 @@ def test_goal_closing_must_not_cause_root_selection() -> None:
         [
             RenderRow(2, 2, "Zoom root", True, False, [child(3)], {"Zoom": "root"}),
             RenderRow(3, 3, "Close me", True, True, []),
-            RenderRow(-1, -1, "Root", True, False, [blocker(2)]),
+            RenderRow(-1, -1, "Root goal", True, False, [blocker(2)]),
         ],
         select=(2, 2),
         roots={-1},
@@ -372,7 +372,7 @@ def test_goal_closing_must_not_cause_root_selection() -> None:
         [
             RenderRow(2, 2, "Zoom root", True, True, [child(3)], {"Zoom": "root"}),
             RenderRow(3, 3, "Close me", False, True, []),
-            RenderRow(-1, -1, "Root", True, False, [blocker(2)]),
+            RenderRow(-1, -1, "Root goal", True, False, [blocker(2)]),
         ],
         select=(2, 2),
         roots={-1},
@@ -382,7 +382,7 @@ def test_goal_closing_must_not_cause_root_selection() -> None:
 def test_goal_reopening_must_not_change_selection() -> None:
     goals = Zoom(
         build_goaltree(
-            open_(1, "Root", [2]),
+            open_(1, "Root goal", [2]),
             open_(2, "Zoom root", [3], select=selected),
             open_(3, "Reopen me"),
         )
@@ -396,7 +396,7 @@ def test_goal_reopening_must_not_change_selection() -> None:
         [
             RenderRow(2, 2, "Zoom root", True, True, [child(3)], {"Zoom": "root"}),
             RenderRow(3, 3, "Reopen me", False, True, []),
-            RenderRow(-1, -1, "Root", True, False, [blocker(2)]),
+            RenderRow(-1, -1, "Root goal", True, False, [blocker(2)]),
         ],
         select=(2, 2),
         roots={-1},
@@ -406,7 +406,7 @@ def test_goal_reopening_must_not_change_selection() -> None:
         [
             RenderRow(2, 2, "Zoom root", True, False, [child(3)], {"Zoom": "root"}),
             RenderRow(3, 3, "Reopen me", True, True, []),
-            RenderRow(-1, -1, "Root", True, False, [blocker(2)]),
+            RenderRow(-1, -1, "Root goal", True, False, [blocker(2)]),
         ],
         select=(3, 2),
         roots={-1},
@@ -416,7 +416,7 @@ def test_goal_reopening_must_not_change_selection() -> None:
 def test_deleting_zoom_root_should_cause_unzoom() -> None:
     goals = Zoom(
         build_goaltree(
-            open_(1, "Root", [2]),
+            open_(1, "Root goal", [2]),
             open_(2, "Intermediate", [3]),
             open_(3, "Zoom here", select=selected),
         )
@@ -424,7 +424,7 @@ def test_deleting_zoom_root_should_cause_unzoom() -> None:
     goals.accept_all(ToggleZoom(), Delete())
     assert goals.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, False, [child(2)]),
+            RenderRow(1, 1, "Root goal", True, False, [child(2)]),
             RenderRow(2, 2, "Intermediate", True, True, []),
         ],
         select=(2, 2),
@@ -435,7 +435,7 @@ def test_deleting_zoom_root_should_cause_unzoom() -> None:
 def test_deleting_parent_goal_should_cause_unzoom() -> None:
     goals = Zoom(
         build_goaltree(
-            open_(1, "Root", [2]),
+            open_(1, "Root goal", [2]),
             open_(2, "Intermediate", [3], select=previous),
             open_(3, "Zoom here", [4], select=selected),
             open_(4, "Next zoom", [5]),
@@ -447,7 +447,7 @@ def test_deleting_parent_goal_should_cause_unzoom() -> None:
         [
             RenderRow(2, 2, "Intermediate", True, False, []),
             RenderRow(5, 5, "Final zoom", True, True, [], {"Zoom": "root"}),
-            RenderRow(-1, -1, "Root", True, False, [blocker(2), blocker(5)]),
+            RenderRow(-1, -1, "Root goal", True, False, [blocker(2), blocker(5)]),
         ],
         select=(5, 2),
         roots={-1},
@@ -460,7 +460,7 @@ def test_deleting_parent_goal_should_cause_unzoom() -> None:
     goals.accept_all(Select(2), Delete())
     assert goals.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, True, []),
+            RenderRow(1, 1, "Root goal", True, True, []),
         ],
         select=(1, 1),
         roots={1},
@@ -478,7 +478,7 @@ def test_deleting_parent_goal_should_cause_unzoom() -> None:
 def test_goal_deletion_must_not_cause_root_selection() -> None:
     goals = Zoom(
         build_goaltree(
-            open_(1, "Root", [2]),
+            open_(1, "Root goal", [2]),
             open_(2, "Hidden", [3]),
             open_(3, "Zoom root", [4], select=selected),
             open_(4, "Deleted"),
@@ -489,7 +489,7 @@ def test_goal_deletion_must_not_cause_root_selection() -> None:
         [
             RenderRow(3, 3, "Zoom root", True, False, [child(4)], {"Zoom": "root"}),
             RenderRow(4, 4, "Deleted", True, True, []),
-            RenderRow(-1, -1, "Root", True, False, [blocker(3)]),
+            RenderRow(-1, -1, "Root goal", True, False, [blocker(3)]),
         ],
         select=(3, 3),
         roots={-1},
@@ -498,7 +498,7 @@ def test_goal_deletion_must_not_cause_root_selection() -> None:
     assert goals.q() == RenderResult(
         [
             RenderRow(3, 3, "Zoom root", True, True, [], {"Zoom": "root"}),
-            RenderRow(-1, -1, "Root", True, False, [blocker(3)]),
+            RenderRow(-1, -1, "Root goal", True, False, [blocker(3)]),
         ],
         select=(3, 3),
         roots={-1},
@@ -508,7 +508,7 @@ def test_goal_deletion_must_not_cause_root_selection() -> None:
 def test_zoom_events() -> None:
     goals = Zoom(
         build_goaltree(
-            open_(1, "Root", [2]),
+            open_(1, "Root goal", [2]),
             open_(2, "First zoom", [3], select=selected),
             open_(3, "Intermediate", [4]),
             open_(4, "Second zoom", [5]),
@@ -529,7 +529,7 @@ def test_zoom_events() -> None:
 def test_do_not_duplicate_parent_prev_selection() -> None:
     goals = Zoom(
         build_goaltree(
-            open_(1, "Root", [2], select=previous),
+            open_(1, "Root goal", [2], select=previous),
             open_(2, "Zoom root", select=selected),
         )
     )
@@ -538,7 +538,7 @@ def test_do_not_duplicate_parent_prev_selection() -> None:
     assert goals.q() == RenderResult(
         [
             RenderRow(2, 2, "Zoom root", True, True, [], {"Zoom": "root"}),
-            RenderRow(-1, -1, "Root", True, False, [blocker(2)]),
+            RenderRow(-1, -1, "Root goal", True, False, [blocker(2)]),
         ],
         select=(2, -1),
         roots={-1},
@@ -548,13 +548,13 @@ def test_do_not_duplicate_parent_prev_selection() -> None:
 def test_zoom_root_must_not_be_switchable() -> None:
     goals = Zoom(
         build_goaltree(
-            open_(1, "Root", [2], select=previous),
+            open_(1, "Root goal", [2], select=previous),
             clos_(2, "Closed", [], select=selected),
         )
     )
     assert goals.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, True, [child(2)]),
+            RenderRow(1, 1, "Root goal", True, True, [child(2)]),
             RenderRow(2, 2, "Closed", False, True, []),
         ],
         select=(2, 1),
@@ -564,7 +564,7 @@ def test_zoom_root_must_not_be_switchable() -> None:
     assert goals.q() == RenderResult(
         [
             RenderRow(2, 2, "Closed", False, True, [], {"Zoom": "root"}),
-            RenderRow(-1, -1, "Root", True, False, [blocker(2)]),
+            RenderRow(-1, -1, "Root goal", True, False, [blocker(2)]),
         ],
         select=(2, -1),
         roots={-1},
@@ -575,7 +575,7 @@ def test_zoom_attempt_out_of_stack() -> None:
     messages: List[str] = []
     goals = Zoom(
         build_goaltree(
-            open_(1, "Root", [2, 3]),
+            open_(1, "Root goal", [2, 3]),
             open_(2, "Selected and out of tree", select=previous),
             open_(3, "Zoom root", [4], select=selected),
             open_(4, "Top"),
@@ -588,7 +588,7 @@ def test_zoom_attempt_out_of_stack() -> None:
             RenderRow(2, 2, "Selected and out of tree", True, True, []),
             RenderRow(3, 3, "Zoom root", True, False, [child(4)], {"Zoom": "root"}),
             RenderRow(4, 4, "Top", True, True, []),
-            RenderRow(-1, -1, "Root", True, False, [blocker(2), blocker(3)]),
+            RenderRow(-1, -1, "Root goal", True, False, [blocker(2), blocker(3)]),
         ],
         select=(2, 2),
         roots={-1},
