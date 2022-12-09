@@ -304,7 +304,7 @@ def test_selection_cache_should_avoid_overflow(goal_chain_11) -> None:
 def test_do_not_enumerate_goals_with_negative_id() -> None:
     g = all_layers(
         build_goaltree(
-            open_(1, "Root", [2]),
+            open_(1, "Root goal", [2]),
             open_(2, "Zoomed", [3], select=selected),
             open_(3, "Top"),
         )
@@ -312,9 +312,9 @@ def test_do_not_enumerate_goals_with_negative_id() -> None:
     g.accept(ToggleZoom())
     assert g.q() == RenderResult(
         [
-            RenderRow(2, 2, "Zoomed", True, False, [child(3)], {"Zoom": "root"}),
+            RenderRow(2, 2, "Zoomed", True, False, [child(3)], {"Zoom": "Root goal"}),
             RenderRow(3, 3, "Top", True, True, []),
-            RenderRow(-1, -1, "Root", True, False, [blocker(2)]),
+            RenderRow(-1, -1, "Root goal", True, False, [blocker(2)]),
         ],
         select=(2, 2),
         roots={-1},
@@ -322,9 +322,9 @@ def test_do_not_enumerate_goals_with_negative_id() -> None:
     e = Enumeration(g)
     assert e.q() == RenderResult(
         [
-            RenderRow(1, 2, "Zoomed", True, False, [child(2)], {"Zoom": "root"}),
+            RenderRow(1, 2, "Zoomed", True, False, [child(2)], {"Zoom": "Root goal"}),
             RenderRow(2, 3, "Top", True, True, []),
-            RenderRow(-1, -1, "Root", True, False, [blocker(1)]),
+            RenderRow(-1, -1, "Root goal", True, False, [blocker(1)]),
         ],
         select=(1, 1),
         roots={-1},

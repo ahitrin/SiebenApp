@@ -88,7 +88,7 @@ def test_non_switchable_goals_disappear_on_selection_change() -> None:
 
 def test_how_should_we_deal_with_zooming() -> None:
     g = build_goaltree(
-        open_(1, "Root", [2]),
+        open_(1, "Root goal", [2]),
         open_(2, "Zoomed", blockers=[3], select=selected),
         open_(3, "Ex-top"),
     )
@@ -96,7 +96,7 @@ def test_how_should_we_deal_with_zooming() -> None:
     v.accept_all(ToggleZoom(), ToggleSwitchableView())
     assert v.q() == RenderResult(
         [
-            RenderRow(2, 2, "Zoomed", True, False, [], {"Zoom": "root"}),
+            RenderRow(2, 2, "Zoomed", True, False, [], {"Zoom": "Root goal"}),
             RenderRow(3, 3, "Ex-top", True, True, []),
         ],
         select=(2, 2),
@@ -105,7 +105,7 @@ def test_how_should_we_deal_with_zooming() -> None:
     v.accept(Add("Unexpectedly hidden"))
     assert v.q() == RenderResult(
         [
-            RenderRow(2, 2, "Zoomed", True, False, [], {"Zoom": "root"}),
+            RenderRow(2, 2, "Zoomed", True, False, [], {"Zoom": "Root goal"}),
             RenderRow(3, 3, "Ex-top", True, True, []),
             RenderRow(4, 4, "Unexpectedly hidden", True, True, []),
         ],

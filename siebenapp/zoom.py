@@ -69,7 +69,11 @@ class Zoom(Graph):
                 {
                     # We could use `r.attrs | (...)` in Python 3.9+
                     **r.attrs,
-                    **({"Zoom": "root"} if r.goal_id == self.zoom_root[-1] else {}),
+                    **(
+                        {"Zoom": origin_root.name}
+                        if r.goal_id == self.zoom_root[-1]
+                        else {}
+                    ),
                 },
             )
             for r in render_result.rows

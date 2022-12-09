@@ -83,7 +83,7 @@ def test_zoomed_parent_goal_must_not_be_filtered_out(zoomed_goaltree) -> None:
     zoomed_goaltree.accept_all(HoldSelect(), Select(2), ToggleZoom(), FilterBy("mm"))
     assert zoomed_goaltree.q() == RenderResult(
         [
-            RenderRow(2, 2, "Beta", True, False, [child(3)], {"Zoom": "root"}),
+            RenderRow(2, 2, "Beta", True, False, [child(3)], {"Zoom": "Alpha"}),
             RenderRow(3, 3, "Gamma", True, True, [], {"Filter": "mm"}),
             RenderRow(-1, -1, "Alpha", True, False, [blocker(2)]),
         ],

@@ -186,7 +186,7 @@ def test_add_dangling_goals_to_old_root_on_zoom() -> None:
     v = OpenView(
         Zoom(
             build_goaltree(
-                open_(1, "Root", [2]),
+                open_(1, "Root goal", [2]),
                 open_(2, "Zoom root", [3, 5], select=selected),
                 clos_(3, "Transitive", [4]),
                 clos_(4, "Previous top", select=previous),
@@ -197,10 +197,12 @@ def test_add_dangling_goals_to_old_root_on_zoom() -> None:
     v.accept(ToggleZoom())
     assert v.q() == RenderResult(
         [
-            RenderRow(2, 2, "Zoom root", True, False, [child(5)], {"Zoom": "root"}),
+            RenderRow(
+                2, 2, "Zoom root", True, False, [child(5)], {"Zoom": "Root goal"}
+            ),
             RenderRow(4, 4, "Previous top", False, False, []),
             RenderRow(5, 5, "Current top", True, True, []),
-            RenderRow(-1, -1, "Root", True, False, [blocker(2)]),
+            RenderRow(-1, -1, "Root goal", True, False, [blocker(2)]),
         ],
         select=(2, 4),
         roots={-1, 4},
