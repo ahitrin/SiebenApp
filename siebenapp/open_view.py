@@ -4,10 +4,10 @@ from typing import Dict, Any, Set, List, Tuple
 from siebenapp.domain import (
     Command,
     Graph,
-    EdgeType,
     RenderResult,
     GoalId,
     RenderRow,
+    blocker,
 )
 
 
@@ -65,13 +65,11 @@ class OpenView(Graph):
         dangling: Set[GoalId] = (
             set(visible_rows.keys())
             .difference(set(e[0] for row in rows for e in row.edges))
-            .difference({1, -1})
+            .difference(render_result.roots)
         )
         root_id: GoalId = min(visible_rows)
         result = RenderResult(
             rows, select=render_result.select, roots=render_result.roots
         )
-        result.by_id(root_id).edges.extend(
-            [(goal_id, EdgeType.BLOCKER) for goal_id in dangling]
-        )
+        result.by_id(root_id).edges.extend([blocker(goal_id) for goal_id in dangling])
         return result

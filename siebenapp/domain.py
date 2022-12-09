@@ -25,12 +25,12 @@ class Command:
 GoalId = Union[str, int]
 
 
-def child(goal_id: int) -> Tuple[GoalId, EdgeType]:
+def child(goal_id: GoalId) -> Tuple[GoalId, EdgeType]:
     """A more compact way of writing (goal_id, EdgeType.PARENT)"""
     return goal_id, EdgeType.PARENT
 
 
-def blocker(goal_id: int) -> Tuple[GoalId, EdgeType]:
+def blocker(goal_id: GoalId) -> Tuple[GoalId, EdgeType]:
     """A more compact way of writing (goal_id, EdgeType.BLOCKER)"""
     return goal_id, EdgeType.BLOCKER
 
