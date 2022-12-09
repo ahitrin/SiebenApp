@@ -147,7 +147,7 @@ def test_closed_goals_are_shown_when_selected() -> None:
     )
 
 
-def test_build_fake_links_to_far_closed_goals() -> None:
+def test_do_not_build_fake_links_to_far_closed_goals() -> None:
     v = OpenView(
         build_goaltree(
             open_(1, "Root", blockers=[2], select=previous),
@@ -157,11 +157,11 @@ def test_build_fake_links_to_far_closed_goals() -> None:
     )
     assert v.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, True, [blocker(3)]),
+            RenderRow(1, 1, "Root", True, True, []),
             RenderRow(3, 3, "Top", False, False, []),
         ],
         select=(3, 1),
-        roots={1},
+        roots={1, 3},
     )
 
 
@@ -200,8 +200,8 @@ def test_add_dangling_goals_to_old_root_on_zoom() -> None:
             RenderRow(2, 2, "Zoom root", True, False, [child(5)], {"Zoom": "root"}),
             RenderRow(4, 4, "Previous top", False, False, []),
             RenderRow(5, 5, "Current top", True, True, []),
-            RenderRow(-1, -1, "Root", True, False, [blocker(2), blocker(4)]),
+            RenderRow(-1, -1, "Root", True, False, [blocker(2)]),
         ],
         select=(2, 4),
-        roots={-1},
+        roots={-1, 4},
     )
