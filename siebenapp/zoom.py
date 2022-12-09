@@ -52,8 +52,7 @@ class Zoom(Graph):
         render_result = self.goaltree.q()
         if self.zoom_root == [1]:
             return render_result
-        rows = render_result.rows
-        origin_root = rows[0]
+        origin_root: RenderRow = render_result.by_id(list(render_result.roots)[0])
         assert origin_root.goal_id == Goals.ROOT_ID
         visible_goals = self._build_visible_goals(render_result)
         selected_goals: Set[int] = {
@@ -74,7 +73,7 @@ class Zoom(Graph):
                     **({"Zoom": "root"} if r.goal_id == self.zoom_root[-1] else {}),
                 },
             )
-            for r in rows
+            for r in render_result.rows
             if r.goal_id in visible_goals.union(selected_goals)
         ]
         fake_root = RenderRow(
