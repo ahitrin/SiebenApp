@@ -40,8 +40,8 @@ class Zoom(Graph):
             self.events().append(("unzoom", last_zoom))
         elif selection not in self.zoom_root:
             # try to zoom
-            rows = self.goaltree.q().rows
-            visible_goals = self._build_visible_goals(rows)
+            render_result = self.goaltree.q()
+            visible_goals = self._build_visible_goals(render_result)
             if selection in visible_goals:
                 self.zoom_root.append(selection)
                 self.events().append(("zoom", len(self.zoom_root), selection))
@@ -50,14 +50,12 @@ class Zoom(Graph):
 
     def q(self) -> RenderResult:
         render_result = self.goaltree.q()
+        if self.zoom_root == [1]:
+            return render_result
         rows = render_result.rows
         origin_root = rows[0]
         assert origin_root.goal_id == Goals.ROOT_ID
-        if self.zoom_root == [1]:
-            return RenderResult(
-                rows, select=render_result.select, roots=render_result.roots
-            )
-        visible_goals = self._build_visible_goals(rows)
+        visible_goals = self._build_visible_goals(render_result)
         selected_goals: Set[int] = {
             self.settings("selection"),
             self.settings("previous_selection"),
@@ -120,7 +118,8 @@ class Zoom(Graph):
             return -1
         return self.goaltree.settings(key)
 
-    def _build_visible_goals(self, rows: List[RenderRow]) -> Set[GoalId]:
+    def _build_visible_goals(self, render_result: RenderResult) -> Set[GoalId]:
+        rows = render_result.rows
         current_zoom_root = self.zoom_root[-1]
         if current_zoom_root == Goals.ROOT_ID:
             return set(row.goal_id for row in rows)
