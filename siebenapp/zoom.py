@@ -55,10 +55,9 @@ class Zoom(Graph):
         origin_root: RenderRow = render_result.by_id(list(render_result.roots)[0])
         assert origin_root.goal_id == Goals.ROOT_ID
         visible_goals = self._build_visible_goals(render_result)
-        selected_goals: Set[int] = {
-            self.settings("selection"),
-            self.settings("previous_selection"),
-        }.difference({Goals.ROOT_ID})
+        selected_goals: Set[GoalId] = set(render_result.select).difference(
+            {Goals.ROOT_ID}
+        )
         zoomed_rows: List[RenderRow] = [
             RenderRow(
                 r.goal_id,
@@ -84,7 +83,7 @@ class Zoom(Graph):
             False,
             sorted(
                 list(
-                    blocker(goal_id)
+                    blocker(int(goal_id))
                     for goal_id in selected_goals.difference(visible_goals).union(
                         {self.zoom_root[-1]}
                     )
