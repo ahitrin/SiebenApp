@@ -50,7 +50,7 @@ class Zoom(Graph):
 
     def q(self) -> RenderResult:
         render_result = self.goaltree.q()
-        if self.zoom_root == [1]:
+        if self.zoom_root == [Goals.ROOT_ID]:
             return render_result
         origin_root: RenderRow = render_result.by_id(list(render_result.roots)[0])
         assert origin_root.goal_id == Goals.ROOT_ID
