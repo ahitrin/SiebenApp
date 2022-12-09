@@ -87,14 +87,11 @@ class Zoom(Graph):
                     origin_root.name,
                     origin_root.is_open,
                     False,
-                    sorted(
-                        list(
-                            blocker(int(goal_id))
-                            for goal_id in selected_goals.difference(
-                                visible_goals
-                            ).union({self.zoom_root[-1]})
-                        )
-                    ),
+                    [
+                        blocker(goal_id)
+                        for goal_id, _ in origin_root.edges
+                        if goal_id in visible_goals.union(selected_goals)
+                    ],
                 )
             )
         new_select = (
