@@ -4,7 +4,7 @@ from distutils.core import setup
 
 setup(
     name='SiebenApp',
-    version='0.11',
+    version='0.12',
     description='An experimental dependency-aware goal manager',
     author='Andrey Hitrin',
     author_email='andrey.hitrin@gmail.com',
