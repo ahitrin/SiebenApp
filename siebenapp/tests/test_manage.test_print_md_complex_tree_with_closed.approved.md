@@ -1,4 +1,4 @@
-* [ ] **11** Root
+* [ ] **11** Root goal of a complex goal tree
   * [x] **12** Closed
   * [ ] **13** Simply 3 (blocked by **15**)
   * [ ] **14** Also 4 (blocked by **15**)

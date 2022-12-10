@@ -22,7 +22,7 @@ def test_print_dot_empty_file() -> None:
 @pytest.fixture
 def complex_goaltree_file():
     g = build_goaltree(
-        open_(1, "Root", [2, 3, 4, 5, 6], [7, 8]),
+        open_(1, "Root goal of a complex goal tree", [2, 3, 4, 5, 6], [7, 8]),
         clos_(2, "Closed", blockers=[7]),
         open_(3, "Simply 3", blockers=[5, 8]),
         open_(4, "Also 4", blockers=[5, 6, 7, 8], select=selected),

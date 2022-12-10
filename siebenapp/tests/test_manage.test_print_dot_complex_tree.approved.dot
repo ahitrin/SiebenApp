@@ -1,6 +1,7 @@
 digraph g {
 node [shape=box];
-1 [label="1: Root", color=red];
+1 [label="1: Root goal of a complex
+goal tree", color=red];
 2 [label="2: Simply 3", color=red];
 3 [label="3: Also 4", color=red];
 4 [label="4: Now 5", color=red, style=bold];

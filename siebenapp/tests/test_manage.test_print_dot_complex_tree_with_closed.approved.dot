@@ -1,7 +1,8 @@
 digraph g {
 node [shape=box];
 10 [label="10: More nested 10", color=green];
-11 [label="11: Root", color=red];
+11 [label="11: Root goal of a complex
+goal tree", color=red];
 12 [label="12: Closed", color=green];
 13 [label="13: Simply 3", color=red];
 14 [label="14: Also 4", color=red];

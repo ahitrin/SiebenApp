@@ -1,4 +1,4 @@
-* [ ] **1** Root [Progress: 33% (2/6)]
+* [ ] **1** Root goal of a complex goal tree [Progress: 33% (2/6)]
   * [ ] **2** Simply 3 (blocked by **4**) [Progress: 0% (0/1)]
   * [ ] **3** Also 4 (blocked by **4**) [Progress: 0% (0/1)]
   * [ ] **4** Now 5 [Progress: 0% (0/1)]
