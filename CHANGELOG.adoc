@@ -1,5 +1,39 @@
 = Changelog
 
+== Alpha version 0.12
+2022-12-10
+
+New/done features:
+
+* Add goal attributes #344
+* Minor performance optimizations in rendering
+
+Bug fixes:
+
+Refactoring/cleanup:
+
+* Return 'roots' field in `Grapg.q()` #342
+* Return 'select' field in `Graph.q()` #343
+* Get rid of separate tests for Python 3.10+
+* Split the most complex methods into smaller ones
+* Many small cleanups that improve overall readability
+* Place more mypy annotations
+
+Other improvements:
+
+* Setup CI for Python 3.11
+* Update dependencies (thx to @dependabot):
+`approvaltests-minimal` (7.1.0 to 7.3.0),
+`certifi` (2022.9.24 to 2022.12.7),
+`dearpygui` (1.7.1 to 1.8.0),
+`hypothesis` (6.56.1 to 6.60.0),
+`mypy` (0.982 to 0.991),
+`pytest` (7.1.3 to 7.2.0).
+
+Compatibility breaks:
+
+* Do not show fake goals in autolink, filter, zoom (with few exceptions)
+
 == Alpha version 0.11
 2022-10-15
 
