@@ -150,7 +150,7 @@ def _format_name(row: RenderRow) -> str:
         if isinstance(row.goal_id, int) and row.goal_id >= 0
         else f"{goal_name}"
     )
-    attrs: List[str] = [f"{k}: {v}" for k, v in row.attrs.items()]
+    attrs: List[str] = [f"{k}: {split_long(v)}" for k, v in row.attrs.items()]
     return '"' + "\n".join([label] + attrs) + '"'
 
 
