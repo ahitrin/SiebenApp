@@ -1,7 +1,7 @@
 from collections import deque
 from dataclasses import dataclass, field
 from enum import IntEnum
-from typing import Dict, Any, Union, Tuple, Optional, Set
+from typing import Any, Union, Tuple, Optional, Set
 
 
 class EdgeType(IntEnum):
@@ -45,24 +45,24 @@ class RenderRow:
     is_open: bool
     is_switchable: bool
     edges: list[Tuple[GoalId, EdgeType]]
-    attrs: Dict[str, str] = field(default_factory=lambda: {})
+    attrs: dict[str, str] = field(default_factory=lambda: {})
 
 
 @dataclass
 class RenderResult:
     rows: list[RenderRow]
-    edge_opts: Dict[str, Tuple[int, int, int]]
+    edge_opts: dict[str, Tuple[int, int, int]]
     select: Tuple[GoalId, GoalId]
-    node_opts: Dict[GoalId, Any]
+    node_opts: dict[GoalId, Any]
     roots: Set[GoalId]
-    index: Dict[GoalId, int]
+    index: dict[GoalId, int]
 
     def __init__(
         self,
         rows: list[RenderRow],
-        edge_opts: Optional[Dict[str, Tuple[int, int, int]]] = None,
+        edge_opts: Optional[dict[str, Tuple[int, int, int]]] = None,
         select: Optional[Tuple[GoalId, GoalId]] = None,
-        node_opts: Optional[Dict[GoalId, Any]] = None,
+        node_opts: Optional[dict[GoalId, Any]] = None,
         roots: Optional[Set[GoalId]] = None,
     ):
         self.rows = rows

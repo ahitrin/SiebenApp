@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, Any, Tuple
+from typing import Any, Tuple
 
 from siebenapp.domain import Graph, Command, EdgeType, GoalId, RenderResult, RenderRow
 
@@ -10,7 +10,7 @@ class ToggleProgress(Command):
 
 
 def _progress_status(
-    row: RenderRow, progress_cache: Dict[GoalId, Tuple[int, int]]
+    row: RenderRow, progress_cache: dict[GoalId, Tuple[int, int]]
 ) -> str:
     dividend = progress_cache[row.goal_id][0]
     divisor = progress_cache[row.goal_id][1]
@@ -39,7 +39,7 @@ class ProgressView(Graph):
         render_result = self.goaltree.q()
         if not self.show_progress:
             return render_result
-        progress_cache: Dict[GoalId, Tuple[int, int]] = {}
+        progress_cache: dict[GoalId, Tuple[int, int]] = {}
         rows = render_result.rows
         queue: list[RenderRow] = list(rows)
         while queue:

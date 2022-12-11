@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, Any, Set
+from typing import Any, Set
 
 from siebenapp.domain import (
     Command,
@@ -40,7 +40,7 @@ class OpenView(Graph):
         render_result = self.goaltree.q()
         if not self._open:
             return render_result
-        visible_rows: Dict[GoalId, RenderRow] = {
+        visible_rows: dict[GoalId, RenderRow] = {
             row.goal_id: row
             for row in render_result.rows
             if row.is_open

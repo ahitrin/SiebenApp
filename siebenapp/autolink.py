@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, Union, Tuple, Optional, Set
+from typing import Union, Tuple, Optional, Set
 
 from siebenapp.domain import (
     Graph,
@@ -29,8 +29,8 @@ AutoLinkData = list[Tuple[int, str]]
 class AutoLink(Graph):
     def __init__(self, goals: Graph, data: Optional[AutoLinkData] = None):
         super(AutoLink, self).__init__(goals)
-        self.keywords: Dict[str, int] = {}
-        self.back_kw: Dict[int, str] = {}
+        self.keywords: dict[str, int] = {}
+        self.back_kw: dict[int, str] = {}
         if data:
             for goal_id, keyword in data:
                 self.keywords[keyword] = goal_id
@@ -94,7 +94,7 @@ class AutoLink(Graph):
 
     def accept_Delete(self, command: Delete) -> None:
         selected_id: int = command.goal_id or self.settings("selection")
-        edges: Dict[int, list[Tuple[GoalId, EdgeType]]] = {
+        edges: dict[int, list[Tuple[GoalId, EdgeType]]] = {
             row.raw_id: row.edges for row in self.goaltree.q().rows
         }
         goals_to_check: list[int] = [selected_id]
@@ -117,7 +117,7 @@ class AutoLink(Graph):
     def _make_links(self, matching_goals: list[int], target_goal: int) -> None:
         if not matching_goals:
             return
-        self_children: Dict[int, list[GoalId]] = {
+        self_children: dict[int, list[GoalId]] = {
             row.raw_id: [e[0] for e in row.edges] for row in self.goaltree.q().rows
         }
         for add_to in matching_goals:

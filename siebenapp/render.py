@@ -1,6 +1,6 @@
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Dict, Tuple, Any, Set, Optional, Protocol
+from typing import Tuple, Any, Set, Optional, Protocol
 
 from siebenapp.domain import Graph, EdgeType, GoalId, RenderResult
 
@@ -58,24 +58,24 @@ class Renderer:
         self.render_result = goals.q()
         self.width_limit = width_limit
         self.rows = self.render_result.rows
-        self.node_opts: Dict[GoalId, Any] = {row.goal_id: {} for row in self.rows}
-        self.edges: Dict[GoalId, list[GoalId]] = {
+        self.node_opts: dict[GoalId, Any] = {row.goal_id: {} for row in self.rows}
+        self.edges: dict[GoalId, list[GoalId]] = {
             row.goal_id: [e[0] for e in row.edges] for row in self.rows
         }
-        self.back_edges: Dict[GoalId, list[GoalId]] = {}
+        self.back_edges: dict[GoalId, list[GoalId]] = {}
         for row in self.rows:
             for upper_goal, edge_type in row.edges:
                 if upper_goal not in self.back_edges:
                     self.back_edges[upper_goal] = []
                 self.back_edges[upper_goal].append(row.goal_id)
-        self.layers: Dict[int, Layer] = defaultdict(list)
-        self.positions: Dict[GoalId, int] = {}
-        self.edge_types: Dict[Tuple[GoalId, GoalId], EdgeType] = {
+        self.layers: dict[int, Layer] = defaultdict(list)
+        self.positions: dict[GoalId, int] = {}
+        self.edge_types: dict[Tuple[GoalId, GoalId], EdgeType] = {
             (parent, child): edge_type
             for parent in self.node_opts
             for child, edge_type in self.render_result.by_id(parent).edges
         }
-        self.result_edge_options: Dict[str, Tuple[int, int, int]] = {}
+        self.result_edge_options: dict[str, Tuple[int, int, int]] = {}
 
     def build(self) -> RenderResult:
         self.split_by_layers()
@@ -90,7 +90,7 @@ class Renderer:
         )
 
     def split_by_layers(self) -> None:
-        unsorted_goals: Dict[GoalId, list[GoalId]] = dict(self.edges)
+        unsorted_goals: dict[GoalId, list[GoalId]] = dict(self.edges)
         sorted_goals: Set[GoalId] = set()
         incoming_edges: Set[GoalId] = set()
         outgoing_edges: list[GoalId] = []
@@ -135,7 +135,7 @@ class Renderer:
         }
 
     def candidates_for_new_layer(
-        self, sorted_goals: Set[GoalId], unsorted_goals: Dict[GoalId, list[GoalId]]
+        self, sorted_goals: Set[GoalId], unsorted_goals: dict[GoalId, list[GoalId]]
     ) -> list[Tuple[GoalId, int]]:
         candidates: list[Tuple[GoalId, int]] = [
             (goal, len(edges))
@@ -149,8 +149,8 @@ class Renderer:
         for curr_layer in sorted(self.layers.keys(), reverse=True)[:-1]:
             fixed_line: Layer = self.layers[curr_layer]
             random_line: Layer = self.layers[curr_layer - 1]
-            deltas: Dict[GoalId, int] = self.count_deltas(fixed_line)
-            new_positions: Dict[GoalId, int] = {
+            deltas: dict[GoalId, int] = self.count_deltas(fixed_line)
+            new_positions: dict[GoalId, int] = {
                 g: int(self.positions[g] + deltas.get(g, 0))
                 for g in random_line
                 if g is not None
@@ -162,8 +162,8 @@ class Renderer:
             }
             self.layers[curr_layer - 1] = placed_line
 
-    def count_deltas(self, fixed_line: Layer) -> Dict[GoalId, int]:
-        deltas: Dict[GoalId, list[int]] = defaultdict(list)
+    def count_deltas(self, fixed_line: Layer) -> dict[GoalId, int]:
+        deltas: dict[GoalId, list[int]] = defaultdict(list)
         for goal in fixed_line:
             if goal is not None:
                 for e in self.edges[goal]:
@@ -193,7 +193,7 @@ class Renderer:
                 }
 
     def build_index(self) -> None:
-        result_index: Dict[int, Dict[int, GoalId]] = {}
+        result_index: dict[int, dict[int, GoalId]] = {}
         for goal_id, attrs in self.node_opts.items():
             if (row := attrs["row"]) not in result_index:
                 result_index[row] = {}
@@ -221,7 +221,7 @@ class Renderer:
             e: (left, i + 1, len(edges) + 1) for i, e in enumerate(edges)
         }
 
-    def place(self, source: Dict[GoalId, int]) -> Layer:
+    def place(self, source: dict[GoalId, int]) -> Layer:
         result: Layer = []
         unplaced: list[Tuple[GoalId, int]] = sorted(list(source.items()), key=goal_key)
         while unplaced:
@@ -256,10 +256,10 @@ def adjust_graph(render_result: RenderResult, gp: GeometryProvider) -> None:
     max_y: int = 0
     max_col: int = 0
     max_row: int = 0
-    width: Dict[int, int] = {}  # key=goal_id
-    height: Dict[int, int] = {}  # key=goal_id
-    max_width: Dict[int, int] = {}  # key=column
-    max_height: Dict[int, int] = {}  # key=row
+    width: dict[int, int] = {}  # key=goal_id
+    height: dict[int, int] = {}  # key=goal_id
+    max_width: dict[int, int] = {}  # key=column
+    max_height: dict[int, int] = {}  # key=row
 
     for goal_id, attrs in render_result.goals():
         row, col = attrs["row"], attrs["col"]

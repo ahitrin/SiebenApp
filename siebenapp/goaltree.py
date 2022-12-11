@@ -1,5 +1,5 @@
 # coding: utf-8
-from typing import Callable, Dict, Optional, Set, Any, Tuple
+from typing import Callable, Optional, Set, Any, Tuple
 from collections import deque, defaultdict
 
 from siebenapp.domain import (
@@ -31,12 +31,12 @@ class Goals(Graph):
         self, name: str, message_fn: Optional[Callable[[str], None]] = None
     ) -> None:
         super().__init__()
-        self.goals: Dict[int, Optional[str]] = {}
-        self.edges: Dict[Tuple[int, int], EdgeType] = {}
-        self.edges_forward: Dict[int, Dict[int, EdgeType]] = defaultdict(
+        self.goals: dict[int, Optional[str]] = {}
+        self.edges: dict[Tuple[int, int], EdgeType] = {}
+        self.edges_forward: dict[int, dict[int, EdgeType]] = defaultdict(
             lambda: defaultdict(lambda: EdgeType.BLOCKER)
         )
-        self.edges_backward: Dict[int, Dict[int, EdgeType]] = defaultdict(
+        self.edges_backward: dict[int, dict[int, EdgeType]] = defaultdict(
             lambda: defaultdict(lambda: EdgeType.BLOCKER)
         )
         self.closed: Set[int] = set()
@@ -371,7 +371,7 @@ class Goals(Graph):
     ) -> "Goals":
         result: Goals = Goals("", message_fn)
         result._events.clear()
-        goals_dict: Dict[int, Optional[str]] = {g[0]: g[1] for g in goals}
+        goals_dict: dict[int, Optional[str]] = {g[0]: g[1] for g in goals}
         result.goals = {
             i: goals_dict.get(i) for i in range(1, max(goals_dict.keys()) + 1)
         }
@@ -384,7 +384,7 @@ class Goals(Graph):
             result.edges[parent, child] = EdgeType(link_type)
             result.edges_forward[parent][child] = EdgeType(link_type)
             result.edges_backward[child][parent] = EdgeType(link_type)
-        selection_dict: Dict[str, int] = dict(settings)
+        selection_dict: dict[str, int] = dict(settings)
         result.selection = selection_dict.get("selection", result.selection)
         result.previous_selection = selection_dict.get(
             "previous_selection", result.previous_selection
