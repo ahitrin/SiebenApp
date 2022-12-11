@@ -1,5 +1,5 @@
 import math
-from typing import Tuple, Iterable, Set
+from typing import Tuple, Iterable
 
 from siebenapp.domain import Graph, Select, GoalId, RenderResult, RenderRow
 
@@ -77,7 +77,7 @@ class Enumeration(Graph):
 
     def accept_Select(self, command: Select):
         render_result, index = self._id_mapping()
-        goals: Set[GoalId] = {row.goal_id for row in render_result.rows}
+        goals: set[GoalId] = {row.goal_id for row in render_result.rows}
         if (goal_id := command.goal_id) >= 10:
             self.selection_cache = []
         if self.selection_cache:

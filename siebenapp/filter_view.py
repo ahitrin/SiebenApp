@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Set
+from typing import Any
 
 from siebenapp.domain import Graph, Command, RenderResult, RenderRow, GoalId
 
@@ -32,12 +32,12 @@ class FilterView(Graph):
         render_result = self.goaltree.q()
         if not self.pattern:
             return render_result
-        accepted_ids: Set[GoalId] = {
+        accepted_ids: set[GoalId] = {
             row.goal_id
             for row in render_result.rows
             if self.pattern in row.name.lower()
         }
-        all_ids: Set[GoalId] = accepted_ids.union(render_result.select)
+        all_ids: set[GoalId] = accepted_ids.union(render_result.select)
         rows: list[RenderRow] = [
             RenderRow(
                 row.goal_id,
@@ -63,6 +63,6 @@ class FilterView(Graph):
             )
             all_ids.add(-2)
             rows.append(fake_row)
-        linked_ids: Set[GoalId] = {goal_id for r in rows for goal_id, _ in r.edges}
-        new_roots: Set[GoalId] = all_ids.difference(linked_ids)
+        linked_ids: set[GoalId] = {goal_id for r in rows for goal_id, _ in r.edges}
+        new_roots: set[GoalId] = all_ids.difference(linked_ids)
         return RenderResult(rows, select=render_result.select, roots=new_roots)

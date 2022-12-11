@@ -1,6 +1,6 @@
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Tuple, Any, Set, Optional, Protocol
+from typing import Tuple, Any, Optional, Protocol
 
 from siebenapp.domain import Graph, EdgeType, GoalId, RenderResult
 
@@ -91,8 +91,8 @@ class Renderer:
 
     def split_by_layers(self) -> None:
         unsorted_goals: dict[GoalId, list[GoalId]] = dict(self.edges)
-        sorted_goals: Set[GoalId] = set()
-        incoming_edges: Set[GoalId] = set()
+        sorted_goals: set[GoalId] = set()
+        incoming_edges: set[GoalId] = set()
         outgoing_edges: list[GoalId] = []
         current_layer: int = 0
         while unsorted_goals:
@@ -135,7 +135,7 @@ class Renderer:
         }
 
     def candidates_for_new_layer(
-        self, sorted_goals: Set[GoalId], unsorted_goals: dict[GoalId, list[GoalId]]
+        self, sorted_goals: set[GoalId], unsorted_goals: dict[GoalId, list[GoalId]]
     ) -> list[Tuple[GoalId, int]]:
         candidates: list[Tuple[GoalId, int]] = [
             (goal, len(edges))

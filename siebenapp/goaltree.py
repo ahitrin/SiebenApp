@@ -1,5 +1,5 @@
 # coding: utf-8
-from typing import Callable, Optional, Set, Any, Tuple
+from typing import Callable, Optional, Any, Tuple
 from collections import deque, defaultdict
 
 from siebenapp.domain import (
@@ -39,7 +39,7 @@ class Goals(Graph):
         self.edges_backward: dict[int, dict[int, EdgeType]] = defaultdict(
             lambda: defaultdict(lambda: EdgeType.BLOCKER)
         )
-        self.closed: Set[int] = set()
+        self.closed: set[int] = set()
         self.selection: int = Goals.ROOT_ID
         self.previous_selection: int = Goals.ROOT_ID
         self._events: deque = deque()
@@ -60,7 +60,7 @@ class Goals(Graph):
         return [Edge(k, goal, v) for k, v in self.edges_backward[goal].items()]
 
     def _parent(self, goal: int) -> int:
-        parents: Set[Edge] = {
+        parents: set[Edge] = {
             e for e in self._back_edges(goal) if e.type == EdgeType.PARENT
         }
         return parents.pop().source if parents else Goals.ROOT_ID
@@ -72,7 +72,7 @@ class Goals(Graph):
             "root": Goals.ROOT_ID,
         }.get(key, 0)
 
-    def selections(self) -> Set[int]:
+    def selections(self) -> set[int]:
         return set(
             k
             for k in [
@@ -216,10 +216,10 @@ class Goals(Graph):
         self.goals[goal_id] = None
         self.closed.add(goal_id)
         forward_edges: list[Edge] = self._forward_edges(goal_id)
-        next_to_remove: Set[Edge] = {
+        next_to_remove: set[Edge] = {
             e for e in forward_edges if e.type == EdgeType.PARENT
         }
-        blockers: Set[Edge] = {e for e in forward_edges if e.type == EdgeType.BLOCKER}
+        blockers: set[Edge] = {e for e in forward_edges if e.type == EdgeType.BLOCKER}
         for back_edge in self._back_edges(goal_id):
             self.edges_forward[back_edge.source].pop(goal_id)
         self.edges_forward[goal_id].clear()
@@ -295,9 +295,9 @@ class Goals(Graph):
             self._replace_link(p, upper, EdgeType.BLOCKER)
 
     def _has_circular_dependency(self, lower: int, upper: int) -> bool:
-        front: Set[int] = {upper}
-        visited: Set[int] = set()
-        total: Set[int] = set()
+        front: set[int] = {upper}
+        visited: set[int] = set()
+        total: set[int] = set()
         while front:
             g = front.pop()
             visited.add(g)
@@ -321,7 +321,7 @@ class Goals(Graph):
 
     def _verify_all_subgoals_are_accessible_from_the_root_goal(self) -> None:
         queue: list[int] = [Goals.ROOT_ID]
-        visited: Set[int] = set()
+        visited: set[int] = set()
         while queue:
             goal: int = queue.pop()
             queue.extend(
@@ -341,10 +341,10 @@ class Goals(Graph):
         ), "Deleted goals must have no dependencies"
 
     def _verify_forward_and_backward_edges_match_each_other(self) -> None:
-        fwd_edges: Set[Tuple[int, int, EdgeType]] = set(
+        fwd_edges: set[Tuple[int, int, EdgeType]] = set(
             (g1, g2, et) for g1, e in self.edges_forward.items() for g2, et in e.items()
         )
-        bwd_edges: Set[Tuple[int, int, EdgeType]] = set(
+        bwd_edges: set[Tuple[int, int, EdgeType]] = set(
             (g1, g2, et)
             for g2, e in self.edges_backward.items()
             for g1, et in e.items()
@@ -357,7 +357,7 @@ class Goals(Graph):
         parent_edges: list[Tuple[int, int]] = [
             k for k, v in self.edges.items() if v == EdgeType.PARENT
         ]
-        edges_with_parent: Set[int] = {child for parent, child in parent_edges}
+        edges_with_parent: set[int] = {child for parent, child in parent_edges}
         assert len(parent_edges) == len(
             edges_with_parent
         ), "Each goal must have at most 1 parent"

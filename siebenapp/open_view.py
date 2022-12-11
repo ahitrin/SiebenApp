@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Set
+from typing import Any
 
 from siebenapp.domain import (
     Command,
@@ -58,7 +58,7 @@ class OpenView(Graph):
             )
             for row in visible_rows.values()
         ]
-        dangling: Set[GoalId] = set(visible_rows.keys()).difference(
+        dangling: set[GoalId] = set(visible_rows.keys()).difference(
             set(e[0] for row in rows for e in row.edges)
         )
         return RenderResult(

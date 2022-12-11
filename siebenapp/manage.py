@@ -2,7 +2,7 @@ from argparse import ArgumentParser
 from html import escape
 from operator import attrgetter
 from os import path
-from typing import Optional, Set
+from typing import Optional
 
 from siebenapp.cli import IO, ConsoleIO
 from siebenapp.domain import EdgeType, Graph, RenderRow, GoalId
@@ -224,8 +224,8 @@ def extract_subtree(source_goals: Graph, goal_id: int) -> Graph:
     assert (
         render_result.by_id(goal_id) is not None
     ), f"Cannot find goal with id {goal_id}"
-    target_goals: Set[GoalId] = set()
-    goals_to_add: Set[GoalId] = {goal_id}
+    target_goals: set[GoalId] = set()
+    goals_to_add: set[GoalId] = {goal_id}
     goals_data: GoalsData = []
     edges_data: EdgesData = []
     options_data: OptionsData = []

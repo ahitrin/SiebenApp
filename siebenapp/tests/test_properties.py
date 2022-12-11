@@ -2,7 +2,6 @@ import os
 import sqlite3
 from contextlib import closing
 from dataclasses import asdict
-from typing import Set
 
 from hypothesis import settings, assume, note, event
 from hypothesis.stateful import (
@@ -210,11 +209,11 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     @invariant()
     def root_goals_should_not_have_incoming_edges(self) -> None:
         render_result = self.goaltree.q()
-        result_roots: Set[GoalId] = render_result.roots
-        has_incoming_edges: Set[GoalId] = {
+        result_roots: set[GoalId] = render_result.roots
+        has_incoming_edges: set[GoalId] = {
             e[0] for row in render_result.rows for e in row.edges
         }
-        actual_roots: Set[GoalId] = {
+        actual_roots: set[GoalId] = {
             row.goal_id
             for row in render_result.rows
             if row.goal_id not in has_incoming_edges

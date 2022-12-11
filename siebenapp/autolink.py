@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Union, Tuple, Optional, Set
+from typing import Union, Tuple, Optional
 
 from siebenapp.domain import (
     Graph,
@@ -78,10 +78,10 @@ class AutoLink(Graph):
 
     def _autolink_new_goal(self, command: Union[Add, Insert]) -> None:
         matching: list[int] = self._find_matching_goals(command.name)
-        ids_before: Set[int] = set(self.goaltree.goals.keys())
+        ids_before: set[int] = set(self.goaltree.goals.keys())
         self.goaltree.accept(command)
-        ids_after: Set[int] = set(self.goaltree.goals.keys())
-        ids_diff: Set[int] = ids_after.difference(ids_before)
+        ids_after: set[int] = set(self.goaltree.goals.keys())
+        ids_diff: set[int] = ids_after.difference(ids_before)
         if ids_diff:
             added_id: int = ids_diff.pop()
             self._make_links(matching, added_id)

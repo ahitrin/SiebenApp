@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Set, Tuple, Optional
+from typing import Any, Tuple, Optional
 
 from siebenapp.domain import (
     Graph,
@@ -96,9 +96,9 @@ class Zoom(Graph):
             _replace_with_fake(render_result.select[0]),
             _replace_with_fake(render_result.select[1]),
         )
-        all_ids: Set[GoalId] = {r.goal_id for r in rows}
-        linked_ids: Set[GoalId] = {goal_id for r in rows for goal_id, _ in r.edges}
-        new_roots: Set[GoalId] = all_ids.difference(linked_ids)
+        all_ids: set[GoalId] = {r.goal_id for r in rows}
+        linked_ids: set[GoalId] = {goal_id for r in rows for goal_id, _ in r.edges}
+        new_roots: set[GoalId] = all_ids.difference(linked_ids)
         return RenderResult(rows, select=new_select, roots=new_roots)
 
     def accept_ToggleClose(self, command: ToggleClose):
@@ -108,9 +108,9 @@ class Zoom(Graph):
         self.goaltree.accept(ToggleClose(self.zoom_root[-1]))
 
     def accept_Delete(self, command: Delete) -> None:
-        ids_before: Set[int] = set(r.raw_id for r in self.goaltree.q().rows)
+        ids_before: set[int] = set(r.raw_id for r in self.goaltree.q().rows)
         self.goaltree.accept(command)
-        ids_after: Set[int] = set(r.raw_id for r in self.goaltree.q().rows)
+        ids_after: set[int] = set(r.raw_id for r in self.goaltree.q().rows)
         removed = ids_before.difference(ids_after)
         while self.zoom_root and self.zoom_root[-1] in removed:
             last_zoom = self.zoom_root.pop(-1)
@@ -121,11 +121,11 @@ class Zoom(Graph):
             return -1
         return self.goaltree.settings(key)
 
-    def _build_visible_goals(self, render_result: RenderResult) -> Set[GoalId]:
+    def _build_visible_goals(self, render_result: RenderResult) -> set[GoalId]:
         current_zoom_root = self.zoom_root[-1]
         if current_zoom_root == Goals.ROOT_ID:
             return set(row.goal_id for row in render_result.rows)
-        visible_goals: Set[GoalId] = {current_zoom_root}
+        visible_goals: set[GoalId] = {current_zoom_root}
         edges_to_visit = set(render_result.by_id(current_zoom_root).edges)
         while edges_to_visit:
             edge_id, edge_type = edges_to_visit.pop()
