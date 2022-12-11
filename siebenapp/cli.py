@@ -95,15 +95,16 @@ def build_actions(command):
     if command and all(c in "1234567890" for c in command):
         return [Select(int(c)) for c in command]
     if command.startswith("a "):
-        return [Add(command[2:])]
+        return [Add(command.removeprefix("a "))]
     if command.startswith("i "):
-        return [Insert(command[2:])]
+        return [Insert(command.removeprefix("i "))]
     if command.startswith("r "):
-        return [Rename(command[2:])]
+        return [Rename(command.removeprefix("r "))]
     if command.startswith("f"):
-        return [FilterBy(command[1:].lstrip())]
+        # Note: filter may empty
+        return [FilterBy(command.removeprefix("f").lstrip())]
     if command.startswith("` "):
-        return [ToggleAutoLink(command[2:])]
+        return [ToggleAutoLink(command.removeprefix("` "))]
     if command in simple_commands:
         return [simple_commands[command]]
     return []
