@@ -393,8 +393,7 @@ class Goals(Graph):
         return result
 
     @staticmethod
-    def export(goals):
-        # type: (Goals) -> tuple[GoalsData, EdgesData, OptionsData]
+    def export(goals: "Goals") -> tuple[GoalsData, EdgesData, OptionsData]:
         nodes: GoalsData = [
             (g_id, g_name, g_id not in goals.closed)
             for g_id, g_name in goals.goals.items()

@@ -141,6 +141,5 @@ class Zoom(Graph):
         ), "Zoom stack must always start from the root"
 
     @staticmethod
-    def export(goals):
-        # type: (Zoom) -> ZoomData
+    def export(goals: "Zoom") -> ZoomData:
         return [(idx + 1, goal) for idx, goal in enumerate(goals.zoom_root)]
