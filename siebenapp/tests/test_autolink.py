@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import Tuple
 
 import pytest
 
@@ -52,7 +52,7 @@ def tree_3i_goals():
     )
 
 
-def _autolink_events(goals: Graph) -> List[Tuple]:
+def _autolink_events(goals: Graph) -> list[Tuple]:
     return [e for e in goals.events() if "autolink" in e[0]]
 
 
@@ -145,7 +145,7 @@ def test_do_not_add_autolink_on_whitespace(tree_2_goals) -> None:
 
 
 def test_do_not_add_autolink_to_closed_goals() -> None:
-    messages: List[str] = []
+    messages: list[str] = []
     goals = AutoLink(
         build_goaltree(
             open_(1, "Root", [2]),
@@ -167,7 +167,7 @@ def test_do_not_add_autolink_to_closed_goals() -> None:
 
 
 def test_do_not_add_autolink_to_root_goal() -> None:
-    messages: List[str] = []
+    messages: list[str] = []
     goals = AutoLink(
         build_goaltree(open_(1, "Root", select=selected), message_fn=messages.append)
     )

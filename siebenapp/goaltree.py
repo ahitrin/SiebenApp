@@ -1,5 +1,5 @@
 # coding: utf-8
-from typing import Callable, Dict, Optional, List, Set, Any, Tuple
+from typing import Callable, Dict, Optional, Set, Any, Tuple
 from collections import deque, defaultdict
 
 from siebenapp.domain import (
@@ -19,9 +19,9 @@ from siebenapp.domain import (
     RenderRow,
 )
 
-GoalsData = List[Tuple[int, Optional[str], bool]]
-EdgesData = List[Tuple[int, int, EdgeType]]
-OptionsData = List[Tuple[str, int]]
+GoalsData = list[Tuple[int, Optional[str], bool]]
+EdgesData = list[Tuple[int, int, EdgeType]]
+OptionsData = list[Tuple[str, int]]
 
 
 class Goals(Graph):
@@ -53,10 +53,10 @@ class Goals(Graph):
     def _has_link(self, lower: int, upper: int) -> bool:
         return upper in self.edges_forward[lower]
 
-    def _forward_edges(self, goal: int) -> List[Edge]:
+    def _forward_edges(self, goal: int) -> list[Edge]:
         return [Edge(goal, k, v) for k, v in self.edges_forward[goal].items()]
 
-    def _back_edges(self, goal: int) -> List[Edge]:
+    def _back_edges(self, goal: int) -> list[Edge]:
         return [Edge(k, goal, v) for k, v in self.edges_backward[goal].items()]
 
     def _parent(self, goal: int) -> int:
@@ -111,9 +111,9 @@ class Goals(Graph):
         self._events.append(("hold_select", self.selection))
 
     def q(self) -> RenderResult:
-        rows: List[RenderRow] = []
+        rows: list[RenderRow] = []
         for key, name in ((k, n) for k, n in self.goals.items() if n is not None):
-            edges: List[Tuple[GoalId, EdgeType]] = sorted(
+            edges: list[Tuple[GoalId, EdgeType]] = sorted(
                 [(e.target, e.type) for e in self._forward_edges(key)]
             )
             rows.append(
@@ -182,18 +182,18 @@ class Goals(Graph):
         return all(g.target in self.closed for g in self._forward_edges(self.selection))
 
     def _may_be_reopened(self) -> bool:
-        blocked_by_selected: List[int] = [
+        blocked_by_selected: list[int] = [
             e.source for e in self._back_edges(self.selection)
         ]
         return all(g not in self.closed for g in blocked_by_selected)
 
     def _first_open_and_switchable(self, root: int) -> int:
         actual_root: int = max(root, Goals.ROOT_ID)
-        front: List[int] = [actual_root]
-        candidates: List[int] = []
+        front: list[int] = [actual_root]
+        candidates: list[int] = []
         while front:
             next_goal: int = front.pop()
-            subgoals: List[int] = [
+            subgoals: list[int] = [
                 e.target
                 for e in self._forward_edges(next_goal)
                 if e.target not in self.closed and e.type == EdgeType.PARENT
@@ -215,7 +215,7 @@ class Goals(Graph):
         parent: int = self._parent(goal_id)
         self.goals[goal_id] = None
         self.closed.add(goal_id)
-        forward_edges: List[Edge] = self._forward_edges(goal_id)
+        forward_edges: list[Edge] = self._forward_edges(goal_id)
         next_to_remove: Set[Edge] = {
             e for e in forward_edges if e.type == EdgeType.PARENT
         }
@@ -286,7 +286,7 @@ class Goals(Graph):
         self._events.append(("link", lower, upper, edge_type))
 
     def _transform_old_parents_into_blocked(self, lower: int, upper: int) -> None:
-        old_parents: List[int] = [
+        old_parents: list[int] = [
             e.source
             for e in self._back_edges(upper)
             if e.type == EdgeType.PARENT and e.source != lower
@@ -320,7 +320,7 @@ class Goals(Graph):
         ), "Open goals could not be blocked by closed ones"
 
     def _verify_all_subgoals_are_accessible_from_the_root_goal(self) -> None:
-        queue: List[int] = [Goals.ROOT_ID]
+        queue: list[int] = [Goals.ROOT_ID]
         visited: Set[int] = set()
         while queue:
             goal: int = queue.pop()
@@ -335,7 +335,7 @@ class Goals(Graph):
         }, "All subgoals must be accessible from the root goal"
 
     def _verify_deleted_goals_have_no_dependencies(self) -> None:
-        deleted_nodes: List[int] = [g for g, v in self.goals.items() if v is None]
+        deleted_nodes: list[int] = [g for g, v in self.goals.items() if v is None]
         assert all(
             not self._forward_edges(n) for n in deleted_nodes
         ), "Deleted goals must have no dependencies"
@@ -354,7 +354,7 @@ class Goals(Graph):
         ), "Forward and backward edges must always match each other"
 
     def _verify_at_most_one_parent_for_each_goal(self) -> None:
-        parent_edges: List[Tuple[int, int]] = [
+        parent_edges: list[Tuple[int, int]] = [
             k for k, v in self.edges.items() if v == EdgeType.PARENT
         ]
         edges_with_parent: Set[int] = {child for parent, child in parent_edges}

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, Any, Set, List
+from typing import Dict, Any, Set
 
 from siebenapp.domain import (
     Command,
@@ -46,7 +46,7 @@ class OpenView(Graph):
             if row.is_open
             or row.goal_id in render_result.roots.union(set(render_result.select))
         }
-        rows: List[RenderRow] = [
+        rows: list[RenderRow] = [
             RenderRow(
                 row.goal_id,
                 row.raw_id,

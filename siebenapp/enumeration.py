@@ -1,5 +1,5 @@
 import math
-from typing import List, Tuple, Iterable, Set
+from typing import Tuple, Iterable, Set
 
 from siebenapp.domain import Graph, Select, GoalId, RenderResult, RenderRow
 
@@ -32,7 +32,7 @@ class BidirectionalIndex:
         return new_id
 
     def backward(self, goal_id: int) -> int:
-        possible_selections: List[int] = [
+        possible_selections: list[int] = [
             g for g in self.m if self.forward(g) == goal_id
         ]
         if len(possible_selections) == 1:
@@ -43,7 +43,7 @@ class BidirectionalIndex:
 class Enumeration(Graph):
     def __init__(self, goaltree: Graph) -> None:
         super().__init__(goaltree)
-        self.selection_cache: List[int] = []
+        self.selection_cache: list[int] = []
 
     def _id_mapping(self) -> Tuple[RenderResult, BidirectionalIndex]:
         render_result = self.goaltree.q()
@@ -53,7 +53,7 @@ class Enumeration(Graph):
 
     def q(self) -> RenderResult:
         render_result, index = self._id_mapping()
-        rows: List[RenderRow] = [
+        rows: list[RenderRow] = [
             RenderRow(
                 index.forward(row.goal_id),
                 row.raw_id,

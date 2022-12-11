@@ -2,7 +2,7 @@ from argparse import ArgumentParser
 from html import escape
 from operator import attrgetter
 from os import path
-from typing import List, Optional, Set
+from typing import Optional, Set
 
 from siebenapp.cli import IO, ConsoleIO
 from siebenapp.domain import EdgeType, Graph, RenderRow, GoalId
@@ -81,7 +81,7 @@ def _flag(parser, key, description) -> None:
     parser.add_argument(key, required=False, action="store_true", help=description)
 
 
-def main(argv: Optional[List[str]] = None, io: Optional[IO] = None):
+def main(argv: Optional[list[str]] = None, io: Optional[IO] = None):
     parser = ArgumentParser()
     subparsers = parser.add_subparsers(title="commands")
 
@@ -148,7 +148,7 @@ def _format_name(row: RenderRow) -> str:
         if isinstance(row.goal_id, int) and row.goal_id >= 0
         else f"{goal_name}"
     )
-    attrs: List[str] = [f"{k}: {split_long(v)}" for k, v in row.attrs.items()]
+    attrs: list[str] = [f"{k}: {split_long(v)}" for k, v in row.attrs.items()]
     return '"' + "\n".join([label] + attrs) + '"'
 
 
@@ -186,7 +186,7 @@ def markdown_export(goals: Graph) -> str:
         e[0] for r in render_result.rows for e in r.edges if e[1] == EdgeType.PARENT
     }
     roots = all_ids.difference(non_roots)
-    output: List[str] = []
+    output: list[str] = []
     for root_id in sorted(list(roots)):
         output.extend(_md_tree(render_result, root_id, 0))
     return "\n".join(output)
@@ -203,7 +203,7 @@ def _md_tree(render_result, root_id, shift):
 
 def _format_md_row(render_result, row: RenderRow, shift: int) -> str:
     open_status = " " if row.is_open else "x"
-    blockers: List[str] = [
+    blockers: list[str] = [
         f"**{e[0]}**"
         for e in row.edges
         if e[1] == EdgeType.BLOCKER and render_result.by_id(e[0]).is_open

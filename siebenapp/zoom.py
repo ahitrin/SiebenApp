@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, Any, Set, List, Tuple, Optional
+from typing import Any, Set, Tuple, Optional
 
 from siebenapp.domain import (
     Graph,
@@ -20,7 +20,7 @@ class ToggleZoom(Command):
     """Hide or show all goals blocked by the current one"""
 
 
-ZoomData = List[Tuple[int, int]]
+ZoomData = list[Tuple[int, int]]
 
 
 def _replace_with_fake(goal_id: GoalId):
@@ -30,7 +30,7 @@ def _replace_with_fake(goal_id: GoalId):
 class Zoom(Graph):
     def __init__(self, goaltree: Graph, zoom_data: Optional[ZoomData] = None) -> None:
         super().__init__(goaltree)
-        self.zoom_root: List[int] = [x[1] for x in zoom_data] if zoom_data else [1]
+        self.zoom_root: list[int] = [x[1] for x in zoom_data] if zoom_data else [1]
 
     def accept_ToggleZoom(self, command: ToggleZoom):
         selection = self.settings("selection")
@@ -59,7 +59,7 @@ class Zoom(Graph):
             .union(set(render_result.select))
             .difference({Goals.ROOT_ID})
         )
-        rows: List[RenderRow] = [
+        rows: list[RenderRow] = [
             RenderRow(
                 r.goal_id,
                 r.raw_id,

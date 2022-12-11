@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from argparse import ArgumentParser
 from pathlib import Path
-from typing import List, Tuple, Dict, Any
+from typing import Tuple, Dict, Any
 
 import dearpygui.dearpygui as dpg
 
@@ -93,7 +93,7 @@ class SiebenApp:
         # zero -> loop [ goals -> adjust -> edges -> no_update -> ... ]
         self.phase: str = "zero"
         self.render_result: RenderResult = RenderResult([])
-        self.drawn_items: List[str] = []
+        self.drawn_items: list[str] = []
         self.nodes: Dict[Tuple[int, int], Any] = {}
         self.columns: int = Renderer.DEFAULT_WIDTH
         self.font = font

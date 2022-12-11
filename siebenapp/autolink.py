@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, List, Union, Tuple, Optional, Set
+from typing import Dict, Union, Tuple, Optional, Set
 
 from siebenapp.domain import (
     Graph,
@@ -23,7 +23,7 @@ class ToggleAutoLink(Command):
     keyword: str
 
 
-AutoLinkData = List[Tuple[int, str]]
+AutoLinkData = list[Tuple[int, str]]
 
 
 class AutoLink(Graph):
@@ -77,7 +77,7 @@ class AutoLink(Graph):
         self._autolink_new_goal(command)
 
     def _autolink_new_goal(self, command: Union[Add, Insert]) -> None:
-        matching: List[int] = self._find_matching_goals(command.name)
+        matching: list[int] = self._find_matching_goals(command.name)
         ids_before: Set[int] = set(self.goaltree.goals.keys())
         self.goaltree.accept(command)
         ids_after: Set[int] = set(self.goaltree.goals.keys())
@@ -87,17 +87,17 @@ class AutoLink(Graph):
             self._make_links(matching, added_id)
 
     def accept_Rename(self, command: Rename) -> None:
-        matching: List[int] = self._find_matching_goals(command.new_name)
+        matching: list[int] = self._find_matching_goals(command.new_name)
         self.goaltree.accept(command)
         selected_id: int = command.goal_id or self.settings("selection")
         self._make_links(matching, selected_id)
 
     def accept_Delete(self, command: Delete) -> None:
         selected_id: int = command.goal_id or self.settings("selection")
-        edges: Dict[int, List[Tuple[GoalId, EdgeType]]] = {
+        edges: Dict[int, list[Tuple[GoalId, EdgeType]]] = {
             row.raw_id: row.edges for row in self.goaltree.q().rows
         }
-        goals_to_check: List[int] = [selected_id]
+        goals_to_check: list[int] = [selected_id]
         while goals_to_check:
             goal_id: int = goals_to_check.pop()
             goals_to_check.extend(
@@ -111,13 +111,13 @@ class AutoLink(Graph):
                 self.events().append(("remove_autolink", goal_id))
         self.goaltree.accept(command)
 
-    def _find_matching_goals(self, text: str) -> List[int]:
+    def _find_matching_goals(self, text: str) -> list[int]:
         return [goal_id for kw, goal_id in self.keywords.items() if kw in text.lower()]
 
-    def _make_links(self, matching_goals: List[int], target_goal: int) -> None:
+    def _make_links(self, matching_goals: list[int], target_goal: int) -> None:
         if not matching_goals:
             return
-        self_children: Dict[int, List[GoalId]] = {
+        self_children: Dict[int, list[GoalId]] = {
             row.raw_id: [e[0] for e in row.edges] for row in self.goaltree.q().rows
         }
         for add_to in matching_goals:
@@ -129,7 +129,7 @@ class AutoLink(Graph):
         if not self.back_kw:
             # Fast exit without creating new objects
             return render_result
-        rows: List[RenderRow] = [
+        rows: list[RenderRow] = [
             RenderRow(
                 row.goal_id,
                 row.raw_id,

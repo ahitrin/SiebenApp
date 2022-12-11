@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, Any, Tuple, List
+from typing import Dict, Any, Tuple
 
 from siebenapp.domain import Graph, Command, EdgeType, GoalId, RenderResult, RenderRow
 
@@ -41,7 +41,7 @@ class ProgressView(Graph):
             return render_result
         progress_cache: Dict[GoalId, Tuple[int, int]] = {}
         rows = render_result.rows
-        queue: List[RenderRow] = list(rows)
+        queue: list[RenderRow] = list(rows)
         while queue:
             row = queue.pop(0)
             children = [x[0] for x in row.edges if x[1] == EdgeType.PARENT]
@@ -56,7 +56,7 @@ class ProgressView(Graph):
             else:
                 queue.append(row)
 
-        result_rows: List[RenderRow] = [
+        result_rows: list[RenderRow] = [
             RenderRow(
                 row.goal_id,
                 row.raw_id,

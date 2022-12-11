@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, List
+from typing import Any
 
 from siebenapp.domain import Command, Graph, RenderResult, RenderRow
 
@@ -34,7 +34,7 @@ class SwitchableView(Graph):
         render_result = self.goaltree.q()
         if not self._only_switchable:
             return render_result
-        rows: List[RenderRow] = [
+        rows: list[RenderRow] = [
             RenderRow(
                 row.goal_id,
                 row.raw_id,

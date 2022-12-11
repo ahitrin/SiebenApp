@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, List, Set
+from typing import Any, Set
 
 from siebenapp.domain import Graph, Command, RenderResult, RenderRow, GoalId
 
@@ -38,7 +38,7 @@ class FilterView(Graph):
             if self.pattern in row.name.lower()
         }
         all_ids: Set[GoalId] = accepted_ids.union(render_result.select)
-        rows: List[RenderRow] = [
+        rows: list[RenderRow] = [
             RenderRow(
                 row.goal_id,
                 row.raw_id,

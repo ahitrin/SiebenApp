@@ -1,4 +1,4 @@
-from typing import List, Any, Optional
+from typing import Any, Optional
 
 from approvaltests import verify  # type: ignore
 from approvaltests.namer import get_default_namer  # type: ignore
@@ -10,11 +10,11 @@ from siebenapp.system import load
 
 class DummyIO(IO):
     def __init__(
-        self, commands: Optional[List[str]] = None, log: Optional[List[str]] = None
+        self, commands: Optional[list[str]] = None, log: Optional[list[str]] = None
     ):
         super().__init__()
         self.commands = [] if commands is None else commands
-        self.log: List[str] = [] if log is None else log
+        self.log: list[str] = [] if log is None else log
 
     def write(self, text: str, *args) -> None:
         self.log.append(" ".join([text, *args]))

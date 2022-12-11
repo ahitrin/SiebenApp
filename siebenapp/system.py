@@ -1,7 +1,7 @@
 # coding: utf-8
 import sqlite3
 from os import path
-from typing import Callable, List, Optional
+from typing import Callable, Optional
 
 from siebenapp.autolink import AutoLink, AutoLinkData
 from siebenapp.domain import Graph
@@ -205,9 +205,9 @@ def load(
 
 
 def run_migrations(
-    conn: sqlite3.Connection, migrations_to_run: Optional[List[List[str]]] = None
+    conn: sqlite3.Connection, migrations_to_run: Optional[list[list[str]]] = None
 ) -> None:
-    migrations: List[List[str]] = (
+    migrations: list[list[str]] = (
         MIGRATIONS if migrations_to_run is None else migrations_to_run
     )
     cur = conn.cursor()

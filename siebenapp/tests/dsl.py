@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import Optional
 
 from siebenapp.domain import EdgeType
 from siebenapp.goaltree import Goals
@@ -14,8 +14,8 @@ class GoalPrototype:
     goal_id: int
     name: str
     open: bool
-    children: List[int]
-    blockers: List[int]
+    children: list[int]
+    blockers: list[int]
     select: Optional[str]
 
 
