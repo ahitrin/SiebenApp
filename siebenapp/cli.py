@@ -101,10 +101,11 @@ def build_actions(command):
     if command.startswith("r "):
         return [Rename(command.removeprefix("r "))]
     if command.startswith("f"):
-        # Note: filter may empty
+        # Note: filter may be empty
         return [FilterBy(command.removeprefix("f").lstrip())]
-    if command.startswith("` "):
-        return [ToggleAutoLink(command.removeprefix("` "))]
+    if command.startswith("`"):
+        # Note: autolink may be empty
+        return [ToggleAutoLink(command.removeprefix("`").lstrip())]
     if command in simple_commands:
         return [simple_commands[command]]
     return []
