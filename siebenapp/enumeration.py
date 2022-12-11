@@ -1,5 +1,5 @@
 import math
-from typing import Iterable
+from collections.abc import Iterable
 
 from siebenapp.domain import Graph, Select, GoalId, RenderResult, RenderRow
 
