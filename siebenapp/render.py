@@ -157,9 +157,9 @@ class Renderer:
             }
 
             placed_line: Layer = self.place(new_positions)
-            self.positions.update(
-                {g: idx for idx, g in enumerate(placed_line) if g is not None}
-            )
+            self.positions |= {
+                g: idx for idx, g in enumerate(placed_line) if g is not None
+            }
             self.layers[curr_layer - 1] = placed_line
 
     def count_deltas(self, fixed_line: Layer) -> Dict[GoalId, int]:
@@ -184,15 +184,13 @@ class Renderer:
                         "col": col,
                         "edge_render": [],
                     }
-                self.node_opts[goal_id].update(
-                    {
-                        "row": row,
-                        "edge_render": [
-                            (child, self.edge_types[goal_id, child])
-                            for child in self.edges[goal_id]
-                        ],
-                    }
-                )
+                self.node_opts[goal_id] |= {
+                    "row": row,
+                    "edge_render": [
+                        (child, self.edge_types[goal_id, child])
+                        for child in self.edges[goal_id]
+                    ],
+                }
 
     def build_index(self) -> None:
         result_index: Dict[int, Dict[int, GoalId]] = {}
@@ -219,9 +217,9 @@ class Renderer:
             self._write_edges(edges, left)
 
     def _write_edges(self, edges: List[str], left: int) -> None:
-        self.result_edge_options.update(
-            {e: (left, i + 1, len(edges) + 1) for i, e in enumerate(edges)}
-        )
+        self.result_edge_options |= {
+            e: (left, i + 1, len(edges) + 1) for i, e in enumerate(edges)
+        }
 
     def place(self, source: Dict[GoalId, int]) -> Layer:
         result: Layer = []

@@ -61,15 +61,13 @@ def merge(args, io: IO):
     delta = 1
     for source_db in sources:
         source_root = get_root(load(source_db))
-        merged_db.goals.update(
-            {goal_id + delta: name for goal_id, name in source_root.goals.items()}
-        )
-        merged_db.edges.update(
-            {
-                (edge[0] + delta, edge[1] + delta): edge_type
-                for edge, edge_type in source_root.edges.items()
-            }
-        )
+        merged_db.goals |= {
+            goal_id + delta: name for goal_id, name in source_root.goals.items()
+        }
+        merged_db.edges |= {
+            (edge[0] + delta, edge[1] + delta): edge_type
+            for edge, edge_type in source_root.edges.items()
+        }
         merged_db.edges[
             Goals.ROOT_ID, min(source_root.goals.keys()) + delta
         ] = EdgeType.PARENT
