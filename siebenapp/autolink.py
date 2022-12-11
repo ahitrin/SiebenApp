@@ -137,15 +137,12 @@ class AutoLink(Graph):
                 row.is_open,
                 row.is_switchable,
                 row.edges,
-                {
-                    # We could use `r.attrs | (...)` in Python 3.9+
-                    **row.attrs,
-                    **(
-                        {"Autolink": self.back_kw[int(row.goal_id)]}
-                        if row.goal_id in self.back_kw
-                        else {}
-                    ),
-                },
+                row.attrs
+                | (
+                    {"Autolink": self.back_kw[int(row.goal_id)]}
+                    if row.goal_id in self.back_kw
+                    else {}
+                ),
             )
             for row in render_result.rows
         ]

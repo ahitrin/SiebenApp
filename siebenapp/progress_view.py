@@ -64,11 +64,7 @@ class ProgressView(Graph):
                 row.is_open,
                 row.is_switchable,
                 row.edges,
-                {
-                    # We could use `r.attrs | (...)` in Python 3.9+
-                    **row.attrs,
-                    **{"Progress": _progress_status(row, progress_cache)},
-                },
+                row.attrs | {"Progress": _progress_status(row, progress_cache)},
             )
             for row in rows
         ]

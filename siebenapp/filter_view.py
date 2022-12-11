@@ -46,11 +46,8 @@ class FilterView(Graph):
                 row.is_open,
                 row.is_switchable,
                 [e for e in row.edges if e[0] in all_ids],
-                {
-                    # We could use `r.attrs | (...)` in Python 3.9+
-                    **row.attrs,
-                    **({"Filter": self.pattern} if row.goal_id in accepted_ids else {}),
-                },
+                row.attrs
+                | ({"Filter": self.pattern} if row.goal_id in accepted_ids else {}),
             )
             for row in render_result.rows
             if row.goal_id in all_ids
