@@ -3,8 +3,8 @@
 all: check venv test
 
 check:
-	if [ ! `which python3` ] ; then echo Please install Python 3.8 or greater ; exit 1; fi
-	if [ `python3 -V | cut -d. -f2` -lt 8 ]; then echo Please install Python 3.8 or greater; exit 1; fi
+	if [ ! `which python3` ] ; then echo Please install Python 3.9 or greater ; exit 1; fi
+	if [ `python3 -V | cut -d. -f2` -lt 9 ]; then echo Please install Python 3.9 or greater; exit 1; fi
 	if [ ! `which pipenv` ] ; then echo Please install pipenv ; exit 1; fi
 
 venv:
