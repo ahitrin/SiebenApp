@@ -1,5 +1,5 @@
 import math
-from typing import Tuple, Iterable
+from typing import Iterable
 
 from siebenapp.domain import Graph, Select, GoalId, RenderResult, RenderRow
 
@@ -45,7 +45,7 @@ class Enumeration(Graph):
         super().__init__(goaltree)
         self.selection_cache: list[int] = []
 
-    def _id_mapping(self) -> Tuple[RenderResult, BidirectionalIndex]:
+    def _id_mapping(self) -> tuple[RenderResult, BidirectionalIndex]:
         render_result = self.goaltree.q()
         return render_result, BidirectionalIndex(
             [r.goal_id for r in render_result.rows]

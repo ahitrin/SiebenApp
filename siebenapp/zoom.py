@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Tuple, Optional
+from typing import Any, Optional
 
 from siebenapp.domain import (
     Graph,
@@ -20,7 +20,7 @@ class ToggleZoom(Command):
     """Hide or show all goals blocked by the current one"""
 
 
-ZoomData = list[Tuple[int, int]]
+ZoomData = list[tuple[int, int]]
 
 
 def _replace_with_fake(goal_id: GoalId):

@@ -1,5 +1,3 @@
-from typing import Tuple
-
 from siebenapp.domain import (
     EdgeType,
     HoldSelect,
@@ -19,7 +17,7 @@ from siebenapp.tests.dsl import build_goaltree, open_, selected, previous, clos_
 from siebenapp.zoom import Zoom, ToggleZoom
 
 
-def _zoom_events(goals: Graph) -> list[Tuple]:
+def _zoom_events(goals: Graph) -> list[tuple]:
     return [e for e in goals.events() if "zoom" in e[0]]
 
 

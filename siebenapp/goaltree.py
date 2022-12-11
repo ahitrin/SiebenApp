@@ -1,5 +1,5 @@
 # coding: utf-8
-from typing import Callable, Optional, Any, Tuple
+from typing import Callable, Optional, Any
 from collections import deque, defaultdict
 
 from siebenapp.domain import (
@@ -19,9 +19,9 @@ from siebenapp.domain import (
     RenderRow,
 )
 
-GoalsData = list[Tuple[int, Optional[str], bool]]
-EdgesData = list[Tuple[int, int, EdgeType]]
-OptionsData = list[Tuple[str, int]]
+GoalsData = list[tuple[int, Optional[str], bool]]
+EdgesData = list[tuple[int, int, EdgeType]]
+OptionsData = list[tuple[str, int]]
 
 
 class Goals(Graph):
@@ -32,7 +32,7 @@ class Goals(Graph):
     ) -> None:
         super().__init__()
         self.goals: dict[int, Optional[str]] = {}
-        self.edges: dict[Tuple[int, int], EdgeType] = {}
+        self.edges: dict[tuple[int, int], EdgeType] = {}
         self.edges_forward: dict[int, dict[int, EdgeType]] = defaultdict(
             lambda: defaultdict(lambda: EdgeType.BLOCKER)
         )
@@ -113,7 +113,7 @@ class Goals(Graph):
     def q(self) -> RenderResult:
         rows: list[RenderRow] = []
         for key, name in ((k, n) for k, n in self.goals.items() if n is not None):
-            edges: list[Tuple[GoalId, EdgeType]] = sorted(
+            edges: list[tuple[GoalId, EdgeType]] = sorted(
                 [(e.target, e.type) for e in self._forward_edges(key)]
             )
             rows.append(
@@ -341,10 +341,10 @@ class Goals(Graph):
         ), "Deleted goals must have no dependencies"
 
     def _verify_forward_and_backward_edges_match_each_other(self) -> None:
-        fwd_edges: set[Tuple[int, int, EdgeType]] = set(
+        fwd_edges: set[tuple[int, int, EdgeType]] = set(
             (g1, g2, et) for g1, e in self.edges_forward.items() for g2, et in e.items()
         )
-        bwd_edges: set[Tuple[int, int, EdgeType]] = set(
+        bwd_edges: set[tuple[int, int, EdgeType]] = set(
             (g1, g2, et)
             for g2, e in self.edges_backward.items()
             for g1, et in e.items()
@@ -354,7 +354,7 @@ class Goals(Graph):
         ), "Forward and backward edges must always match each other"
 
     def _verify_at_most_one_parent_for_each_goal(self) -> None:
-        parent_edges: list[Tuple[int, int]] = [
+        parent_edges: list[tuple[int, int]] = [
             k for k, v in self.edges.items() if v == EdgeType.PARENT
         ]
         edges_with_parent: set[int] = {child for parent, child in parent_edges}
@@ -394,7 +394,7 @@ class Goals(Graph):
 
     @staticmethod
     def export(goals):
-        # type: (Goals) -> Tuple[GoalsData, EdgesData, OptionsData]
+        # type: (Goals) -> tuple[GoalsData, EdgesData, OptionsData]
         nodes: GoalsData = [
             (g_id, g_name, g_id not in goals.closed)
             for g_id, g_name in goals.goals.items()

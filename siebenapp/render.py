@@ -1,6 +1,6 @@
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Tuple, Any, Optional, Protocol
+from typing import Any, Optional, Protocol
 
 from siebenapp.domain import Graph, EdgeType, GoalId, RenderResult
 
@@ -29,7 +29,7 @@ class Point:
     def __repr__(self):
         return f"<{self.x}, {self.y}>"
 
-    def as_tuple(self) -> Tuple[int, int]:
+    def as_tuple(self) -> tuple[int, int]:
         return self.x, self.y
 
 
@@ -70,12 +70,12 @@ class Renderer:
                 self.back_edges[upper_goal].append(row.goal_id)
         self.layers: dict[int, Layer] = defaultdict(list)
         self.positions: dict[GoalId, int] = {}
-        self.edge_types: dict[Tuple[GoalId, GoalId], EdgeType] = {
+        self.edge_types: dict[tuple[GoalId, GoalId], EdgeType] = {
             (parent, child): edge_type
             for parent in self.node_opts
             for child, edge_type in self.render_result.by_id(parent).edges
         }
-        self.result_edge_options: dict[str, Tuple[int, int, int]] = {}
+        self.result_edge_options: dict[str, tuple[int, int, int]] = {}
 
     def build(self) -> RenderResult:
         self.split_by_layers()
@@ -136,8 +136,8 @@ class Renderer:
 
     def candidates_for_new_layer(
         self, sorted_goals: set[GoalId], unsorted_goals: dict[GoalId, list[GoalId]]
-    ) -> list[Tuple[GoalId, int]]:
-        candidates: list[Tuple[GoalId, int]] = [
+    ) -> list[tuple[GoalId, int]]:
+        candidates: list[tuple[GoalId, int]] = [
             (goal, len(edges))
             for goal, edges in unsorted_goals.items()
             if all(v in sorted_goals for v in edges)
@@ -223,7 +223,7 @@ class Renderer:
 
     def place(self, source: dict[GoalId, int]) -> Layer:
         result: Layer = []
-        unplaced: list[Tuple[GoalId, int]] = sorted(list(source.items()), key=goal_key)
+        unplaced: list[tuple[GoalId, int]] = sorted(list(source.items()), key=goal_key)
         while unplaced:
             value, index = unplaced.pop(0)
             if len(result) < index + 1:
@@ -237,7 +237,7 @@ class Renderer:
         return result
 
 
-def goal_key(tup: Tuple[GoalId, int]) -> Tuple[int, int]:
+def goal_key(tup: tuple[GoalId, int]) -> tuple[int, int]:
     """Sort goals by position first and by id second (transform str ids into ints)"""
     goal_id, goal_pos = tup
     if isinstance(goal_id, str):
@@ -307,9 +307,9 @@ def adjust_graph(render_result: RenderResult, gp: GeometryProvider) -> None:
 
 def render_lines(
     gp: GeometryProvider, render_result: RenderResult
-) -> list[Tuple[EdgeType, Point, Point, str]]:
+) -> list[tuple[EdgeType, Point, Point, str]]:
     edges = {}
-    lines: list[Tuple[EdgeType, Point, Point, str]] = []
+    lines: list[tuple[EdgeType, Point, Point, str]] = []
 
     for goal_id, attrs in render_result.node_opts.items():
         for e_target, e_type in attrs["edge_render"]:

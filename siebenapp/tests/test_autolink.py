@@ -1,5 +1,3 @@
-from typing import Tuple
-
 import pytest
 
 from siebenapp.autolink import AutoLink, ToggleAutoLink
@@ -52,7 +50,7 @@ def tree_3i_goals():
     )
 
 
-def _autolink_events(goals: Graph) -> list[Tuple]:
+def _autolink_events(goals: Graph) -> list[tuple]:
     return [e for e in goals.events() if "autolink" in e[0]]
 
 

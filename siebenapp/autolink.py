@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Union, Tuple, Optional
+from typing import Union, Optional
 
 from siebenapp.domain import (
     Graph,
@@ -23,7 +23,7 @@ class ToggleAutoLink(Command):
     keyword: str
 
 
-AutoLinkData = list[Tuple[int, str]]
+AutoLinkData = list[tuple[int, str]]
 
 
 class AutoLink(Graph):
@@ -94,7 +94,7 @@ class AutoLink(Graph):
 
     def accept_Delete(self, command: Delete) -> None:
         selected_id: int = command.goal_id or self.settings("selection")
-        edges: dict[int, list[Tuple[GoalId, EdgeType]]] = {
+        edges: dict[int, list[tuple[GoalId, EdgeType]]] = {
             row.raw_id: row.edges for row in self.goaltree.q().rows
         }
         goals_to_check: list[int] = [selected_id]
