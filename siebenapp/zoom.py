@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Optional
 
 from siebenapp.domain import (
     Graph,
@@ -115,11 +115,6 @@ class Zoom(Graph):
         while self.zoom_root and self.zoom_root[-1] in removed:
             last_zoom = self.zoom_root.pop(-1)
             self.events().append(("unzoom", last_zoom))
-
-    def settings(self, key: str) -> Any:
-        if key == "root" and self.zoom_root[-1] != Goals.ROOT_ID:
-            return -1
-        return self.goaltree.settings(key)
 
     def _build_visible_goals(self, render_result: RenderResult) -> set[GoalId]:
         current_zoom_root = self.zoom_root[-1]

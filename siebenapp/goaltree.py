@@ -69,7 +69,6 @@ class Goals(Graph):
         return {
             "selection": self.selection,
             "previous_selection": self.previous_selection,
-            "root": Goals.ROOT_ID,
         }.get(key, 0)
 
     def selections(self) -> set[int]:
