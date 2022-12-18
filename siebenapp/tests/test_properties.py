@@ -101,21 +101,12 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         event("hold")
         self._accept(HoldSelect())
 
-    @rule(d=data())
-    # Ignore trivial trees (without any subgoal)
-    @precondition(lambda self: len(self.goaltree.q().rows) > 1)
-    def insert(self, d) -> None:
+    @rule()
+    # Run insert only when two different goals are selected
+    @precondition(lambda self: len(set(self.goaltree.q().select).difference({-1})) > 1)
+    def insert(self) -> None:
         event("insert")
-        render_result = self.goaltree.q()
-        candidates = sorted(
-            list(
-                row.goal_id
-                for row in render_result.rows
-                if row.goal_id != render_result.select[0]
-            )
-        )
-        random_goal = d.draw(sampled_from(candidates))
-        self._accept_all(HoldSelect(), Select(random_goal), Insert("i"))
+        self._accept_all(Insert("i"))
 
     @rule(b=booleans(), d=data())
     # Ignore trivial trees (without any subgoal)
