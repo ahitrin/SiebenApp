@@ -223,7 +223,9 @@ class Renderer:
 
     def place(self, source: dict[GoalId, int]) -> Layer:
         result: Layer = []
-        unplaced: list[tuple[GoalId, int]] = sorted(list(source.items()), key=goal_key)
+        unplaced: list[tuple[GoalId, int]] = sorted(
+            [(k, v) for k, v in source.items()], key=goal_key
+        )
         while unplaced:
             value, index = unplaced.pop(0)
             if len(result) < index + 1:
