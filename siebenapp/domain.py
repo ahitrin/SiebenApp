@@ -127,7 +127,7 @@ class Graph:
     def events(self) -> deque:
         """Returns queue of applied actions.
         Note: this queue is modifiable -- you may push new events into it. But this
-        behavior may be changed in future."""
+        behavior may be changed in the future."""
         if self.goaltree != self:
             return self.goaltree.events()
         raise NotImplementedError
