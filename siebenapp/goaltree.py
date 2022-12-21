@@ -134,7 +134,7 @@ class Goals(Graph):
     def _switchable(self, key: int) -> bool:
         if key in self.closed:
             if back_edges := self._back_edges(key):
-                return any(e.source not in self.closed for e in back_edges)
+                return all(e.source not in self.closed for e in back_edges)
             return True
         return all(x.target in self.closed for x in self._forward_edges(key))
 

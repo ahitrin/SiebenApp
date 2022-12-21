@@ -255,6 +255,37 @@ class GoalsTest(TestCase):
             roots={1},
         )
 
+    def test_blocker_could_not_be_switchable(self) -> None:
+        self.goals = self.build(
+            open_(1, "Root", [2, 3]),
+            clos_(2, "Blocked", blockers=[4], select=selected),
+            open_(3, "Intermediate", [4]),
+            clos_(4, "Blocker"),
+        )
+        # Goal 4 should not be switchable when goal 2 is closed
+        assert self.goals.q() == RenderResult(
+            [
+                RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
+                RenderRow(2, 2, "Blocked", False, True, [blocker(4)]),
+                RenderRow(3, 3, "Intermediate", True, True, [child(4)]),
+                RenderRow(4, 4, "Blocker", False, False, []),
+            ],
+            select=(2, 2),
+            roots={1},
+        )
+        # Goal 4 could only become switchable when we reopen goal 2
+        self.goals.accept(ToggleClose())
+        assert self.goals.q() == RenderResult(
+            [
+                RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
+                RenderRow(2, 2, "Blocked", True, True, [blocker(4)]),
+                RenderRow(3, 3, "Intermediate", True, True, [child(4)]),
+                RenderRow(4, 4, "Blocker", False, True, []),
+            ],
+            select=(2, 2),
+            roots={1},
+        )
+
     def test_delete_single_goal(self) -> None:
         self.goals = self.build(open_(1, "Root", [2]), open_(2, "A", select=selected))
         self.goals.accept(Delete())

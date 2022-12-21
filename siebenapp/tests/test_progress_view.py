@@ -131,7 +131,7 @@ def test_change_progress_on_close(goaltree) -> None:
             RenderRow(
                 3, 3, "With subgoal", True, True, [child(4)], {"Progress": "50% (1/2)"}
             ),
-            RenderRow(4, 4, "Top goal", False, True, [], {"Progress": "100% (1/1)"}),
+            RenderRow(4, 4, "Top goal", False, False, [], {"Progress": "100% (1/1)"}),
         ],
         select=(1, 1),
         roots={1},
