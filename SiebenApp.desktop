@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=SiebenApp
+Icon=_SIEBEN_APP_DIR_/doc/Logo.png
+Exec=/usr/bin/python3.9 _SIEBEN_APP_DIR_/sieben %f
+Comment=Pro GTD
+Categories=Utilities
+Terminal=false
