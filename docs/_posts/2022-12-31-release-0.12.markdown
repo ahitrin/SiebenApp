@@ -1,0 +1,121 @@
+---
+layout: post
+title:  "Version 0.12 is released"
+date:   2022-12-31
+tags: news
+---
+
+## New features
+
+There's only one visible change in this release.
+But, as It's so big and significant, it deserves a close look.
+
+### Add goal attributes [#344](https://github.com/ahitrin/SiebenApp/issues/344)
+
+Now, every goal could have one or several "attributes" attached to it.
+An attribute is simply a key-value record that's added to goal automatically.
+It's main purpose is informational.
+Let's see how it works.
+
+#### Zoom
+
+When you zoom on some goal subtree, a `Zoom` attribute is added to the root of this tree.
+This helps you spot a zoom exit point, and still reminds about the top root goal.
+
+![zoom after](/SiebenApp/images/2022-12-31-release-0.12/attrs-zoom-after.jpg)
+
+In previous versions, zooming was denoted with a "fake" goal without a number.
+It couldn't be selected until unzoom.
+It also had an informational purpose, designating a current "zoom root" and a mere fact of existing zoom.
+
+![zoom before](/SiebenApp/images/2022-12-31-release-0.12/attrs-zoom-before.jpg)
+
+With an attribute, we could not show this "fake" goal most of the time.
+Application screen contains the same important information as before, but with fewer goals and edges. 
+
+#### Filter
+
+Another "fake" goal was used to show filter results.
+Every matching goal was attached to it.
+
+![filter before](/SiebenApp/images/2022-12-31-release-0.12/attrs-filter-before.jpg)
+
+Since SiebenApp 0.12, we use a `Filter` attribute to show filter results.
+Goals that do not match given filter but still have to be shown (selected ones) do not gain this attribute.
+
+![filter after](/SiebenApp/images/2022-12-31-release-0.12/attrs-filter-after.jpg)
+
+As you can see, overall graph structure was simplified significantly.
+This is especially useful for complex goal trees.
+
+#### Autolink
+
+"Autolink" is a special goal property that allows you to connect it to new subgoals automatically.
+Previously, it was also displayed using fake goal:
+
+![autolink before](/SiebenApp/images/2022-12-31-release-0.12/attrs-autolink-before.jpg)
+
+Now, we use an `Autolink` attribute for this.
+It makes a whole picture simpler without losing important information.
+
+![autolink after](/SiebenApp/images/2022-12-31-release-0.12/attrs-autolink-after.jpg)
+
+An additional benefit we gain from attributes appears when using different aforementioned features at the same time.
+For example, filter and autolink often didn't play well together.
+How do you like this picture?
+
+![autolink and filter before](/SiebenApp/images/2022-12-31-release-0.12/attrs-autolink-and-filter-before.jpg)
+
+With attributes, there are no confusing fake goals anymore.
+Only three real ones:
+
+![autolink and filter after](/SiebenApp/images/2022-12-31-release-0.12/attrs-autolink-and-filter-after.jpg)
+
+#### Progress
+
+Initially, visualization of progress was implemented in naive wey, by adding closed/total counters directly to goal names.
+
+![progress before](/SiebenApp/images/2022-12-31-release-0.12/attrs-progress-before.jpg)
+
+It was nothing more than a trade-off between new need and existed application architecture.
+As a consequence of this trade-off, progress counters polluted goal name in rename dialog.
+
+![progress with rename before](/SiebenApp/images/2022-12-31-release-0.12/attrs-progress-rename-before.jpg)
+
+Using new `Progress` attribute, we could get rid of this pollution at last.
+Goal name and progress status are now separated both internally and visually.
+Bonus: there's also more room for this status, so we could show not only counters, but also their ratio as a percentage.
+
+![progress after](/SiebenApp/images/2022-12-31-release-0.12/attrs-progress-after.jpg)
+
+And no problems with renames, of course.
+
+![progress with rename after](/SiebenApp/images/2022-12-31-release-0.12/attrs-progress-rename-after.jpg)
+
+#### Recap
+
+Goal attributes are a new mechanism implemented in SiebenApp 0.12.
+It's used to reduce overall complexity of picture shown to user.
+This follows the main goal of the application: allow to solve complex tasks by decomposing into simpler parts and visualizing dependencies.
+
+Goal attributes is a powerful feature, and I think more use cases could be found for them in the future.
+Let's see.
+
+## More changes
+
+More changes are available in the [changelog file](https://github.com/ahitrin/SiebenApp/blob/master/CHANGELOG.adoc#alpha-version-011).
+They're hardly visible to the user now.
+But they establish a basement for visible changes in the next versions.
+
+## Future plans
+
+For version 0.13, the following changes are planned:
+
+1. Remove support for Python 3.8 ([#367](https://github.com/ahitrin/SiebenApp/issues/367)) and DearPyGu ([#372](https://github.com/ahitrin/SiebenApp/issues/372)).
+Such feature removals is an important part of SiebenApp development process, allowing to keep code base simple and clean, and simplifying addition of new features.
+2. Allow multiple root goals ([#14](https://github.com/ahitrin/SiebenApp/issues/14)).
+It's an old desire, and now it looks possible to implement.
+3. Do not redraw all goals when possible ([#371](https://github.com/ahitrin/SiebenApp/issues/371)).
+It's an experimental performance improvement targeting large goal trees.
+
+SiebenApp is already good enough, but there's always a room for further improvements.
