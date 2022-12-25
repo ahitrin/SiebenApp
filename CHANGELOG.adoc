@@ -5,15 +5,15 @@
 
 New/done features:
 
-* Add goal attributes #344
+* Add goal attributes https://github.com/ahitrin/SiebenApp/issues/344[#344]
 * Minor performance optimizations in rendering
 
 Bug fixes:
 
 Refactoring/cleanup:
 
-* Return 'roots' field in `Grapg.q()` #342
-* Return 'select' field in `Graph.q()` #343
+* Return 'roots' field in `Grapg.q()` https://github.com/ahitrin/SiebenApp/issues/342[#342]
+* Return 'select' field in `Graph.q()` https://github.com/ahitrin/SiebenApp/issues/343[#343]
 * Get rid of separate tests for Python 3.10+
 * Split the most complex methods into smaller ones
 * Many small cleanups that improve overall readability
