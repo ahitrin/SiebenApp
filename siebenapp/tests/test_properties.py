@@ -235,7 +235,8 @@ def build_goals(conn) -> Graph:
         zoom_data = list(cur.execute("select * from zoom"))
         autolink_data = list(cur.execute("select * from autolink"))
         note(
-            f"Goals: {goal_list}, Edges: {edges}, Settings: {db_settings}, Zoom: {zoom_data}, Autolink: {autolink_data}"
+            f"Goals: {goal_list}, Edges: {edges}, Settings: {db_settings}, "
+            "Zoom: {zoom_data}, Autolink: {autolink_data}"
         )
         goals: Goals = Goals.build(goal_list, edges, db_settings)
         wrapped = all_layers(goals, zoom_data, autolink_data)

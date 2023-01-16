@@ -1,8 +1,5 @@
 # coding: utf-8
 import pytest
-from approvaltests import verify  # type: ignore
-from approvaltests.namer import get_default_namer  # type: ignore
-from approvaltests.reporters import GenericDiffReporterFactory  # type: ignore
 
 from siebenapp.system import split_long
 

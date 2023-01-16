@@ -107,26 +107,30 @@ def main(argv: Optional[list[str]] = None, io: Optional[IO] = None):
     parser_extract.add_argument(
         "source_db",
         help="An existing file with goaltree to extract. "
-        "This file will not be modified during the operation. You may/should do it manually.",
+        "This file will not be modified during the operation. "
+        "You may/should do it manually.",
     )
     parser_extract.add_argument(
         "target_db",
         help="A new file to be created. It will contain a result of extraction. "
-        "Only subgoals and edges are extracted, no zoom and/or autolink data is inherited.",
+        "Only subgoals and edges are extracted, no zoom and/or autolink data "
+        "is inherited.",
     )
     parser_extract.add_argument(
         "goal_id",
         type=int,
         help="An id of the goal that should be set as a root goal of a new goaltree. "
         "All of its subgoals will be copied too (but not blockers). "
-        "The simplest way to find a real id of a goal is to run `sieben-manage dot` on the source file.",
+        "The simplest way to find a real id of a goal is to run `sieben-manage dot` "
+        "on the source file.",
     )
     parser_extract.set_defaults(func=extract)
 
     parser_merge = subparsers.add_parser("merge")
     parser_merge.add_argument(
         "target_db",
-        help="File where merged results will be written into. Should not exist beforhand.",
+        help="File where merged results will be written into. "
+        "Should not exist beforhand.",
     )
     parser_merge.add_argument(
         "source_db", nargs="+", help="Files to merge (at least 2)."
@@ -202,20 +206,20 @@ def _md_tree(render_result, root_id, shift):
 
 
 def _format_md_row(render_result, row: RenderRow, shift: int) -> str:
-    open_status = " " if row.is_open else "x"
+    is_open = " " if row.is_open else "x"
     blockers: list[str] = [
         f"**{e[0]}**"
         for e in row.edges
         if e[1] == EdgeType.BLOCKER and render_result.by_id(e[0]).is_open
     ]
-    blocked_status = "" if not blockers else f" (blocked by {', '.join(blockers)})"
-    attributes = (
+    blocked = "" if not blockers else f" (blocked by {', '.join(blockers)})"
+    attrs = (
         ""
         if not row.attrs
         else f" [{','.join(f'{k}: {row.attrs[k]}' for k in sorted(row.attrs.keys()))}]"
     )
     spaces = " " * shift * 2
-    return f"{spaces}* [{open_status}] **{row.goal_id}** {row.name}{blocked_status}{attributes}"
+    return f"{spaces}* [{is_open}] **{row.goal_id}** {row.name}{blocked}{attrs}"
 
 
 def extract_subtree(source_goals: Graph, goal_id: int) -> Graph:

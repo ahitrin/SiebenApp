@@ -4,7 +4,7 @@ import sys
 from argparse import ArgumentParser
 from os.path import dirname, join, realpath
 
-from PyQt5.QtCore import pyqtSignal, Qt, QRect, QPoint  # type: ignore
+from PyQt5.QtCore import pyqtSignal, Qt, QRect  # type: ignore
 from PyQt5.QtGui import QPainter, QPen  # type: ignore
 from PyQt5.QtWidgets import (  # type: ignore
     QApplication,
