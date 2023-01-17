@@ -1,3 +1,4 @@
+from pathlib import Path
 from tempfile import NamedTemporaryFile
 
 import pytest
@@ -10,6 +11,21 @@ from siebenapp.system import save, load
 from siebenapp.tests.dsl import build_goaltree, open_, clos_, selected, previous
 from siebenapp.tests.test_cli import DummyIO, verify_file
 from siebenapp.zoom import ToggleZoom
+
+
+def test_create_default_db_on_migrate_missing_file() -> None:
+    file_name = NamedTemporaryFile().name
+    io = DummyIO()
+    main(["migrate", file_name], io)
+
+    assert not io.log
+    assert Path(file_name).exists()
+    g = load(file_name)
+    assert g.q() == RenderResult(
+        [RenderRow(1, 1, "Rename me", True, True, [])],
+        roots={1},
+        select=(1, 1),
+    )
 
 
 def test_print_dot_empty_file() -> None:
