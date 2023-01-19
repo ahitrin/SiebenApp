@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any
 
 from siebenapp.domain import Graph, Command, EdgeType, GoalId, RenderResult, RenderRow
@@ -57,14 +57,9 @@ class ProgressView(Graph):
                 queue.append(row)
 
         result_rows: list[RenderRow] = [
-            RenderRow(
-                row.goal_id,
-                row.raw_id,
-                row.name,
-                row.is_open,
-                row.is_switchable,
-                row.edges,
-                row.attrs | {"Progress": _progress_status(row, progress_cache)},
+            replace(
+                row,
+                attrs=row.attrs | {"Progress": _progress_status(row, progress_cache)},
             )
             for row in rows
         ]

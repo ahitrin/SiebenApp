@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Optional
 
 from siebenapp.domain import (
@@ -60,14 +60,10 @@ class Zoom(Graph):
             .difference({Goals.ROOT_ID})
         )
         rows: list[RenderRow] = [
-            RenderRow(
-                r.goal_id,
-                r.raw_id,
-                r.name,
-                r.is_open,
-                r.is_switchable,
-                [e for e in r.edges if e[0] in visible_goals],
-                r.attrs
+            replace(
+                r,
+                edges=[e for e in r.edges if e[0] in visible_goals],
+                attrs=r.attrs
                 | (
                     {"Zoom": origin_root.name}
                     if r.goal_id == self.zoom_root[-1]

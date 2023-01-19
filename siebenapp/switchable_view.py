@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any
 
 from siebenapp.domain import Command, Graph, RenderResult, RenderRow
@@ -35,15 +35,7 @@ class SwitchableView(Graph):
         if not self._only_switchable:
             return render_result
         rows: list[RenderRow] = [
-            RenderRow(
-                row.goal_id,
-                row.raw_id,
-                row.name,
-                row.is_open,
-                row.is_switchable,
-                [],
-                row.attrs,
-            )
+            replace(row, edges=[])
             for row in render_result.rows
             if row.is_switchable or row.goal_id in list(render_result.select)
         ]

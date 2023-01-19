@@ -1,5 +1,6 @@
 import math
 from collections.abc import Iterable
+from dataclasses import replace
 
 from siebenapp.domain import Graph, Select, GoalId, RenderResult, RenderRow
 
@@ -54,14 +55,10 @@ class Enumeration(Graph):
     def q(self) -> RenderResult:
         render_result, index = self._id_mapping()
         rows: list[RenderRow] = [
-            RenderRow(
-                index.forward(row.goal_id),
-                row.raw_id,
-                row.name,
-                row.is_open,
-                row.is_switchable,
-                [(index.forward(e[0]), e[1]) for e in row.edges],
-                row.attrs,
+            replace(
+                row,
+                goal_id=index.forward(row.goal_id),
+                edges=[(index.forward(e[0]), e[1]) for e in row.edges],
             )
             for row in render_result.rows
         ]

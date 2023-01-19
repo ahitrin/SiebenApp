@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Union, Optional
 
 from siebenapp.domain import (
@@ -130,14 +130,9 @@ class AutoLink(Graph):
             # Fast exit without creating new objects
             return render_result
         rows: list[RenderRow] = [
-            RenderRow(
-                row.goal_id,
-                row.raw_id,
-                row.name,
-                row.is_open,
-                row.is_switchable,
-                row.edges,
-                row.attrs
+            replace(
+                row,
+                attrs=row.attrs
                 | (
                     {"Autolink": self.back_kw[int(row.goal_id)]}
                     if row.goal_id in self.back_kw

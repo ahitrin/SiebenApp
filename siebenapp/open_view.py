@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any
 
 from siebenapp.domain import (
@@ -47,15 +47,7 @@ class OpenView(Graph):
             or row.goal_id in render_result.roots.union(set(render_result.select))
         }
         rows: list[RenderRow] = [
-            RenderRow(
-                row.goal_id,
-                row.raw_id,
-                row.name,
-                row.is_open,
-                row.is_switchable,
-                [e for e in row.edges if e[0] in visible_rows],
-                row.attrs,
-            )
+            replace(row, edges=[e for e in row.edges if e[0] in visible_rows])
             for row in visible_rows.values()
         ]
         dangling: set[GoalId] = set(visible_rows.keys()).difference(

@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any
 
 from siebenapp.domain import Graph, Command, RenderResult, RenderRow, GoalId
@@ -39,14 +39,10 @@ class FilterView(Graph):
         }
         all_ids: set[GoalId] = accepted_ids.union(render_result.select)
         rows: list[RenderRow] = [
-            RenderRow(
-                row.goal_id,
-                row.raw_id,
-                row.name,
-                row.is_open,
-                row.is_switchable,
-                [e for e in row.edges if e[0] in all_ids],
-                row.attrs
+            replace(
+                row,
+                edges=[e for e in row.edges if e[0] in all_ids],
+                attrs=row.attrs
                 | ({"Filter": self.pattern} if row.goal_id in accepted_ids else {}),
             )
             for row in render_result.rows
