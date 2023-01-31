@@ -242,11 +242,11 @@ def extract_subtree(source_goals: Graph, goal_id: int) -> Graph:
             (int(goal), int(target_), type_) for target_, type_ in row.edges
         )
         goals_to_add.update(
-            set(
+            {
                 goal
                 for goal, edge_type in row.edges
                 if edge_type == EdgeType.PARENT and goal not in target_goals
-            )
+            }
         )
     edges_data = [edge for edge in edges_data if edge[1] in target_goals]
     remap = {

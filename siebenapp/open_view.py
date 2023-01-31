@@ -51,7 +51,7 @@ class OpenView(Graph):
             for row in visible_rows.values()
         ]
         dangling: set[GoalId] = set(visible_rows.keys()).difference(
-            set(e[0] for row in rows for e in row.edges)
+            {e[0] for row in rows for e in row.edges}
         )
         return RenderResult(
             rows, select=render_result.select, roots=render_result.roots.union(dangling)

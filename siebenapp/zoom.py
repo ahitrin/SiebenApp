@@ -104,9 +104,9 @@ class Zoom(Graph):
         self.goaltree.accept(ToggleClose(self.zoom_root[-1]))
 
     def accept_Delete(self, command: Delete) -> None:
-        ids_before: set[int] = set(r.raw_id for r in self.goaltree.q().rows)
+        ids_before: set[int] = {r.raw_id for r in self.goaltree.q().rows}
         self.goaltree.accept(command)
-        ids_after: set[int] = set(r.raw_id for r in self.goaltree.q().rows)
+        ids_after: set[int] = {r.raw_id for r in self.goaltree.q().rows}
         removed = ids_before.difference(ids_after)
         while self.zoom_root and self.zoom_root[-1] in removed:
             last_zoom = self.zoom_root.pop(-1)
@@ -115,7 +115,7 @@ class Zoom(Graph):
     def _build_visible_goals(self, render_result: RenderResult) -> set[GoalId]:
         current_zoom_root = self.zoom_root[-1]
         if current_zoom_root == Goals.ROOT_ID:
-            return set(row.goal_id for row in render_result.rows)
+            return {row.goal_id for row in render_result.rows}
         visible_goals: set[GoalId] = {current_zoom_root}
         edges_to_visit = set(render_result.by_id(current_zoom_root).edges)
         while edges_to_visit:

@@ -28,7 +28,7 @@ AutoLinkData = list[tuple[int, str]]
 
 class AutoLink(Graph):
     def __init__(self, goals: Graph, data: Optional[AutoLinkData] = None):
-        super(AutoLink, self).__init__(goals)
+        super().__init__(goals)
         self.keywords: dict[str, int] = {}
         self.back_kw: dict[int, str] = {}
         if data:

@@ -15,9 +15,9 @@ def print_stats(path):
         med = int(statistics.median(data))
         var = statistics.variance(data)
         m = max(data)
-        print("{}: max {}, median {}, variance {}".format(label, m, med, var))
+        print(f"{label}: max {m}, median {med}, variance {var}")
 
-    print('-- {} --'.format(path))
+    print(f'-- {path} --')
     print_stats("Goals", goals)
     print_stats("Edges", edges)
     print_stats("Paths", paths)

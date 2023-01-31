@@ -1,4 +1,3 @@
-# coding: utf-8
 import sqlite3
 from os import path
 from typing import Callable, Optional

@@ -1,4 +1,3 @@
-# coding: utf-8
 from typing import Callable, Optional, Any
 from collections import deque, defaultdict
 
@@ -72,14 +71,14 @@ class Goals(Graph):
         }.get(key, 0)
 
     def selections(self) -> set[int]:
-        return set(
+        return {
             k
             for k in [
                 self.settings("selection"),
                 self.settings("previous_selection"),
             ]
             if k is not None
-        )
+        }
 
     def events(self) -> deque:
         return self._events
@@ -340,14 +339,14 @@ class Goals(Graph):
         ), "Deleted goals must have no dependencies"
 
     def _verify_forward_and_backward_edges_match_each_other(self) -> None:
-        fwd_edges: set[tuple[int, int, EdgeType]] = set(
+        fwd_edges: set[tuple[int, int, EdgeType]] = {
             (g1, g2, et) for g1, e in self.edges_forward.items() for g2, et in e.items()
-        )
-        bwd_edges: set[tuple[int, int, EdgeType]] = set(
+        }
+        bwd_edges: set[tuple[int, int, EdgeType]] = {
             (g1, g2, et)
             for g2, e in self.edges_backward.items()
             for g1, et in e.items()
-        )
+        }
         assert (
             fwd_edges == bwd_edges
         ), "Forward and backward edges must always match each other"
