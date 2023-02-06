@@ -210,7 +210,9 @@ def test_selection_should_not_be_changed_if_selected_goal_is_visible() -> None:
     )
 
 
-def test_selection_should_not_be_changed_if_selected_goal_is_sibling_to_zoom_root() -> None:
+def test_selection_should_not_be_changed_if_selected_goal_is_sibling_to_zoom_root() -> (
+    None
+):
     goals = Zoom(
         build_goaltree(
             open_(1, "Root goal", [2, 3]),
@@ -230,7 +232,9 @@ def test_selection_should_not_be_changed_if_selected_goal_is_sibling_to_zoom_roo
     )
 
 
-def test_selection_should_not_be_changed_if_selected_goal_is_not_a_child_of_zoom_root() -> None:
+def test_selection_should_not_be_changed_if_selected_goal_is_not_a_child_of_zoom_root() -> (
+    None
+):
     goals = Zoom(
         build_goaltree(
             open_(1, "Root goal", [2, 4]),
@@ -270,7 +274,9 @@ def test_previous_selection_should_not_be_changed_or_reset_after_zoom() -> None:
     goals.verify()
 
 
-def test_selection_should_not_be_changed_on_stacked_unzoom_a_long_chain_of_blockers() -> None:
+def test_selection_should_not_be_changed_on_stacked_unzoom_a_long_chain_of_blockers() -> (
+    None
+):
     goals = Zoom(
         build_goaltree(
             open_(1, "Root goal", blockers=[2]),
@@ -300,7 +306,9 @@ def test_selection_should_not_be_changed_on_stacked_unzoom_a_long_chain_of_block
     goals.verify()
 
 
-def test_unlink_for_goal_outside_of_zoomed_tree_should_not_cause_selection_change() -> None:
+def test_unlink_for_goal_outside_of_zoomed_tree_should_not_cause_selection_change() -> (
+    None
+):
     goals = Zoom(
         build_goaltree(
             open_(1, "Root goal", [2, 3]),
