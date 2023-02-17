@@ -1,6 +1,7 @@
 import sys
 from argparse import ArgumentParser
 from operator import itemgetter
+from typing import List, Mapping, Tuple, Any
 
 from siebenapp.autolink import ToggleAutoLink
 from siebenapp.render import Renderer
@@ -17,6 +18,7 @@ from siebenapp.domain import (
     Graph,
     RenderResult,
     RenderRow,
+    Command,
 )
 from siebenapp.progress_view import ToggleProgress
 from siebenapp.filter_view import FilterBy
@@ -25,7 +27,7 @@ from siebenapp.switchable_view import ToggleSwitchableView
 from siebenapp.system import save, load
 from siebenapp.zoom import ToggleZoom
 
-USER_MESSAGE = ""
+USER_MESSAGE: str = ""
 
 
 class IO:
@@ -39,40 +41,42 @@ class IO:
 
 
 class ConsoleIO(IO):
-    def __init__(self, prompt):
+    def __init__(self, prompt: str):
         super().__init__()
-        sys.stdin.reconfigure(encoding="utf-8")
+        sys.stdin.reconfigure(encoding="utf-8")  # type: ignore
         self.prompt = prompt
 
-    def write(self, text: str, *args) -> None:
+    def write(self, text: str, *args: str) -> None:
         print(text, *args)
 
     def read(self) -> str:
         return input(self.prompt)
 
 
-def update_message(message=""):
+def update_message(message: str = "") -> None:
     global USER_MESSAGE
     USER_MESSAGE = message
 
 
-def fmt(render_result: RenderResult, row: RenderRow, id_width):
-    show_id = " " * id_width if -10 <= int(row.goal_id) < 0 else row.goal_id
-    op = " " if row.is_open else "x"
-    status = f"[{op}]" if row.is_switchable else f" {op} "
-    selection = " "
+def fmt(render_result: RenderResult, row: RenderRow, id_width: int) -> str:
+    show_id: str = " " * id_width if -10 <= int(row.goal_id) < 0 else str(row.goal_id)
+    op: str = " " if row.is_open else "x"
+    status: str = f"[{op}]" if row.is_switchable else f" {op} "
+    selection: str = " "
     if render_result.select[0] == row.goal_id:
         selection = ">"
     elif render_result.select[1] == row.goal_id:
         selection = "_"
-    children = ""
+    children: str = ""
     if row.edges:
-        child_list = ",".join(str(e[0]) for e in row.edges if e[1] == EdgeType.PARENT)
-        blocker_list = ",".join(
+        child_list: str = ",".join(
+            str(e[0]) for e in row.edges if e[1] == EdgeType.PARENT
+        )
+        blocker_list: str = ",".join(
             str(e[0]) for e in row.edges if e[1] == EdgeType.BLOCKER
         )
         children = f" [{child_list} / {blocker_list}]"
-    attributes = (
+    attributes: str = (
         f" [{','.join(f'{k}: {row.attrs[k]}' for k in sorted(row.attrs))}]"
         if row.attrs
         else ""
@@ -80,8 +84,8 @@ def fmt(render_result: RenderResult, row: RenderRow, id_width):
     return f"{show_id}{status}{selection}{row.name}{children}{attributes}"
 
 
-def build_actions(command):
-    simple_commands = {
+def build_actions(command: str) -> List[Command]:
+    simple_commands: Mapping[str, Command] = {
         "c": ToggleClose(),
         "d": Delete(),
         "h": HoldSelect(),
@@ -111,26 +115,24 @@ def build_actions(command):
     return []
 
 
-def loop(io: IO, goals: Graph, db_name: str):
-    cmd = ""
+def loop(io: IO, goals: Graph, db_name: str) -> None:
+    cmd: str = ""
     while cmd != "q":
-        render_result = Renderer(goals, 100).build()
-        rows = render_result.rows
-        index = sorted(
+        render_result: RenderResult = Renderer(goals, 100).build()
+        index: List[Tuple[RenderRow, Any, Any]] = sorted(
             [
                 (
                     row,
                     render_result.node_opts[row.goal_id]["row"],
                     render_result.node_opts[row.goal_id]["col"],
                 )
-                for row in rows
+                for row in render_result.rows
             ],
             key=itemgetter(1, 2),
             reverse=True,
         )
-        id_width = len(str(max(r.goal_id for r in rows)))
-        for item in index:
-            row = item[0]
+        id_width: int = len(str(max(r.goal_id for r in render_result.rows)))
+        for row, _, __ in index:
             io.write(fmt(render_result, row, id_width))
         if USER_MESSAGE:
             io.write(USER_MESSAGE)
@@ -145,7 +147,7 @@ def loop(io: IO, goals: Graph, db_name: str):
         save(goals, db_name)
 
 
-def main():
+def main() -> None:
     io = ConsoleIO(prompt="> ")
     parser = ArgumentParser()
     parser.add_argument(
