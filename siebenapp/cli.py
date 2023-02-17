@@ -4,7 +4,7 @@ from operator import itemgetter
 from typing import List, Mapping, Tuple, Any
 
 from siebenapp.autolink import ToggleAutoLink
-from siebenapp.render import Renderer
+from siebenapp.render import GoalsHolder
 from siebenapp.domain import (
     ToggleClose,
     Delete,
@@ -129,8 +129,9 @@ def build_actions(command: str) -> List[Command]:
 
 def loop(io: IO, goals: Graph, db_name: str) -> None:
     cmd: str = ""
+    goals_holder: GoalsHolder = GoalsHolder(goals, db_name)
     while cmd != "q":
-        render_result: RenderResult = Renderer(goals, 100).build()
+        render_result: RenderResult = goals_holder.render(100)
         index: List[Tuple[RenderRow, Any, Any]] = sorted(
             [
                 (
@@ -154,9 +155,7 @@ def loop(io: IO, goals: Graph, db_name: str) -> None:
         except EOFError:
             break
         actions = build_actions(cmd)
-        if actions:
-            goals.accept_all(*actions)
-        save(goals, db_name)
+        goals_holder.accept(*actions)
 
 
 def main() -> None:

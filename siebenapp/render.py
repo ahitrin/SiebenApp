@@ -2,7 +2,8 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import Any, Optional, Protocol
 
-from siebenapp.domain import Graph, EdgeType, GoalId, RenderResult
+from siebenapp.domain import Graph, EdgeType, GoalId, RenderResult, Command
+from siebenapp.system import save
 
 # Layer is a row of GoalIds, possibly with holes (marked with None)
 # E.g.: [17, "3_4", None, 5]
@@ -356,3 +357,17 @@ def render_lines(
         lines.append((e["style"], e["bottom"], e["top"], ""))
 
     return lines
+
+
+class GoalsHolder:
+    def __init__(self, goals: Graph, filename: str):
+        self.goals = goals
+        self.filename = filename
+
+    def accept(self, *actions: Command) -> None:
+        if actions:
+            self.goals.accept_all(*actions)
+        save(self.goals, self.filename)
+
+    def render(self, width: int) -> RenderResult:
+        return Renderer(self.goals, width).build()
