@@ -140,7 +140,6 @@ class SiebenApp(QMainWindow):
         self.quit_app.connect(QApplication.instance().quit)
         self.db = db
         self.goals = load(db, self.show_user_message)
-        self.force_refresh = True
         self.columns = Renderer.DEFAULT_WIDTH
 
     def setup(self):
@@ -175,9 +174,6 @@ class SiebenApp(QMainWindow):
         return inner
 
     def save_and_render(self):
-        if not self.goals.events() and not self.force_refresh:
-            return
-        self.force_refresh = False
         self.statusBar().clearMessage()
         save(self.goals, self.db)
         for child in self.scrollAreaWidgetContents.children():
@@ -253,7 +249,6 @@ class SiebenApp(QMainWindow):
             self.db = name
             self.goals = load(name, self.show_user_message)
             self._update_title()
-            self.force_refresh = True
             self.refresh.emit()
 
     def show_open_dialog(self):
@@ -262,7 +257,6 @@ class SiebenApp(QMainWindow):
             self.db = name
             self.goals = load(name, self.show_user_message)
             self._update_title()
-            self.force_refresh = True
             self.refresh.emit()
 
     def start_edit(self, label, fn, pre_fn=None):
@@ -312,11 +306,9 @@ class SiebenApp(QMainWindow):
         self.goals.accept(Rename(text))
 
     def emit_filter(self, text):
-        self.force_refresh = True
         self.goals.accept(FilterBy(text))
 
     def emit_autolink(self, text):
-        self.force_refresh = True
         self.goals.accept(ToggleAutoLink(text))
 
     def _current_goal_label(self):
@@ -339,27 +331,23 @@ class SiebenApp(QMainWindow):
         return inner
 
     def toggle_open_view(self, update_ui):
-        self.force_refresh = True
         self.goals.accept(ToggleOpenView())
         if update_ui:
             self.toggleOpen.setChecked(self.goals.settings("filter_open"))
         self._update_title()
 
     def toggle_switchable_view(self, update_ui):
-        self.force_refresh = True
         self.goals.accept(ToggleSwitchableView())
         if update_ui:
             self.toggleSwitchable.setChecked(self.goals.settings("filter_switchable"))
         self._update_title()
 
     def toggle_progress_view(self, update_ui):
-        self.force_refresh = True
         self.goals.accept(ToggleProgress())
         if update_ui:
             self.toggleProgress.setChecked(self.goals.settings("filter_progress"))
 
     def toggle_zoom(self):
-        self.force_refresh = True
         self.goals.accept(ToggleZoom())
         self.refresh.emit()
 
@@ -370,7 +358,6 @@ class SiebenApp(QMainWindow):
         self.statusBar().showMessage(message, 10000)
 
     def change_columns(self, delta):
-        self.force_refresh = True
         new_columns = self.columns + delta
         if 1 <= new_columns <= 100:
             self.columns = new_columns
