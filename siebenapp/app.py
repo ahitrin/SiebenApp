@@ -138,8 +138,8 @@ class SiebenApp(QMainWindow):
         super().__init__(*args, **kwargs)
         self.refresh.connect(self.save_and_render)
         self.quit_app.connect(QApplication.instance().quit)
-        self.goals = load(db, self.show_user_message)
-        self.goals_holder = GoalsHolder(self.goals, db)
+        goals = load(db, self.show_user_message)
+        self.goals_holder = GoalsHolder(goals, db)
         self.columns = Renderer.DEFAULT_WIDTH
 
     def setup(self):
@@ -245,16 +245,16 @@ class SiebenApp(QMainWindow):
         if name:
             if not name.endswith(".db"):
                 name = name + ".db"
-            self.goals = load(name, self.show_user_message)
-            self.goals_holder = GoalsHolder(self.goals, name)
+            goals = load(name, self.show_user_message)
+            self.goals_holder = GoalsHolder(goals, name)
             self._update_title()
             self.refresh.emit()
 
     def show_open_dialog(self):
         name = QFileDialog.getOpenFileName(self, caption="Open file", filter="*.db")[0]
         if name:
-            self.goals = load(name, self.show_user_message)
-            self.goals_holder = GoalsHolder(self.goals, name)
+            goals = load(name, self.show_user_message)
+            self.goals_holder = GoalsHolder(goals, name)
             self._update_title()
             self.refresh.emit()
 
