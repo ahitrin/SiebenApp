@@ -138,9 +138,8 @@ class SiebenApp(QMainWindow):
         super().__init__(*args, **kwargs)
         self.refresh.connect(self.save_and_render)
         self.quit_app.connect(QApplication.instance().quit)
-        self.db = db
         self.goals = load(db, self.show_user_message)
-        self.goals_holder = GoalsHolder(self.goals, self.db)
+        self.goals_holder = GoalsHolder(self.goals, db)
         self.columns = Renderer.DEFAULT_WIDTH
 
     def setup(self):
@@ -165,7 +164,7 @@ class SiebenApp(QMainWindow):
         self.refresh.emit()
 
     def _update_title(self):
-        self.setWindowTitle(f"{self.db} - SiebenApp")
+        self.setWindowTitle(f"{self.goals_holder.filename} - SiebenApp")
 
     def close_goal(self, goal_id):
         def inner():
@@ -246,18 +245,16 @@ class SiebenApp(QMainWindow):
         if name:
             if not name.endswith(".db"):
                 name = name + ".db"
-            self.db = name
             self.goals = load(name, self.show_user_message)
-            self.goals_holder = GoalsHolder(self.goals, self.db)
+            self.goals_holder = GoalsHolder(self.goals, name)
             self._update_title()
             self.refresh.emit()
 
     def show_open_dialog(self):
         name = QFileDialog.getOpenFileName(self, caption="Open file", filter="*.db")[0]
         if name:
-            self.db = name
             self.goals = load(name, self.show_user_message)
-            self.goals_holder = GoalsHolder(self.goals, self.db)
+            self.goals_holder = GoalsHolder(self.goals, name)
             self._update_title()
             self.refresh.emit()
 
@@ -341,13 +338,17 @@ class SiebenApp(QMainWindow):
     def toggle_switchable_view(self, update_ui):
         self.goals_holder.accept(ToggleSwitchableView())
         if update_ui:
-            self.toggleSwitchable.setChecked(self.goals_holder.goals.settings("filter_switchable"))
+            self.toggleSwitchable.setChecked(
+                self.goals_holder.goals.settings("filter_switchable")
+            )
         self._update_title()
 
     def toggle_progress_view(self, update_ui):
         self.goals_holder.accept(ToggleProgress())
         if update_ui:
-            self.toggleProgress.setChecked(self.goals_holder.goals.settings("filter_progress"))
+            self.toggleProgress.setChecked(
+                self.goals_holder.goals.settings("filter_progress")
+            )
 
     def toggle_zoom(self):
         self.goals_holder.accept(ToggleZoom())
