@@ -31,8 +31,8 @@ from siebenapp.domain import (
 )
 from siebenapp.switchable_view import ToggleSwitchableView
 from siebenapp.open_view import ToggleOpenView
-from siebenapp.render import Renderer, GeometryProvider, render_lines
-from siebenapp.system import save, load, split_long
+from siebenapp.render import Renderer, GeometryProvider, render_lines, GoalsHolder
+from siebenapp.system import load, split_long
 from siebenapp.ui.goalwidget import Ui_GoalBody  # type: ignore
 from siebenapp.zoom import ToggleZoom
 
@@ -140,6 +140,7 @@ class SiebenApp(QMainWindow):
         self.quit_app.connect(QApplication.instance().quit)
         self.db = db
         self.goals = load(db, self.show_user_message)
+        self.goals_holder = GoalsHolder(self.goals, self.db)
         self.columns = Renderer.DEFAULT_WIDTH
 
     def setup(self):
@@ -168,18 +169,17 @@ class SiebenApp(QMainWindow):
 
     def close_goal(self, goal_id):
         def inner():
-            self.goals.accept_all(Select(goal_id), ToggleClose())
+            self.goals_holder.accept(Select(goal_id), ToggleClose())
             self.refresh.emit()
 
         return inner
 
     def save_and_render(self):
         self.statusBar().clearMessage()
-        save(self.goals, self.db)
         for child in self.scrollAreaWidgetContents.children():
             if isinstance(child, GoalWidget):
                 child.deleteLater()
-        render_result = Renderer(self.goals, self.columns).build()
+        render_result = self.goals_holder.render(self.columns)
         if "setupData" in dir(self.scrollAreaWidgetContents):
             self.scrollAreaWidgetContents.setupData(render_result)
         for row in render_result.rows:
@@ -206,17 +206,17 @@ class SiebenApp(QMainWindow):
             Qt.Key_9: self.select_number(9),
             Qt.Key_0: self.select_number(0),
             Qt.Key_A: self.start_edit("Add new goal", self.emit_add),
-            Qt.Key_C: self.with_refresh(self.goals.accept, ToggleClose()),
-            Qt.Key_D: self.with_refresh(self.goals.accept, Delete()),
+            Qt.Key_C: self.with_refresh(self.goals_holder.accept, ToggleClose()),
+            Qt.Key_D: self.with_refresh(self.goals_holder.accept, Delete()),
             Qt.Key_F: self.start_edit(
                 "Filter by substring (leave empty to reset filtration)",
                 self.emit_filter,
             ),
             Qt.Key_I: self.start_edit("Insert new goal", self.emit_insert),
             Qt.Key_K: self.with_refresh(
-                self.goals.accept, ToggleLink(edge_type=EdgeType.PARENT)
+                self.goals_holder.accept, ToggleLink(edge_type=EdgeType.PARENT)
             ),
-            Qt.Key_L: self.with_refresh(self.goals.accept, ToggleLink()),
+            Qt.Key_L: self.with_refresh(self.goals_holder.accept, ToggleLink()),
             Qt.Key_N: self.with_refresh(self.toggle_open_view, True),
             Qt.Key_O: self.show_open_dialog,
             Qt.Key_P: self.with_refresh(self.toggle_progress_view, True),
@@ -234,7 +234,7 @@ class SiebenApp(QMainWindow):
             Qt.Key_Minus: self.with_refresh(self.change_columns, -1),
             Qt.Key_Plus: self.with_refresh(self.change_columns, 1),
             Qt.Key_Slash: self.show_keys_help,
-            Qt.Key_Space: self.with_refresh(self.goals.accept, HoldSelect()),
+            Qt.Key_Space: self.with_refresh(self.goals_holder.accept, HoldSelect()),
         }
         if event.key() in key_handlers:
             key_handlers[event.key()]()
@@ -248,6 +248,7 @@ class SiebenApp(QMainWindow):
                 name = name + ".db"
             self.db = name
             self.goals = load(name, self.show_user_message)
+            self.goals_holder = GoalsHolder(self.goals, self.db)
             self._update_title()
             self.refresh.emit()
 
@@ -256,6 +257,7 @@ class SiebenApp(QMainWindow):
         if name:
             self.db = name
             self.goals = load(name, self.show_user_message)
+            self.goals_holder = GoalsHolder(self.goals, self.db)
             self._update_title()
             self.refresh.emit()
 
@@ -297,22 +299,22 @@ class SiebenApp(QMainWindow):
             pass
 
     def emit_add(self, text):
-        self.goals.accept(Add(text))
+        self.goals_holder.accept(Add(text))
 
     def emit_insert(self, text):
-        self.goals.accept(Insert(text))
+        self.goals_holder.accept(Insert(text))
 
     def emit_rename(self, text):
-        self.goals.accept(Rename(text))
+        self.goals_holder.accept(Rename(text))
 
     def emit_filter(self, text):
-        self.goals.accept(FilterBy(text))
+        self.goals_holder.accept(FilterBy(text))
 
     def emit_autolink(self, text):
-        self.goals.accept(ToggleAutoLink(text))
+        self.goals_holder.accept(ToggleAutoLink(text))
 
     def _current_goal_label(self):
-        render_result = self.goals.q()
+        render_result = self.goals_holder.goals.q()
         current_row = render_result.by_id(render_result.select[0])
         return current_row.name
 
@@ -325,30 +327,30 @@ class SiebenApp(QMainWindow):
 
     def select_number(self, num):
         def inner():
-            self.goals.accept(Select(num))
+            self.goals_holder.accept(Select(num))
             self.refresh.emit()
 
         return inner
 
     def toggle_open_view(self, update_ui):
-        self.goals.accept(ToggleOpenView())
+        self.goals_holder.accept(ToggleOpenView())
         if update_ui:
-            self.toggleOpen.setChecked(self.goals.settings("filter_open"))
+            self.toggleOpen.setChecked(self.goals_holder.goals.settings("filter_open"))
         self._update_title()
 
     def toggle_switchable_view(self, update_ui):
-        self.goals.accept(ToggleSwitchableView())
+        self.goals_holder.accept(ToggleSwitchableView())
         if update_ui:
-            self.toggleSwitchable.setChecked(self.goals.settings("filter_switchable"))
+            self.toggleSwitchable.setChecked(self.goals_holder.goals.settings("filter_switchable"))
         self._update_title()
 
     def toggle_progress_view(self, update_ui):
-        self.goals.accept(ToggleProgress())
+        self.goals_holder.accept(ToggleProgress())
         if update_ui:
-            self.toggleProgress.setChecked(self.goals.settings("filter_progress"))
+            self.toggleProgress.setChecked(self.goals_holder.goals.settings("filter_progress"))
 
     def toggle_zoom(self):
-        self.goals.accept(ToggleZoom())
+        self.goals_holder.accept(ToggleZoom())
         self.refresh.emit()
 
     def show_keys_help(self):
