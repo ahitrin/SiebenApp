@@ -59,7 +59,11 @@ class ProgressView(Graph):
         result_rows: list[RenderRow] = [
             replace(
                 row,
-                attrs=row.attrs | {"Progress": _progress_status(row, progress_cache)},
+                attrs=row.attrs
+                | {
+                    "Progress": _progress_status(row, progress_cache),
+                    "Id": str(row.goal_id),
+                },
             )
             for row in rows
         ]
