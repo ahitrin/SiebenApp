@@ -1,11 +1,11 @@
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 from html import escape
 from operator import attrgetter
 from os import path
 from typing import Optional
 
 from siebenapp.cli import IO, ConsoleIO
-from siebenapp.domain import EdgeType, Graph, RenderRow, GoalId
+from siebenapp.domain import EdgeType, Graph, RenderRow, GoalId, RenderResult
 from siebenapp.goaltree import Goals, GoalsData, EdgesData, OptionsData
 from siebenapp.layers import get_root, persistent_layers, all_layers
 from siebenapp.open_view import ToggleOpenView
@@ -14,7 +14,7 @@ from siebenapp.switchable_view import ToggleSwitchableView
 from siebenapp.system import load, save, split_long
 
 
-def print_dot(args, io: IO):
+def print_dot(args: Namespace, io: IO) -> None:
     tree = load(args.db)
     if args.n:
         tree.accept(ToggleOpenView())
@@ -25,7 +25,7 @@ def print_dot(args, io: IO):
     io.write(dot_export(tree))
 
 
-def print_md(args, io: IO):
+def print_md(args: Namespace, io: IO) -> None:
     tree = load(args.db)
     if args.n:
         tree.accept(ToggleOpenView())
@@ -36,20 +36,20 @@ def print_md(args, io: IO):
     io.write(markdown_export(tree))
 
 
-def migrate(args, io: IO):
+def migrate(args: Namespace, io: IO) -> None:
     goals = load(args.db)
     save(goals, args.db)
 
 
-def extract(args, io: IO):
+def extract(args: Namespace, io: IO) -> None:
     tree = load(args.source_db).goaltree.goaltree
     assert not path.exists(args.target_db), f"File {args.target_db} already exists!"
     result = extract_subtree(tree, args.goal_id)
     save(result, args.target_db)
 
 
-def merge(args, io: IO):
-    sources = args.source_db
+def merge(args: Namespace, io: IO) -> None:
+    sources: list[str] = args.source_db
     assert not path.exists(args.target_db), f"File {args.target_db} already exists!"
     assert (
         len(sources) >= 2
@@ -77,11 +77,11 @@ def merge(args, io: IO):
     save(all_layers(merged_db), args.target_db)
 
 
-def _flag(parser, key, description) -> None:
+def _flag(parser: ArgumentParser, key: str, description: str) -> None:
     parser.add_argument(key, required=False, action="store_true", help=description)
 
 
-def main(argv: Optional[list[str]] = None, io: Optional[IO] = None):
+def main(argv: Optional[list[str]] = None, io: Optional[IO] = None) -> None:
     parser = ArgumentParser()
     subparsers = parser.add_subparsers(title="commands")
 
@@ -156,7 +156,7 @@ def _format_name(row: RenderRow) -> str:
     return '"' + "\n".join([label] + attrs) + '"'
 
 
-def dot_export(goals):
+def dot_export(goals: Graph) -> str:
     render_result = goals.q()
     node_lines = []
     edge_lines = []
@@ -196,7 +196,7 @@ def markdown_export(goals: Graph) -> str:
     return "\n".join(output)
 
 
-def _md_tree(render_result, root_id, shift):
+def _md_tree(render_result: RenderResult, root_id: GoalId, shift: int) -> list[str]:
     row = render_result.by_id(root_id)
     result = [_format_md_row(render_result, row, shift)]
     for edge in row.edges:
@@ -205,7 +205,7 @@ def _md_tree(render_result, root_id, shift):
     return result
 
 
-def _format_md_row(render_result, row: RenderRow, shift: int) -> str:
+def _format_md_row(render_result: RenderResult, row: RenderRow, shift: int) -> str:
     is_open = " " if row.is_open else "x"
     blockers: list[str] = [
         f"**{e[0]}**"
