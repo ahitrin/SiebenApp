@@ -360,9 +360,10 @@ def render_lines(
 
 
 class GoalsHolder:
-    def __init__(self, goals: Graph, filename: str):
+    def __init__(self, goals: Graph, filename: str, cache: bool = False):
         self.goals = goals
         self.filename = filename
+        self.cache = cache
 
     def accept(self, *actions: Command) -> None:
         if actions:
