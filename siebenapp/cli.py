@@ -131,7 +131,7 @@ def loop(io: IO, goals: Graph, db_name: str) -> None:
     cmd: str = ""
     goals_holder: GoalsHolder = GoalsHolder(goals, db_name)
     while cmd != "q":
-        render_result: RenderResult = goals_holder.render(100)
+        render_result, _ = goals_holder.render(100)
         index: List[Tuple[RenderRow, Any, Any]] = sorted(
             [
                 (

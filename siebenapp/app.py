@@ -178,7 +178,7 @@ class SiebenApp(QMainWindow):
         for child in self.scrollAreaWidgetContents.children():
             if isinstance(child, GoalWidget):
                 child.deleteLater()
-        render_result = self.goals_holder.render(self.columns)
+        render_result, _ = self.goals_holder.render(self.columns)
         if "setupData" in dir(self.scrollAreaWidgetContents):
             self.scrollAreaWidgetContents.setupData(render_result)
         for row in render_result.rows:

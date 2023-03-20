@@ -1,6 +1,6 @@
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Any, Optional, Protocol
+from typing import Any, Optional, Protocol, Tuple
 
 from siebenapp.domain import Graph, EdgeType, GoalId, RenderResult, Command
 from siebenapp.system import save
@@ -369,5 +369,9 @@ class GoalsHolder:
             self.goals.accept_all(*actions)
         save(self.goals, self.filename)
 
-    def render(self, width: int) -> RenderResult:
-        return Renderer(self.goals, width).build()
+    def render(self, width: int) -> Tuple[RenderResult, list[GoalId]]:
+        """Render tree with a given width and return two values:
+        1. Render result as is.
+        2. A list of changed rows in case of _partial_ update; empty list otherwise.
+        """
+        return Renderer(self.goals, width).build(), []
