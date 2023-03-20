@@ -57,11 +57,6 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     def teardown(self) -> None:
         self.database.close()
 
-    def _accept_all(self, *commands: Command) -> None:
-        for command in commands:
-            note(str(command))
-        self.goaltree.accept_all(*commands)
-
     def _accept(self, command: Command) -> None:
         note(str(command))
         self.goaltree.accept(command)
@@ -106,7 +101,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     @precondition(lambda self: len(set(self.goaltree.q().select).difference({-1})) > 1)
     def insert(self) -> None:
         event("insert")
-        self._accept_all(Insert("i"))
+        self._accept(Insert("i"))
 
     @rule(b=booleans(), d=data())
     # Ignore trivial trees (without any subgoal)
