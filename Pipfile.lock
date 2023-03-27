@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "3789edce09ceaa8ae38a243df6bbf55519b61e4a2ea67eca323f3cef40fad848"
+            "sha256": "fb432c6416d91a85a48ad72b301819c2417831c37efaef3dad9554dbf7013512"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -293,13 +293,6 @@
             "markers": "python_version < '3.11'",
             "version": "==1.1.1"
         },
-        "future": {
-            "hashes": [
-                "sha256:34a17436ed1e96697a86f9de3d15a3b0be01d8bc8de9c1dffd59fb8234ed5307"
-            ],
-            "markers": "python_version >= '2.6' and python_version not in '3.0, 3.1, 3.2, 3.3'",
-            "version": "==0.18.3"
-        },
         "hypothesis": {
             "hashes": [
                 "sha256:be395f71d6337a5e8ed2f695c568360a686056c3b00c98bd818874c674b24586",
@@ -326,10 +319,10 @@
         },
         "mando": {
             "hashes": [
-                "sha256:4ce09faec7e5192ffc3c57830e26acba0fd6cd11e1ee81af0d4df0657463bd1c",
-                "sha256:79feb19dc0f097daa64a1243db578e7674909b75f88ac2220f1c065c10a0d960"
+                "sha256:18baa999b4b613faefb00eac4efadcf14f510b59b924b66e08289aa1de8c3500",
+                "sha256:26ef1d70928b6057ee3ca12583d73c63e05c49de8972d620c278a7b206581a8a"
             ],
-            "version": "==0.6.4"
+            "version": "==0.7.1"
         },
         "mypy": {
             "hashes": [
@@ -389,11 +382,11 @@
         },
         "platformdirs": {
             "hashes": [
-                "sha256:024996549ee88ec1a9aa99ff7f8fc819bb59e2c3477b410d90a16d32d6e707aa",
-                "sha256:e5986afb596e4bb5bde29a79ac9061aa955b94fca2399b7aaac4090860920dd8"
+                "sha256:d5b638ca397f25f979350ff789db335903d7ea010ab28903f57b27e1b16c2b08",
+                "sha256:ebe11c0d7a805086e99506aa331612429a72ca7cd52a1f0d277dc4adc20cb10e"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==3.1.1"
+            "version": "==3.2.0"
         },
         "pluggy": {
             "hashes": [
@@ -434,11 +427,11 @@
         },
         "radon": {
             "hashes": [
-                "sha256:cb1d8752e5f862fb9e20d82b5f758cbc4fb1237c92c9a66450ea0ea7bf29aeee",
-                "sha256:fa74e018197f1fcb54578af0f675d8b8e2342bd8e0b72bef8197bc4c9e645f36"
+                "sha256:632cc032364a6f8bb1010a2f6a12d0f14bc7e5ede76585ef29dc0cecf4cd8859",
+                "sha256:d1ac0053943a893878940fedc8b19ace70386fc9c9bf0a09229a44125ebf45b5"
             ],
             "index": "pypi",
-            "version": "==5.1.0"
+            "version": "==6.0.1"
         },
         "requests": {
             "hashes": [
