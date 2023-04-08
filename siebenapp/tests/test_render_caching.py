@@ -1,7 +1,15 @@
 import pytest
 
 from siebenapp.autolink import ToggleAutoLink
-from siebenapp.domain import Add, Rename, ToggleClose, Delete, Insert
+from siebenapp.domain import (
+    Add,
+    Rename,
+    ToggleClose,
+    Delete,
+    Insert,
+    Select,
+    HoldSelect,
+)
 from siebenapp.filter_view import FilterBy
 from siebenapp.layers import all_layers
 from siebenapp.open_view import ToggleOpenView
@@ -61,3 +69,19 @@ def test_no_diff_when_goaltree_changes(sample_holder, event):
     holder.accept(event)
     result = holder.render(WIDTH)
     assert result[1] == []
+
+
+def test_make_diff_on_select(sample_holder):
+    holder = sample_holder
+    holder.render(WIDTH)  # Prepare cached result
+    holder.accept(Select(4))
+    result = holder.render(WIDTH)
+    assert result[1] == [2, 4]
+
+
+def test_make_diff_on_hold(sample_holder):
+    holder = sample_holder
+    holder.render(WIDTH)  # Prepare cached result
+    holder.accept(HoldSelect())
+    result = holder.render(WIDTH)
+    assert result[1] == [3, 2]

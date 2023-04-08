@@ -364,6 +364,7 @@ class GoalsHolder:
         self.goals = goals
         self.filename = filename
         self.cache = cache
+        self.previous: RenderResult = RenderResult([])
 
     def accept(self, *actions: Command) -> None:
         if actions:
@@ -375,4 +376,26 @@ class GoalsHolder:
         1. Render result as is.
         2. A list of changed rows in case of _partial_ update; empty list otherwise.
         """
-        return Renderer(self.goals, width).build(), []
+        result: RenderResult = Renderer(self.goals, width).build()
+        if not self.cache:
+            return result, []
+        delta = self._calculate_delta(result)
+        self.previous = result
+        return result, delta
+
+    def _calculate_delta(self, new_result: RenderResult) -> list[GoalId]:
+        if len(self.previous.rows) == len(new_result.rows):
+            for old_row in self.previous.rows:
+                new_row = new_result.by_id(old_row.goal_id)
+                if old_row != new_row:
+                    # eager exit on any change in rows
+                    return []
+            result: list[GoalId] = []
+            if self.previous.select[0] != new_result.select[0]:
+                result.append(self.previous.select[0])
+                result.append(new_result.select[0])
+            if self.previous.select[1] != new_result.select[1]:
+                result.append(self.previous.select[1])
+                result.append(new_result.select[1])
+            return result
+        return []
