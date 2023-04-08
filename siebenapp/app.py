@@ -28,6 +28,7 @@ from siebenapp.domain import (
     Insert,
     Rename,
     RenderRow,
+    RenderResult,
 )
 from siebenapp.switchable_view import ToggleSwitchableView
 from siebenapp.open_view import ToggleOpenView
@@ -175,22 +176,33 @@ class SiebenApp(QMainWindow):
 
     def save_and_render(self):
         self.statusBar().clearMessage()
-        for child in self.scrollAreaWidgetContents.children():
-            if isinstance(child, GoalWidget):
-                child.deleteLater()
-        render_result, _ = self.goals_holder.render(self.columns)
+        render_result, partial_change = self.goals_holder.render(self.columns)
         if "setupData" in dir(self.scrollAreaWidgetContents):
             self.scrollAreaWidgetContents.setupData(render_result)
-        for row in render_result.rows:
-            attributes = render_result.node_opts[row.goal_id]
-            widget = GoalWidget()
-            self.scrollAreaWidgetContents.layout().addWidget(
-                widget, attributes["row"], attributes["col"]
-            )
-            widget.setup_data(row, render_result.select)
-            widget.clicked.connect(self.select_number(row.goal_id))
-            widget.check_open.clicked.connect(self.close_goal(row.goal_id))
+        if not partial_change:
+            for child in self.scrollAreaWidgetContents.children():
+                if isinstance(child, GoalWidget):
+                    child.deleteLater()
+            for row in render_result.rows:
+                self._make_widget(render_result, row)
+        else:
+            for child in self.scrollAreaWidgetContents.children():
+                if isinstance(child, GoalWidget) and child.widget_id in partial_change:
+                    child.deleteLater()
+            for row_id in partial_change:
+                row = render_result.by_id(row_id)
+                self._make_widget(render_result, row)
         self.scrollAreaWidgetContents.update()
+
+    def _make_widget(self, render_result: RenderResult, row: RenderRow) -> None:
+        attributes = render_result.node_opts[row.goal_id]
+        widget = GoalWidget()
+        self.scrollAreaWidgetContents.layout().addWidget(
+            widget, attributes["row"], attributes["col"]
+        )
+        widget.setup_data(row, render_result.select)
+        widget.clicked.connect(self.select_number(row.goal_id))
+        widget.check_open.clicked.connect(self.close_goal(row.goal_id))
 
     def keyPressEvent(self, event):
         key_handlers = {
