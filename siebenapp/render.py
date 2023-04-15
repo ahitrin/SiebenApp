@@ -360,10 +360,9 @@ def render_lines(
 
 
 class GoalsHolder:
-    def __init__(self, goals: Graph, filename: str, cache: bool = True):
+    def __init__(self, goals: Graph, filename: str):
         self.goals = goals
         self.filename = filename
-        self.cache = cache
         self.previous: RenderResult = RenderResult([])
 
     def accept(self, *actions: Command) -> None:
@@ -377,8 +376,6 @@ class GoalsHolder:
         2. A list of changed rows in case of _partial_ update; empty list otherwise.
         """
         result: RenderResult = Renderer(self.goals, width).build()
-        if not self.cache:
-            return result, []
         delta = self._calculate_delta(result)
         self.previous = result
         return result, delta

@@ -38,7 +38,7 @@ def sample_tree():
 
 @pytest.fixture
 def sample_holder(sample_tree):
-    return GoalsHolder(sample_tree, ":memory:", True)
+    return GoalsHolder(sample_tree, ":memory:")
 
 
 def test_no_diff_on_start(sample_holder):
