@@ -175,7 +175,6 @@ class SiebenApp(QMainWindow):
         return inner
 
     def save_and_render(self):
-        self.statusBar().clearMessage()
         render_result, partial_change = self.goals_holder.render(self.columns)
         if "setupData" in dir(self.scrollAreaWidgetContents):
             self.scrollAreaWidgetContents.setupData(render_result)
