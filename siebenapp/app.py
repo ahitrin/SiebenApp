@@ -218,7 +218,7 @@ class SiebenApp(QMainWindow):
             Qt.Key_0: self.select_number(0),
             Qt.Key_A: self.start_edit("Add new goal", self.emit_add),
             Qt.Key_C: self.with_refresh(self.goals_holder.accept, ToggleClose()),
-            Qt.Key_D: self.with_refresh(self.goals_holder.accept, Delete()),
+            Qt.Key_D: self.start_edit('Type "yes" to delete a goal', self.emit_delete),
             Qt.Key_F: self.start_edit(
                 "Filter by substring (leave empty to reset filtration)",
                 self.emit_filter,
@@ -321,6 +321,10 @@ class SiebenApp(QMainWindow):
 
     def emit_autolink(self, text):
         self.goals_holder.accept(ToggleAutoLink(text))
+
+    def emit_delete(self, text):
+        if text == "yes":
+            self.goals_holder.accept(Delete())
 
     def _current_goal_label(self):
         render_result = self.goals_holder.goals.q()
