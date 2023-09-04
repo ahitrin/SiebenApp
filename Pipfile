@@ -7,7 +7,7 @@ verify_ssl = true
 hypothesis = "==6.83.1"
 mypy = "==1.5.1"
 mypy-extensions = "==1.0.0"
-pytest = "==7.4.0"
+pytest = "==7.4.1"
 pytest-cov = "==4.1.0"
 black = "==23.7.0"
 approvaltests-minimal = "==9.0.0"
