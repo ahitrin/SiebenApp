@@ -109,19 +109,9 @@ class Renderer:
                     break
             incoming_edges = incoming_edges.difference(set(new_layer))
             for original_id in incoming_edges:
-                new_goal_name: str = f"{original_id}_{current_layer}"
-                self.edges[new_goal_name] = [
-                    g
-                    for g in self.edges[original_id]
-                    if g in sorted_goals and g not in new_layer
-                ]
-                new_edge_type: EdgeType = EdgeType.BLOCKER
-                for g in self.edges[new_goal_name]:
-                    self.edges[original_id].remove(g)
-                    self.edge_types[new_goal_name, g] = self.edge_types[original_id, g]
-                    new_edge_type = max(new_edge_type, self.edge_types[original_id, g])
-                self.edges[original_id].append(new_goal_name)
-                self.edge_types[original_id, new_goal_name] = new_edge_type
+                new_goal_name: str = self._insert_fake_goal(
+                    original_id, sorted_goals.difference(set(new_layer)), current_layer
+                )
                 new_layer.append(new_goal_name)
                 sorted_goals.add(new_goal_name)
             self.layers[current_layer] = new_layer
@@ -134,6 +124,22 @@ class Renderer:
             for idx, g in enumerate(layer)
             if g is not None
         }
+
+    def _insert_fake_goal(
+        self, original_id: GoalId, connect_to: set[GoalId], current_layer: int
+    ) -> str:
+        new_goal_name: str = f"{original_id}_{current_layer}"
+        self.edges[new_goal_name] = [
+            g for g in self.edges[original_id] if g in connect_to
+        ]
+        new_edge_type: EdgeType = EdgeType.BLOCKER
+        for g in self.edges[new_goal_name]:
+            self.edges[original_id].remove(g)
+            self.edge_types[new_goal_name, g] = self.edge_types[original_id, g]
+            new_edge_type = max(new_edge_type, self.edge_types[original_id, g])
+        self.edges[original_id].append(new_goal_name)
+        self.edge_types[original_id, new_goal_name] = new_edge_type
+        return new_goal_name
 
     def candidates_for_new_layer(
         self, sorted_goals: set[GoalId], unsorted_goals: dict[GoalId, list[GoalId]]
