@@ -1,5 +1,50 @@
 = Changelog
 
+== Alpha version 0.13
+2023-09-17
+
+New/done features:
+
+* Add confirmation on delete https://github.com/ahitrin/SiebenApp/issues/419[#419]
+* Rendering: do not redraw all goals when it's possible https://github.com/ahitrin/SiebenApp/issues/371[#371]
+* Add simple desktop file for XDG-compatible *nix distributions
+* Show goals ids in progress view
+
+Bug fixes:
+
+* Warning messages do not appear on Qt UI https://github.com/ahitrin/SiebenApp/issues/415[#415] (appeared during https://github.com/ahitrin/SiebenApp/issues/371[#371])
+* Fix: could not reset autolink in CLI mode
+* Fix: do not mark closed blocker as switchable
+* Fix: remove false-negative property test result on insertions
+
+Refactoring/cleanup:
+
+* Fix few style issues found by ruff linter
+* Add more type annotations for manage.py
+* Refresh code style with pyupgrade --py39-plus
+* Replace old-fashioned mypy annotation with inline ones
+
+Other improvements:
+
+* Update dependencies (thx to @dependabot):
+`approvaltests-minimal` (7.3.0 to 9.0.0),
+`black` (22.10.0 to 23.9.1),
+`hypothesis` (6.60.0 to 6.84.3),
+`mypy-extensions` (0.4.3 to 1.0.0),
+`mypy` (0.991 to 1.5.1),
+`pyqt5` (5.15.7 to 5.15.9),
+`pytest-cov` (4.0.0 to 4.1.0),
+`pytest`  (7.2.0 to 7.4.2),
+`radon` (5.1.0 to 6.0.1),
+`requests` (transitive, 2.30.0 to 2.31.0),
+`typing-extentions` (4.4.0 to 4.7.1).
+* Update blog dependencies
+
+Compatibility breaks:
+
+* Remove experimental DearPyGui app https://github.com/ahitrin/SiebenApp/issues/372[#372]
+* Remove support for Python 3.8 https://github.com/ahitrin/SiebenApp/issues/367[#367]
+
 == Alpha version 0.12
 2022-12-10
 
