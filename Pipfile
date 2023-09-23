@@ -17,6 +17,7 @@ typing-extensions = "*"
 
 [packages]
 PyQt5 = "==5.15.9"
+PySide6 = "==6.5.2"
 
 [requires]
 python_version = "3.9"
