@@ -3,16 +3,16 @@ import sys
 from argparse import ArgumentParser
 from os.path import dirname, join, realpath
 
-from PyQt5.QtCore import pyqtSignal, Qt, QRect  # type: ignore
-from PyQt5.QtGui import QPainter, QPen  # type: ignore
-from PyQt5.QtWidgets import (  # type: ignore
+from PySide6.QtCore import Signal, Qt, QRect, QFile
+from PySide6.QtGui import QPainter, QPen
+from PySide6.QtUiTools import QUiLoader
+from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
     QWidget,
     QGridLayout,
     QFileDialog,
 )
-from PyQt5.uic import loadUi  # type: ignore
 
 from siebenapp.autolink import ToggleAutoLink
 from siebenapp.progress_view import ToggleProgress
@@ -39,7 +39,7 @@ from siebenapp.zoom import ToggleZoom
 
 
 class GoalWidget(QWidget, Ui_GoalBody):
-    clicked = pyqtSignal()
+    clicked = Signal()
 
     def __init__(self):
         super().__init__()
@@ -132,8 +132,8 @@ class CentralWidget(QWidget):
 
 
 class SiebenApp(QMainWindow):
-    refresh = pyqtSignal()
-    quit_app = pyqtSignal()
+    refresh = Signal()
+    quit_app = Signal()
 
     def __init__(self, db, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -144,23 +144,27 @@ class SiebenApp(QMainWindow):
         self.columns = Renderer.DEFAULT_WIDTH
 
     def setup(self):
-        self.action_New.triggered.connect(self.show_new_dialog)
-        self.action_Open.triggered.connect(self.show_open_dialog)
-        self.action_Hotkeys.triggered.connect(self.hotkeys.show)
-        self.action_About.triggered.connect(self.about.show)
-        self.toggleOpen.clicked.connect(self.with_refresh(self.toggle_open_view, False))
-        self.toggleSwitchable.clicked.connect(
+        self.centralWidget().action_New.triggered.connect(self.show_new_dialog)
+        self.centralWidget().action_Open.triggered.connect(self.show_open_dialog)
+        # self.centralWidget().action_Hotkeys.triggered.connect(self.hotkeys.show)
+        # self.centralWidget().action_About.triggered.connect(self.about.show)
+        self.centralWidget().toggleOpen.clicked.connect(
+            self.with_refresh(self.toggle_open_view, False)
+        )
+        self.centralWidget().toggleSwitchable.clicked.connect(
             self.with_refresh(self.toggle_switchable_view, False)
         )
-        self.toggleProgress.clicked.connect(
+        self.centralWidget().toggleProgress.clicked.connect(
             self.with_refresh(self.toggle_progress_view, False)
         )
         # Re-creation of scrollAreaWidgetContents looks like dirty hack,
         # but at the current moment I haven't found a better solution.
         # Widget creation in __init__ does not work: lines disappear.
-        self.scrollAreaWidgetContents = CentralWidget()
+        self.centralWidget().scrollAreaWidgetContents = CentralWidget()
         # End of 'looks like dirty hack'
-        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+        self.centralWidget().scrollArea.setWidget(
+            self.centralWidget().scrollAreaWidgetContents
+        )
         self._update_title()
         self.refresh.emit()
 
@@ -176,27 +180,27 @@ class SiebenApp(QMainWindow):
 
     def save_and_render(self):
         render_result, partial_change = self.goals_holder.render(self.columns)
-        if "setupData" in dir(self.scrollAreaWidgetContents):
-            self.scrollAreaWidgetContents.setupData(render_result)
+        if "setupData" in dir(self.centralWidget().scrollAreaWidgetContents):
+            self.centralWidget().scrollAreaWidgetContents.setupData(render_result)
         if not partial_change:
-            for child in self.scrollAreaWidgetContents.children():
+            for child in self.centralWidget().scrollAreaWidgetContents.children():
                 if isinstance(child, GoalWidget):
                     child.deleteLater()
             for row in render_result.rows:
                 self._make_widget(render_result, row)
         else:
-            for child in self.scrollAreaWidgetContents.children():
+            for child in self.centralWidget().scrollAreaWidgetContents.children():
                 if isinstance(child, GoalWidget) and child.widget_id in partial_change:
                     child.deleteLater()
             for row_id in partial_change:
                 row = render_result.by_id(row_id)
                 self._make_widget(render_result, row)
-        self.scrollAreaWidgetContents.update()
+        self.centralWidget().scrollAreaWidgetContents.update()
 
     def _make_widget(self, render_result: RenderResult, row: RenderRow) -> None:
         attributes = render_result.node_opts[row.goal_id]
         widget = GoalWidget()
-        self.scrollAreaWidgetContents.layout().addWidget(
+        self.centralWidget().scrollAreaWidgetContents.layout().addWidget(  # type: ignore
             widget, attributes["row"], attributes["col"]
         )
         widget.setup_data(row, render_result.select)
@@ -271,38 +275,38 @@ class SiebenApp(QMainWindow):
 
     def start_edit(self, label, fn, pre_fn=None):
         def inner():
-            self.dockWidget.setWindowTitle(label)
-            self.input.setEnabled(True)
-            self.input.setFocus(True)
+            self.centralWidget().dockWidget.setWindowTitle(label)
+            self.centralWidget().input.setEnabled(True)
+            self.centralWidget().input.setFocus(True)
             if pre_fn is not None:
-                self.input.setText(pre_fn())
-            self.input.returnPressed.connect(self.finish_edit(fn))
-            self.cancel.setEnabled(True)
-            self.cancel.clicked.connect(self.cancel_edit)
+                self.centralWidget().input.setText(pre_fn())
+            self.centralWidget().input.returnPressed.connect(self.finish_edit(fn))
+            self.centralWidget().cancel.setEnabled(True)
+            self.centralWidget().cancel.clicked.connect(self.cancel_edit)
 
         return inner
 
     def finish_edit(self, fn):
         def inner():
-            self.dockWidget.setWindowTitle("")
-            self.input.returnPressed.disconnect()
-            fn(self.input.text())
-            self.input.setEnabled(False)
-            self.input.setText("")
-            self.cancel.setEnabled(False)
-            self.cancel.clicked.disconnect()
+            self.centralWidget().dockWidget.setWindowTitle("")
+            self.centralWidget().input.returnPressed.disconnect()
+            fn(self.centralWidget().input.text())
+            self.centralWidget().input.setEnabled(False)
+            self.centralWidget().input.setText("")
+            self.centralWidget().cancel.setEnabled(False)
+            self.centralWidget().cancel.clicked.disconnect()
             self.refresh.emit()
 
         return inner
 
     def cancel_edit(self):
-        self.dockWidget.setWindowTitle("")
-        self.input.setEnabled(False)
-        self.input.setText("")
-        self.cancel.setEnabled(False)
+        self.centralWidget().dockWidget.setWindowTitle("")
+        self.centralWidget().input.setEnabled(False)
+        self.centralWidget().input.setText("")
+        self.centralWidget().cancel.setEnabled(False)
         try:
-            self.input.returnPressed.disconnect()
-            self.cancel.clicked.disconnect()
+            self.centralWidget().input.returnPressed.disconnect()
+            self.centralWidget().cancel.clicked.disconnect()
         except TypeError:
             pass
 
@@ -347,13 +351,15 @@ class SiebenApp(QMainWindow):
     def toggle_open_view(self, update_ui):
         self.goals_holder.accept(ToggleOpenView())
         if update_ui:
-            self.toggleOpen.setChecked(self.goals_holder.goals.settings("filter_open"))
+            self.centralWidget().toggleOpen.setChecked(
+                self.goals_holder.goals.settings("filter_open")
+            )
         self._update_title()
 
     def toggle_switchable_view(self, update_ui):
         self.goals_holder.accept(ToggleSwitchableView())
         if update_ui:
-            self.toggleSwitchable.setChecked(
+            self.centralWidget().toggleSwitchable.setChecked(
                 self.goals_holder.goals.settings("filter_switchable")
             )
         self._update_title()
@@ -361,7 +367,7 @@ class SiebenApp(QMainWindow):
     def toggle_progress_view(self, update_ui):
         self.goals_holder.accept(ToggleProgress())
         if update_ui:
-            self.toggleProgress.setChecked(
+            self.centralWidget().toggleProgress.setChecked(
                 self.goals_holder.goals.settings("filter_progress")
             )
 
@@ -370,7 +376,7 @@ class SiebenApp(QMainWindow):
         self.refresh.emit()
 
     def show_keys_help(self):
-        self.action_Hotkeys.trigger()
+        self.centralWidget().action_Hotkeys.trigger()
 
     def show_user_message(self, message):
         self.statusBar().showMessage(message, 10000)
@@ -379,6 +385,15 @@ class SiebenApp(QMainWindow):
         new_columns = self.columns + delta
         if 1 <= new_columns <= 100:
             self.columns = new_columns
+
+
+def loadUi(file_path: str, parent) -> QWidget:
+    loader = QUiLoader()
+    qfile = QFile(file_path)
+    qfile.open(QFile.ReadOnly)  # type: ignore
+    widget = loader.load(qfile, parent)
+    qfile.close()
+    return widget
 
 
 def main(root_script):
@@ -392,9 +407,10 @@ def main(root_script):
     args = parser.parse_args()
     app = QApplication(sys.argv)
     root = dirname(realpath(root_script))
-    w = loadUi(join(root, "ui", "main.ui"), SiebenApp(args.db))
-    w.about = loadUi(join(root, "ui", "about.ui"))
-    w.hotkeys = loadUi(join(root, "ui", "hotkeys.ui"))
-    w.setup()
+    sieben = SiebenApp(args.db)
+    w = loadUi(join(root, "ui", "main.ui"), sieben)
+    w.about = loadUi(join(root, "ui", "about.ui"), sieben)
+    w.hotkeys = loadUi(join(root, "ui", "hotkeys.ui"), sieben)
+    sieben.setup()
     w.showMaximized()
     sys.exit(app.exec_())
