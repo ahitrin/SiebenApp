@@ -1,0 +1,59 @@
+---
+layout: post
+title:  "Version 0.13 is released"
+date:   2023-11-11
+tags: news
+---
+
+Well, this post is aged for a bit (almost 2 months), but anyway.
+
+## New features
+
+### Add confirmation on delete [#419](https://github.com/ahitrin/SiebenApp/issues/419)
+
+A simple feature, yet SiebenApp has been lacking it for years.
+Before, there was a risk of unintentional deletion of the selected goal when pressing a `d` button.
+This action was immediate and undoable.
+
+![confirmation of delete](/SiebenApp/images/2023-11-11-release-0.13/confirmation.png)
+
+Now, a goal could be deleted only after an explicit confirmaion.
+It's much better.
+
+### Do not redraw all goals when it's possible [#371](https://github.com/ahitrin/SiebenApp/issues/371)
+
+Again, there's a regular need to control and improve application performance.
+As we gradually restructure and extend internal app architecture, slow points migrate from one place to another.
+But with a little help from profiler, we cound find them and fix.
+
+That was one of these improvements.
+
+### Show goal ids in progress view
+
+Another helpful improvement.
+It's mostly needed when there's a need to perform some manipulations with goal tree using `sieben-manage` script.
+Some commands (like `extract`) need a real goal ID.
+Now it's very easy to see it.
+
+![goal ids](/SiebenApp/images/2023-11-11-release-0.13/ids.png)
+
+Probably, I would rename "Progress view" into "Statistics view" at some moment in the future.
+This name should reflect it's current abilities better than existing one and should open some new possibilities.
+
+## More changes
+
+More changes are available in the [changelog file](https://github.com/ahitrin/SiebenApp/blob/master/CHANGELOG.adoc#alpha-version-013).
+
+## Future plans
+
+In version 0.14, I plan to focus mainly on the visual side of the application:
+
+1. Issues like "Rendering: tweak algorithms for better placement of edges ([#312](https://github.com/ahitrin/SiebenApp/issues/312))" and "Rendering: various improvements ([#447](https://github.com/ahitrin/SiebenApp/issues/447))" would affect on how do we draw goals and edges between them.
+2. In "Move from Qt5 to Qt6 ([#450](https://github.com/ahitrin/SiebenApp/issues/450))", I plan to migrate to the modern version of Qt framework.
+Most probably, it wouldn't significantly affect UI behavior or look and feel.
+3. A new, experimental way of filtering goals is planned to implement in "Hide all subgoals of a blocked goal ([#449](https://github.com/ahitrin/SiebenApp/issues/449))".
+It would definitely affect UI behavior, but only in a separate view mode.
+
+I'm not sure if all of these issues would be done at the moment when it's time to make a new release.
+The development process of the project tends to be quite lazy for the last year.
+But I'll try to do my best.

@@ -103,7 +103,7 @@ Let's see.
 
 ## More changes
 
-More changes are available in the [changelog file](https://github.com/ahitrin/SiebenApp/blob/master/CHANGELOG.adoc#alpha-version-011).
+More changes are available in the [changelog file](https://github.com/ahitrin/SiebenApp/blob/master/CHANGELOG.adoc#alpha-version-012).
 They're hardly visible to the user now.
 But they establish a basement for visible changes in the next versions.
 
