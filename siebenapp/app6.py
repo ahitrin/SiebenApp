@@ -34,7 +34,7 @@ from siebenapp.switchable_view import ToggleSwitchableView
 from siebenapp.open_view import ToggleOpenView
 from siebenapp.render import Renderer, GeometryProvider, render_lines, GoalsHolder
 from siebenapp.system import load, split_long
-from siebenapp.ui.goalwidget import Ui_GoalBody  # type: ignore
+from siebenapp.ui.goalwidget6 import Ui_GoalBody  # type: ignore
 from siebenapp.zoom import ToggleZoom
 
 
