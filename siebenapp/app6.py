@@ -3,7 +3,7 @@ import sys
 from argparse import ArgumentParser
 from os.path import dirname, join, realpath
 
-from PySide6.QtCore import Signal, Qt, QRect, QFile, QIODevice  # type: ignore
+from PySide6.QtCore import Signal, Qt, QRect, QFile, QIODevice, QEvent  # type: ignore
 from PySide6.QtGui import QPainter, QPen  # type: ignore
 from PySide6.QtUiTools import QUiLoader  # type: ignore
 from PySide6.QtWidgets import (  # type: ignore
@@ -165,6 +165,7 @@ class SiebenApp(QMainWindow):
         self.centralWidget().scrollArea.setWidget(
             self.centralWidget().scrollAreaWidgetContents
         )
+        self.centralWidget().installEventFilter(self)
         self._update_title()
         self.refresh.emit()
 
@@ -206,6 +207,12 @@ class SiebenApp(QMainWindow):
         widget.setup_data(row, render_result.select)
         widget.clicked.connect(self.select_number(row.goal_id))
         widget.check_open.clicked.connect(self.close_goal(row.goal_id))
+
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.KeyPress:
+            self.keyPressEvent(event)
+            return False
+        return super().eventFilter(obj, event)
 
     def keyPressEvent(self, event):
         key_handlers = {
