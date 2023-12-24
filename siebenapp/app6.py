@@ -3,10 +3,10 @@ import sys
 from argparse import ArgumentParser
 from os.path import dirname, join, realpath
 
-from PySide6.QtCore import Signal, Qt, QRect, QFile
-from PySide6.QtGui import QPainter, QPen
-from PySide6.QtUiTools import QUiLoader
-from PySide6.QtWidgets import (
+from PySide6.QtCore import Signal, Qt, QRect, QFile, QIODevice  # type: ignore
+from PySide6.QtGui import QPainter, QPen  # type: ignore
+from PySide6.QtUiTools import QUiLoader  # type: ignore
+from PySide6.QtWidgets import (  # type: ignore
     QApplication,
     QMainWindow,
     QWidget,
@@ -408,9 +408,9 @@ def main(root_script):
     app = QApplication(sys.argv)
     root = dirname(realpath(root_script))
     sieben = SiebenApp(args.db)
-    w = loadUi(join(root, "ui", "main6.ui"), sieben)
-    w.about = loadUi(join(root, "ui", "about6.ui"), sieben)
-    w.hotkeys = loadUi(join(root, "ui", "hotkeys6.ui"), sieben)
+    w = loadUi(join(root, "ui", "main.ui"), sieben)
+    w.about = loadUi(join(root, "ui", "about.ui"), sieben)
+    w.hotkeys = loadUi(join(root, "ui", "hotkeys.ui"), sieben)
     sieben.setup()
     w.showMaximized()
     sys.exit(app.exec_())
