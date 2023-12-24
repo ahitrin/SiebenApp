@@ -146,8 +146,8 @@ class SiebenApp(QMainWindow):
     def setup(self):
         self.centralWidget().action_New.triggered.connect(self.show_new_dialog)
         self.centralWidget().action_Open.triggered.connect(self.show_open_dialog)
-        # self.centralWidget().action_Hotkeys.triggered.connect(self.hotkeys.show)
-        # self.centralWidget().action_About.triggered.connect(self.about.show)
+        self.centralWidget().action_Hotkeys.triggered.connect(self.hotkeys.show)
+        self.centralWidget().action_About.triggered.connect(self.about.show)
         self.centralWidget().toggleOpen.clicked.connect(
             self.with_refresh(self.toggle_open_view, False)
         )
@@ -416,8 +416,8 @@ def main(root_script):
     root = dirname(realpath(root_script))
     sieben = SiebenApp(args.db)
     w = loadUi(join(root, "ui", "main.ui"), sieben)
-    w.about = loadUi(join(root, "ui", "about.ui"), sieben)
-    w.hotkeys = loadUi(join(root, "ui", "hotkeys.ui"), sieben)
+    sieben.about = loadUi(join(root, "ui", "about.ui"), sieben)
+    sieben.hotkeys = loadUi(join(root, "ui", "hotkeys.ui"), sieben)
     sieben.setup()
     w.showMaximized()
     sys.exit(app.exec_())
