@@ -390,7 +390,7 @@ class SiebenApp(QMainWindow):
 def loadUi(file_path: str, parent) -> QWidget:
     loader = QUiLoader()
     qfile = QFile(file_path)
-    qfile.open(QFile.ReadOnly)  # type: ignore
+    qfile.open(QIODevice.ReadOnly)
     widget = loader.load(qfile, parent)
     qfile.close()
     return widget

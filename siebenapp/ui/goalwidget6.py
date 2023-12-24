@@ -52,7 +52,6 @@ class Ui_GoalBody(object):
         font = QtGui.QFont()
         font.setPointSize(12)
         font.setBold(True)
-        font.setWeight(75)
         self.label_number.setFont(font)
         self.label_number.setText("")
         self.label_number.setObjectName("label_number")
