@@ -284,7 +284,7 @@ class SiebenApp(QMainWindow):
         def inner():
             self.centralWidget().dockWidget.setWindowTitle(label)
             self.centralWidget().input.setEnabled(True)
-            self.centralWidget().input.setFocus(True)
+            self.centralWidget().input.setFocus()
             if pre_fn is not None:
                 self.centralWidget().input.setText(pre_fn())
             self.centralWidget().input.returnPressed.connect(self.finish_edit(fn))
