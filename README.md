@@ -16,8 +16,26 @@ SiebenApp is an experimental goal manager that tries to solve these problems.
 
 ## Installation notes
 
-In order to run SiebenApp you need to have Qt5, Python 3.9+ and PyQt installed.
-Clone this repository and run it locally.
+In order to run SiebenApp you need to have Python 3.9+ and [pipenv](https://pipenv.pypa.io/en/latest/) installed.
+
+1. Clone this repository.
+2. Initialize virtual environment and install dependencies:
+
+```shell
+pipenv install --python $(which python3)
+```
+
+3. Run application:
+
+```shell
+pipenv run ./sieben
+```
+
+or, for Qt6 version:
+
+```shell
+pipenv run ./sieben6
+```
 
 Currently, there is no separate package distribution and/or installer for SiebenApp.
 If you need one, please let me know in [#1](https://github.com/ahitrin/SiebenApp/issues/1).
