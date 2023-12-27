@@ -31,12 +31,6 @@ pipenv install --python $(which python3)
 pipenv run ./sieben
 ```
 
-or, for Qt6 version:
-
-```shell
-pipenv run ./sieben6
-```
-
 Currently, there is no separate package distribution and/or installer for SiebenApp.
 If you need one, please let me know in [#1](https://github.com/ahitrin/SiebenApp/issues/1).
 
