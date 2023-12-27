@@ -16,7 +16,6 @@ radon = "==6.0.1"
 typing-extensions = "*"
 
 [packages]
-PyQt5 = "==5.15.10"
 PySide6 = "==6.6.0"
 
 [requires]
