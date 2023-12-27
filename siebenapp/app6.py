@@ -148,6 +148,7 @@ class SiebenApp(QMainWindow):
         self.centralWidget().action_Open.triggered.connect(self.show_open_dialog)
         self.centralWidget().action_Hotkeys.triggered.connect(self.hotkeys.show)
         self.centralWidget().action_About.triggered.connect(self.about.show)
+        self.centralWidget().actionQuit.triggered.connect(self.quit_app)
         self.centralWidget().toggleOpen.clicked.connect(
             self.with_refresh(self.toggle_open_view, False)
         )
