@@ -14,9 +14,13 @@ SiebenApp is an experimental goal manager that tries to solve these problems.
 
 ![How does it look](doc/main.png)
 
-## Installation notes
+## Installation
 
-In order to run SiebenApp you need to have Python 3.9+ and [pipenv](https://pipenv.pypa.io/en/latest/) installed.
+In order to run SiebenApp you need to have Python 3.9+.
+
+### Installation into virtual environment
+
+To use SiebenApp within venv, you should have [pipenv](https://pipenv.pypa.io/en/latest/) installed.
 
 1. Clone this repository.
 2. Initialize virtual environment and install dependencies:
@@ -30,6 +34,46 @@ pipenv install --python $(which python3)
 ```shell
 pipenv run ./sieben
 ```
+
+OR
+
+```shell
+pipenv shell
+./sieben
+```
+
+### System-wide installation
+
+The only Python dependency required is `PySide6` (needed to draw user interface).
+If it's installed locally, you could run `sieben` right away.
+
+1. Clone this repository.
+2. Install `PySide6` (for example, via `pip`):
+
+```shell
+pip install PySide6
+```
+
+3. Run application:
+
+```shell
+./sieben
+```
+
+If your OS supports FreeDesktop specifications (like Linux or FreeBSD), you may want to add a Desktop file to your DE.
+To do this:
+
+1. Copy `SiebenApp.desktop` file to your `~/.local/share/applications` directory.
+2. Replace `_SIEBEN_APP_DIR_` placeholder with full path to SiebenApp cloned directory.
+3. If needed, replace default path to Python3.9 with your own path.
+You could find it by calling `which python3`.
+
+### CLI tools
+
+For CLI tools, like `clieben` and `sieben-manage`, no additional dependencies are needed.
+They use plain Python only.
+
+### Without cloning
 
 Currently, there is no separate package distribution and/or installer for SiebenApp.
 If you need one, please let me know in [#1](https://github.com/ahitrin/SiebenApp/issues/1).
