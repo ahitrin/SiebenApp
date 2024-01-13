@@ -155,7 +155,7 @@ class Goals(Graph):
 
     def accept_ToggleClose(self, command: ToggleClose) -> None:
         if self.selection in self.closed:
-            if self._may_be_reopened():
+            if self._switchable(self.selection):
                 self.closed.remove(self.selection)
                 self._events.append(("toggle_close", True, self.selection))
             else:
@@ -163,7 +163,7 @@ class Goals(Graph):
                     "This goal can't be reopened because other subgoals block it"
                 )
         else:
-            if self._may_be_closed():
+            if self._switchable(self.selection):
                 self.closed.add(self.selection)
                 self._events.append(("toggle_close", False, self.selection))
                 if self.previous_selection != self.selection:
@@ -175,12 +175,6 @@ class Goals(Graph):
                     self.accept(HoldSelect())
             else:
                 self.error("This goal can't be closed because it have open subgoals")
-
-    def _may_be_closed(self) -> bool:
-        return self.selection not in self.closed and self._switchable(self.selection)
-
-    def _may_be_reopened(self) -> bool:
-        return self.selection in self.closed and self._switchable(self.selection)
 
     def _first_open_and_switchable(self, root: int) -> int:
         actual_root: int = max(root, Goals.ROOT_ID)
