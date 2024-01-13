@@ -610,6 +610,30 @@ class GoalsTest(TestCase):
             roots={1},
         )
 
+    def test_mutual_blocking_by_converting_parent_link(self) -> None:
+        """In this case, we get some kind of circular blocking.
+        Subgoal 3 is transformed into a blocker of 1 and (therefore) of 2.
+        But it's blocked by a subgoal 2 at the same time.
+        As a result, none of goals is allowed to be switchable.
+        Probably, it would be fixed in the future.
+        Most likely, by disallowing a 1->3 link transformation from PARENT into BLOCKER.
+        """
+        self.goals = self.build(
+            open_(1, "Root", [2, 3], select=previous),
+            open_(2, "Goal 2"),
+            open_(3, "Goal 3", blockers=[2], select=selected),
+        )
+        self.goals.accept(ToggleLink(edge_type=EdgeType.BLOCKER))
+        assert self.goals.q() == RenderResult(
+            [
+                RenderRow(1, 1, "Root", True, False, [child(2), blocker(3)]),
+                RenderRow(2, 2, "Goal 2", True, False, []),
+                RenderRow(3, 3, "Goal 3", True, False, [blocker(2)]),
+            ],
+            select=(3, 1),
+            roots={1},
+        )
+
     def test_root_goal_is_selected_by_default(self) -> None:
         assert self.goals.q() == RenderResult(
             [
