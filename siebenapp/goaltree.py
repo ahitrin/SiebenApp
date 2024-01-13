@@ -293,6 +293,12 @@ class Goals(Graph):
         if self._lower_is_reachable_from_upper(lower, upper):
             self.error("Circular dependencies between goals are not allowed")
             return
+        goal_id = upper
+        while parent := self._strict_parent(goal_id):
+            if self.edges.get((parent, lower)) == EdgeType.BLOCKER:
+                self.error("A goal cannot block its own blocker")
+                return
+            goal_id = parent
         if edge_type == EdgeType.PARENT:
             self._transform_old_parents_into_blocked(lower, upper)
         self.edges[lower, upper] = edge_type

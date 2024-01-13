@@ -582,6 +582,34 @@ class GoalsTest(TestCase):
             roots={1},
         )
 
+    def test_mutual_blocking(self) -> None:
+        self.goals = self.build(
+            open_(1, "Root", [2], [3]),
+            open_(2, "Blocker-of-blocker", select=selected),
+            open_(3, "Blocker-of-root", select=previous),
+        )
+        assert self.goals.q() == RenderResult(
+            [
+                RenderRow(1, 1, "Root", True, False, [child(2), blocker(3)]),
+                RenderRow(2, 2, "Blocker-of-blocker", True, False, []),
+                RenderRow(3, 3, "Blocker-of-root", True, True, []),
+            ],
+            select=(2, 3),
+            roots={1},
+        )
+        # When we block a blocker, which goal should be switchable? Is such a move allowed?
+        self.goals.accept(ToggleLink())
+        # Seems not to be allowed
+        assert self.goals.q() == RenderResult(
+            [
+                RenderRow(1, 1, "Root", True, False, [child(2), blocker(3)]),
+                RenderRow(2, 2, "Blocker-of-blocker", True, False, []),
+                RenderRow(3, 3, "Blocker-of-root", True, True, []),
+            ],
+            select=(2, 3),
+            roots={1},
+        )
+
     def test_root_goal_is_selected_by_default(self) -> None:
         assert self.goals.q() == RenderResult(
             [
