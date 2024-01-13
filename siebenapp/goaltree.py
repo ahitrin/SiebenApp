@@ -154,27 +154,28 @@ class Goals(Graph):
         self._events.append(("rename", command.new_name, goal_id))
 
     def accept_ToggleClose(self, command: ToggleClose) -> None:
-        if self.selection in self.closed:
-            if self._switchable(self.selection):
-                self.closed.remove(self.selection)
-                self._events.append(("toggle_close", True, self.selection))
-            else:
-                self.error(
-                    "This goal can't be reopened because other subgoals block it"
-                )
+        is_closed = self.selection in self.closed
+        error_messages = {
+            True: "This goal can't be reopened because other subgoals block it",
+            False: "This goal can't be closed because it have open subgoals",
+        }
+        if not self._switchable(self.selection):
+            self.error(error_messages[is_closed])
+            return
+
+        if is_closed:
+            self.closed.remove(self.selection)
+            self._events.append(("toggle_close", True, self.selection))
         else:
-            if self._switchable(self.selection):
-                self.closed.add(self.selection)
-                self._events.append(("toggle_close", False, self.selection))
-                if self.previous_selection != self.selection:
-                    self.accept_Select(Select(self.previous_selection))
-                else:
-                    self.accept_Select(
-                        Select(self._first_open_and_switchable(command.root))
-                    )
-                    self.accept(HoldSelect())
+            self.closed.add(self.selection)
+            self._events.append(("toggle_close", False, self.selection))
+            if self.previous_selection != self.selection:
+                self.accept_Select(Select(self.previous_selection))
             else:
-                self.error("This goal can't be closed because it have open subgoals")
+                self.accept_Select(
+                    Select(self._first_open_and_switchable(command.root))
+                )
+                self.accept(HoldSelect())
 
     def _first_open_and_switchable(self, root: int) -> int:
         actual_root: int = max(root, Goals.ROOT_ID)
