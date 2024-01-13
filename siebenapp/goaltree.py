@@ -177,7 +177,7 @@ class Goals(Graph):
                 self.error("This goal can't be closed because it have open subgoals")
 
     def _may_be_closed(self) -> bool:
-        return all(g.target in self.closed for g in self._forward_edges(self.selection))
+        return self.selection not in self.closed and self._switchable(self.selection)
 
     def _may_be_reopened(self) -> bool:
         blocked_by_selected: list[int] = [
