@@ -172,9 +172,8 @@ class Goals(Graph):
             if self.previous_selection != self.selection:
                 self.accept_Select(Select(self.previous_selection))
             else:
-                self.accept_Select(
-                    Select(self._first_open_and_switchable(command.root))
-                )
+                next_selection = self._first_open_and_switchable(command.root)
+                self.accept_Select(Select(next_selection))
                 self.accept(HoldSelect())
 
     def _first_open_and_switchable(self, root: int) -> int:
