@@ -518,6 +518,37 @@ class GoalsTest(TestCase):
             roots={1},
         )
 
+    def test_children_of_blocked_goal_are_blocked_too(self) -> None:
+        self.goals = self.build(
+            open_(1, "Root", [2, 3], select=selected),
+            open_(2, "Subgoal 1", [4]),
+            open_(3, "Subgoal 2"),
+            open_(4, "Nested subgoal"),
+        )
+        assert self.goals.q() == RenderResult(
+            [
+                RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
+                RenderRow(2, 2, "Subgoal 1", True, False, [child(4)]),
+                RenderRow(3, 3, "Subgoal 2", True, True, []),
+                RenderRow(4, 4, "Nested subgoal", True, True, []),
+            ],
+            select=(1, 1),
+            roots={1},
+        )
+        # Blocking a goal should lead to blocking of all its subgoals
+        self.goals.accept(Add("Overall blocker", edge_type=EdgeType.BLOCKER))
+        assert self.goals.q() == RenderResult(
+            [
+                RenderRow(1, 1, "Root", True, False, [child(2), child(3), blocker(5)]),
+                RenderRow(2, 2, "Subgoal 1", True, False, [child(4)]),
+                RenderRow(3, 3, "Subgoal 2", True, True, []),
+                RenderRow(4, 4, "Nested subgoal", True, True, []),
+                RenderRow(5, 5, "Overall blocker", True, True, []),
+            ],
+            select=(1, 1),
+            roots={1},
+        )
+
     def test_root_goal_is_selected_by_default(self) -> None:
         assert self.goals.q() == RenderResult(
             [
