@@ -58,11 +58,14 @@ class Goals(Graph):
     def _back_edges(self, goal: int) -> list[Edge]:
         return [Edge(k, goal, v) for k, v in self.edges_backward[goal].items()]
 
-    def _parent(self, goal: int) -> int:
+    def _strict_parent(self, goal: int) -> Optional[int]:
         parents: set[Edge] = {
             e for e in self._back_edges(goal) if e.type == EdgeType.PARENT
         }
-        return parents.pop().source if parents else Goals.ROOT_ID
+        return parents.pop().source if parents else None
+
+    def _parent(self, goal: int) -> int:
+        return self._strict_parent(goal) or Goals.ROOT_ID
 
     def settings(self, key: str) -> Any:
         return {
@@ -142,12 +145,9 @@ class Goals(Graph):
 
     def _blocked_by_parent(self, goal_id: int) -> bool:
         while goal_id != Goals.ROOT_ID:
-            parents: list[int] = [
-                e.source for e in self._back_edges(goal_id) if e.type == EdgeType.PARENT
-            ]
-            if not parents:
+            parent = self._strict_parent(goal_id)
+            if not parent:
                 break
-            parent = parents[0]
             parent_blockers = [
                 e
                 for e in self._forward_edges(parent)
@@ -163,12 +163,9 @@ class Goals(Graph):
 
     def _is_direct_subgoal(self, parent: int, goal_id: int) -> bool:
         while goal_id != Goals.ROOT_ID:
-            parents: list[int] = [
-                e.source for e in self._back_edges(goal_id) if e.type == EdgeType.PARENT
-            ]
-            if not parents:
+            goal_parent = self._strict_parent(goal_id)
+            if not goal_parent:
                 return False
-            goal_parent = parents[0]
             if goal_parent == parent:
                 return True
             goal_id = goal_parent
