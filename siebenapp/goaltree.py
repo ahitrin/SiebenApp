@@ -241,14 +241,6 @@ class Goals(Graph):
         else:
             self._create_new_link(lower, upper, command.edge_type)
 
-    def _replace_link(self, lower: int, upper: int, edge_type: EdgeType) -> None:
-        old_edge_type: EdgeType = self.edges_forward[lower][upper]
-        self.edges[(lower, upper)] = edge_type
-        self.edges_forward[lower][upper] = edge_type
-        self.edges_backward[upper][lower] = edge_type
-        self._events.append(("link", lower, upper, edge_type))
-        self._events.append(("unlink", lower, upper, old_edge_type))
-
     def _remove_existing_link(
         self, lower: int, upper: int, edge_type: Optional[int] = None
     ) -> None:
@@ -282,6 +274,14 @@ class Goals(Graph):
         ]
         for p in old_parents:
             self._replace_link(p, upper, EdgeType.BLOCKER)
+
+    def _replace_link(self, lower: int, upper: int, edge_type: EdgeType) -> None:
+        old_edge_type: EdgeType = self.edges_forward[lower][upper]
+        self.edges[(lower, upper)] = edge_type
+        self.edges_forward[lower][upper] = edge_type
+        self.edges_backward[upper][lower] = edge_type
+        self._events.append(("link", lower, upper, edge_type))
+        self._events.append(("unlink", lower, upper, old_edge_type))
 
     def _has_circular_dependency(self, lower: int, upper: int) -> bool:
         front: set[int] = {upper}
