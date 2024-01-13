@@ -135,7 +135,44 @@ class Goals(Graph):
             if back_edges := self._back_edges(key):
                 return all(e.source not in self.closed for e in back_edges)
             return True
-        return all(x.target in self.closed for x in self._forward_edges(key))
+        no_direct_blockers_or_subgoals = all(
+            x.target in self.closed for x in self._forward_edges(key)
+        )
+        return no_direct_blockers_or_subgoals and not self._blocked_by_parent(key)
+
+    def _blocked_by_parent(self, goal_id: int) -> bool:
+        while goal_id != Goals.ROOT_ID:
+            parents: list[int] = [
+                e.source for e in self._back_edges(goal_id) if e.type == EdgeType.PARENT
+            ]
+            if not parents:
+                break
+            parent = parents[0]
+            parent_blockers = [
+                e
+                for e in self._forward_edges(parent)
+                if e.type == EdgeType.BLOCKER
+                and e.target not in self.closed
+                and not self._is_direct_subgoal(parent, e.target)
+            ]
+            if parent_blockers:
+                return True
+
+            goal_id = parent
+        return False
+
+    def _is_direct_subgoal(self, parent: int, goal_id: int) -> bool:
+        while goal_id != Goals.ROOT_ID:
+            parents: list[int] = [
+                e.source for e in self._back_edges(goal_id) if e.type == EdgeType.PARENT
+            ]
+            if not parents:
+                return False
+            goal_parent = parents[0]
+            if goal_parent == parent:
+                return True
+            goal_id = goal_parent
+        return False
 
     def accept_Insert(self, command: Insert) -> None:
         if (lower := self.previous_selection) == (upper := self.selection):

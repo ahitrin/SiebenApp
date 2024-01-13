@@ -107,10 +107,9 @@ def test_how_should_we_deal_with_zooming() -> None:
         [
             RenderRow(2, 2, "Zoomed", True, False, [], {"Zoom": "Root goal"}),
             RenderRow(3, 3, "Ex-top", True, True, []),
-            RenderRow(4, 4, "Unexpectedly hidden", True, True, []),
         ],
         select=(2, 2),
-        roots={2, 3, 4},
+        roots={2, 3},
     )
 
 

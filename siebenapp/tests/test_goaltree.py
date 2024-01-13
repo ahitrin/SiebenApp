@@ -541,11 +541,44 @@ class GoalsTest(TestCase):
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3), blocker(5)]),
                 RenderRow(2, 2, "Subgoal 1", True, False, [child(4)]),
-                RenderRow(3, 3, "Subgoal 2", True, True, []),
-                RenderRow(4, 4, "Nested subgoal", True, True, []),
+                RenderRow(3, 3, "Subgoal 2", True, False, []),
+                RenderRow(4, 4, "Nested subgoal", True, False, []),
                 RenderRow(5, 5, "Overall blocker", True, True, []),
             ],
             select=(1, 1),
+            roots={1},
+        )
+
+    def test_nested_subgoal_cannot_block_siblings_by_parent(self):
+        self.goals = self.build(
+            open_(1, "Root", [2, 3], select=previous),
+            open_(2, "Intermediate", [4]),
+            open_(3, "Intermediate 2", [5]),
+            open_(4, "Pseudo-blocker", select=selected),
+            open_(5, "Top"),
+        )
+        assert self.goals.q() == RenderResult(
+            [
+                RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
+                RenderRow(2, 2, "Intermediate", True, False, [child(4)]),
+                RenderRow(3, 3, "Intermediate 2", True, False, [child(5)]),
+                RenderRow(4, 4, "Pseudo-blocker", True, True, []),
+                RenderRow(5, 5, "Top", True, True, []),
+            ],
+            select=(4, 1),
+            roots={1},
+        )
+        # When a subgoal blocks parent, it shouldn't make all other subgoals and itself blocked
+        self.goals.accept(ToggleLink(EdgeType.BLOCKER))
+        assert self.goals.q() == RenderResult(
+            [
+                RenderRow(1, 1, "Root", True, False, [child(2), child(3), blocker(4)]),
+                RenderRow(2, 2, "Intermediate", True, False, [child(4)]),
+                RenderRow(3, 3, "Intermediate 2", True, False, [child(5)]),
+                RenderRow(4, 4, "Pseudo-blocker", True, True, []),
+                RenderRow(5, 5, "Top", True, True, []),
+            ],
+            select=(4, 1),
             roots={1},
         )
 
