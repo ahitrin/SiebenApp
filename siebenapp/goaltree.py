@@ -137,7 +137,7 @@ class Goals(Graph):
             return True
         return all(x.target in self.closed for x in self._forward_edges(key))
 
-    def accept_Insert(self, command: Insert):
+    def accept_Insert(self, command: Insert) -> None:
         if (lower := self.previous_selection) == (upper := self.selection):
             self.error("A new goal can be inserted only between two different goals")
             return
@@ -148,7 +148,7 @@ class Goals(Graph):
             if self._has_link(lower, upper):
                 self.accept_ToggleLink(ToggleLink(lower, upper))
 
-    def accept_Rename(self, command: Rename):
+    def accept_Rename(self, command: Rename) -> None:
         goal_id: int = command.goal_id or self.selection
         self.goals[goal_id] = command.new_name
         self._events.append(("rename", command.new_name, goal_id))
@@ -224,7 +224,7 @@ class Goals(Graph):
                 self._delete_subtree(next_goal.target)
         self._events.append(("delete", goal_id))
 
-    def accept_ToggleLink(self, command: ToggleLink):
+    def accept_ToggleLink(self, command: ToggleLink) -> None:
         if (lower := command.lower or self.previous_selection) == (
             upper := command.upper or self.selection
         ):
