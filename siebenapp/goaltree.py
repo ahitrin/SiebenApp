@@ -290,7 +290,7 @@ class Goals(Graph):
         if lower in self.closed and upper not in self.closed:
             self.error("An open goal can't block already closed one")
             return
-        if self._has_circular_dependency(lower, upper):
+        if self._lower_is_reachable_from_upper(lower, upper):
             self.error("Circular dependencies between goals are not allowed")
             return
         if edge_type == EdgeType.PARENT:
@@ -317,7 +317,7 @@ class Goals(Graph):
         self._events.append(("link", lower, upper, edge_type))
         self._events.append(("unlink", lower, upper, old_edge_type))
 
-    def _has_circular_dependency(self, lower: int, upper: int) -> bool:
+    def _lower_is_reachable_from_upper(self, lower: int, upper: int) -> bool:
         front: set[int] = {upper}
         visited: set[int] = set()
         total: set[int] = set()
