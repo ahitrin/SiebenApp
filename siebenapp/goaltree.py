@@ -180,10 +180,7 @@ class Goals(Graph):
         return self.selection not in self.closed and self._switchable(self.selection)
 
     def _may_be_reopened(self) -> bool:
-        blocked_by_selected: list[int] = [
-            e.source for e in self._back_edges(self.selection)
-        ]
-        return all(g not in self.closed for g in blocked_by_selected)
+        return self.selection in self.closed and self._switchable(self.selection)
 
     def _first_open_and_switchable(self, root: int) -> int:
         actual_root: int = max(root, Goals.ROOT_ID)
