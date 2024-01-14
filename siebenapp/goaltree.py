@@ -265,15 +265,18 @@ class Goals(Graph):
             self.error("Goal can't be linked to itself")
             return
         if self._has_link(lower, upper):
-            if (
-                current_edge_type := self.edges_forward[lower][upper]
-            ) != command.edge_type:
-                self._replace_link(lower, upper, command.edge_type)
-                self._transform_old_parents_into_blocked(lower, upper)
-            else:
-                self._remove_existing_link(lower, upper, current_edge_type)
+            self._replace_or_remove_existing_link(command, lower, upper)
         else:
             self._create_new_link(lower, upper, command.edge_type)
+
+    def _replace_or_remove_existing_link(
+        self, command: ToggleLink, lower: int, upper: int
+    ) -> None:
+        if (current_edge_type := self.edges_forward[lower][upper]) != command.edge_type:
+            self._replace_link(lower, upper, command.edge_type)
+            self._transform_old_parents_into_blocked(lower, upper)
+        else:
+            self._remove_existing_link(lower, upper, current_edge_type)
 
     def _remove_existing_link(
         self, lower: int, upper: int, edge_type: Optional[int] = None
