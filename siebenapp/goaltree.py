@@ -302,12 +302,12 @@ class Goals(Graph):
                 self.error("A goal cannot block its own blocker")
                 return
             goal_id = parent
-        if edge_type == EdgeType.PARENT:
-            self._transform_old_parents_into_blocked(lower, upper)
         self.edges[lower, upper] = edge_type
         self.edges_forward[lower][upper] = edge_type
         self.edges_backward[upper][lower] = edge_type
         self._events.append(("link", lower, upper, edge_type))
+        if edge_type == EdgeType.PARENT:
+            self._transform_old_parents_into_blocked(lower, upper)
 
     def _transform_old_parents_into_blocked(self, lower: int, upper: int) -> None:
         old_parents: list[int] = [
@@ -316,7 +316,7 @@ class Goals(Graph):
             if e.type == EdgeType.PARENT and e.source != lower
         ]
         for p in old_parents:
-            self._replace_link(p, upper, EdgeType.BLOCKER)
+            self._remove_existing_link(p, upper, EdgeType.PARENT)
 
     def _replace_link(self, lower: int, upper: int, edge_type: EdgeType) -> None:
         old_edge_type: EdgeType = self.edges_forward[lower][upper]

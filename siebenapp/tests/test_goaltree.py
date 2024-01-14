@@ -406,7 +406,7 @@ class GoalsTest(TestCase):
             roots={1},
         )
 
-    def test_new_parent_link_replaces_old_one(self) -> None:
+    def test_new_parent_link_removes_old_one(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2, 3]),
             open_(2, "Old parent", [4]),
@@ -417,7 +417,7 @@ class GoalsTest(TestCase):
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
-                RenderRow(2, 2, "Old parent", True, False, [blocker(4)]),
+                RenderRow(2, 2, "Old parent", True, True, []),
                 RenderRow(3, 3, "New parent", True, False, [child(4)]),
                 RenderRow(4, 4, "Child", True, True, []),
             ],
@@ -425,7 +425,7 @@ class GoalsTest(TestCase):
             roots={1},
         )
 
-    def test_new_parent_link_replaces_old_one_when_changed_from_blocker(self) -> None:
+    def test_new_parent_link_removes_old_one_when_changed_from_blocker(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2, 3]),
             open_(2, "A", select=selected),
@@ -434,7 +434,7 @@ class GoalsTest(TestCase):
         self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", True, False, [blocker(2), child(3)]),
+                RenderRow(1, 1, "Root", True, False, [child(3)]),
                 RenderRow(2, 2, "A", True, True, []),
                 RenderRow(3, 3, "B", True, False, [child(2)]),
             ],
@@ -921,10 +921,11 @@ class GoalsTest(TestCase):
             open_(3, "Upper", [], select=selected),
         )
         self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
-        assert self.goals.events()[-4] == ("link", 2, 3, EdgeType.PARENT)
-        assert self.goals.events()[-3] == ("unlink", 2, 3, EdgeType.BLOCKER)
-        assert self.goals.events()[-2] == ("link", 1, 3, EdgeType.BLOCKER)
-        assert self.goals.events()[-1] == ("unlink", 1, 3, EdgeType.PARENT)
+        assert list(self.goals.events())[-3:] == [
+            ("link", 2, 3, EdgeType.PARENT),
+            ("unlink", 2, 3, EdgeType.BLOCKER),
+            ("unlink", 1, 3, EdgeType.PARENT),
+        ]
 
     def test_no_messages_at_start(self) -> None:
         assert self.messages == []
