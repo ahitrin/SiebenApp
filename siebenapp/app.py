@@ -387,7 +387,7 @@ class SiebenApp(QMainWindow):
         self.centralWidget().action_Hotkeys.trigger()
 
     def show_user_message(self, message):
-        self.statusBar().showMessage(message, 10000)
+        self.centralWidget().statusBar().showMessage(message, 10000)
 
     def change_columns(self, delta):
         new_columns = self.columns + delta
