@@ -68,9 +68,9 @@ def merge(args: Namespace, io: IO) -> None:
             (edge[0] + delta, edge[1] + delta): edge_type
             for edge, edge_type in source_root.edges.items()
         }
-        merged_db.edges[
-            Goals.ROOT_ID, min(source_root.goals.keys()) + delta
-        ] = EdgeType.PARENT
+        merged_db.edges[Goals.ROOT_ID, min(source_root.goals.keys()) + delta] = (
+            EdgeType.PARENT
+        )
         merged_db.closed.update({goal_id + delta for goal_id in source_root.closed})
         delta = max(merged_db.goals.keys())
 
