@@ -11,6 +11,7 @@ from siebenapp.render import (
     Point,
     adjust_graph,
 )
+from siebenapp.render_next import build_with, tube
 from siebenapp.tests.dsl import build_goaltree, open_, clos_, selected, previous
 from siebenapp.tests.test_cli import verify_file
 
@@ -70,4 +71,14 @@ def test_render_example(default_tree) -> None:
         print(f"Avg: dx={avg_dx}, dy={avg_dy}", file=out)
         print("\n== Lines", file=out)
         pprint(lines, out)
+        verify_file(out.getvalue())
+
+
+def test_render_new_example(default_tree) -> None:
+    result = default_tree.q()
+    result.node_opts = {row.goal_id: {} for row in result.rows}
+    rendered_result = build_with(result, tube).rr
+    with io.StringIO() as out:
+        print("== Graph\n", file=out)
+        pprint(asdict(rendered_result), out)
         verify_file(out.getvalue())
