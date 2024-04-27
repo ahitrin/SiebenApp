@@ -99,7 +99,7 @@ class Renderer:
         while unsorted_goals:
             new_layer: Layer = []
             candidates = self.candidates_for_new_layer(sorted_goals, unsorted_goals)
-            for goal, edges_len in candidates:
+            for goal in candidates:
                 unsorted_goals.pop(goal)
                 sorted_goals.add(goal)
                 new_layer.append(goal)
@@ -144,14 +144,14 @@ class Renderer:
 
     def candidates_for_new_layer(
         self, sorted_goals: set[GoalId], unsorted_goals: dict[GoalId, list[GoalId]]
-    ) -> list[tuple[GoalId, int]]:
+    ) -> list[GoalId]:
         candidates: list[tuple[GoalId, int]] = [
             (goal, len(edges))
             for goal, edges in unsorted_goals.items()
             if all(v in sorted_goals for v in edges)
         ]
         candidates.sort(key=lambda x: x[1], reverse=True)
-        return candidates[: self.width_limit]
+        return [g for g, _ in candidates[: self.width_limit]]
 
     def reorder(self) -> None:
         for curr_layer in sorted(self.layers.keys(), reverse=True)[:-1]:
