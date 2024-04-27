@@ -108,9 +108,10 @@ class Renderer:
                 if len(outgoing_edges) >= self.width_limit:
                     break
             incoming_edges = incoming_edges.difference(set(new_layer))
+            connect_to: set[GoalId] = sorted_goals.difference(set(new_layer))
             for original_id in incoming_edges:
                 new_goal_name: str = self._insert_fake_goal(
-                    original_id, sorted_goals.difference(set(new_layer)), current_layer
+                    original_id, connect_to, current_layer
                 )
                 new_layer.append(new_goal_name)
                 sorted_goals.add(new_goal_name)
