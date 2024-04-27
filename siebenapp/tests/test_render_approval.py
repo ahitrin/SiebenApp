@@ -2,6 +2,8 @@ import io
 from dataclasses import asdict
 from pprint import pprint
 
+import pytest
+
 from siebenapp.render import (
     Renderer,
     GeometryProvider,
@@ -33,12 +35,9 @@ class FakeGeometry(GeometryProvider):
         return self.bottom_left(row, col) + self.width(row, col)
 
 
-def test_render_example() -> None:
-    _run_render_test()
-
-
-def _run_render_test():
-    g = build_goaltree(
+@pytest.fixture
+def default_tree():
+    return build_goaltree(
         open_(1, "Root", [2, 3, 4, 5, 6], [7, 8]),
         clos_(2, "Closed", blockers=[7]),
         open_(3, "Simply 3", blockers=[5, 8]),
@@ -48,7 +47,10 @@ def _run_render_test():
         clos_(7, "Lucky 7", [8], select=previous),
         clos_(8, "Finally 8"),
     )
-    r = Renderer(g)
+
+
+def test_render_example(default_tree) -> None:
+    r = Renderer(default_tree)
     result = r.build()
     gp = FakeGeometry()
     adjust_graph(result, gp)
@@ -58,13 +60,13 @@ def _run_render_test():
         pprint(asdict(result), out)
         print("\n== Geometry change after adjust\n", file=out)
         total_delta = Point(0, 0)
-        for goal_id in g.goals:
+        for goal_id in default_tree.goals:
             goal = result.node_opts[goal_id]
             delta = gp.top_left(goal["row"], goal["col"]) - Point(goal["x"], goal["y"])
             total_delta += delta
             print(f"{goal_id}: dx={delta.x}, dy={delta.y}", file=out)
-        avg_dx = total_delta.x // len(g.goals)
-        avg_dy = total_delta.y // len(g.goals)
+        avg_dx = total_delta.x // len(default_tree.goals)
+        avg_dy = total_delta.y // len(default_tree.goals)
         print(f"Avg: dx={avg_dx}, dy={avg_dy}", file=out)
         print("\n== Lines", file=out)
         pprint(lines, out)
