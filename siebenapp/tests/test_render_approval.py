@@ -1,4 +1,5 @@
 import io
+import sys
 from dataclasses import asdict
 from pprint import pprint
 
@@ -74,6 +75,10 @@ def test_render_example(default_tree) -> None:
         verify_file(out.getvalue())
 
 
+@pytest.mark.skipif(
+    sys.version_info == (3, 12),
+    reason="Minor differences in printing of float values in py312",
+)
 def test_render_new_example(default_tree) -> None:
     result = default_tree.q()
     result.node_opts = {row.goal_id: {} for row in result.rows}
