@@ -76,7 +76,7 @@ def test_render_example(default_tree) -> None:
 
 
 @pytest.mark.skipif(
-    sys.version_info == (3, 12),
+    sys.version_info >= (3, 12),
     reason="Minor differences in printing of float values in py312",
 )
 def test_render_new_example(default_tree) -> None:
