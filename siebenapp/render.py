@@ -88,6 +88,7 @@ class Renderer:
             edge_opts=self.result_edge_options,
             select=self.render_result.select,
             node_opts=self.node_opts,
+            roots=self.render_result.roots,
         )
 
     def split_by_layers(self) -> None:

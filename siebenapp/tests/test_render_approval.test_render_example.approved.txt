@@ -87,7 +87,7 @@
                        'edge_render': [(6, <EdgeType.BLOCKER: 1>),
                                        ('4_2', <EdgeType.BLOCKER: 1>)],
                        'row': 3}},
- 'roots': set(),
+ 'roots': {1},
  'rows': [{'attrs': {},
            'edges': [(2, <EdgeType.PARENT: 2>),
                      (3, <EdgeType.PARENT: 2>),
