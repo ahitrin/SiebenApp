@@ -11,7 +11,7 @@ from hypothesis.stateful import (
     invariant,
     precondition,
 )
-from hypothesis.strategies import data, integers, booleans, text, sampled_from
+from hypothesis.strategies import data, integers, text, sampled_from
 
 from siebenapp.autolink import ToggleAutoLink
 from siebenapp.domain import (
@@ -103,10 +103,13 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         event("insert")
         self._accept(Insert("i"))
 
-    @rule(b=booleans(), d=data())
+    @rule(
+        edge_type=integers(min_value=EdgeType.RELATION, max_value=EdgeType.PARENT),
+        d=data(),
+    )
     # Ignore trivial trees (without any subgoal)
     @precondition(lambda self: len(self.goaltree.q().rows) > 1)
-    def toggle_link(self, b, d) -> None:
+    def toggle_link(self, edge_type, d) -> None:
         event("toggle link")
         goal_keys = sorted(
             list(row.goal_id for row in self.goaltree.q().rows if row.goal_id > 0)
@@ -116,7 +119,6 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         goal_keys.remove(selection)
         prev_selection = d.draw(sampled_from(goal_keys))
         event("valid toggle link")
-        edge_type = EdgeType.PARENT if b else EdgeType.BLOCKER
         self._accept(
             ToggleLink(lower=prev_selection, upper=selection, edge_type=edge_type)
         )
