@@ -5,6 +5,7 @@ from typing import Any, Union, Optional
 
 
 class EdgeType(IntEnum):
+    RELATION = 0
     BLOCKER = 1
     PARENT = 2
 
@@ -33,6 +34,11 @@ def child(goal_id: GoalId) -> tuple[GoalId, EdgeType]:
 def blocker(goal_id: GoalId) -> tuple[GoalId, EdgeType]:
     """A more compact way of writing (goal_id, EdgeType.BLOCKER)"""
     return goal_id, EdgeType.BLOCKER
+
+
+def relation(goal_id: GoalId) -> tuple[GoalId, EdgeType]:
+    """A more compact way of writing (goal_id, EdgeType.RELATION)"""
+    return goal_id, EdgeType.RELATION
 
 
 @dataclass(frozen=True)
