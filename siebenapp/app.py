@@ -80,8 +80,9 @@ class CentralWidget(QWidget):
     __metaclass__ = GeometryProvider
 
     EDGE_PENS = {
-        EdgeType.BLOCKER: QPen(Qt.black, 1, Qt.DashLine),  # type: ignore
-        EdgeType.PARENT: QPen(Qt.black, 1, Qt.SolidLine),  # type: ignore
+        EdgeType.RELATION: QPen(Qt.black, 1, Qt.DotLine),  # type: ignore
+        EdgeType.BLOCKER: QPen(Qt.black, 1.2, Qt.DashLine),  # type: ignore
+        EdgeType.PARENT: QPen(Qt.black, 1.3, Qt.SolidLine),  # type: ignore
     }
 
     def __init__(self):
@@ -256,6 +257,9 @@ class SiebenApp(QMainWindow):
             Qt.Key_Minus: self.with_refresh(self.change_columns, -1),
             Qt.Key_Plus: self.with_refresh(self.change_columns, 1),
             Qt.Key_Slash: self.show_keys_help,
+            Qt.Key_Semicolon: self.with_refresh(
+                self.goals_holder.accept, ToggleLink(edge_type=EdgeType.RELATION)
+            ),
             Qt.Key_Space: self.with_refresh(self.goals_holder.accept, HoldSelect()),
         }
         if event.key() in key_handlers:
