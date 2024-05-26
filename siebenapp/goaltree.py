@@ -242,7 +242,9 @@ class Goals(Graph):
         next_to_remove: set[Edge] = {
             e for e in forward_edges if e.type == EdgeType.PARENT
         }
-        blockers: set[Edge] = {e for e in forward_edges if e.type == EdgeType.BLOCKER}
+        dangling_goals: set[Edge] = {
+            e for e in forward_edges if e.type != EdgeType.PARENT
+        }
         for back_edge in self._back_edges(goal_id):
             self.edges_forward[back_edge.source].pop(goal_id)
         self.edges_forward[goal_id].clear()
@@ -250,9 +252,9 @@ class Goals(Graph):
             self.edges_backward[forward_edge.target].pop(goal_id)
         self.edges_backward[goal_id].clear()
         self.edges = {k: v for k, v in self.edges.items() if goal_id not in k}
-        for old_blocker in blockers:
-            if not self._back_edges(old_blocker.target):
-                self._create_new_link(parent, old_blocker.target, EdgeType.BLOCKER)
+        for g in dangling_goals:
+            if not self._back_edges(g.target):
+                self._create_new_link(parent, g.target, g.type)
         for next_goal in next_to_remove:
             if not self._back_edges(next_goal.target):
                 self._delete_subtree(next_goal.target)

@@ -15,6 +15,7 @@ from siebenapp.domain import (
     RenderResult,
     child,
     blocker,
+    relation,
 )
 from siebenapp.tests.dsl import build_goaltree, open_, selected, previous, clos_
 
@@ -331,6 +332,22 @@ class GoalsTest(TestCase):
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [blocker(3)]),
+                RenderRow(3, 3, "B", True, True, []),
+            ],
+            select=(1, 1),
+            roots={1},
+        )
+
+    def test_relink_goal_chain_with_relation(self) -> None:
+        self.goals = self.build(
+            open_(1, "Root", [2]),
+            open_(2, "A", relations=[3], select=selected),
+            open_(3, "B"),
+        )
+        self.goals.accept(Delete())
+        assert self.goals.q() == RenderResult(
+            [
+                RenderRow(1, 1, "Root", True, False, [relation(3)]),
                 RenderRow(3, 3, "B", True, True, []),
             ],
             select=(1, 1),
