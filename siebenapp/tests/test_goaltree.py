@@ -370,7 +370,7 @@ class GoalsTest(TestCase):
             roots={1},
         )
 
-    def test_add_link_between_goals(self) -> None:
+    def test_add_blocker_link_between_goals(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2, 3]),
             open_(2, "A", select=previous),
@@ -390,6 +390,32 @@ class GoalsTest(TestCase):
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
                 RenderRow(2, 2, "A", True, False, [blocker(3)]),
+                RenderRow(3, 3, "B", True, True, []),
+            ],
+            select=(3, 2),
+            roots={1},
+        )
+
+    def test_add_relation_link_between_goals(self) -> None:
+        self.goals = self.build(
+            open_(1, "Root", [2, 3]),
+            open_(2, "A", select=previous),
+            open_(3, "B", select=selected),
+        )
+        assert self.goals.q() == RenderResult(
+            [
+                RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
+                RenderRow(2, 2, "A", True, True, []),
+                RenderRow(3, 3, "B", True, True, []),
+            ],
+            select=(3, 2),
+            roots={1},
+        )
+        self.goals.accept(ToggleLink(edge_type=EdgeType.RELATION))
+        assert self.goals.q() == RenderResult(
+            [
+                RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
+                RenderRow(2, 2, "A", True, False, [relation(3)]),
                 RenderRow(3, 3, "B", True, True, []),
             ],
             select=(3, 2),
@@ -501,6 +527,15 @@ class GoalsTest(TestCase):
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2)]),
+                RenderRow(2, 2, "Top", True, True, []),
+            ],
+            select=(2, 1),
+            roots={1},
+        )
+        self.goals.accept(ToggleLink(edge_type=EdgeType.RELATION))
+        assert self.goals.q() == RenderResult(
+            [
+                RenderRow(1, 1, "Root", True, False, [relation(2)]),
                 RenderRow(2, 2, "Top", True, True, []),
             ],
             select=(2, 1),
@@ -942,6 +977,11 @@ class GoalsTest(TestCase):
             ("link", 2, 3, EdgeType.PARENT),
             ("unlink", 2, 3, EdgeType.BLOCKER),
             ("unlink", 1, 3, EdgeType.PARENT),
+        ]
+        self.goals.accept(ToggleLink(edge_type=EdgeType.RELATION))
+        assert list(self.goals.events())[-2:] == [
+            ("link", 2, 3, EdgeType.RELATION),
+            ("unlink", 2, 3, EdgeType.PARENT),
         ]
 
     def test_no_messages_at_start(self) -> None:
