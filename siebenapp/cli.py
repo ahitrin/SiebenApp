@@ -76,13 +76,17 @@ def fmt(render_result: RenderResult, row: RenderRow, id_width: int) -> str:
     def children() -> str:
         if not row.edges:
             return ""
-        child_list: str = ",".join(
-            str(e[0]) for e in row.edges if e[1] == EdgeType.PARENT
-        )
-        blocker_list: str = ",".join(
-            str(e[0]) for e in row.edges if e[1] == EdgeType.BLOCKER
-        )
-        return f" [{child_list} / {blocker_list}]"
+        children: list[str] = []
+        blockers: list[str] = []
+        relates: list[str] = []
+        for e in row.edges:
+            if e[1] == EdgeType.PARENT:
+                children.append(str(e[0]))
+            elif e[1] == EdgeType.BLOCKER:
+                blockers.append(str(e[0]))
+            else:
+                relates.append(str(e[0]))
+        return f" [{','.join(children)} / {','.join(blockers)} | {','.join(relates)}]"
 
     def attributes() -> str:
         return (
@@ -103,6 +107,7 @@ def build_actions(command: str) -> List[Command]:
         "h": HoldSelect(),
         "k": ToggleLink(edge_type=EdgeType.PARENT),
         "l": ToggleLink(),
+        ";": ToggleLink(edge_type=EdgeType.RELATION),
         "n": ToggleOpenView(),
         "p": ToggleProgress(),
         "t": ToggleSwitchableView(),
