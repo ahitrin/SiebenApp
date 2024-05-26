@@ -354,6 +354,32 @@ class GoalsTest(TestCase):
             roots={1},
         )
 
+    def test_cannot_convert_relation_for_closed_goal(self) -> None:
+        self.goals = self.build(
+            clos_(1, "Root", relations=[2], select=previous),
+            open_(2, "Related", select=selected),
+        )
+        assert self.goals.q() == RenderResult(
+            [
+                RenderRow(1, 1, "Root", False, True, [relation(2)]),
+                RenderRow(2, 2, "Related", True, True, []),
+            ],
+            select=(2, 1),
+            roots={1},
+        )
+        self.goals.accept(ToggleLink())
+        # Nothing should change
+        assert self.goals.q() == RenderResult(
+            [
+                RenderRow(1, 1, "Root", False, True, [relation(2)]),
+                RenderRow(2, 2, "Related", True, True, []),
+            ],
+            select=(2, 1),
+            roots={1},
+        )
+        # Error message is expected
+        assert len(self.messages) == 1
+
     def test_select_parent_after_delete(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2], select=previous),

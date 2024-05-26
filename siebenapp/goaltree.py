@@ -269,6 +269,9 @@ class Goals(Graph):
         ):
             self.error("Goal can't be linked to itself")
             return
+        if lower in self.closed and upper not in self.closed:
+            self.error("Cannot add a blocking relation to the closed goal")
+            return
         if self._has_link(lower, upper):
             self._replace_or_remove_existing_link(command, lower, upper)
         else:
@@ -352,9 +355,13 @@ class Goals(Graph):
         self._verify_at_most_one_parent_for_each_goal()
 
     def _verify_open_goals_are_not_blocked_by_closed_goals(self) -> None:
-        assert all(
-            g.target in self.closed for p in self.closed for g in self._forward_edges(p)
-        ), "Open goals could not be blocked by closed ones"
+        b = all(
+            e.target in self.closed
+            for p in self.closed
+            for e in self._forward_edges(p)
+            if e.type != EdgeType.RELATION
+        )
+        assert b, "Open goals could not be blocked by closed ones"
 
     def _verify_all_subgoals_are_accessible_from_the_root_goal(self) -> None:
         queue: list[int] = [Goals.ROOT_ID]
