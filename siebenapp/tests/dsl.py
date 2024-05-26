@@ -45,19 +45,11 @@ def clos_(goal_id, name, children=None, blockers=None, relations=None, select=No
 
 def build_goaltree(*goal_prototypes, message_fn=None):
     goals = [(g.goal_id, g.name, g.open) for g in goal_prototypes]
-    edges = (
-        [(g.goal_id, e, EdgeType.PARENT) for g in goal_prototypes for e in g.children]
-        + [
-            (g.goal_id, e, EdgeType.BLOCKER)
-            for g in goal_prototypes
-            for e in g.blockers
-        ]
-        + [
-            (g.goal_id, e, EdgeType.RELATION)
-            for g in goal_prototypes
-            for e in g.relations
-        ]
-    )
+    edges = []
+    for g in goal_prototypes:
+        edges.extend([(g.goal_id, e, EdgeType.PARENT) for e in g.children])
+        edges.extend([(g.goal_id, e, EdgeType.BLOCKER) for e in g.blockers])
+        edges.extend([(g.goal_id, e, EdgeType.RELATION) for e in g.relations])
     selection = {g.goal_id for g in goal_prototypes if g.select == selected}
     prev_selection = {g.goal_id for g in goal_prototypes if g.select == previous}
     assert len(selection) == 1
