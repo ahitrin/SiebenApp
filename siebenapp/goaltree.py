@@ -181,9 +181,9 @@ class Goals(Graph):
         edge_type: EdgeType = self.edges_forward[lower].get(upper, EdgeType.BLOCKER)
         if self.accept_Add(Add(command.name, lower, edge_type)):
             key: int = len(self.goals)
-            self.accept_ToggleLink(ToggleLink(key, upper, edge_type))
+            self._create_new_link(key, upper, edge_type)
             if self._has_link(lower, upper):
-                self.accept_ToggleLink(ToggleLink(lower, upper))
+                self.accept_ToggleLink(ToggleLink(lower, upper, edge_type))
 
     def accept_Rename(self, command: Rename) -> None:
         goal_id: int = command.goal_id or self.selection
@@ -276,13 +276,15 @@ class Goals(Graph):
             self._replace_or_remove_existing_link(command, lower, upper)
         else:
             self._create_new_link(lower, upper, command.edge_type)
+            if command.edge_type == EdgeType.PARENT:
+                self._transform_old_parents_into_relation(lower, upper)
 
     def _replace_or_remove_existing_link(
         self, command: ToggleLink, lower: int, upper: int
     ) -> None:
         if (current_edge_type := self.edges_forward[lower][upper]) != command.edge_type:
             self._replace_link(lower, upper, command.edge_type)
-            self._transform_old_parents_into_blocked(lower, upper)
+            self._transform_old_parents_into_relation(lower, upper)
         else:
             self._remove_existing_link(lower, upper, current_edge_type)
 
@@ -318,17 +320,15 @@ class Goals(Graph):
         self.edges_forward[lower][upper] = edge_type
         self.edges_backward[upper][lower] = edge_type
         self._events.append(("link", lower, upper, edge_type))
-        if edge_type == EdgeType.PARENT:
-            self._transform_old_parents_into_blocked(lower, upper)
 
-    def _transform_old_parents_into_blocked(self, lower: int, upper: int) -> None:
+    def _transform_old_parents_into_relation(self, lower: int, upper: int) -> None:
         old_parents: list[int] = [
             e.source
             for e in self._back_edges(upper)
             if e.type == EdgeType.PARENT and e.source != lower
         ]
         for p in old_parents:
-            self._remove_existing_link(p, upper, EdgeType.PARENT)
+            self._replace_link(p, upper, EdgeType.RELATION)
 
     def _replace_link(self, lower: int, upper: int, edge_type: EdgeType) -> None:
         old_edge_type: EdgeType = self.edges_forward[lower][upper]
