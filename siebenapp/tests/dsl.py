@@ -16,30 +16,48 @@ class GoalPrototype:
     open: bool
     children: list[int]
     blockers: list[int]
+    relations: list[int]
     select: Optional[str]
 
 
-def _build_goal_prototype(goal_id, name, is_open, children, blockers, select):
+def _build_goal_prototype(
+    goal_id, name, is_open, children, blockers, relations, select
+):
     children = children or []
     blockers = blockers or []
+    relations = relations or []
     assert isinstance(children, list)
     assert select in allowed_selects
-    return GoalPrototype(goal_id, name, is_open, children, blockers, select)
+    return GoalPrototype(goal_id, name, is_open, children, blockers, relations, select)
 
 
-def open_(goal_id, name, children=None, blockers=None, select=None):
-    return _build_goal_prototype(goal_id, name, True, children, blockers, select)
+def open_(goal_id, name, children=None, blockers=None, relations=None, select=None):
+    return _build_goal_prototype(
+        goal_id, name, True, children, blockers, relations, select
+    )
 
 
-def clos_(goal_id, name, children=None, blockers=None, select=None):
-    return _build_goal_prototype(goal_id, name, False, children, blockers, select)
+def clos_(goal_id, name, children=None, blockers=None, relations=None, select=None):
+    return _build_goal_prototype(
+        goal_id, name, False, children, blockers, relations, select
+    )
 
 
 def build_goaltree(*goal_prototypes, message_fn=None):
     goals = [(g.goal_id, g.name, g.open) for g in goal_prototypes]
-    edges = [
-        (g.goal_id, e, EdgeType.PARENT) for g in goal_prototypes for e in g.children
-    ] + [(g.goal_id, e, EdgeType.BLOCKER) for g in goal_prototypes for e in g.blockers]
+    edges = (
+        [(g.goal_id, e, EdgeType.PARENT) for g in goal_prototypes for e in g.children]
+        + [
+            (g.goal_id, e, EdgeType.BLOCKER)
+            for g in goal_prototypes
+            for e in g.blockers
+        ]
+        + [
+            (g.goal_id, e, EdgeType.RELATION)
+            for g in goal_prototypes
+            for e in g.relations
+        ]
+    )
     selection = {g.goal_id for g in goal_prototypes if g.select == selected}
     prev_selection = {g.goal_id for g in goal_prototypes if g.select == previous}
     assert len(selection) == 1

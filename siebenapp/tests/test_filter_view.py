@@ -10,7 +10,7 @@ from siebenapp.zoom import Zoom, ToggleZoom
 def goaltree():
     return FilterView(
         build_goaltree(
-            open_(1, "Alpha", [2], [], selected),
+            open_(1, "Alpha", [2], [], [], selected),
             open_(2, "Beta", [3]),
             open_(3, "Gamma", []),
         )
@@ -22,7 +22,7 @@ def zoomed_goaltree():
     return FilterView(
         Zoom(
             build_goaltree(
-                open_(1, "Alpha", [2], [], selected),
+                open_(1, "Alpha", [2], [], [], selected),
                 open_(2, "Beta", [3]),
                 open_(3, "Gamma", []),
             )
