@@ -298,7 +298,11 @@ class Goals(Graph):
             self.error("Can't remove the last link")
 
     def _create_new_link(self, lower: int, upper: int, edge_type: EdgeType) -> None:
-        if lower in self.closed and upper not in self.closed:
+        if (
+            lower in self.closed
+            and upper not in self.closed
+            and edge_type != EdgeType.RELATION
+        ):
             self.error("An open goal can't block already closed one")
             return
         if self._lower_is_reachable_from_upper(lower, upper):

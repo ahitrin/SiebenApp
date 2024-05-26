@@ -295,7 +295,7 @@ class GoalsTest(TestCase):
             roots={1},
         )
 
-    def test_enumeration_should_not_be_changed_after_delete(self) -> None:
+    def test_delete_leaf_goal(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2, 3]), open_(2, "A", select=selected), open_(3, "B")
         )
@@ -303,6 +303,67 @@ class GoalsTest(TestCase):
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(3)]),
+                RenderRow(3, 3, "B", True, True, []),
+            ],
+            select=(1, 1),
+            roots={1},
+        )
+
+    def test_delete_with_children(self) -> None:
+        self.goals = self.build(
+            open_(1, "Root", [2]), open_(2, "A", [3], select=selected), open_(3, "B")
+        )
+        self.goals.accept(Delete())
+        assert self.goals.q() == RenderResult(
+            [
+                RenderRow(1, 1, "Root", True, True, []),
+            ],
+            select=(1, 1),
+            roots={1},
+        )
+
+    def test_delete_with_blocker(self) -> None:
+        self.goals = self.build(
+            open_(1, "Root", blockers=[2]),
+            open_(2, "A", blockers=[3], select=selected),
+            open_(3, "B"),
+        )
+        self.goals.accept(Delete())
+        assert self.goals.q() == RenderResult(
+            [
+                RenderRow(1, 1, "Root", True, False, [blocker(3)]),
+                RenderRow(3, 3, "B", True, True, []),
+            ],
+            select=(1, 1),
+            roots={1},
+        )
+
+    def test_delete_with_relation(self) -> None:
+        self.goals = self.build(
+            open_(1, "Root", relations=[2]),
+            open_(2, "A", relations=[3], select=selected),
+            open_(3, "B"),
+        )
+        self.goals.accept(Delete())
+        assert self.goals.q() == RenderResult(
+            [
+                RenderRow(1, 1, "Root", True, True, [relation(3)]),
+                RenderRow(3, 3, "B", True, True, []),
+            ],
+            select=(1, 1),
+            roots={1},
+        )
+
+    def test_delete_with_relation_and_closed_root(self) -> None:
+        self.goals = self.build(
+            clos_(1, "Root", relations=[2]),
+            open_(2, "A", relations=[3], select=selected),
+            open_(3, "B"),
+        )
+        self.goals.accept(Delete())
+        assert self.goals.q() == RenderResult(
+            [
+                RenderRow(1, 1, "Root", False, True, [relation(3)]),
                 RenderRow(3, 3, "B", True, True, []),
             ],
             select=(1, 1),
