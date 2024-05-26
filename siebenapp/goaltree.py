@@ -138,8 +138,11 @@ class Goals(Graph):
             if back_edges := self._back_edges(key):
                 return all(e.source not in self.closed for e in back_edges)
             return True
+        direct_blockers = [
+            e for e in self._forward_edges(key) if e.type != EdgeType.RELATION
+        ]
         no_direct_blockers_or_subgoals = all(
-            x.target in self.closed for x in self._forward_edges(key)
+            x.target in self.closed for x in direct_blockers
         )
         return no_direct_blockers_or_subgoals and not self._blocked_by_parent(key)
 

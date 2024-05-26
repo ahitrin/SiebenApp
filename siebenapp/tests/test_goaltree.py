@@ -347,7 +347,7 @@ class GoalsTest(TestCase):
         self.goals.accept(Delete())
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", True, False, [relation(3)]),
+                RenderRow(1, 1, "Root", True, True, [relation(3)]),
                 RenderRow(3, 3, "B", True, True, []),
             ],
             select=(1, 1),
@@ -415,7 +415,7 @@ class GoalsTest(TestCase):
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
-                RenderRow(2, 2, "A", True, False, [relation(3)]),
+                RenderRow(2, 2, "A", True, True, [relation(3)]),
                 RenderRow(3, 3, "B", True, True, []),
             ],
             select=(3, 2),
@@ -535,7 +535,7 @@ class GoalsTest(TestCase):
         self.goals.accept(ToggleLink(edge_type=EdgeType.RELATION))
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", True, False, [relation(2)]),
+                RenderRow(1, 1, "Root", True, True, [relation(2)]),
                 RenderRow(2, 2, "Top", True, True, []),
             ],
             select=(2, 1),
@@ -683,6 +683,22 @@ class GoalsTest(TestCase):
                 RenderRow(3, 3, "Goal 3", True, False, [blocker(2)]),
             ],
             select=(3, 1),
+            roots={1},
+        )
+
+    def test_relation_edge_does_not_block(self) -> None:
+        self.goals = self.build(
+            open_(1, "Root", [2, 3], select=selected),
+            open_(2, "Have a relation", relations=[3]),
+            open_(3, "Does not block"),
+        )
+        assert self.goals.q() == RenderResult(
+            [
+                RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
+                RenderRow(2, 2, "Have a relation", True, True, [relation(3)]),
+                RenderRow(3, 3, "Does not block", True, True, []),
+            ],
+            select=(1, 1),
             roots={1},
         )
 
