@@ -1,5 +1,6 @@
-* [ ] **1** Root goal of a complex goal tree [Id: 1,Progress: 33% (2/6)]
-  * [ ] **2** Simply 3 (blocked by **4**) [Id: 3,Progress: 0% (0/1)]
+* [ ] **1** Root goal of a complex goal tree [Id: 1,Progress: 28% (2/7)]
+  * [ ] **2** Simply 3 (blocked by **4**, related to **3**, **6**) [Id: 3,Progress: 0% (0/1)]
   * [ ] **3** Also 4 (blocked by **4**) [Id: 4,Progress: 0% (0/1)]
   * [ ] **4** Now 5 [Id: 5,Progress: 0% (0/1)]
+  * [ ] **6** Informational 12 [Id: 12,Progress: 0% (0/1)]
 * [x] **5** Lucky 7 [Id: 7,Progress: 100% (5/5)]

@@ -2,7 +2,7 @@ digraph g {
 node [shape=box];
 1 [label="1: Root goal of a complex
 goal tree
-Progress: 33% (2/6)
+Progress: 28% (2/7)
 Id: 1", color=red];
 2 [label="2: Simply 3
 Progress: 0% (0/1)
@@ -16,11 +16,17 @@ Id: 5", color=red, style=bold];
 5 [label="5: Lucky 7
 Progress: 100% (5/5)
 Id: 7", color=green];
+6 [label="6: Informational 12
+Progress: 0% (0/1)
+Id: 12", color=red, style=bold];
 2 -> 1 [color=black];
 3 -> 1 [color=black];
 4 -> 1 [color=black];
 5 -> 1 [color=gray, style=dashed];
+6 -> 1 [color=black];
+3 -> 2 [color=black, style=dotted];
 4 -> 2 [color=black, style=dashed];
+6 -> 2 [color=black, style=dotted];
 4 -> 3 [color=black, style=dashed];
 5 -> 3 [color=gray, style=dashed];
 }

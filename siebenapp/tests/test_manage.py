@@ -38,9 +38,9 @@ def test_print_dot_empty_file() -> None:
 @pytest.fixture
 def complex_goaltree_file():
     g = build_goaltree(
-        open_(1, "Root goal of a complex goal tree", [2, 3, 4, 5, 6], [7, 8]),
-        clos_(2, "Closed", blockers=[7]),
-        open_(3, "Simply 3", blockers=[5, 8]),
+        open_(1, "Root goal of a complex goal tree", [2, 3, 4, 5, 6, 12], [7, 8]),
+        clos_(2, "Closed", blockers=[7], relations=[12]),
+        open_(3, "Simply 3", blockers=[5, 8], relations=[4, 12]),
         open_(4, "Also 4", blockers=[5, 6, 7, 8], select=selected),
         open_(5, "Now 5", blockers=[6]),
         clos_(6, "Same 6", blockers=[7]),
@@ -49,6 +49,7 @@ def complex_goaltree_file():
         clos_(9, "Nested 9", [10]),
         clos_(10, "More nested 10", [11]),
         clos_(11, "Even more nested 11"),
+        open_(12, "Informational 12"),
     )
     file_name = NamedTemporaryFile().name
     save(all_layers(g), file_name)

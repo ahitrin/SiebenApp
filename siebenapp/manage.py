@@ -178,6 +178,8 @@ def dot_export(goals: Graph) -> str:
             line_attrs = f"color={color}"
             if edge[1] == EdgeType.BLOCKER:
                 line_attrs += ", style=dashed"
+            elif edge[1] == EdgeType.RELATION:
+                line_attrs += ", style=dotted"
             edge_lines.append(f"{edge[0]} -> {row.goal_id} [{line_attrs}];")
     body = "\n".join(node_lines + edge_lines)
     return f"digraph g {{\nnode [shape=box];\n{body}\n}}"
@@ -207,19 +209,26 @@ def _md_tree(render_result: RenderResult, root_id: GoalId, shift: int) -> list[s
 
 def _format_md_row(render_result: RenderResult, row: RenderRow, shift: int) -> str:
     is_open = " " if row.is_open else "x"
-    blockers: list[str] = [
-        f"**{e[0]}**"
-        for e in row.edges
-        if e[1] == EdgeType.BLOCKER and render_result.by_id(e[0]).is_open
-    ]
-    blocked = "" if not blockers else f" (blocked by {', '.join(blockers)})"
+    blockers: list[str] = []
+    relations: list[str] = []
+    for e in row.edges:
+        if e[1] == EdgeType.BLOCKER and render_result.by_id(e[0]).is_open:
+            blockers.append(f"**{e[0]}**")
+        elif e[1] == EdgeType.RELATION:
+            relations.append(f"**{e[0]}**")
+    blocked = "" if not blockers else f"blocked by {', '.join(blockers)}"
+    related = "" if not relations else f"related to {', '.join(relations)}"
+    extras = [s for s in [blocked, related] if s]
+    extras_formatted = "" if not extras else f" ({', '.join(extras)})"
     attrs = (
         ""
         if not row.attrs
         else f" [{','.join(f'{k}: {row.attrs[k]}' for k in sorted(row.attrs.keys()))}]"
     )
     spaces = " " * shift * 2
-    return f"{spaces}* [{is_open}] **{row.goal_id}** {row.name}{blocked}{attrs}"
+    return (
+        f"{spaces}* [{is_open}] **{row.goal_id}** {row.name}{extras_formatted}{attrs}"
+    )
 
 
 def extract_subtree(source_goals: Graph, goal_id: int) -> Graph:

@@ -6,11 +6,15 @@ goal tree", color=red];
 3 [label="3: Also 4", color=red];
 4 [label="4: Now 5", color=red, style=bold];
 5 [label="5: Lucky 7", color=green];
+6 [label="6: Informational 12", color=red, style=bold];
 2 -> 1 [color=black];
 3 -> 1 [color=black];
 4 -> 1 [color=black];
 5 -> 1 [color=gray, style=dashed];
+6 -> 1 [color=black];
+3 -> 2 [color=black, style=dotted];
 4 -> 2 [color=black, style=dashed];
+6 -> 2 [color=black, style=dotted];
 4 -> 3 [color=black, style=dashed];
 5 -> 3 [color=gray, style=dashed];
 }
