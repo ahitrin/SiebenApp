@@ -80,13 +80,14 @@ def test_render_example(default_tree) -> None:
     reason="Minor differences in printing of float values in py312",
 )
 def test_render_new_example(default_tree) -> None:
+    width = 4
     result = default_tree.q()
     result.node_opts = {row.goal_id: {} for row in result.rows}
-    rendered_result = build_with(result, tube).rr
+    rendered_result = build_with(result, tube, width).rr
 
     rrr_1 = adjust_horizontal(rendered_result, 1.0)
     rrr_2 = adjust_horizontal(rrr_1, 0.5)
-    rrr_3 = normalize_cols(rrr_2)
+    rrr_3 = normalize_cols(rrr_2, width)
 
     with io.StringIO() as out:
         print("== Graph\n", file=out)

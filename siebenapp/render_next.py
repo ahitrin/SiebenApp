@@ -2,8 +2,7 @@ from dataclasses import dataclass
 from typing import Callable
 
 from siebenapp.domain import RenderResult, GoalId
-
-WIDTH: int = 4
+from siebenapp.goaltree import Goals
 
 
 @dataclass
@@ -34,11 +33,11 @@ def find_previous(rr: RenderResult) -> dict[GoalId, list[GoalId]]:
     return result
 
 
-def tube(step: RenderStep):
+def tube(step: RenderStep, width: int):
     new_layer: list[GoalId] = []
     already_added: set[GoalId] = set(g for l in step.layers for g in l)
     for goal_id in step.roots:
-        if len(new_layer) >= WIDTH:
+        if len(new_layer) >= width:
             break
         if all(g in already_added for g in step.previous[goal_id]):
             new_layer.append(goal_id)
@@ -73,10 +72,12 @@ def tube(step: RenderStep):
     )
 
 
-def build_with(rr: RenderResult, fn: Callable[[RenderStep], RenderStep]) -> RenderStep:
+def build_with(
+    rr: RenderResult, fn: Callable[[RenderStep, int], RenderStep], width: int
+) -> RenderStep:
     step = RenderStep(rr, list(rr.roots), [], find_previous(rr))
     while step.roots:
-        step = fn(step)
+        step = fn(step, width)
     return step
 
 
@@ -117,7 +118,7 @@ def adjust_horizontal(rr: RenderResult, mult):
     return RenderResult(rr.rows, node_opts=new_opts, select=rr.select, roots=rr.roots)
 
 
-def normalize_cols(rr: RenderResult) -> RenderResult:
+def normalize_cols(rr: RenderResult, width: int) -> RenderResult:
     order0: dict[int, list[tuple[int, GoalId]]] = {}
     for goal_id, opts in rr.node_opts.items():
         row, col = opts["row"], opts["col"]
@@ -128,7 +129,7 @@ def normalize_cols(rr: RenderResult) -> RenderResult:
     for layer, tuples in order0.items():
         non_empty = list(round(t[0]) for t in tuples)
         need_drop = len(tuples) - len(set(non_empty))
-        empty = {x for x in range(WIDTH)}.difference(non_empty)
+        empty = {x for x in range(width)}.difference(non_empty)
         for i in range(need_drop):
             empty.pop()
         order1[layer] = tuples + [(e, -10) for e in empty]
@@ -148,3 +149,19 @@ def normalize_cols(rr: RenderResult) -> RenderResult:
         for goal_id, opts in rr.node_opts.items()
     }
     return RenderResult(rr.rows, node_opts=new_opts, select=rr.select, roots=rr.roots)
+
+
+def tweak_horizontal(rr: RenderResult, width: int):
+    r1 = adjust_horizontal(rr, 1.0)
+    r2 = adjust_horizontal(r1, 0.5)
+    r3 = normalize_cols(r2, width)
+    return r3
+
+
+def full_render(g: Goals, width: int) -> RenderResult:
+    """Main entrance point for the rendering process."""
+    r0: RenderResult = g.q()
+    r0.node_opts = {row.goal_id: {} for row in r0.rows}
+    r1: RenderStep = build_with(r0, tube, width)
+    r2: RenderResult = tweak_horizontal(r1.rr, width)
+    return r2
