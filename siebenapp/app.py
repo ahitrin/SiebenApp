@@ -136,12 +136,13 @@ class SiebenApp(QMainWindow):
     refresh = Signal()
     quit_app = Signal()
 
-    def __init__(self, db, *args, **kwargs):
+    def __init__(self, db, experimental, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.refresh.connect(self.save_and_render)
         self.quit_app.connect(QApplication.instance().quit)
         goals = load(db, self.show_user_message)
-        self.goals_holder = GoalsHolder(goals, db)
+        self.classic_render = not experimental
+        self.goals_holder = GoalsHolder(goals, db, self.classic_render)
         self.columns = Renderer.DEFAULT_WIDTH
 
     def setup(self):
@@ -273,7 +274,7 @@ class SiebenApp(QMainWindow):
             if not name.endswith(".db"):
                 name = name + ".db"
             goals = load(name, self.show_user_message)
-            self.goals_holder = GoalsHolder(goals, name)
+            self.goals_holder = GoalsHolder(goals, name, self.classic_render)
             self._update_title()
             self.refresh.emit()
 
@@ -281,7 +282,7 @@ class SiebenApp(QMainWindow):
         name = QFileDialog.getOpenFileName(self, caption="Open file", filter="*.db")[0]
         if name:
             goals = load(name, self.show_user_message)
-            self.goals_holder = GoalsHolder(goals, name)
+            self.goals_holder = GoalsHolder(goals, name, self.classic_render)
             self._update_title()
             self.refresh.emit()
 
@@ -416,10 +417,17 @@ def main(root_script):
         default="sieben.db",
         help="Path to the database file (default: sieben.db)",
     )
+    parser.add_argument(
+        "-x",
+        "--experimental",
+        action="store_true",
+        default=False,
+        help="Enable experimental features",
+    )
     args = parser.parse_args()
     app = QApplication(sys.argv)
     root = dirname(realpath(root_script))
-    sieben = SiebenApp(args.db)
+    sieben = SiebenApp(args.db, args.experimental)
     w = loadUi(join(root, "ui", "main.ui"), sieben)
     sieben.about = loadUi(join(root, "ui", "about.ui"), sieben)
     sieben.hotkeys = loadUi(join(root, "ui", "hotkeys.ui"), sieben)
