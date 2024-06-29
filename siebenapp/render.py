@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import Any, Optional, Protocol, Tuple
 
 from siebenapp.domain import Graph, EdgeType, GoalId, RenderResult, Command
+from siebenapp.render_next import full_render
 from siebenapp.system import save
 
 # Layer is a row of GoalIds, possibly with holes (marked with None)
@@ -368,10 +369,11 @@ def render_lines(
 
 
 class GoalsHolder:
-    def __init__(self, goals: Graph, filename: str):
+    def __init__(self, goals: Graph, filename: str, classic: bool = True):
         self.goals = goals
         self.filename = filename
         self.previous: RenderResult = RenderResult([])
+        self.classic = classic
 
     def accept(self, *actions: Command) -> None:
         if actions:
@@ -383,7 +385,11 @@ class GoalsHolder:
         1. Render result as is.
         2. A list of changed rows in case of _partial_ update; empty list otherwise.
         """
-        result: RenderResult = Renderer(self.goals, width).build()
+        result: RenderResult = (
+            Renderer(self.goals, width).build()
+            if self.classic
+            else full_render(self.goals, width)
+        )
         delta = self._calculate_delta(result)
         self.previous = result
         return result, delta

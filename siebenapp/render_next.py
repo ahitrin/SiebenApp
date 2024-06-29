@@ -1,8 +1,7 @@
 from dataclasses import dataclass
 from typing import Callable
 
-from siebenapp.domain import RenderResult, GoalId
-from siebenapp.goaltree import Goals
+from siebenapp.domain import RenderResult, GoalId, Graph
 
 
 @dataclass
@@ -158,7 +157,7 @@ def tweak_horizontal(rr: RenderResult, width: int):
     return r3
 
 
-def full_render(g: Goals, width: int) -> RenderResult:
+def full_render(g: Graph, width: int) -> RenderResult:
     """Main entrance point for the rendering process."""
     r0: RenderResult = g.q()
     r0.node_opts = {row.goal_id: {} for row in r0.rows}
