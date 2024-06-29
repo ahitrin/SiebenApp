@@ -157,10 +157,18 @@ def tweak_horizontal(rr: RenderResult, width: int):
     return r3
 
 
+def add_edges(rr: RenderResult) -> RenderResult:
+    node_opts = rr.node_opts
+    for r in rr.rows:
+        node_opts[r.goal_id] |= {"edge_render": r.edges}
+    return RenderResult(rr.rows, rr.edge_opts, rr.select, node_opts, rr.roots)
+
+
 def full_render(g: Graph, width: int) -> RenderResult:
     """Main entrance point for the rendering process."""
     r0: RenderResult = g.q()
     r0.node_opts = {row.goal_id: {} for row in r0.rows}
     r1: RenderStep = build_with(r0, tube, width)
     r2: RenderResult = tweak_horizontal(r1.rr, width)
-    return r2
+    r3: RenderResult = add_edges(r2)
+    return r3

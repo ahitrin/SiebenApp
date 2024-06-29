@@ -12,7 +12,13 @@ from siebenapp.render import (
     Point,
     adjust_graph,
 )
-from siebenapp.render_next import build_with, tube, adjust_horizontal, normalize_cols
+from siebenapp.render_next import (
+    build_with,
+    tube,
+    adjust_horizontal,
+    normalize_cols,
+    add_edges,
+)
 from siebenapp.tests.dsl import build_goaltree, open_, clos_, selected, previous
 from siebenapp.tests.test_cli import verify_file
 
@@ -88,6 +94,7 @@ def test_render_new_example(default_tree) -> None:
     rrr_1 = adjust_horizontal(rendered_result, 1.0)
     rrr_2 = adjust_horizontal(rrr_1, 0.5)
     rrr_3 = normalize_cols(rrr_2, width)
+    rrr_4 = add_edges(rrr_3)
 
     with io.StringIO() as out:
         print("== Graph\n", file=out)
@@ -97,5 +104,5 @@ def test_render_new_example(default_tree) -> None:
         print("\n== Horizontal adjustment 2\n", file=out)
         pprint(asdict(rrr_2), out)
         print("\n== Normalized columns\n", file=out)
-        pprint(asdict(rrr_3), out)
+        pprint(asdict(rrr_4), out)
         verify_file(out.getvalue())
