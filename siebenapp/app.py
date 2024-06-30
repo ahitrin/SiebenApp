@@ -169,11 +169,15 @@ class SiebenApp(QMainWindow):
             self.centralWidget().scrollAreaWidgetContents
         )
         self.centralWidget().installEventFilter(self)
-        self._update_title()
+        self._reset_controls_and_title()
         self.refresh.emit()
 
-    def _update_title(self):
+    def _reset_controls_and_title(self):
+        """Set application title and revert controls to defaults."""
         self.centralWidget().setWindowTitle(f"{self.goals_holder.filename} - SiebenApp")
+        self.centralWidget().toggleOpen.setChecked(True)
+        self.centralWidget().toggleSwitchable.setChecked(False)
+        self.centralWidget().toggleProgress.setChecked(False)
 
     def close_goal(self, goal_id):
         def inner():
@@ -275,7 +279,7 @@ class SiebenApp(QMainWindow):
                 name = name + ".db"
             goals = load(name, self.show_user_message)
             self.goals_holder = GoalsHolder(goals, name, self.classic_render)
-            self._update_title()
+            self._reset_controls_and_title()
             self.refresh.emit()
 
     def show_open_dialog(self):
@@ -283,7 +287,7 @@ class SiebenApp(QMainWindow):
         if name:
             goals = load(name, self.show_user_message)
             self.goals_holder = GoalsHolder(goals, name, self.classic_render)
-            self._update_title()
+            self._reset_controls_and_title()
             self.refresh.emit()
 
     def start_edit(self, label, fn, pre_fn=None):
