@@ -293,6 +293,14 @@
             "markers": "python_full_version >= '3.7.1'",
             "version": "==0.0.9"
         },
+        "exceptiongroup": {
+            "hashes": [
+                "sha256:5258b9ed329c5bbdd31a309f53cbfb0b155341807f6ff7606a1e801a891b29ad",
+                "sha256:a4785e48b045528f5bfe627b6ad554ff32def154f42372786903b7abcfe1aa16"
+            ],
+            "markers": "python_version < '3.11'",
+            "version": "==1.2.1"
+        },
         "hypothesis": {
             "hashes": [
                 "sha256:629b7cdeca8c225933739f99879caba21949000d2c919c8b4585e01048b3bc73",
@@ -478,6 +486,14 @@
             ],
             "markers": "python_version >= '3.8'",
             "version": "==5.2.0"
+        },
+        "tomli": {
+            "hashes": [
+                "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc",
+                "sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f"
+            ],
+            "markers": "python_version < '3.11'",
+            "version": "==2.0.1"
         },
         "typing-extensions": {
             "hashes": [
