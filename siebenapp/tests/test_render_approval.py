@@ -2,6 +2,7 @@ import io
 import sys
 from dataclasses import asdict
 from pprint import pprint
+from typing import Any
 
 import pytest
 
@@ -12,13 +13,7 @@ from siebenapp.render import (
     Point,
     adjust_graph,
 )
-from siebenapp.render_next import (
-    build_with,
-    tube,
-    adjust_horizontal,
-    normalize_cols,
-    add_edges,
-)
+from siebenapp.render_next import full_render
 from siebenapp.tests.dsl import build_goaltree, open_, clos_, selected, previous
 from siebenapp.tests.test_cli import verify_file
 
@@ -87,22 +82,12 @@ def test_render_example(default_tree) -> None:
 )
 def test_render_new_example(default_tree) -> None:
     width = 4
-    result = default_tree.q()
-    result.node_opts = {row.goal_id: {} for row in result.rows}
-    rendered_result = build_with(result, tube, width).rr
-
-    rrr_1 = adjust_horizontal(rendered_result, 1.0)
-    rrr_2 = adjust_horizontal(rrr_1, 0.5)
-    rrr_3 = normalize_cols(rrr_2, width)
-    rrr_4 = add_edges(rrr_3)
+    listener: list[tuple[str, Any]] = []
+    full_render(default_tree, width, listener)
 
     with io.StringIO() as out:
-        print("== Graph\n", file=out)
-        pprint(asdict(rendered_result), out)
-        print("\n== Horizontal adjustment 1\n", file=out)
-        pprint(asdict(rrr_1), out)
-        print("\n== Horizontal adjustment 2\n", file=out)
-        pprint(asdict(rrr_2), out)
-        print("\n== Normalized columns\n", file=out)
-        pprint(asdict(rrr_4), out)
+        print("= Render process", file=out)
+        for msg, content in listener:
+            print(f"\n== {msg}\n", file=out)
+            pprint(asdict(content), out)
         verify_file(out.getvalue())

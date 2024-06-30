@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Callable
+from typing import Callable, Any, Optional
 
 from siebenapp.domain import RenderResult, GoalId, Graph
 
@@ -150,10 +150,20 @@ def normalize_cols(rr: RenderResult, width: int) -> RenderResult:
     return RenderResult(rr.rows, node_opts=new_opts, select=rr.select, roots=rr.roots)
 
 
-def tweak_horizontal(rr: RenderResult, width: int):
+def __log(listener: Optional[list[tuple[str, Any]]], msg: str, content: Any) -> None:
+    if listener is not None:
+        listener.append((msg, content))
+
+
+def tweak_horizontal(
+    rr: RenderResult, width: int, listener: Optional[list[tuple[str, Any]]] = None
+) -> RenderResult:
     r1 = adjust_horizontal(rr, 1.0)
+    __log(listener, "Horizontal adjustment 1", r1)
     r2 = adjust_horizontal(r1, 0.5)
+    __log(listener, "Horizontal adjustment 2", r2)
     r3 = normalize_cols(r2, width)
+    __log(listener, "Normalized columns", r3)
     return r3
 
 
@@ -164,11 +174,15 @@ def add_edges(rr: RenderResult) -> RenderResult:
     return RenderResult(rr.rows, rr.edge_opts, rr.select, node_opts, rr.roots)
 
 
-def full_render(g: Graph, width: int) -> RenderResult:
+def full_render(
+    g: Graph, width: int, listener: Optional[list[tuple[str, Any]]] = None
+) -> RenderResult:
     """Main entrance point for the rendering process."""
     r0: RenderResult = g.q()
     r0.node_opts = {row.goal_id: {} for row in r0.rows}
     r1: RenderStep = build_with(r0, tube, width)
-    r2: RenderResult = tweak_horizontal(r1.rr, width)
+    __log(listener, "Graph", r1.rr)
+    r2: RenderResult = tweak_horizontal(r1.rr, width, listener)
     r3: RenderResult = add_edges(r2)
+    __log(listener, "Final result", r3)
     return r3
