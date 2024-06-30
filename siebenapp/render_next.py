@@ -155,6 +155,12 @@ def __log(listener: Optional[list[tuple[str, Any]]], msg: str, content: Any) -> 
         listener.append((msg, content))
 
 
+def revert_rows(rr: RenderResult) -> RenderResult:
+    max_row: int = max(o["row"] for o in rr.node_opts.values()) + 1
+    node_opts = {k: v | {"row": max_row - v["row"]} for k, v in rr.node_opts.items()}
+    return RenderResult(rr.rows, rr.edge_opts, rr.select, node_opts, rr.roots)
+
+
 def tweak_horizontal(
     rr: RenderResult, width: int, listener: Optional[list[tuple[str, Any]]] = None
 ) -> RenderResult:
@@ -182,7 +188,9 @@ def full_render(
     r0.node_opts = {row.goal_id: {} for row in r0.rows}
     r1: RenderStep = build_with(r0, tube, width)
     __log(listener, "Graph", r1)
-    r2: RenderResult = tweak_horizontal(r1.rr, width, listener)
-    r3: RenderResult = add_edges(r2)
-    __log(listener, "Final result", r3)
-    return r3
+    r2: RenderResult = revert_rows(r1.rr)
+    __log(listener, "Invert rows", r2)
+    r3: RenderResult = tweak_horizontal(r2, width, listener)
+    r4: RenderResult = add_edges(r3)
+    __log(listener, "Final result", r4)
+    return r4
