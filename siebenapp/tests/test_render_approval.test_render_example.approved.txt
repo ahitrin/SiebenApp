@@ -15,42 +15,28 @@
                    'edge_render': [(3, <EdgeType.PARENT: 2>),
                                    (4, <EdgeType.PARENT: 2>),
                                    ('1_4', <EdgeType.PARENT: 2>)],
-                   'row': 5,
-                   'x': 0,
-                   'y': 500},
+                   'row': 5},
                2: {'col': 0,
                    'edge_render': [(7, <EdgeType.BLOCKER: 1>)],
-                   'row': 2,
-                   'x': 3,
-                   'y': 197},
+                   'row': 2},
                3: {'col': 0,
                    'edge_render': [(5, <EdgeType.BLOCKER: 1>),
                                    ('3_3', <EdgeType.BLOCKER: 1>)],
-                   'row': 4,
-                   'x': 3,
-                   'y': 399},
+                   'row': 4},
                4: {'col': 1,
                    'edge_render': [(5, <EdgeType.BLOCKER: 1>),
                                    ('4_3', <EdgeType.BLOCKER: 1>)],
-                   'row': 4,
-                   'x': 100,
-                   'y': 394},
+                   'row': 4},
                5: {'col': 0,
                    'edge_render': [(6, <EdgeType.BLOCKER: 1>)],
-                   'row': 3,
-                   'x': 0,
-                   'y': 298},
+                   'row': 3},
                6: {'col': 1,
                    'edge_render': [(7, <EdgeType.BLOCKER: 1>)],
-                   'row': 2,
-                   'x': 100,
-                   'y': 192},
+                   'row': 2},
                7: {'col': 0,
                    'edge_render': [(8, <EdgeType.PARENT: 2>)],
-                   'row': 1,
-                   'x': 0,
-                   'y': 96},
-               8: {'col': 0, 'edge_render': [], 'row': 0, 'x': 3, 'y': 0},
+                   'row': 1},
+               8: {'col': 0, 'edge_render': [], 'row': 0},
                '1_1': {'col': 0,
                        'edge_render': [(8, <EdgeType.BLOCKER: 1>)],
                        'row': 1},
@@ -154,18 +140,6 @@
            'name': 'Finally 8',
            'raw_id': 8}],
  'select': (4, 7)}
-
-== Geometry change after adjust
-
-1: dx=0, dy=0
-2: dx=-3, dy=3
-3: dx=-3, dy=1
-4: dx=0, dy=6
-5: dx=0, dy=2
-6: dx=0, dy=8
-7: dx=0, dy=4
-8: dx=-3, dy=0
-Avg: dx=-2, dy=3
 
 == Lines
 [(<EdgeType.PARENT: 2>, <25, 500>, <22, 440>, '1-3'),

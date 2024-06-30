@@ -11,7 +11,6 @@ from siebenapp.render import (
     GeometryProvider,
     render_lines,
     Point,
-    adjust_graph,
 )
 from siebenapp.render_next import full_render
 from siebenapp.tests.dsl import build_goaltree, open_, clos_, selected, previous
@@ -56,21 +55,10 @@ def test_render_example(default_tree) -> None:
     r = Renderer(default_tree)
     result = r.build()
     gp = FakeGeometry()
-    adjust_graph(result, gp)
     lines = render_lines(gp, result)
     with io.StringIO() as out:
         print("== Graph\n", file=out)
         pprint(asdict(result), out)
-        print("\n== Geometry change after adjust\n", file=out)
-        total_delta = Point(0, 0)
-        for goal_id in default_tree.goals:
-            goal = result.node_opts[goal_id]
-            delta = gp.top_left(goal["row"], goal["col"]) - Point(goal["x"], goal["y"])
-            total_delta += delta
-            print(f"{goal_id}: dx={delta.x}, dy={delta.y}", file=out)
-        avg_dx = total_delta.x // len(default_tree.goals)
-        avg_dy = total_delta.y // len(default_tree.goals)
-        print(f"Avg: dx={avg_dx}, dy={avg_dy}", file=out)
         print("\n== Lines", file=out)
         pprint(lines, out)
         verify_file(out.getvalue())

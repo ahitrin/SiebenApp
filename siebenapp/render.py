@@ -1,6 +1,6 @@
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Any, Optional, Protocol, Tuple
+from typing import Any, Optional, Protocol
 
 from siebenapp.domain import Graph, EdgeType, GoalId, RenderResult, Command
 from siebenapp.render_next import full_render
@@ -259,62 +259,6 @@ def goal_key(tup: tuple[GoalId, int]) -> tuple[int, int]:
 
 def middle_point(left: Point, right: Point, numerator: int, denominator: int) -> Point:
     return left + (right - left) * numerator / denominator
-
-
-def adjust_graph(render_result: RenderResult, gp: GeometryProvider) -> None:
-    min_x: int = 100000
-    max_x: int = 0
-    min_y: int = 100000
-    max_y: int = 0
-    max_col: int = 0
-    max_row: int = 0
-    width: dict[int, int] = {}  # key=goal_id
-    height: dict[int, int] = {}  # key=goal_id
-    max_width: dict[int, int] = {}  # key=column
-    max_height: dict[int, int] = {}  # key=row
-
-    for goal_id, attrs in render_result.goals():
-        row, col = attrs["row"], attrs["col"]
-        max_row = max([max_row, row])
-        max_col = max([max_col, col])
-        tl = gp.top_left(row, col)
-        x, y = tl.x, tl.y
-        min_x = min([min_x, x])
-        max_x = max([max_x, x])
-        min_y = min([min_y, y])
-        max_y = max([max_y, y])
-        width[goal_id] = (gp.top_right(row, col) - tl).x
-        max_width[col] = max([max_width.get(col, 0), width[goal_id]])
-        height[goal_id] = (gp.bottom_left(row, col) - tl).y
-        max_height[row] = max([max_height.get(row, 0), height[goal_id]])
-
-    gap_x = int(
-        (max_width[max_col] + max_x - min_x - sum(max_width.values()))
-        / (len(max_width) - 1)
-        if len(max_width) > 1
-        else 50
-    )
-    gap_y = int(
-        (max_height[max_row] + max_y - min_y - sum(max_height.values()))
-        / (len(max_height) - 1)
-        if len(max_height) > 1
-        else 30
-    )
-
-    for goal_id, attrs in render_result.goals():
-        row, col = attrs["row"], attrs["col"]
-        attrs["x"] = (
-            min_x
-            + sum(max_width[i] for i in range(col))
-            + (col * gap_x)
-            + ((max_width[col] - width[goal_id]) // 2)
-        )
-        attrs["y"] = (
-            min_y
-            + sum(max_height[i] for i in range(row))
-            + (row * gap_y)
-            + ((max_height[row] - height[goal_id]) // 2)
-        )
 
 
 def render_lines(
