@@ -1,4 +1,4 @@
-.PHONY: check venv test test-cov test-prop-ci analysis install format mypy run clean distclean prepare
+.PHONY: check venv test test-cov test-prop-ci analysis install format codestyle mypy run clean distclean prepare
 
 all: check venv test
 
@@ -11,7 +11,7 @@ venv:
 	$([ which pipenv ] || pip install pipenv)
 	pipenv install -d --python $(shell which python3)
 
-prepare: format test mypy
+prepare: codestyle format test mypy
 
 test:
 	pipenv run py.test
@@ -28,6 +28,9 @@ analysis:
 
 install:
 	pipenv run python3 setup.py install
+
+codestyle:
+	find siebenapp -type f -name \*.py | grep -v ui | xargs pipenv run pyupgrade --py39-plus
 
 format:
 	pipenv run black sieben siebenapp clieben sieben-manage
