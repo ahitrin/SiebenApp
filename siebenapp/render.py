@@ -380,7 +380,7 @@ class GoalsHolder:
             self.goals.accept_all(*actions)
         save(self.goals, self.filename)
 
-    def render(self, width: int) -> Tuple[RenderResult, list[GoalId]]:
+    def render(self, width: int) -> tuple[RenderResult, list[GoalId]]:
         """Render tree with a given width and return two values:
         1. Render result as is.
         2. A list of changed rows in case of _partial_ update; empty list otherwise.

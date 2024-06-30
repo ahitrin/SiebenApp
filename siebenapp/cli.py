@@ -1,7 +1,8 @@
 import sys
 from argparse import ArgumentParser
 from operator import itemgetter
-from typing import List, Mapping, Tuple, Any
+from typing import Any
+from collections.abc import Mapping
 
 from siebenapp.autolink import ToggleAutoLink
 from siebenapp.render import GoalsHolder
@@ -100,7 +101,7 @@ def fmt(render_result: RenderResult, row: RenderRow, id_width: int) -> str:
     )
 
 
-def build_actions(command: str) -> List[Command]:
+def build_actions(command: str) -> list[Command]:
     simple_commands: Mapping[str, Command] = {
         "c": ToggleClose(),
         "d": Delete(),
@@ -137,7 +138,7 @@ def loop(io: IO, goals: Graph, db_name: str) -> None:
     goals_holder: GoalsHolder = GoalsHolder(goals, db_name)
     while cmd != "q":
         render_result, _ = goals_holder.render(100)
-        index: List[Tuple[RenderRow, Any, Any]] = sorted(
+        index: list[tuple[RenderRow, Any, Any]] = sorted(
             [
                 (
                     row,

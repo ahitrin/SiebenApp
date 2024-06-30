@@ -34,7 +34,7 @@ def find_previous(rr: RenderResult) -> dict[GoalId, list[GoalId]]:
 
 def tube(step: RenderStep, width: int):
     new_layer: list[GoalId] = []
-    already_added: set[GoalId] = set(g for l in step.layers for g in l)
+    already_added: set[GoalId] = {g for l in step.layers for g in l}
     for goal_id in step.roots:
         if len(new_layer) >= width:
             break
@@ -54,7 +54,7 @@ def tube(step: RenderStep, width: int):
         for goal_id, opts in step.rr.node_opts.items()
     }
     new_layers = step.layers + [new_layer]
-    already_added.update(set(g for l in new_layers for g in l))
+    already_added.update({g for l in new_layers for g in l})
     filtered_roots: list[GoalId] = []
     for g in new_roots:
         if g not in already_added:
