@@ -81,7 +81,7 @@ def build_with(
 
 
 def avg(vals):
-    return sum(vals) / len(vals)
+    return sum(vals) / len(vals) if vals else 0
 
 
 def shift_neutral(ds):
