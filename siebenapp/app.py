@@ -173,7 +173,7 @@ class SiebenApp(QMainWindow):
         self.refresh.emit()
 
     def _update_title(self):
-        self.setWindowTitle(f"{self.goals_holder.filename} - SiebenApp")
+        self.centralWidget().setWindowTitle(f"{self.goals_holder.filename} - SiebenApp")
 
     def close_goal(self, goal_id):
         def inner():
@@ -367,7 +367,6 @@ class SiebenApp(QMainWindow):
             self.centralWidget().toggleOpen.setChecked(
                 self.goals_holder.goals.settings("filter_open")
             )
-        self._update_title()
 
     def toggle_switchable_view(self, update_ui):
         self.goals_holder.accept(ToggleSwitchableView())
@@ -375,7 +374,6 @@ class SiebenApp(QMainWindow):
             self.centralWidget().toggleSwitchable.setChecked(
                 self.goals_holder.goals.settings("filter_switchable")
             )
-        self._update_title()
 
     def toggle_progress_view(self, update_ui):
         self.goals_holder.accept(ToggleProgress())
