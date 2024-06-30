@@ -181,7 +181,7 @@ def full_render(
     r0: RenderResult = g.q()
     r0.node_opts = {row.goal_id: {} for row in r0.rows}
     r1: RenderStep = build_with(r0, tube, width)
-    __log(listener, "Graph", r1.rr)
+    __log(listener, "Graph", r1)
     r2: RenderResult = tweak_horizontal(r1.rr, width, listener)
     r3: RenderResult = add_edges(r2)
     __log(listener, "Final result", r3)
