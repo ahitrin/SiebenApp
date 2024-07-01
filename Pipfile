@@ -5,7 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 hypothesis = "==6.104.2"
-mypy = "==1.10.0"
+mypy = "==1.10.1"
 mypy-extensions = "==1.0.0"
 pytest = "==8.2.2"
 pytest-cov = "==5.0.0"
