@@ -145,7 +145,7 @@ def normalize_cols(rr: RenderResult, width: int) -> RenderResult:
     indexed1: dict[GoalId, int] = {}
     for layer1 in indexed0.values():
         for i, goal_id in enumerate(layer1):
-            if isinstance(goal_id, int) and goal_id >= 0:
+            if isinstance(goal_id, int):
                 indexed1[goal_id] = i
     new_opts = {
         goal_id: opts | {"col": indexed1[goal_id]}
