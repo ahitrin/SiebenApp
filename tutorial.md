@@ -48,7 +48,7 @@ Now you don't need to think about visa. Being focused well on a single goal, you
 
 ![step8](doc/example8.png)
 
-Wow, it disappears! And you may become even more focused because now you see the only one goal. Don't forget to _select_ it with `2` and _close_ with clicking on checkbox (or hitting `c`) when it will be ready.
+Wow, it disappears! And you may become even more focused because now you see the only one goal. Close it in the same way as the previous one.
 
 ![step9](doc/example9.png)
 
