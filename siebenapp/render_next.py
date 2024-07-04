@@ -136,12 +136,9 @@ def normalize_cols(rr: RenderResult, width: int) -> RenderResult:
         for i in range(need_drop):
             empty.pop()
         order1[layer] = tuples + [(e, -10) for e in empty]
-    order2: dict[int, list[tuple[int, GoalId]]] = {
-        k: sorted(v) for k, v in order1.items()
-    }
     indexed: dict[GoalId, int] = {
         goal_id: idx
-        for v in order2.values()
+        for v in [sorted(v1) for v1 in order1.values()]
         for idx, goal_id in enumerate([t[1] for t in v])
         if isinstance(goal_id, int)
     }
