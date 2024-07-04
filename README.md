@@ -16,7 +16,7 @@ SiebenApp is an experimental goal manager that tries to solve these problems.
 
 ## Installation
 
-In order to run SiebenApp you need to have Python 3.9+.
+In order to run SiebenApp you need to have Python 3.10+.
 
 ### Installation into virtual environment
 
@@ -65,7 +65,7 @@ To do this:
 
 1. Copy `SiebenApp.desktop` file to your `~/.local/share/applications` directory.
 2. Replace `_SIEBEN_APP_DIR_` placeholder with full path to SiebenApp cloned directory.
-3. If needed, replace default path to Python3.9 with your own path.
+3. If needed, replace default path to Python3.10 with your own path.
 You could find it by calling `which python3`.
 
 ### CLI tools

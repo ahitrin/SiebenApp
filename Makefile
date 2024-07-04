@@ -3,8 +3,8 @@
 all: check venv test
 
 check:
-	if [ ! `which python3` ] ; then echo Please install Python 3.9 or greater ; exit 1; fi
-	if [ `python3 -V | cut -d. -f2` -lt 9 ]; then echo Please install Python 3.9 or greater; exit 1; fi
+	if [ ! `which python3` ] ; then echo Please install Python 3.10 or greater ; exit 1; fi
+	if [ `python3 -V | cut -d. -f2` -lt 10 ]; then echo Please install Python 3.10 or greater; exit 1; fi
 	if [ ! `which pipenv` ] ; then echo Please install pipenv ; exit 1; fi
 
 venv:
@@ -30,7 +30,7 @@ install:
 	pipenv run python3 setup.py install
 
 codestyle:
-	find siebenapp -type f -name \*.py | grep -v ui | xargs pipenv run pyupgrade --py39-plus
+	find siebenapp -type f -name \*.py | grep -v ui | xargs pipenv run pyupgrade --py310-plus
 
 format:
 	pipenv run black sieben siebenapp clieben sieben-manage
