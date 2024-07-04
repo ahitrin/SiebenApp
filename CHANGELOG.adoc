@@ -1,5 +1,45 @@
 = Changelog
 
+== Alpha version 0.14
+2024-07-04
+
+New/done features:
+
+* Move from Qt5 to Qt6 https://github.com/ahitrin/SiebenApp/issues/450[#450]
+* Hide all subgoals of a blocked goal https://github.com/ahitrin/SiebenApp/issues/449[#449]
+* New edge type: simple non-blocking relation https://github.com/ahitrin/SiebenApp/issues/522[#522]
+* Rendering: tweak algorithms for better placement of edges https://github.com/ahitrin/SiebenApp/issues/312[#312] (*unfinished*)
+
+Bug fixes:
+
+* Few minor defects for implemented features.
+
+Refactoring/cleanup:
+
+* No specific tasks.
+
+Other improvements:
+
+* Remove some unused code.
+* Add support for Python 3.12 on CI.
+* Update dependencies (thx to @dependabot):
+`approvaltests-minimal` (9.0.0 to 12.2.1),
+`black` (23.9.1 to 24.4.0),
+`hypothesis` (6.84.3 to 6.104.2),
+`idna` (transitive, from 3.6 to 3.7),
+`mypy` (1.5.1 to 1.10.1),
+`pytest-cov` (4.1.0 to 5.0.0),
+`pytest` (7.4.2 to 8.2.2),
+`typing-extentions` (4.7.1 to 4.12.2),
+`urllib3` (transitive, from 2.0.5 to 2.2.2).
+* Add development dependency: `pyupgrade`.
+* Update blog dependencies (thx to @dependabot)
+
+Compatibility breaks:
+
+* Migrate from PyQt5 to PySide6.
+* Migrate LICENSE from MIT to GPLv3.
+
 == Alpha version 0.13
 2023-09-17
 
