@@ -13,6 +13,7 @@ class RenderStep:
 
 
 def add_if_not(m: dict, m1: dict) -> dict:
+    """Merge two dictionaries _without_ overwriting already existing values."""
     nm = dict(m)
     for k, v in m1.items():
         if nm.get(k, None) is None:
@@ -21,6 +22,7 @@ def add_if_not(m: dict, m1: dict) -> dict:
 
 
 def find_previous(rr: RenderResult) -> dict[GoalId, list[GoalId]]:
+    """Add previous nodes (parent, blocked, etc) for every node."""
     result: dict[GoalId, list[GoalId]] = {g: [] for g in rr.roots}
     to_visit: set[GoalId] = set(rr.roots)
     while to_visit:
@@ -32,7 +34,8 @@ def find_previous(rr: RenderResult) -> dict[GoalId, list[GoalId]]:
     return result
 
 
-def tube(step: RenderStep, width: int):
+def tube(step: RenderStep, width: int) -> RenderStep:
+    """Node placing algorithm that uses a "tube" with a fixed width."""
     new_layer: list[GoalId] = []
     already_added: set[GoalId] = {g for l in step.layers for g in l}
     for goal_id in step.roots:
@@ -74,21 +77,20 @@ def tube(step: RenderStep, width: int):
 def build_with(
     rr: RenderResult, fn: Callable[[RenderStep, int], RenderStep], width: int
 ) -> RenderStep:
+    """Invoke node placing algorithm in a loop while there are nodes to place."""
     step = RenderStep(rr, list(rr.roots), [], find_previous(rr))
     while step.roots:
         step = fn(step, width)
     return step
 
 
-def avg(vals):
+def avg(vals: list) -> float:
+    """Safe average for the list (possibly empty)."""
     return sum(vals) / len(vals) if vals else 0
 
 
-def shift_neutral(ds):
-    return avg([d[1] for d in ds])
-
-
-def calc_shift(rr: RenderResult, shift_fn):
+def calc_shift(rr: RenderResult) -> dict[GoalId, float]:
+    """Calculate forces that moves each node to the left (negative) or to the right (positive)."""
     connected: dict[GoalId, set[GoalId]] = {row.goal_id: set() for row in rr.rows}
     for row in rr.rows:
         for e in row.edges:
@@ -104,12 +106,13 @@ def calc_shift(rr: RenderResult, shift_fn):
             (rr.node_opts[c]["row"] - row_, rr.node_opts[c]["col"] - col_)
             for c in connected[goal_id]
         ]
-        result[goal_id] = shift_fn(deltas)
+        result[goal_id] = avg([d[1] for d in deltas])
     return result
 
 
-def adjust_horizontal(rr: RenderResult, mult):
-    deltas = calc_shift(rr, shift_neutral)
+def adjust_horizontal(rr: RenderResult, mult: float) -> RenderResult:
+    """Move nodes in the horizontal dimension according to the force of the given multiplier."""
+    deltas = calc_shift(rr)
     new_opts = {
         goal_id: opts | {"col": opts["col"] + (mult * deltas[goal_id])}
         for goal_id, opts in rr.node_opts.items()
@@ -118,6 +121,7 @@ def adjust_horizontal(rr: RenderResult, mult):
 
 
 def normalize_cols(rr: RenderResult, width: int) -> RenderResult:
+    """Convert float column values into integer ones."""
     order0: dict[int, list[tuple[int, GoalId]]] = {}
     for goal_id, opts in rr.node_opts.items():
         row, col = opts["row"], opts["col"]
@@ -151,11 +155,14 @@ def normalize_cols(rr: RenderResult, width: int) -> RenderResult:
 
 
 def __log(listener: Optional[list[tuple[str, Any]]], msg: str, content: Any) -> None:
+    """Log a message to the listener, iff it exists."""
     if listener is not None:
         listener.append((msg, content))
 
 
 def revert_rows(rr: RenderResult) -> RenderResult:
+    """Algorithm and UI uses different ordering scheme for rows.
+    Here we revert rows order to adapt them to screen requirements."""
     max_row: int = max(o["row"] for o in rr.node_opts.values()) + 1
     node_opts = {k: v | {"row": max_row - v["row"]} for k, v in rr.node_opts.items()}
     return RenderResult(rr.rows, rr.edge_opts, rr.select, node_opts, rr.roots)
@@ -164,6 +171,7 @@ def revert_rows(rr: RenderResult) -> RenderResult:
 def tweak_horizontal(
     rr: RenderResult, width: int, listener: Optional[list[tuple[str, Any]]] = None
 ) -> RenderResult:
+    """Improve horizontal node placement on all layers."""
     r1 = adjust_horizontal(rr, 1.0)
     __log(listener, "Horizontal adjustment 1", r1)
     r2 = adjust_horizontal(r1, 0.5)
@@ -174,6 +182,7 @@ def tweak_horizontal(
 
 
 def add_edges(rr: RenderResult) -> RenderResult:
+    """Workaround: add data needed later by edge rendering algorithm."""
     node_opts = rr.node_opts
     for r in rr.rows:
         node_opts[r.goal_id] |= {"edge_render": r.edges}
