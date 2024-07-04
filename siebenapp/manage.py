@@ -2,7 +2,6 @@ from argparse import ArgumentParser, Namespace
 from html import escape
 from operator import attrgetter
 from os import path
-from typing import Optional
 
 from siebenapp.cli import IO, ConsoleIO
 from siebenapp.domain import EdgeType, Graph, RenderRow, GoalId, RenderResult
@@ -81,7 +80,7 @@ def _flag(parser: ArgumentParser, key: str, description: str) -> None:
     parser.add_argument(key, required=False, action="store_true", help=description)
 
 
-def main(argv: Optional[list[str]] = None, io: Optional[IO] = None) -> None:
+def main(argv: list[str] | None = None, io: IO | None = None) -> None:
     parser = ArgumentParser()
     subparsers = parser.add_subparsers(title="commands")
 

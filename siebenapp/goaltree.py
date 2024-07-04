@@ -1,4 +1,5 @@
-from typing import Callable, Optional, Any
+from typing import Any
+from collections.abc import Callable
 from collections import deque, defaultdict
 
 from siebenapp.domain import (
@@ -18,7 +19,7 @@ from siebenapp.domain import (
     RenderRow,
 )
 
-GoalsData = list[tuple[int, Optional[str], bool]]
+GoalsData = list[tuple[int, str | None, bool]]
 EdgesData = list[tuple[int, int, EdgeType]]
 OptionsData = list[tuple[str, int]]
 
@@ -27,10 +28,10 @@ class Goals(Graph):
     ROOT_ID = 1
 
     def __init__(
-        self, name: str, message_fn: Optional[Callable[[str], None]] = None
+        self, name: str, message_fn: Callable[[str], None] | None = None
     ) -> None:
         super().__init__()
-        self.goals: dict[int, Optional[str]] = {}
+        self.goals: dict[int, str | None] = {}
         self.edges: dict[tuple[int, int], EdgeType] = {}
         self.edges_forward: dict[int, dict[int, EdgeType]] = defaultdict(
             lambda: defaultdict(lambda: EdgeType.BLOCKER)
@@ -42,7 +43,7 @@ class Goals(Graph):
         self.selection: int = Goals.ROOT_ID
         self.previous_selection: int = Goals.ROOT_ID
         self._events: deque = deque()
-        self.message_fn: Optional[Callable[[str], None]] = message_fn
+        self.message_fn: Callable[[str], None] | None = message_fn
         self._add_no_link(name)
 
     def error(self, message: str) -> None:
@@ -58,7 +59,7 @@ class Goals(Graph):
     def _back_edges(self, goal: int) -> list[Edge]:
         return [Edge(k, goal, v) for k, v in self.edges_backward[goal].items()]
 
-    def _strict_parent(self, goal: int) -> Optional[int]:
+    def _strict_parent(self, goal: int) -> int | None:
         parents: set[Edge] = {
             e for e in self._back_edges(goal) if e.type == EdgeType.PARENT
         }
@@ -289,7 +290,7 @@ class Goals(Graph):
             self._remove_existing_link(lower, upper, current_edge_type)
 
     def _remove_existing_link(
-        self, lower: int, upper: int, edge_type: Optional[int] = None
+        self, lower: int, upper: int, edge_type: int | None = None
     ) -> None:
         if len(self._back_edges(upper)) > 1:
             self.edges.pop((lower, upper))
@@ -415,11 +416,11 @@ class Goals(Graph):
         goals: GoalsData,
         edges: EdgesData,
         settings: OptionsData,
-        message_fn: Optional[Callable[[str], None]] = None,
+        message_fn: Callable[[str], None] | None = None,
     ) -> "Goals":
         result: Goals = Goals("", message_fn)
         result._events.clear()
-        goals_dict: dict[int, Optional[str]] = {g[0]: g[1] for g in goals}
+        goals_dict: dict[int, str | None] = {g[0]: g[1] for g in goals}
         result.goals = {
             i: goals_dict.get(i) for i in range(1, max(goals_dict.keys()) + 1)
         }

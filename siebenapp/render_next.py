@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from typing import Callable, Any, Optional
+from typing import Any
+from collections.abc import Callable
 
 from siebenapp.domain import RenderResult, GoalId, Graph
 
@@ -149,7 +150,7 @@ def normalize_cols(rr: RenderResult, width: int) -> RenderResult:
     return RenderResult(rr.rows, node_opts=new_opts, select=rr.select, roots=rr.roots)
 
 
-def __log(listener: Optional[list[tuple[str, Any]]], msg: str, content: Any) -> None:
+def __log(listener: list[tuple[str, Any]] | None, msg: str, content: Any) -> None:
     """Log a message to the listener, iff it exists."""
     if listener is not None:
         listener.append((msg, content))
@@ -164,7 +165,7 @@ def revert_rows(rr: RenderResult) -> RenderResult:
 
 
 def tweak_horizontal(
-    rr: RenderResult, width: int, listener: Optional[list[tuple[str, Any]]] = None
+    rr: RenderResult, width: int, listener: list[tuple[str, Any]] | None = None
 ) -> RenderResult:
     """Improve horizontal node placement on all layers."""
     r1 = adjust_horizontal(rr, 1.0)
@@ -185,7 +186,7 @@ def add_edges(rr: RenderResult) -> RenderResult:
 
 
 def full_render(
-    g: Graph, width: int, listener: Optional[list[tuple[str, Any]]] = None
+    g: Graph, width: int, listener: list[tuple[str, Any]] | None = None
 ) -> RenderResult:
     """Main entrance point for the rendering process."""
     r0: RenderResult = g.q()

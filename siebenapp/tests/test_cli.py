@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 
 from approvaltests import verify  # type: ignore
 from approvaltests.namer import get_default_namer  # type: ignore
@@ -9,9 +9,7 @@ from siebenapp.system import load
 
 
 class DummyIO(IO):
-    def __init__(
-        self, commands: Optional[list[str]] = None, log: Optional[list[str]] = None
-    ):
+    def __init__(self, commands: list[str] | None = None, log: list[str] | None = None):
         super().__init__()
         self.commands = [] if commands is None else commands
         self.log: list[str] = [] if log is None else log
@@ -31,7 +29,7 @@ class DummyIO(IO):
         return "\n".join(self.log)
 
 
-def verify_file(content: Any, extension: Optional[str] = None) -> None:
+def verify_file(content: Any, extension: str | None = None) -> None:
     verify(
         content,
         GenericDiffReporterFactory().get_first_working(),

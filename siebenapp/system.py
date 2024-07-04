@@ -1,6 +1,6 @@
 import sqlite3
 from os import path
-from typing import Callable, Optional
+from collections.abc import Callable
 
 from siebenapp.autolink import AutoLink, AutoLinkData
 from siebenapp.domain import Graph
@@ -180,9 +180,7 @@ def save_updates(goals: Graph, connection: sqlite3.Connection) -> None:
     connection.commit()
 
 
-def load(
-    filename: str, message_fn: Optional[Callable[[str], None]] = None
-) -> Enumeration:
+def load(filename: str, message_fn: Callable[[str], None] | None = None) -> Enumeration:
     zoom_data: ZoomData = []
     autolink_data: AutoLinkData = []
     if path.isfile(filename):
@@ -204,7 +202,7 @@ def load(
 
 
 def run_migrations(
-    conn: sqlite3.Connection, migrations_to_run: Optional[list[list[str]]] = None
+    conn: sqlite3.Connection, migrations_to_run: list[list[str]] | None = None
 ) -> None:
     migrations: list[list[str]] = (
         MIGRATIONS if migrations_to_run is None else migrations_to_run

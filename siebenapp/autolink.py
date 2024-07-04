@@ -1,5 +1,4 @@
 from dataclasses import dataclass, replace
-from typing import Union, Optional
 
 from siebenapp.domain import (
     Graph,
@@ -27,7 +26,7 @@ AutoLinkData = list[tuple[int, str]]
 
 
 class AutoLink(Graph):
-    def __init__(self, goals: Graph, data: Optional[AutoLinkData] = None):
+    def __init__(self, goals: Graph, data: AutoLinkData | None = None):
         super().__init__(goals)
         self.keywords: dict[str, int] = {}
         self.back_kw: dict[int, str] = {}
@@ -76,7 +75,7 @@ class AutoLink(Graph):
     def accept_Insert(self, command: Insert) -> None:
         self._autolink_new_goal(command)
 
-    def _autolink_new_goal(self, command: Union[Add, Insert]) -> None:
+    def _autolink_new_goal(self, command: Add | Insert) -> None:
         matching: list[int] = self._find_matching_goals(command.name)
         ids_before: set[int] = set(self.goaltree.goals.keys())
         self.goaltree.accept(command)

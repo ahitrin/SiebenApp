@@ -66,10 +66,10 @@ class RenderResult:
     def __init__(
         self,
         rows: list[RenderRow],
-        edge_opts: Optional[dict[str, tuple[int, int, int]]] = None,
-        select: Optional[tuple[GoalId, GoalId]] = None,
-        node_opts: Optional[dict[GoalId, Any]] = None,
-        roots: Optional[set[GoalId]] = None,
+        edge_opts: dict[str, tuple[int, int, int]] | None = None,
+        select: tuple[GoalId, GoalId] | None = None,
+        node_opts: dict[GoalId, Any] | None = None,
+        roots: set[GoalId] | None = None,
     ):
         self.rows = rows
         self.edge_opts = edge_opts or {}

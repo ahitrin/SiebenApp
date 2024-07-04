@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Optional
 
 from siebenapp.domain import EdgeType
 from siebenapp.goaltree import Goals
@@ -17,7 +16,7 @@ class GoalPrototype:
     children: list[int]
     blockers: list[int]
     relations: list[int]
-    select: Optional[str]
+    select: str | None
 
 
 def _build_goal_prototype(
