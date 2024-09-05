@@ -285,7 +285,8 @@ class Goals(Graph):
     ) -> None:
         if (current_edge_type := self.edges_forward[lower][upper]) != command.edge_type:
             self._replace_link(lower, upper, command.edge_type)
-            self._transform_old_parents_into_relation(lower, upper)
+            if command.edge_type == EdgeType.PARENT:
+                self._transform_old_parents_into_relation(lower, upper)
         else:
             self._remove_existing_link(lower, upper, current_edge_type)
 

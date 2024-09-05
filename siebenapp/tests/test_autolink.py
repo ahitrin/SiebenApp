@@ -15,6 +15,8 @@ from siebenapp.domain import (
     child,
     blocker,
     relation,
+    ToggleLink,
+    EdgeType,
 )
 from siebenapp.tests.dsl import build_goaltree, open_, selected, clos_
 
@@ -463,5 +465,38 @@ def test_autolink_on_all_matching_goals(tree_3v_goals) -> None:
             RenderRow(4, 4, "Link me to both please", True, True, []),
         ],
         select=(1, 2),
+        roots={1},
+    )
+
+
+def test_relink_as_blocker(tree_3v_goals) -> None:
+    goals = tree_3v_goals
+    # add a subgoal that matches autolink pattern
+    goals.accept_all(ToggleAutoLink("target"), Add("relink target", 3))
+    assert goals.q() == RenderResult(
+        [
+            RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
+            RenderRow(
+                2, 2, "Autolink on me", True, False, [child(4)], {"Autolink": "target"}
+            ),
+            RenderRow(3, 3, "Another subgoal", True, True, [relation(4)]),
+            RenderRow(4, 4, "relink target", True, True, []),
+        ],
+        select=(2, 2),
+        roots={1},
+    )
+    # re-link goal from relation into a blocker
+    goals.accept_all(Select(3), HoldSelect(), Select(4))
+    goals.accept(ToggleLink(edge_type=EdgeType.BLOCKER))
+    assert goals.q() == RenderResult(
+        [
+            RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
+            RenderRow(
+                2, 2, "Autolink on me", True, False, [child(4)], {"Autolink": "target"}
+            ),
+            RenderRow(3, 3, "Another subgoal", True, False, [blocker(4)]),
+            RenderRow(4, 4, "relink target", True, True, []),
+        ],
+        select=(4, 3),
         roots={1},
     )
