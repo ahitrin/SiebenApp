@@ -29,6 +29,7 @@ from siebenapp.domain import (
     Rename,
     RenderRow,
     RenderResult,
+    GoalId,
 )
 from siebenapp.switchable_view import ToggleSwitchableView
 from siebenapp.open_view import ToggleOpenView
@@ -47,7 +48,7 @@ class GoalWidget(QWidget, Ui_GoalBody):
         self.setupUi(self)
         self.widget_id = None
 
-    def setup_data(self, row: RenderRow, selection):
+    def setup_data(self, row: RenderRow, selection: tuple[GoalId, GoalId]) -> None:
         self.widget_id = row.goal_id
         self.label_goal_name.setText(split_long(row.name))
         self.check_open.setVisible(row.is_switchable)
