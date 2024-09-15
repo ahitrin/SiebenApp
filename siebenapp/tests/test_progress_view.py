@@ -9,17 +9,18 @@ from siebenapp.domain import (
     blocker,
 )
 from siebenapp.progress_view import ProgressView, ToggleProgress
-from siebenapp.tests.dsl import build_goaltree, selected, open_
+from siebenapp.tests.dsl import build_goaltree, open_
 
 
 @fixture
 def goaltree():
     return ProgressView(
         build_goaltree(
-            open_(1, "Root", [2, 3], select=selected),
+            open_(1, "Root", [2, 3]),
             open_(2, "With blocker", [], [4]),
             open_(3, "With subgoal", [4]),
             open_(4, "Top goal"),
+            select=(1, 1),
         )
     )
 
