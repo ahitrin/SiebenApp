@@ -13,7 +13,7 @@ from siebenapp.render import (
     Point,
 )
 from siebenapp.render_next import full_render
-from siebenapp.tests.dsl import build_goaltree, open_, clos_, selected, previous
+from siebenapp.tests.dsl import build_goaltree, open_, clos_
 from siebenapp.tests.test_cli import verify_file
 
 
@@ -43,11 +43,12 @@ def default_tree():
         open_(1, "Root", [2, 3, 4, 5, 6], [7, 8]),
         clos_(2, "Closed", blockers=[7]),
         open_(3, "Simply 3", blockers=[5, 8]),
-        open_(4, "Also 4", blockers=[5, 6, 7, 8], select=selected),
+        open_(4, "Also 4", blockers=[5, 6, 7, 8]),
         open_(5, "Now 5", blockers=[6]),
         clos_(6, "Same 6", blockers=[7]),
-        clos_(7, "Lucky 7", [8], select=previous),
+        clos_(7, "Lucky 7", [8]),
         clos_(8, "Finally 8"),
+        select=(4, 7),
     )
 
 
