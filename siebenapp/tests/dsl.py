@@ -42,18 +42,29 @@ def clos_(goal_id, name, children=None, blockers=None, relations=None, select=No
     )
 
 
-def build_goaltree(*goal_prototypes, message_fn=None):
+def build_goaltree(
+    *goal_prototypes, select: tuple[int, int] | None = None, message_fn=None
+) -> Goals:
     goals = [(g.goal_id, g.name, g.open) for g in goal_prototypes]
     edges = []
     for g in goal_prototypes:
         edges.extend([(g.goal_id, e, EdgeType.PARENT) for e in g.children])
         edges.extend([(g.goal_id, e, EdgeType.BLOCKER) for e in g.blockers])
         edges.extend([(g.goal_id, e, EdgeType.RELATION) for e in g.relations])
-    selection = {g.goal_id for g in goal_prototypes if g.select == selected}
-    prev_selection = {g.goal_id for g in goal_prototypes if g.select == previous}
-    assert len(selection) == 1
-    assert len(prev_selection) <= 1
-    selection_id = selection.pop()
+    if select is not None:
+        # New logic
+        selection_id, prev_selection_id = select
+        all_ids = {g.goal_id for g in goal_prototypes}
+        assert selection_id in all_ids
+        assert prev_selection_id in all_ids
+    else:
+        # Legacy logic
+        selection = {g.goal_id for g in goal_prototypes if g.select == selected}
+        prev_selection = {g.goal_id for g in goal_prototypes if g.select == previous}
+        assert len(selection) == 1
+        assert len(prev_selection) <= 1
+        selection_id = selection.pop()
+        prev_selection_id = prev_selection.pop() if prev_selection else selection_id
     return Goals.build(
         goals,
         edges,
@@ -61,7 +72,7 @@ def build_goaltree(*goal_prototypes, message_fn=None):
             ("selection", selection_id),
             (
                 "previous_selection",
-                prev_selection.pop() if prev_selection else selection_id,
+                prev_selection_id,
             ),
         ],
         message_fn,
