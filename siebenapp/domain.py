@@ -187,6 +187,8 @@ class Insert(Command):
 class HoldSelect(Command):
     """Saves current selection into the "previous selection" state"""
 
+    goal_id: int = 0
+
 
 @dataclass(frozen=True)
 class Rename(Command):
