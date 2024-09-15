@@ -16,7 +16,7 @@ from siebenapp.open_view import ToggleOpenView
 from siebenapp.progress_view import ToggleProgress
 from siebenapp.render import GoalsHolder
 from siebenapp.switchable_view import ToggleSwitchableView
-from siebenapp.tests.dsl import build_goaltree, open_, selected, previous, clos_
+from siebenapp.tests.dsl import build_goaltree, open_, clos_
 from siebenapp.zoom import ToggleZoom
 
 WIDTH = 3
@@ -27,11 +27,12 @@ def sample_tree():
     return all_layers(
         build_goaltree(
             open_(1, "Root", [2, 3, 4]),
-            open_(2, "Selected", select=selected),
-            open_(3, "Previous", [5], blockers=[4], select=previous),
+            open_(2, "Selected"),
+            open_(3, "Previous", [5], blockers=[4]),
             open_(4, "Blocked", blockers=[6]),
             clos_(5, "Closed intermediate", [6]),
             clos_(6, "Closed top"),
+            select=(2, 3),
         )
     )
 
