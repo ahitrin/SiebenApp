@@ -9,19 +9,19 @@ from siebenapp.domain import (
     RenderResult,
 )
 from siebenapp.open_view import ToggleOpenView, OpenView
-from siebenapp.tests.dsl import build_goaltree, open_, selected, clos_, previous
+from siebenapp.tests.dsl import build_goaltree, open_, clos_
 from siebenapp.zoom import Zoom, ToggleZoom
 
 
 @pytest.fixture
 def trivial():
-    g = build_goaltree(open_(1, "Start", [], [], select=selected))
+    g = build_goaltree(open_(1, "Start", [], []), select=(1, 1))
     return OpenView(g)
 
 
 @pytest.fixture
 def two_goals():
-    g = build_goaltree(open_(1, "Open", [2], [], select=selected), clos_(2, "Closed"))
+    g = build_goaltree(open_(1, "Open", [2], []), clos_(2, "Closed"), select=(1, 1))
     return OpenView(g)
 
 
@@ -88,9 +88,7 @@ def test_closed_goal_is_shown_after_switch(two_goals) -> None:
 def test_simple_open_enumeration_workflow() -> None:
     e = OpenView(
         build_goaltree(
-            open_(1, "Root", [2, 3], select=previous),
-            open_(2, "1", select=selected),
-            open_(3, "2"),
+            open_(1, "Root", [2, 3]), open_(2, "1"), open_(3, "2"), select=(2, 1)
         )
     )
     assert e.q() == RenderResult(
@@ -116,10 +114,11 @@ def test_simple_open_enumeration_workflow() -> None:
 def test_closed_goals_are_shown_when_selected() -> None:
     v = OpenView(
         build_goaltree(
-            open_(1, "Root", [2, 3], select=selected),
+            open_(1, "Root", [2, 3]),
             clos_(2, "closed"),
             clos_(3, "closed too", [4]),
             clos_(4, "closed and not selected"),
+            select=(1, 1),
         )
     )
     v.accept_all(ToggleOpenView(), Select(2), HoldSelect(), Select(3))
@@ -149,9 +148,10 @@ def test_closed_goals_are_shown_when_selected() -> None:
 def test_do_not_build_fake_links_to_far_closed_goals() -> None:
     v = OpenView(
         build_goaltree(
-            open_(1, "Root", blockers=[2], select=previous),
+            open_(1, "Root", blockers=[2]),
             clos_(2, "Middle", blockers=[3]),
-            clos_(3, "Top", select=selected),
+            clos_(3, "Top"),
+            select=(3, 1),
         )
     )
     assert v.q() == RenderResult(
@@ -166,10 +166,7 @@ def test_do_not_build_fake_links_to_far_closed_goals() -> None:
 
 def test_still_show_root_when_it_is_closed_and_unselected() -> None:
     v = OpenView(
-        build_goaltree(
-            clos_(1, "Hidden root", [2]),
-            clos_(2, "Visible", select=selected),
-        )
+        build_goaltree(clos_(1, "Hidden root", [2]), clos_(2, "Visible"), select=(2, 2))
     )
     assert v.q() == RenderResult(
         [
@@ -186,10 +183,11 @@ def test_do_not_add_dangling_goals_to_old_root_on_zoom() -> None:
         Zoom(
             build_goaltree(
                 open_(1, "Root goal", [2]),
-                open_(2, "Zoom root", [3, 5], select=selected),
+                open_(2, "Zoom root", [3, 5]),
                 clos_(3, "Transitive", [4]),
-                clos_(4, "Previous top", select=previous),
+                clos_(4, "Previous top"),
                 open_(5, "Current top"),
+                select=(2, 4),
             )
         )
     )
