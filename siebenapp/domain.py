@@ -179,6 +179,8 @@ class Insert(Command):
     """Add an intermediate goal between two selected goals"""
 
     name: str
+    lower: int = 0
+    upper: int = 0
 
 
 @dataclass(frozen=True)
