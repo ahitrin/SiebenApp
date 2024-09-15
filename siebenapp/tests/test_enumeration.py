@@ -11,7 +11,7 @@ from siebenapp.domain import (
 from siebenapp.enumeration import Enumeration, BidirectionalIndex
 from siebenapp.layers import all_layers
 from siebenapp.switchable_view import ToggleSwitchableView, SwitchableView
-from siebenapp.tests.dsl import build_goaltree, open_, previous, selected
+from siebenapp.tests.dsl import build_goaltree, open_
 from siebenapp.zoom import ToggleZoom
 
 
@@ -19,7 +19,7 @@ from siebenapp.zoom import ToggleZoom
 def goal_chain_10():
     """a → b → c → ... → j"""
     return build_goaltree(
-        open_(1, "a", [2], select=selected),
+        open_(1, "a", [2]),
         open_(2, "b", [3]),
         open_(3, "c", [4]),
         open_(4, "d", [5]),
@@ -29,6 +29,7 @@ def goal_chain_10():
         open_(8, "h", [9]),
         open_(9, "i", [10]),
         open_(10, "j", []),
+        select=(1, 1),
     )
 
 
@@ -44,8 +45,9 @@ def test_simple_enumeration_is_not_changed() -> None:
     e = Enumeration(
         build_goaltree(
             open_(1, "a", [2, 3]),
-            open_(2, "b", blockers=[3], select=previous),
-            open_(3, "c", select=selected),
+            open_(2, "b", blockers=[3]),
+            open_(3, "c"),
+            select=(3, 2),
         )
     )
     assert e.q() == RenderResult(
@@ -247,7 +249,7 @@ def test_select_goal_by_full_id_with_non_empty_cache(goal_chain_11) -> None:
 def test_enumerated_goals_must_have_the_same_dimension() -> None:
     e = Enumeration(
         build_goaltree(
-            open_(1, "a", [2, 20], select=selected), open_(2, "b"), open_(20, "x")
+            open_(1, "a", [2, 20]), open_(2, "b"), open_(20, "x"), select=(1, 1)
         )
     )
     assert e.q() == RenderResult(
@@ -304,9 +306,10 @@ def test_selection_cache_should_avoid_overflow(goal_chain_11) -> None:
 def test_do_not_enumerate_goals_with_negative_id() -> None:
     g = all_layers(
         build_goaltree(
-            open_(1, "Root goal", [2], select=previous),
-            open_(2, "Zoomed", [3], select=selected),
+            open_(1, "Root goal", [2]),
+            open_(2, "Zoomed", [3]),
             open_(3, "Top"),
+            select=(2, 1),
         )
     )
     g.accept(ToggleZoom())
