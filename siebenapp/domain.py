@@ -68,7 +68,7 @@ class RenderResult:
         rows: list[RenderRow],
         edge_opts: dict[str, tuple[int, int, int]] | None = None,
         select: tuple[GoalId, GoalId] | None = None,
-        node_opts: dict[GoalId, Any] | None = None,
+        node_opts: dict[GoalId, dict[str, Any]] | None = None,
         roots: set[GoalId] | None = None,
     ):
         self.rows = rows
