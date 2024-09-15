@@ -2,15 +2,16 @@ from siebenapp.domain import Add, Select, HoldSelect, RenderRow, RenderResult, c
 from siebenapp.goaltree import Goals
 from siebenapp.layers import persistent_layers
 from siebenapp.switchable_view import ToggleSwitchableView, SwitchableView
-from siebenapp.tests.dsl import build_goaltree, open_, selected, previous
+from siebenapp.tests.dsl import build_goaltree, open_
 from siebenapp.zoom import ToggleZoom
 
 
 def test_toggle_hide_non_switchable_goals() -> None:
     g = build_goaltree(
         open_(1, "Root", [2, 3]),
-        open_(2, "Switchable 1", select=selected),
+        open_(2, "Switchable 1"),
         open_(3, "Switchable 2"),
+        select=(2, 2),
     )
     e = SwitchableView(g)
     assert e.q() == RenderResult(
@@ -46,9 +47,10 @@ def test_toggle_hide_non_switchable_goals() -> None:
 def test_do_not_hide_unswitchable_goals_when_they_have_selection() -> None:
     v = SwitchableView(
         build_goaltree(
-            open_(1, "Selected", [2], select=selected),
-            open_(2, "Prev-selected", [3], select=previous),
+            open_(1, "Selected", [2]),
+            open_(2, "Prev-selected", [3]),
             open_(3, "Switchable"),
+            select=(1, 2),
         )
     )
     v.accept_all(ToggleSwitchableView())
@@ -89,8 +91,9 @@ def test_non_switchable_goals_disappear_on_selection_change() -> None:
 def test_how_should_we_deal_with_zooming() -> None:
     g = build_goaltree(
         open_(1, "Root goal", [2]),
-        open_(2, "Zoomed", blockers=[3], select=selected),
+        open_(2, "Zoomed", blockers=[3]),
         open_(3, "Ex-top"),
+        select=(2, 2),
     )
     v = SwitchableView(persistent_layers(g))
     v.accept_all(ToggleZoom(), ToggleSwitchableView())
@@ -114,11 +117,11 @@ def test_how_should_we_deal_with_zooming() -> None:
 
 
 def test_filter_switchable_setting_is_not_set_by_default() -> None:
-    v = SwitchableView(build_goaltree(open_(1, "only", select=selected)))
+    v = SwitchableView(build_goaltree(open_(1, "only"), select=(1, 1)))
     assert v.settings("filter_switchable") == 0
 
 
 def test_filter_switchable_setting_is_changed_after_switch() -> None:
-    v = SwitchableView(build_goaltree(open_(1, "only", select=selected)))
+    v = SwitchableView(build_goaltree(open_(1, "only"), select=(1, 1)))
     v.accept(ToggleSwitchableView())
     assert v.settings("filter_switchable") == 1
