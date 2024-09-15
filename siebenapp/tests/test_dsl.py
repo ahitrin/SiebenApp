@@ -9,4 +9,5 @@ def test_two_parents_for_one_goal_is_forbidden() -> None:
             open_(1, "First parent of 3", [2, 3]),
             open_(2, "Second parent of 3", [3]),
             open_(3, "Fellow child"),
+            select=(1, 2),
         )
