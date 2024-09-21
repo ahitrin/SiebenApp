@@ -28,9 +28,11 @@ class GoalsTest(TestCase):
     def _register_message(self, msg):
         self.messages.append(msg)
 
-    def build(self, *goal_prototypes, select: tuple[int, int]) -> Goals:
-        return build_goaltree(
-            *goal_prototypes, select=select, message_fn=self._register_message
+    def build(self, *goal_prototypes, select: tuple[int, int]) -> Selectable:
+        return Selectable(
+            build_goaltree(
+                *goal_prototypes, select=select, message_fn=self._register_message
+            )
         )
 
     def test_there_is_one_goal_at_start(self) -> None:

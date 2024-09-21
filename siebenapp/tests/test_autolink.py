@@ -18,25 +18,31 @@ from siebenapp.domain import (
     ToggleLink,
     EdgeType,
 )
-from siebenapp.goaltree import OPTION_SELECT, OPTION_PREV_SELECT
+from siebenapp.goaltree import OPTION_SELECT, OPTION_PREV_SELECT, Selectable
 from siebenapp.tests.dsl import build_goaltree, open_, clos_
 
 
 @pytest.fixture()
 def tree_2_goals():
     return AutoLink(
-        build_goaltree(open_(1, "Root", [2]), open_(2, "Autolink on me"), select=(2, 2))
+        Selectable(
+            build_goaltree(
+                open_(1, "Root", [2]), open_(2, "Autolink on me"), select=(2, 2)
+            )
+        )
     )
 
 
 @pytest.fixture()
 def tree_3v_goals():
     return AutoLink(
-        build_goaltree(
-            open_(1, "Root", [2, 3]),
-            open_(2, "Autolink on me"),
-            open_(3, "Another subgoal"),
-            select=(2, 2),
+        Selectable(
+            build_goaltree(
+                open_(1, "Root", [2, 3]),
+                open_(2, "Autolink on me"),
+                open_(3, "Another subgoal"),
+                select=(2, 2),
+            )
         )
     )
 
@@ -44,11 +50,13 @@ def tree_3v_goals():
 @pytest.fixture()
 def tree_3i_goals():
     return AutoLink(
-        build_goaltree(
-            open_(1, "Root", [2]),
-            open_(2, "Autolink on me", [3]),
-            open_(3, "Another subgoal"),
-            select=(2, 2),
+        Selectable(
+            build_goaltree(
+                open_(1, "Root", [2]),
+                open_(2, "Autolink on me", [3]),
+                open_(3, "Another subgoal"),
+                select=(2, 2),
+            )
         )
     )
 
@@ -148,11 +156,13 @@ def test_do_not_add_autolink_on_whitespace(tree_2_goals) -> None:
 def test_do_not_add_autolink_to_closed_goals() -> None:
     messages: list[str] = []
     goals = AutoLink(
-        build_goaltree(
-            open_(1, "Root", [2]),
-            clos_(2, "Well, it's closed"),
-            select=(2, 2),
-            message_fn=messages.append,
+        Selectable(
+            build_goaltree(
+                open_(1, "Root", [2]),
+                clos_(2, "Well, it's closed"),
+                select=(2, 2),
+                message_fn=messages.append,
+            )
         )
     )
     goals.accept(ToggleAutoLink("Failed"))
@@ -171,7 +181,9 @@ def test_do_not_add_autolink_to_closed_goals() -> None:
 def test_do_not_add_autolink_to_root_goal() -> None:
     messages: list[str] = []
     goals = AutoLink(
-        build_goaltree(open_(1, "Root"), select=(1, 1), message_fn=messages.append)
+        Selectable(
+            build_goaltree(open_(1, "Root"), select=(1, 1), message_fn=messages.append)
+        )
     )
     goals.accept(ToggleAutoLink("misused"))
     assert goals.q() == RenderResult(

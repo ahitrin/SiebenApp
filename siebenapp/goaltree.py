@@ -150,10 +150,6 @@ class Goals(Graph):
         return RenderResult(
             rows,
             roots={Goals.ROOT_ID},
-            global_opts={
-                OPTION_SELECT: self.selection,
-                OPTION_PREV_SELECT: self.previous_selection,
-            },
         )
 
     def _switchable(self, key: int) -> bool:

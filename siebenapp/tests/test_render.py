@@ -1,6 +1,7 @@
 import pytest
 
 from siebenapp.enumeration import Enumeration
+from siebenapp.goaltree import Selectable
 from siebenapp.switchable_view import ToggleSwitchableView, SwitchableView
 from siebenapp.domain import EdgeType, child, blocker
 from siebenapp.render import Renderer
@@ -147,7 +148,7 @@ def test_render_in_switchable_view() -> None:
         open_(6, "Sext"),
         select=(6, 6),
     )
-    view = Enumeration(SwitchableView(goals))
+    view = Enumeration(SwitchableView(Selectable(goals)))
     view.accept(ToggleSwitchableView())
     result = Renderer(view).build().node_opts
     # Just verify that it renders fine

@@ -9,7 +9,7 @@ from siebenapp.domain import (
     RenderResult,
 )
 from siebenapp.enumeration import Enumeration, BidirectionalIndex
-from siebenapp.goaltree import OPTION_SELECT, OPTION_PREV_SELECT
+from siebenapp.goaltree import OPTION_SELECT, OPTION_PREV_SELECT, Selectable
 from siebenapp.layers import all_layers
 from siebenapp.switchable_view import ToggleSwitchableView, SwitchableView
 from siebenapp.tests.dsl import build_goaltree, open_
@@ -19,18 +19,20 @@ from siebenapp.zoom import ToggleZoom
 @pytest.fixture
 def goal_chain_10():
     """a → b → c → ... → j"""
-    return build_goaltree(
-        open_(1, "a", [2]),
-        open_(2, "b", [3]),
-        open_(3, "c", [4]),
-        open_(4, "d", [5]),
-        open_(5, "e", [6]),
-        open_(6, "f", [7]),
-        open_(7, "g", [8]),
-        open_(8, "h", [9]),
-        open_(9, "i", [10]),
-        open_(10, "j", []),
-        select=(1, 1),
+    return Selectable(
+        build_goaltree(
+            open_(1, "a", [2]),
+            open_(2, "b", [3]),
+            open_(3, "c", [4]),
+            open_(4, "d", [5]),
+            open_(5, "e", [6]),
+            open_(6, "f", [7]),
+            open_(7, "g", [8]),
+            open_(8, "h", [9]),
+            open_(9, "i", [10]),
+            open_(10, "j", []),
+            select=(1, 1),
+        )
     )
 
 
@@ -44,11 +46,13 @@ def goal_chain_11(goal_chain_10):
 
 def test_simple_enumeration_is_not_changed() -> None:
     e = Enumeration(
-        build_goaltree(
-            open_(1, "a", [2, 3]),
-            open_(2, "b", blockers=[3]),
-            open_(3, "c"),
-            select=(3, 2),
+        Selectable(
+            build_goaltree(
+                open_(1, "a", [2, 3]),
+                open_(2, "b", blockers=[3]),
+                open_(3, "c"),
+                select=(3, 2),
+            )
         )
     )
     assert e.q() == RenderResult(
@@ -249,8 +253,10 @@ def test_select_goal_by_full_id_with_non_empty_cache(goal_chain_11) -> None:
 
 def test_enumerated_goals_must_have_the_same_dimension() -> None:
     e = Enumeration(
-        build_goaltree(
-            open_(1, "a", [2, 20]), open_(2, "b"), open_(20, "x"), select=(1, 1)
+        Selectable(
+            build_goaltree(
+                open_(1, "a", [2, 20]), open_(2, "b"), open_(20, "x"), select=(1, 1)
+            )
         )
     )
     assert e.q() == RenderResult(

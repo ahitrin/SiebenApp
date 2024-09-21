@@ -38,11 +38,13 @@ def test_single_goal_could_not_be_zoomed() -> None:
 
 def test_skip_intermediate_goal_during_zoom() -> None:
     goals = Zoom(
-        build_goaltree(
-            open_(1, "Root goal", [2]),
-            open_(2, "Hidden", [3]),
-            open_(3, "Zoomed"),
-            select=(3, 3),
+        Selectable(
+            build_goaltree(
+                open_(1, "Root goal", [2]),
+                open_(2, "Hidden", [3]),
+                open_(3, "Zoomed"),
+                select=(3, 3),
+            )
         )
     )
     goals.accept(ToggleZoom())
@@ -57,12 +59,14 @@ def test_skip_intermediate_goal_during_zoom() -> None:
 
 def test_hide_neighbour_goals_during_zoom() -> None:
     goals = Zoom(
-        build_goaltree(
-            open_(1, "Root goal", [2, 3, 4]),
-            open_(2, "Zoomed"),
-            open_(3, "Hidden 1"),
-            open_(4, "Hidden 2"),
-            select=(2, 2),
+        Selectable(
+            build_goaltree(
+                open_(1, "Root goal", [2, 3, 4]),
+                open_(2, "Zoomed"),
+                open_(3, "Hidden 1"),
+                open_(4, "Hidden 2"),
+                select=(2, 2),
+            )
         )
     )
     goals.accept(ToggleZoom())
@@ -77,11 +81,13 @@ def test_hide_neighbour_goals_during_zoom() -> None:
 
 def test_do_not_hide_subgoals() -> None:
     goals = Zoom(
-        build_goaltree(
-            open_(1, "Root goal", [2]),
-            open_(2, "Zoomed", [3]),
-            open_(3, "Visible"),
-            select=(2, 2),
+        Selectable(
+            build_goaltree(
+                open_(1, "Root goal", [2]),
+                open_(2, "Zoomed", [3]),
+                open_(3, "Visible"),
+                select=(2, 2),
+            )
         )
     )
     goals.accept(ToggleZoom())
@@ -107,12 +113,14 @@ def test_do_not_hide_subgoals() -> None:
 
 def test_hide_subgoals_of_blockers() -> None:
     goals = Zoom(
-        build_goaltree(
-            open_(1, "Root goal", [2, 3]),
-            open_(2, "Zoomed", blockers=[3]),
-            open_(3, "Blocker", [4]),
-            open_(4, "Should be hidden"),
-            select=(2, 2),
+        Selectable(
+            build_goaltree(
+                open_(1, "Root goal", [2, 3]),
+                open_(2, "Zoomed", blockers=[3]),
+                open_(3, "Blocker", [4]),
+                open_(4, "Should be hidden"),
+                select=(2, 2),
+            )
         )
     )
     goals.accept(ToggleZoom())
@@ -128,11 +136,13 @@ def test_hide_subgoals_of_blockers() -> None:
 
 def test_double_zoom_means_unzoom() -> None:
     goals = Zoom(
-        build_goaltree(
-            open_(1, "Root goal", [2, 3]),
-            open_(2, "Zoomed"),
-            open_(3, "Hidden"),
-            select=(2, 2),
+        Selectable(
+            build_goaltree(
+                open_(1, "Root goal", [2, 3]),
+                open_(2, "Zoomed"),
+                open_(3, "Hidden"),
+                select=(2, 2),
+            )
         )
     )
     goals.accept(ToggleZoom())
@@ -157,13 +167,15 @@ def test_double_zoom_means_unzoom() -> None:
 
 def test_stacked_zoom() -> None:
     goals = Zoom(
-        build_goaltree(
-            open_(1, "Root goal", [2]),
-            open_(2, "Skip me", [3]),
-            open_(3, "Intermediate zoom", [4]),
-            open_(4, "Next zoom", [5]),
-            open_(5, "Top"),
-            select=(3, 3),
+        Selectable(
+            build_goaltree(
+                open_(1, "Root goal", [2]),
+                open_(2, "Skip me", [3]),
+                open_(3, "Intermediate zoom", [4]),
+                open_(4, "Next zoom", [5]),
+                open_(5, "Top"),
+                select=(3, 3),
+            )
         )
     )
     goals.accept_all(ToggleZoom(), Select(4), ToggleZoom())
@@ -201,11 +213,13 @@ def test_stacked_zoom() -> None:
 
 def test_selection_should_not_be_changed_if_selected_goal_is_visible() -> None:
     goals = Zoom(
-        build_goaltree(
-            open_(1, "Root goal", [2]),
-            open_(2, "Select root", [3]),
-            open_(3, "Previous selected"),
-            select=(2, 3),
+        Selectable(
+            build_goaltree(
+                open_(1, "Root goal", [2]),
+                open_(2, "Select root", [3]),
+                open_(3, "Previous selected"),
+                select=(2, 3),
+            )
         )
     )
     goals.accept(ToggleZoom())
@@ -225,11 +239,13 @@ def test_selection_should_not_be_changed_if_selected_goal_is_sibling_to_zoom_roo
     None
 ):
     goals = Zoom(
-        build_goaltree(
-            open_(1, "Root goal", [2, 3]),
-            open_(2, "Previous selected"),
-            open_(3, "Zoomed"),
-            select=(3, 2),
+        Selectable(
+            build_goaltree(
+                open_(1, "Root goal", [2, 3]),
+                open_(2, "Previous selected"),
+                open_(3, "Zoomed"),
+                select=(3, 2),
+            )
         )
     )
     goals.accept(ToggleZoom())
@@ -248,12 +264,14 @@ def test_selection_should_not_be_changed_if_selected_goal_is_not_a_child_of_zoom
     None
 ):
     goals = Zoom(
-        build_goaltree(
-            open_(1, "Root goal", [2, 4]),
-            open_(2, "Blocker", [3]),
-            open_(3, "Previous selected"),
-            open_(4, "Zoomed", blockers=[2]),
-            select=(4, 3),
+        Selectable(
+            build_goaltree(
+                open_(1, "Root goal", [2, 4]),
+                open_(2, "Blocker", [3]),
+                open_(3, "Previous selected"),
+                open_(4, "Zoomed", blockers=[2]),
+                select=(4, 3),
+            )
         )
     )
     goals.accept(ToggleZoom())
@@ -271,13 +289,15 @@ def test_selection_should_not_be_changed_if_selected_goal_is_not_a_child_of_zoom
 
 def test_previous_selection_should_not_be_changed_or_reset_after_zoom() -> None:
     goals = Zoom(
-        build_goaltree(
-            open_(1, "", blockers=[2, 3]),
-            open_(2, "", [4]),
-            open_(3, "", [2]),
-            open_(4, "", blockers=[5]),
-            open_(5, ""),
-            select=(3, 4),
+        Selectable(
+            build_goaltree(
+                open_(1, "", blockers=[2, 3]),
+                open_(2, "", [4]),
+                open_(3, "", [2]),
+                open_(4, "", blockers=[5]),
+                open_(5, ""),
+                select=(3, 4),
+            )
         )
     )
     goals.verify()
@@ -292,12 +312,14 @@ def test_selection_should_not_be_changed_on_stacked_unzoom_a_long_chain_of_block
     None
 ):
     goals = Zoom(
-        build_goaltree(
-            open_(1, "Root goal", blockers=[2]),
-            open_(2, "A", blockers=[3]),
-            open_(3, "D", blockers=[4]),
-            open_(4, "E"),
-            select=(2, 2),
+        Selectable(
+            build_goaltree(
+                open_(1, "Root goal", blockers=[2]),
+                open_(2, "A", blockers=[3]),
+                open_(3, "D", blockers=[4]),
+                open_(4, "E"),
+                select=(2, 2),
+            )
         )
     )
     goals.accept_all(
@@ -325,11 +347,13 @@ def test_unlink_for_goal_outside_of_zoomed_tree_should_not_cause_selection_chang
     None
 ):
     goals = Zoom(
-        build_goaltree(
-            open_(1, "Root goal", [2, 3]),
-            open_(2, "Out of zoom"),
-            open_(3, "Zoom root", blockers=[2]),
-            select=(3, 3),
+        Selectable(
+            build_goaltree(
+                open_(1, "Root goal", [2, 3]),
+                open_(2, "Out of zoom"),
+                open_(3, "Zoom root", blockers=[2]),
+                select=(3, 3),
+            )
         )
     )
     goals.accept_all(
@@ -350,11 +374,13 @@ def test_unlink_for_goal_outside_of_zoomed_tree_should_not_cause_selection_chang
 
 def test_closing_zoom_root_should_cause_unzoom() -> None:
     goals = Zoom(
-        build_goaltree(
-            open_(1, "Root goal", [2]),
-            open_(2, "Intermediate", [3]),
-            open_(3, "Zoom here"),
-            select=(3, 3),
+        Selectable(
+            build_goaltree(
+                open_(1, "Root goal", [2]),
+                open_(2, "Intermediate", [3]),
+                open_(3, "Zoom here"),
+                select=(3, 3),
+            )
         )
     )
     goals.accept_all(ToggleZoom(), ToggleClose())
@@ -371,11 +397,13 @@ def test_closing_zoom_root_should_cause_unzoom() -> None:
 
 def test_goal_closing_must_not_cause_root_selection() -> None:
     goals = Zoom(
-        build_goaltree(
-            open_(1, "Root goal", [2]),
-            open_(2, "Zoom root", [3]),
-            open_(3, "Close me"),
-            select=(2, 2),
+        Selectable(
+            build_goaltree(
+                open_(1, "Root goal", [2]),
+                open_(2, "Zoom root", [3]),
+                open_(3, "Close me"),
+                select=(2, 2),
+            )
         )
     )
     goals.accept(ToggleZoom())
@@ -402,11 +430,13 @@ def test_goal_closing_must_not_cause_root_selection() -> None:
 
 def test_goal_reopening_must_not_change_selection() -> None:
     goals = Zoom(
-        build_goaltree(
-            open_(1, "Root goal", [2]),
-            open_(2, "Zoom root", [3]),
-            open_(3, "Reopen me"),
-            select=(2, 2),
+        Selectable(
+            build_goaltree(
+                open_(1, "Root goal", [2]),
+                open_(2, "Zoom root", [3]),
+                open_(3, "Reopen me"),
+                select=(2, 2),
+            )
         )
     )
     goals.accept_all(
@@ -437,11 +467,13 @@ def test_goal_reopening_must_not_change_selection() -> None:
 
 def test_deleting_zoom_root_should_cause_unzoom() -> None:
     goals = Zoom(
-        build_goaltree(
-            open_(1, "Root goal", [2]),
-            open_(2, "Intermediate", [3]),
-            open_(3, "Zoom here"),
-            select=(3, 3),
+        Selectable(
+            build_goaltree(
+                open_(1, "Root goal", [2]),
+                open_(2, "Intermediate", [3]),
+                open_(3, "Zoom here"),
+                select=(3, 3),
+            )
         )
     )
     goals.accept_all(ToggleZoom(), Delete())
@@ -457,13 +489,15 @@ def test_deleting_zoom_root_should_cause_unzoom() -> None:
 
 def test_deleting_parent_goal_should_cause_unzoom() -> None:
     goals = Zoom(
-        build_goaltree(
-            open_(1, "Root goal", [2]),
-            open_(2, "Intermediate", [3]),
-            open_(3, "Zoom here", [4]),
-            open_(4, "Next zoom", [5]),
-            open_(5, "Final zoom"),
-            select=(3, 2),
+        Selectable(
+            build_goaltree(
+                open_(1, "Root goal", [2]),
+                open_(2, "Intermediate", [3]),
+                open_(3, "Zoom here", [4]),
+                open_(4, "Next zoom", [5]),
+                open_(5, "Final zoom"),
+                select=(3, 2),
+            )
         )
     )
     goals.accept_all(ToggleZoom(), Select(4), ToggleZoom(), Select(5), ToggleZoom())
@@ -500,12 +534,14 @@ def test_deleting_parent_goal_should_cause_unzoom() -> None:
 
 def test_goal_deletion_must_not_cause_root_selection() -> None:
     goals = Zoom(
-        build_goaltree(
-            open_(1, "Root goal", [2]),
-            open_(2, "Hidden", [3]),
-            open_(3, "Zoom root", [4]),
-            open_(4, "Deleted"),
-            select=(3, 3),
+        Selectable(
+            build_goaltree(
+                open_(1, "Root goal", [2]),
+                open_(2, "Hidden", [3]),
+                open_(3, "Zoom root", [4]),
+                open_(4, "Deleted"),
+                select=(3, 3),
+            )
         )
     )
     goals.accept(ToggleZoom())
@@ -531,13 +567,15 @@ def test_goal_deletion_must_not_cause_root_selection() -> None:
 
 def test_zoom_events() -> None:
     goals = Zoom(
-        build_goaltree(
-            open_(1, "Root goal", [2]),
-            open_(2, "First zoom", [3]),
-            open_(3, "Intermediate", [4]),
-            open_(4, "Second zoom", [5]),
-            open_(5, "Top"),
-            select=(2, 2),
+        Selectable(
+            build_goaltree(
+                open_(1, "Root goal", [2]),
+                open_(2, "First zoom", [3]),
+                open_(3, "Intermediate", [4]),
+                open_(4, "Second zoom", [5]),
+                open_(5, "Top"),
+                select=(2, 2),
+            )
         )
     )
     goals.accept(ToggleZoom())
@@ -553,7 +591,11 @@ def test_zoom_events() -> None:
 
 def test_do_not_duplicate_parent_prev_selection() -> None:
     goals = Zoom(
-        build_goaltree(open_(1, "Root goal", [2]), open_(2, "Zoom root"), select=(2, 1))
+        Selectable(
+            build_goaltree(
+                open_(1, "Root goal", [2]), open_(2, "Zoom root"), select=(2, 1)
+            )
+        )
     )
     assert goals.q() == RenderResult(
         [
@@ -576,11 +618,13 @@ def test_do_not_duplicate_parent_prev_selection() -> None:
 
 def test_global_root_is_isolated() -> None:
     goals = Zoom(
-        build_goaltree(
-            open_(1, "Root goal", [2]),
-            open_(2, "Intermediate", [3]),
-            open_(3, "Zoom target", []),
-            select=(3, 1),
+        Selectable(
+            build_goaltree(
+                open_(1, "Root goal", [2]),
+                open_(2, "Intermediate", [3]),
+                open_(3, "Zoom target", []),
+                select=(3, 1),
+            )
         )
     )
     goals.accept(ToggleZoom())
@@ -596,8 +640,10 @@ def test_global_root_is_isolated() -> None:
 
 def test_zoom_root_must_not_be_switchable() -> None:
     goals = Zoom(
-        build_goaltree(
-            open_(1, "Root goal", [2]), clos_(2, "Closed", []), select=(2, 1)
+        Selectable(
+            build_goaltree(
+                open_(1, "Root goal", [2]), clos_(2, "Closed", []), select=(2, 1)
+            )
         )
     )
     assert goals.q() == RenderResult(
@@ -622,13 +668,15 @@ def test_zoom_root_must_not_be_switchable() -> None:
 def test_zoom_attempt_out_of_stack() -> None:
     messages: list[str] = []
     goals = Zoom(
-        build_goaltree(
-            open_(1, "Root goal", [2, 3]),
-            open_(2, "Selected and out of tree"),
-            open_(3, "Zoom root", [4]),
-            open_(4, "Top"),
-            select=(3, 2),
-            message_fn=messages.append,
+        Selectable(
+            build_goaltree(
+                open_(1, "Root goal", [2, 3]),
+                open_(2, "Selected and out of tree"),
+                open_(3, "Zoom root", [4]),
+                open_(4, "Top"),
+                select=(3, 2),
+                message_fn=messages.append,
+            )
         )
     )
     goals.accept_all(ToggleZoom(), Select(2), HoldSelect())

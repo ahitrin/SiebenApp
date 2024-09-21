@@ -2,7 +2,7 @@ from _pytest.fixtures import fixture
 
 from siebenapp.domain import Select, HoldSelect, child, blocker, RenderRow, RenderResult
 from siebenapp.filter_view import FilterBy, FilterView
-from siebenapp.goaltree import OPTION_SELECT, OPTION_PREV_SELECT
+from siebenapp.goaltree import OPTION_SELECT, OPTION_PREV_SELECT, Selectable
 from siebenapp.tests.dsl import build_goaltree, open_
 from siebenapp.zoom import Zoom, ToggleZoom
 
@@ -10,11 +10,13 @@ from siebenapp.zoom import Zoom, ToggleZoom
 @fixture
 def goaltree():
     return FilterView(
-        build_goaltree(
-            open_(1, "Alpha", [2], [], []),
-            open_(2, "Beta", [3]),
-            open_(3, "Gamma", []),
-            select=(1, 1),
+        Selectable(
+            build_goaltree(
+                open_(1, "Alpha", [2], [], []),
+                open_(2, "Beta", [3]),
+                open_(3, "Gamma", []),
+                select=(1, 1),
+            )
         )
     )
 
@@ -23,11 +25,13 @@ def goaltree():
 def zoomed_goaltree():
     return FilterView(
         Zoom(
-            build_goaltree(
-                open_(1, "Alpha", [2], [], []),
-                open_(2, "Beta", [3]),
-                open_(3, "Gamma", []),
-                select=(1, 1),
+            Selectable(
+                build_goaltree(
+                    open_(1, "Alpha", [2], [], []),
+                    open_(2, "Beta", [3]),
+                    open_(3, "Gamma", []),
+                    select=(1, 1),
+                )
             )
         )
     )
