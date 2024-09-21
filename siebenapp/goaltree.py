@@ -181,7 +181,9 @@ class Goals(Graph):
         return False
 
     def accept_Insert(self, command: Insert) -> None:
-        if (lower := self.previous_selection) == (upper := self.selection):
+        if (lower := command.lower or self.previous_selection) == (
+            upper := command.upper or self.selection
+        ):
             self.error("A new goal can be inserted only between two different goals")
             return
         edge_type: EdgeType = self.edges_forward[lower].get(upper, EdgeType.BLOCKER)
