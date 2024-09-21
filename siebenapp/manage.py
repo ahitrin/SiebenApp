@@ -264,4 +264,6 @@ def extract_subtree(source_goals: Graph, goal_id: int) -> Graph:
     edges_data = [
         (remap[source], remap[target], e_type) for source, target, e_type in edges_data
     ]
-    return persistent_layers(Goals.build(goals_data, edges_data, options_data))
+    return persistent_layers(
+        Goals.build(goals_data, edges_data, options_data), options_data
+    )

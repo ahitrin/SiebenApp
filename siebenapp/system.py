@@ -5,7 +5,7 @@ from collections.abc import Callable
 from siebenapp.autolink import AutoLink, AutoLinkData
 from siebenapp.domain import Graph
 from siebenapp.enumeration import Enumeration
-from siebenapp.goaltree import Goals
+from siebenapp.goaltree import Goals, OptionsData
 from siebenapp.layers import all_layers, get_root
 from siebenapp.zoom import Zoom, ZoomData
 
@@ -181,6 +181,7 @@ def save_updates(goals: Graph, connection: sqlite3.Connection) -> None:
 
 
 def load(filename: str, message_fn: Callable[[str], None] | None = None) -> Enumeration:
+    settings: OptionsData = []
     zoom_data: ZoomData = []
     autolink_data: AutoLinkData = []
     if path.isfile(filename):
@@ -196,7 +197,7 @@ def load(filename: str, message_fn: Callable[[str], None] | None = None) -> Enum
         goals = Goals.build(names, edges, settings, message_fn)
     else:
         goals = Goals("Rename me", message_fn)
-    result = Enumeration(all_layers(goals, zoom_data, autolink_data))
+    result = Enumeration(all_layers(goals, settings, zoom_data, autolink_data))
     result.verify()
     return result
 

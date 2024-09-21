@@ -31,6 +31,12 @@ OPTION_PREV_SELECT = "prev_select"
 class Selectable(Graph):
     def __init__(self, goals: Graph, data: OptionsData | None = None):
         super().__init__(goals)
+        selection_dict: dict[str, int] = dict(data or [])
+        original_root = int(list(goals.q().roots)[0])
+        self.selection: int = selection_dict.get("selection", original_root)
+        self.previous_selection: int = selection_dict.get(
+            "previous_selection", original_root
+        )
 
     def q(self) -> RenderResult:
         return self.goaltree.q()

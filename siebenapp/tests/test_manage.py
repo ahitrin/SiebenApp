@@ -172,7 +172,8 @@ def extract_source():
                 clos_(6, "Closed subgoal", blockers=[7]),
                 clos_(7, "Another external blocker NX"),
                 select=(1, 5),
-            )
+            ),
+            [("selection", 1), ("previous_selection", 5)],
         )
     )
 
@@ -186,7 +187,8 @@ def extract_target():
             open_(3, "Selected subgoal (selection will be lost)", [4]),
             clos_(4, "Closed subgoal"),
             select=(1, 1),
-        )
+        ),
+        [("selection", 1), ("previous_selection", 1)],
     )
 
 
@@ -215,7 +217,8 @@ def test_extract_misordered() -> None:
                 open_(2, "Top"),
                 open_(3, "Extraction root", [2]),
                 select=(1, 1),
-            )
+            ),
+            [("selection", 1), ("previous_selection", 1)],
         )
     )
     result = extract_subtree(source, 3)

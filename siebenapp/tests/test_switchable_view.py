@@ -95,7 +95,9 @@ def test_how_should_we_deal_with_zooming() -> None:
         open_(3, "Ex-top"),
         select=(2, 2),
     )
-    v = SwitchableView(persistent_layers(g))
+    v = SwitchableView(
+        persistent_layers(g, [("selection", 2), ("previous_selection", 2)])
+    )
     v.accept_all(ToggleZoom(), ToggleSwitchableView())
     assert v.q() == RenderResult(
         [
