@@ -1,6 +1,7 @@
-from typing import Any
-from collections.abc import Callable
 from collections import deque, defaultdict
+from collections.abc import Callable
+from dataclasses import replace
+from typing import Any
 
 from siebenapp.domain import (
     Graph,
@@ -39,7 +40,17 @@ class Selectable(Graph):
         )
 
     def q(self) -> RenderResult:
-        return self.goaltree.q()
+        rr = self.goaltree.q()
+        self.selection = self.goaltree.selection
+        self.previous_selection = self.goaltree.previous_selection
+        return replace(
+            rr,
+            global_opts=rr.global_opts
+            | {
+                OPTION_SELECT: self.selection,
+                OPTION_PREV_SELECT: self.previous_selection,
+            },
+        )
 
 
 class Goals(Graph):
