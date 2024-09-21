@@ -39,6 +39,15 @@ class Selectable(Graph):
             "previous_selection", original_root
         )
 
+    def accept_Select(self, command: Select):
+        goal_id: int = command.goal_id
+        self.selection = goal_id
+        self.goaltree.accept(command)
+
+    def accept_HoldSelect(self, command: HoldSelect):
+        self.previous_selection = self.selection
+        self.goaltree.accept(command)
+
     def q(self) -> RenderResult:
         rr = self.goaltree.q()
         self.selection = self.goaltree.selection
