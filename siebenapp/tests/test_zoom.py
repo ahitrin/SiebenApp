@@ -555,7 +555,14 @@ def test_do_not_duplicate_parent_prev_selection() -> None:
     goals = Zoom(
         build_goaltree(open_(1, "Root goal", [2]), open_(2, "Zoom root"), select=(2, 1))
     )
-    assert goals.selections() == {1, 2}
+    assert goals.q() == RenderResult(
+        [
+            RenderRow(1, 1, "Root goal", True, False, [child(2)]),
+            RenderRow(2, 2, "Zoom root", True, True, []),
+        ],
+        roots={1},
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 1},
+    )
     goals.accept(ToggleZoom())
     assert goals.q() == RenderResult(
         [
