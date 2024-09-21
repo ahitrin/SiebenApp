@@ -64,9 +64,8 @@ def test_show_new_pseudogoal_on_autolink_event(tree_2_goals) -> None:
             RenderRow(1, 1, "Root", True, False, [child(2)]),
             RenderRow(2, 2, "Autolink on me", True, True, []),
         ],
-        select=(2, 2),
-        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={1},
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
     )
     goals.accept(ToggleAutoLink("heLLO"))
     assert goals.q() == RenderResult(
@@ -74,9 +73,8 @@ def test_show_new_pseudogoal_on_autolink_event(tree_2_goals) -> None:
             RenderRow(1, 1, "Root", True, False, [child(2)]),
             RenderRow(2, 2, "Autolink on me", True, True, [], {"Autolink": "hello"}),
         ],
-        select=(2, 2),
-        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={1},
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
     )
     assert _autolink_events(goals) == [("add_autolink", 2, "hello")]
 
@@ -89,9 +87,8 @@ def test_replace_old_autolink_with_new_one(tree_2_goals) -> None:
             RenderRow(1, 1, "Root", True, False, [child(2)]),
             RenderRow(2, 2, "Autolink on me", True, True, [], {"Autolink": "second"}),
         ],
-        select=(2, 2),
-        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={1},
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
     )
     assert _autolink_events(goals) == [
         ("add_autolink", 2, "first"),
@@ -108,9 +105,8 @@ def test_remove_autolink_by_sending_empty_keyword(tree_2_goals) -> None:
             RenderRow(1, 1, "Root", True, False, [child(2)]),
             RenderRow(2, 2, "Autolink on me", True, True, []),
         ],
-        select=(2, 2),
-        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={1},
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
     )
     assert _autolink_events(goals) == [
         ("add_autolink", 2, "lalala"),
@@ -126,9 +122,8 @@ def test_remove_autolink_by_sending_whitespace(tree_2_goals) -> None:
             RenderRow(1, 1, "Root", True, False, [child(2)]),
             RenderRow(2, 2, "Autolink on me", True, True, []),
         ],
-        select=(2, 2),
-        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={1},
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
     )
     assert _autolink_events(goals) == [
         ("add_autolink", 2, "lalala"),
@@ -144,9 +139,8 @@ def test_do_not_add_autolink_on_whitespace(tree_2_goals) -> None:
             RenderRow(1, 1, "Root", True, False, [child(2)]),
             RenderRow(2, 2, "Autolink on me", True, True, []),
         ],
-        select=(2, 2),
-        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={1},
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
     )
     assert _autolink_events(goals) == []
 
@@ -167,9 +161,8 @@ def test_do_not_add_autolink_to_closed_goals() -> None:
             RenderRow(1, 1, "Root", True, True, [child(2)]),
             RenderRow(2, 2, "Well, it's closed", False, True, []),
         ],
-        select=(2, 2),
-        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={1},
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
     )
     assert messages == ["Autolink cannot be set for closed goals"]
     assert _autolink_events(goals) == []
@@ -185,9 +178,8 @@ def test_do_not_add_autolink_to_root_goal() -> None:
         [
             RenderRow(1, 1, "Root", True, True, []),
         ],
-        select=(1, 1),
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         roots={1},
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )
     assert messages == ["Autolink cannot be set for the root goal"]
     assert _autolink_events(goals) == []
@@ -201,9 +193,8 @@ def test_remove_autolink_on_close(tree_2_goals) -> None:
             RenderRow(1, 1, "Root", True, False, [child(2)]),
             RenderRow(2, 2, "Autolink on me", True, True, [], {"Autolink": "test"}),
         ],
-        select=(2, 2),
-        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={1},
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
     )
     goals.accept(ToggleClose())
     assert goals.q() == RenderResult(
@@ -211,9 +202,8 @@ def test_remove_autolink_on_close(tree_2_goals) -> None:
             RenderRow(1, 1, "Root", True, True, [child(2)]),
             RenderRow(2, 2, "Autolink on me", False, True, []),
         ],
-        select=(1, 1),
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         roots={1},
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )
     assert _autolink_events(goals) == [
         ("add_autolink", 2, "test"),
@@ -229,18 +219,16 @@ def test_remove_autolink_on_delete(tree_2_goals) -> None:
             RenderRow(1, 1, "Root", True, False, [child(2)]),
             RenderRow(2, 2, "Autolink on me", True, True, [], {"Autolink": "test"}),
         ],
-        select=(2, 2),
-        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={1},
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
     )
     goals.accept(Delete())
     assert goals.q() == RenderResult(
         [
             RenderRow(1, 1, "Root", True, True, []),
         ],
-        select=(1, 1),
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         roots={1},
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )
     assert _autolink_events(goals) == [
         ("add_autolink", 2, "test"),
@@ -257,18 +245,16 @@ def test_remove_autolink_on_parent_delete(tree_3i_goals) -> None:
             RenderRow(2, 2, "Autolink on me", True, False, [child(3)]),
             RenderRow(3, 3, "Another subgoal", True, True, [], {"Autolink": "test"}),
         ],
-        select=(3, 2),
-        global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 2},
         roots={1},
+        global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 2},
     )
     goals.accept_all(Select(2), Delete())
     assert goals.q() == RenderResult(
         [
             RenderRow(1, 1, "Root", True, True, []),
         ],
-        select=(1, 1),
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         roots={1},
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )
     assert _autolink_events(goals) == [
         ("add_autolink", 3, "test"),
@@ -285,9 +271,8 @@ def test_replace_same_autolink(tree_3v_goals) -> None:
             RenderRow(2, 2, "Autolink on me", True, True, []),
             RenderRow(3, 3, "Another subgoal", True, True, [], {"Autolink": "same"}),
         ],
-        select=(3, 2),
-        global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 2},
         roots={1},
+        global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 2},
     )
     assert _autolink_events(goals) == [
         ("add_autolink", 2, "same"),
@@ -307,9 +292,8 @@ def test_do_not_make_a_link_on_not_matching_add(tree_2_goals) -> None:
             RenderRow(2, 2, "Autolink on me", True, True, [], {"Autolink": "hello"}),
             RenderRow(3, 3, "Goodbye", True, True, []),
         ],
-        select=(1, 2),
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 2},
         roots={1},
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 2},
     )
     assert _autolink_events(goals) == [
         ("add_autolink", 2, "hello"),
@@ -329,9 +313,8 @@ def test_make_a_link_on_matching_add(tree_2_goals) -> None:
             ),
             RenderRow(3, 3, "Link ME please", True, True, []),
         ],
-        select=(1, 2),
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 2},
         roots={1},
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 2},
     )
     assert _autolink_events(goals) == [
         ("add_autolink", 2, "me"),
@@ -349,9 +332,8 @@ def test_do_not_make_a_link_on_not_old_matching_add(tree_2_goals) -> None:
             RenderRow(2, 2, "Autolink on me", True, True, [], {"Autolink": "new"}),
             RenderRow(3, 3, "This is old subgoal", True, True, []),
         ],
-        select=(1, 2),
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 2},
         roots={1},
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 2},
     )
     assert _autolink_events(goals) == [
         ("add_autolink", 2, "old"),
@@ -374,9 +356,8 @@ def test_make_a_link_on_matching_insert(tree_3v_goals) -> None:
             RenderRow(3, 3, "Another subgoal", True, True, []),
             RenderRow(4, 4, "Link ME please", True, False, [child(3)]),
         ],
-        select=(3, 1),
-        global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 1},
         roots={1},
+        global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 1},
     )
 
 
@@ -392,9 +373,8 @@ def test_make_a_link_on_matching_rename(tree_3v_goals) -> None:
             ),
             RenderRow(3, 3, "Link ME please", True, True, []),
         ],
-        select=(3, 2),
-        global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 2},
         roots={1},
+        global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 2},
     )
 
 
@@ -411,9 +391,8 @@ def test_do_not_make_a_link_on_matching_subgoal_add(tree_2_goals) -> None:
             ),
             RenderRow(3, 3, "Do NOT link me please", True, True, []),
         ],
-        select=(2, 2),
-        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={1},
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
     )
 
 
@@ -431,9 +410,8 @@ def test_do_not_make_a_link_on_matching_subgoal_insert(tree_3i_goals) -> None:
             RenderRow(3, 3, "Another subgoal", True, True, []),
             RenderRow(4, 4, "Do NOT link me please", True, False, [child(3)]),
         ],
-        select=(3, 2),
-        global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 2},
         roots={1},
+        global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 2},
     )
 
 
@@ -449,9 +427,8 @@ def test_do_not_make_a_link_on_matching_subgoal_rename(tree_3i_goals) -> None:
             ),
             RenderRow(3, 3, "Do NOT link me please", True, True, []),
         ],
-        select=(3, 2),
-        global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 2},
         roots={1},
+        global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 2},
     )
 
 
@@ -465,9 +442,8 @@ def test_autolink_on_all_matching_goals(tree_3v_goals) -> None:
             RenderRow(2, 2, "Autolink on me", True, True, [], {"Autolink": "me"}),
             RenderRow(3, 3, "Another subgoal", True, True, [], {"Autolink": "plea"}),
         ],
-        select=(3, 2),
-        global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 2},
         roots={1},
+        global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 2},
     )
     # add 2-mathing goal
     goals.accept_all(Select(1), Add("Link me to both please"))
@@ -489,9 +465,8 @@ def test_autolink_on_all_matching_goals(tree_3v_goals) -> None:
             ),
             RenderRow(4, 4, "Link me to both please", True, True, []),
         ],
-        select=(1, 2),
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 2},
         roots={1},
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 2},
     )
 
 
@@ -508,9 +483,8 @@ def test_relink_as_blocker(tree_3v_goals) -> None:
             RenderRow(3, 3, "Another subgoal", True, True, [relation(4)]),
             RenderRow(4, 4, "relink target", True, True, []),
         ],
-        select=(2, 2),
-        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={1},
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
     )
     # re-link goal from relation into a blocker
     goals.accept_all(Select(3), HoldSelect(), Select(4))
@@ -524,7 +498,6 @@ def test_relink_as_blocker(tree_3v_goals) -> None:
             RenderRow(3, 3, "Another subgoal", True, False, [blocker(4)]),
             RenderRow(4, 4, "relink target", True, True, []),
         ],
-        select=(4, 3),
-        global_opts={OPTION_SELECT: 4, OPTION_PREV_SELECT: 3},
         roots={1},
+        global_opts={OPTION_SELECT: 4, OPTION_PREV_SELECT: 3},
     )

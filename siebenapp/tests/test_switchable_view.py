@@ -20,9 +20,8 @@ def test_toggle_hide_non_switchable_goals() -> None:
             RenderRow(2, 2, "Switchable 1", True, True, []),
             RenderRow(3, 3, "Switchable 2", True, True, []),
         ],
-        select=(2, 2),
-        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={1},
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
     )
     e.accept(ToggleSwitchableView())
     assert e.q() == RenderResult(
@@ -30,9 +29,8 @@ def test_toggle_hide_non_switchable_goals() -> None:
             RenderRow(2, 2, "Switchable 1", True, True, []),
             RenderRow(3, 3, "Switchable 2", True, True, []),
         ],
-        select=(2, 2),
-        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={2, 3},
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
     )
     e.accept(ToggleSwitchableView())
     assert e.q() == RenderResult(
@@ -41,9 +39,8 @@ def test_toggle_hide_non_switchable_goals() -> None:
             RenderRow(2, 2, "Switchable 1", True, True, []),
             RenderRow(3, 3, "Switchable 2", True, True, []),
         ],
-        select=(2, 2),
-        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={1},
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
     )
 
 
@@ -63,9 +60,8 @@ def test_do_not_hide_unswitchable_goals_when_they_have_selection() -> None:
             RenderRow(2, 2, "Prev-selected", True, False, []),
             RenderRow(3, 3, "Switchable", True, True, []),
         ],
-        select=(1, 2),
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 2},
         roots={1, 2, 3},
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 2},
     )
 
 
@@ -78,9 +74,8 @@ def test_non_switchable_goals_disappear_on_selection_change() -> None:
             RenderRow(2, 2, "1", True, True, []),
             RenderRow(3, 3, "2", True, True, []),
         ],
-        select=(2, 1),
-        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 1},
         roots={1, 2, 3},
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 1},
     )
     e.accept(HoldSelect())
     assert e.q() == RenderResult(
@@ -88,9 +83,8 @@ def test_non_switchable_goals_disappear_on_selection_change() -> None:
             RenderRow(2, 2, "1", True, True, []),
             RenderRow(3, 3, "2", True, True, []),
         ],
-        select=(2, 2),
-        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={2, 3},
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
     )
 
 
@@ -108,9 +102,8 @@ def test_how_should_we_deal_with_zooming() -> None:
             RenderRow(2, 2, "Zoomed", True, False, [], {"Zoom": "Root goal"}),
             RenderRow(3, 3, "Ex-top", True, True, []),
         ],
-        select=(2, 2),
-        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={2, 3},
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
     )
     v.accept(Add("Unexpectedly hidden"))
     assert v.q() == RenderResult(
@@ -118,9 +111,8 @@ def test_how_should_we_deal_with_zooming() -> None:
             RenderRow(2, 2, "Zoomed", True, False, [], {"Zoom": "Root goal"}),
             RenderRow(3, 3, "Ex-top", True, True, []),
         ],
-        select=(2, 2),
-        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={2, 3},
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
     )
 
 

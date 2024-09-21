@@ -134,7 +134,6 @@ class Goals(Graph):
             )
         return RenderResult(
             rows,
-            select=(self.selection, self.previous_selection),
             roots={Goals.ROOT_ID},
             global_opts={
                 OPTION_SELECT: self.selection,

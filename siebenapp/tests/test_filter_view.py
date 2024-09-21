@@ -41,9 +41,8 @@ def test_empty_string_means_no_filter(goaltree) -> None:
             RenderRow(2, 2, "Beta", True, False, [child(3)]),
             RenderRow(3, 3, "Gamma", True, True, []),
         ],
-        select=(1, 1),
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         roots={1},
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )
 
 
@@ -53,9 +52,8 @@ def test_filter_by_substring(goaltree) -> None:
         [
             RenderRow(1, 1, "Alpha", True, False, [], {"Filter": "ph"}),
         ],
-        select=(1, 1),
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         roots={1},
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )
 
 
@@ -66,9 +64,8 @@ def test_selected_goal_must_not_be_filtered_out(goaltree) -> None:
             RenderRow(2, 2, "Beta", True, False, [child(3)], {"Filter": "be"}),
             RenderRow(3, 3, "Gamma", True, True, []),
         ],
-        select=(3, 3),
-        global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 3},
         roots={2},
+        global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 3},
     )
 
 
@@ -80,9 +77,8 @@ def test_show_fake_goal_when_filter_matches_nothing(goaltree) -> None:
             RenderRow(3, 3, "Gamma", True, True, []),
             RenderRow(-2, -2, "Filter by 'matching no one'", True, False, []),
         ],
-        select=(3, 1),
-        global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 1},
         roots={1, 3, -2},
+        global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 1},
     )
 
 
@@ -94,9 +90,8 @@ def test_zoomed_parent_goal_must_not_be_filtered_out(zoomed_goaltree) -> None:
             RenderRow(3, 3, "Gamma", True, True, [], {"Filter": "mm"}),
             RenderRow(-1, -1, "Alpha", True, False, [blocker(2)]),
         ],
-        select=(2, -1),
-        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: -1},
         roots={-1},
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: -1},
     )
 
 
@@ -108,9 +103,8 @@ def test_empty_filter_string_means_resetting(goaltree) -> None:
             RenderRow(2, 2, "Beta", True, False, [child(3)]),
             RenderRow(3, 3, "Gamma", True, True, []),
         ],
-        select=(1, 1),
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         roots={1},
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )
 
 
@@ -121,7 +115,6 @@ def test_filter_is_case_insensitive(goaltree) -> None:
             RenderRow(1, 1, "Alpha", True, False, [child(2)]),
             RenderRow(2, 2, "Beta", True, False, [], {"Filter": "eta"}),
         ],
-        select=(1, 1),
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         roots={1},
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )

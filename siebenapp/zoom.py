@@ -102,7 +102,6 @@ class Zoom(Graph):
         return replace(
             render_result,
             rows=rows,
-            select=new_select,
             roots=new_roots,
             global_opts=render_result.global_opts
             | {OPTION_SELECT: new_select[0], OPTION_PREV_SELECT: new_select[1]},

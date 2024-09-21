@@ -58,7 +58,6 @@ class RenderRow:
 class RenderResult:
     rows: list[RenderRow]
     edge_opts: dict[str, tuple[int, int, int]]
-    select: tuple[GoalId, GoalId]
     node_opts: dict[GoalId, Any]
     global_opts: dict[str, Any]
     roots: set[GoalId]
@@ -68,7 +67,6 @@ class RenderResult:
         self,
         rows: list[RenderRow],
         edge_opts: dict[str, tuple[int, int, int]] | None = None,
-        select: tuple[GoalId, GoalId] | None = None,
         node_opts: dict[GoalId, dict[str, Any]] | None = None,
         roots: set[GoalId] | None = None,
         global_opts: dict[str, Any] | None = None,
@@ -78,7 +76,6 @@ class RenderResult:
     ):
         self.rows = rows
         self.edge_opts = edge_opts or {}
-        self.select = select or (0, 0)
         self.node_opts = node_opts or {}
         self.global_opts = global_opts or {}
         self.roots = roots or set()

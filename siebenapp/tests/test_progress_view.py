@@ -34,9 +34,8 @@ def test_no_progress_by_default(goaltree) -> None:
             RenderRow(3, 3, "With subgoal", True, False, [child(4)]),
             RenderRow(4, 4, "Top goal", True, True, []),
         ],
-        select=(1, 1),
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         roots={1},
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )
 
 
@@ -75,9 +74,8 @@ def test_show_progress(goaltree) -> None:
                 4, 4, "Top goal", True, True, [], {"Progress": "0% (0/1)", "Id": "4"}
             ),
         ],
-        select=(1, 1),
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         roots={1},
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )
 
 
@@ -90,9 +88,8 @@ def test_toggle_hide_progress(goaltree) -> None:
             RenderRow(3, 3, "With subgoal", True, False, [child(4)]),
             RenderRow(4, 4, "Top goal", True, True, []),
         ],
-        select=(1, 1),
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         roots={1},
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )
 
 
@@ -131,9 +128,8 @@ def test_change_progress_on_close(goaltree) -> None:
                 4, 4, "Top goal", False, True, [], {"Progress": "100% (1/1)", "Id": "4"}
             ),
         ],
-        select=(1, 1),
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         roots={1},
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )
     goaltree.accept_all(Select(2), ToggleClose())
     assert goaltree.q() == RenderResult(
@@ -175,7 +171,6 @@ def test_change_progress_on_close(goaltree) -> None:
                 {"Progress": "100% (1/1)", "Id": "4"},
             ),
         ],
-        select=(1, 1),
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         roots={1},
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )
