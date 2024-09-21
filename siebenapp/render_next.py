@@ -161,7 +161,13 @@ def revert_rows(rr: RenderResult) -> RenderResult:
     Here we revert rows order to adapt them to screen requirements."""
     max_row: int = max(o["row"] for o in rr.node_opts.values()) + 1
     node_opts = {k: v | {"row": max_row - v["row"]} for k, v in rr.node_opts.items()}
-    return RenderResult(rr.rows, rr.edge_opts, rr.select, node_opts, rr.roots)
+    return RenderResult(
+        rr.rows,
+        edge_opts=rr.edge_opts,
+        select=rr.select,
+        node_opts=node_opts,
+        roots=rr.roots,
+    )
 
 
 def tweak_horizontal(
@@ -182,7 +188,13 @@ def add_edges(rr: RenderResult) -> RenderResult:
     node_opts = rr.node_opts
     for r in rr.rows:
         node_opts[r.goal_id] |= {"edge_render": r.edges}
-    return RenderResult(rr.rows, rr.edge_opts, rr.select, node_opts, rr.roots)
+    return RenderResult(
+        rr.rows,
+        edge_opts=rr.edge_opts,
+        select=rr.select,
+        node_opts=node_opts,
+        roots=rr.roots,
+    )
 
 
 def full_render(
