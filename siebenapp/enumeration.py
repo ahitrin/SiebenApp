@@ -67,8 +67,9 @@ class Enumeration(Graph):
             index.forward(render_result.global_opts[OPTION_SELECT]),
             index.forward(render_result.global_opts[OPTION_PREV_SELECT]),
         )
-        return RenderResult(
-            rows,
+        return replace(
+            render_result,
+            rows=rows,
             select=new_select,
             roots={index.forward(goal_id) for goal_id in render_result.roots},
             global_opts=render_result.global_opts

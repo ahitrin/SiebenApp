@@ -68,9 +68,4 @@ class ProgressView(Graph):
             for row in rows
         ]
 
-        return RenderResult(
-            result_rows,
-            select=render_result.select,
-            roots=render_result.roots,
-            global_opts=render_result.global_opts,
-        )
+        return replace(render_result, rows=result_rows)

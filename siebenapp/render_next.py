@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any
 from collections.abc import Callable
 
@@ -66,13 +66,7 @@ def tube(step: RenderStep, width: int) -> RenderStep:
             already_added.add(g)
 
     return RenderStep(
-        RenderResult(
-            step.rr.rows,
-            node_opts=new_opts,
-            select=step.rr.select,
-            roots=step.rr.roots,
-            global_opts=step.rr.global_opts,
-        ),
+        replace(step.rr, node_opts=new_opts),
         filtered_roots,
         new_layers,
         step.previous,
@@ -122,13 +116,7 @@ def adjust_horizontal(rr: RenderResult, mult: float) -> RenderResult:
         goal_id: opts | {"col": opts["col"] + (mult * deltas[goal_id])}
         for goal_id, opts in rr.node_opts.items()
     }
-    return RenderResult(
-        rr.rows,
-        node_opts=new_opts,
-        select=rr.select,
-        roots=rr.roots,
-        global_opts=rr.global_opts,
-    )
+    return replace(rr, node_opts=new_opts)
 
 
 def normalize_cols(rr: RenderResult, width: int) -> RenderResult:
@@ -157,13 +145,7 @@ def normalize_cols(rr: RenderResult, width: int) -> RenderResult:
         goal_id: opts | {"col": indexed[goal_id]}
         for goal_id, opts in rr.node_opts.items()
     }
-    return RenderResult(
-        rr.rows,
-        node_opts=new_opts,
-        select=rr.select,
-        roots=rr.roots,
-        global_opts=rr.global_opts,
-    )
+    return replace(rr, node_opts=new_opts)
 
 
 def __log(listener: list[tuple[str, Any]] | None, msg: str, content: Any) -> None:
@@ -177,14 +159,7 @@ def revert_rows(rr: RenderResult) -> RenderResult:
     Here we revert rows order to adapt them to screen requirements."""
     max_row: int = max(o["row"] for o in rr.node_opts.values()) + 1
     node_opts = {k: v | {"row": max_row - v["row"]} for k, v in rr.node_opts.items()}
-    return RenderResult(
-        rr.rows,
-        edge_opts=rr.edge_opts,
-        select=rr.select,
-        node_opts=node_opts,
-        roots=rr.roots,
-        global_opts=rr.global_opts,
-    )
+    return replace(rr, node_opts=node_opts)
 
 
 def tweak_horizontal(
@@ -205,14 +180,7 @@ def add_edges(rr: RenderResult) -> RenderResult:
     node_opts = rr.node_opts
     for r in rr.rows:
         node_opts[r.goal_id] |= {"edge_render": r.edges}
-    return RenderResult(
-        rr.rows,
-        edge_opts=rr.edge_opts,
-        select=rr.select,
-        node_opts=node_opts,
-        roots=rr.roots,
-        global_opts=rr.global_opts,
-    )
+    return replace(rr, node_opts=node_opts)
 
 
 def full_render(

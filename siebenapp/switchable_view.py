@@ -45,9 +45,4 @@ class SwitchableView(Graph):
                 render_result.global_opts[OPTION_PREV_SELECT],
             ]
         ]
-        return RenderResult(
-            rows,
-            select=render_result.select,
-            roots={r.goal_id for r in rows},
-            global_opts=render_result.global_opts,
-        )
+        return replace(render_result, rows=rows, roots={r.goal_id for r in rows})

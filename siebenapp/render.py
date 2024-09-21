@@ -1,5 +1,5 @@
 from collections import defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any, Optional, Protocol
 
 from siebenapp.domain import Graph, EdgeType, GoalId, RenderResult, Command
@@ -85,13 +85,11 @@ class Renderer:
         self.reorder()
         self.update_graph()
         self.build_index()
-        return RenderResult(
-            self.rows,
+        return replace(
+            self.render_result,
+            rows=self.rows,
             edge_opts=self.result_edge_options,
-            select=self.render_result.select,
             node_opts=self.node_opts,
-            roots=self.render_result.roots,
-            global_opts=self.render_result.global_opts,
         )
 
     def split_by_layers(self) -> None:

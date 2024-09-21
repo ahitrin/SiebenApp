@@ -72,6 +72,9 @@ class RenderResult:
         node_opts: dict[GoalId, dict[str, Any]] | None = None,
         roots: set[GoalId] | None = None,
         global_opts: dict[str, Any] | None = None,
+        index: (
+            dict[GoalId, int] | None
+        ) = None,  # intentionally unused, needed for compatibility with dataclasses.replace()
     ):
         self.rows = rows
         self.edge_opts = edge_opts or {}

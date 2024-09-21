@@ -67,9 +67,4 @@ class FilterView(Graph):
             rows.append(fake_row)
         linked_ids: set[GoalId] = {goal_id for r in rows for goal_id, _ in r.edges}
         new_roots: set[GoalId] = all_ids.difference(linked_ids)
-        return RenderResult(
-            rows,
-            select=render_result.select,
-            roots=new_roots,
-            global_opts=render_result.global_opts,
-        )
+        return replace(render_result, rows=rows, roots=new_roots)
