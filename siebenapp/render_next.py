@@ -67,7 +67,11 @@ def tube(step: RenderStep, width: int) -> RenderStep:
 
     return RenderStep(
         RenderResult(
-            step.rr.rows, node_opts=new_opts, select=step.rr.select, roots=step.rr.roots
+            step.rr.rows,
+            node_opts=new_opts,
+            select=step.rr.select,
+            roots=step.rr.roots,
+            global_opts=step.rr.global_opts,
         ),
         filtered_roots,
         new_layers,
@@ -118,7 +122,13 @@ def adjust_horizontal(rr: RenderResult, mult: float) -> RenderResult:
         goal_id: opts | {"col": opts["col"] + (mult * deltas[goal_id])}
         for goal_id, opts in rr.node_opts.items()
     }
-    return RenderResult(rr.rows, node_opts=new_opts, select=rr.select, roots=rr.roots)
+    return RenderResult(
+        rr.rows,
+        node_opts=new_opts,
+        select=rr.select,
+        roots=rr.roots,
+        global_opts=rr.global_opts,
+    )
 
 
 def normalize_cols(rr: RenderResult, width: int) -> RenderResult:
@@ -147,7 +157,13 @@ def normalize_cols(rr: RenderResult, width: int) -> RenderResult:
         goal_id: opts | {"col": indexed[goal_id]}
         for goal_id, opts in rr.node_opts.items()
     }
-    return RenderResult(rr.rows, node_opts=new_opts, select=rr.select, roots=rr.roots)
+    return RenderResult(
+        rr.rows,
+        node_opts=new_opts,
+        select=rr.select,
+        roots=rr.roots,
+        global_opts=rr.global_opts,
+    )
 
 
 def __log(listener: list[tuple[str, Any]] | None, msg: str, content: Any) -> None:
@@ -167,6 +183,7 @@ def revert_rows(rr: RenderResult) -> RenderResult:
         select=rr.select,
         node_opts=node_opts,
         roots=rr.roots,
+        global_opts=rr.global_opts,
     )
 
 
@@ -194,6 +211,7 @@ def add_edges(rr: RenderResult) -> RenderResult:
         select=rr.select,
         node_opts=node_opts,
         roots=rr.roots,
+        global_opts=rr.global_opts,
     )
 
 
