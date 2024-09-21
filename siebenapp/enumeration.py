@@ -64,8 +64,8 @@ class Enumeration(Graph):
             for row in render_result.rows
         ]
         new_select = (
-            index.forward(render_result.select[0]),
-            index.forward(render_result.select[1]),
+            index.forward(render_result.global_opts[OPTION_SELECT]),
+            index.forward(render_result.global_opts[OPTION_PREV_SELECT]),
         )
         return RenderResult(
             rows,

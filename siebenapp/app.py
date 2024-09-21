@@ -15,6 +15,7 @@ from PySide6.QtWidgets import (  # type: ignore
 )
 
 from siebenapp.autolink import ToggleAutoLink
+from siebenapp.goaltree import OPTION_SELECT, OPTION_PREV_SELECT
 from siebenapp.progress_view import ToggleProgress
 from siebenapp.filter_view import FilterBy
 from siebenapp.domain import (
@@ -212,7 +213,13 @@ class SiebenApp(QMainWindow):
         self.centralWidget().scrollAreaWidgetContents.layout().addWidget(  # type: ignore
             widget, attributes["row"], attributes["col"]
         )
-        widget.setup_data(row, render_result.select)
+        widget.setup_data(
+            row,
+            (
+                render_result.global_opts[OPTION_SELECT],
+                render_result.global_opts[OPTION_PREV_SELECT],
+            ),
+        )
         widget.clicked.connect(self.select_number(row.goal_id))
         widget.check_open.clicked.connect(self.close_goal(row.goal_id))
 
@@ -349,7 +356,7 @@ class SiebenApp(QMainWindow):
 
     def _current_goal_label(self):
         render_result = self.goals_holder.goals.q()
-        current_row = render_result.by_id(render_result.select[0])
+        current_row = render_result.by_id(render_result.global_opts[OPTION_SELECT])
         return current_row.name
 
     def with_refresh(self, fn, *args, **kwargs):

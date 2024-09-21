@@ -55,7 +55,12 @@ class Zoom(Graph):
         assert origin_root.goal_id == Goals.ROOT_ID
         visible_goals = (
             self._build_visible_goals(render_result)
-            .union(set(render_result.select))
+            .union(
+                {
+                    render_result.global_opts[OPTION_SELECT],
+                    render_result.global_opts[OPTION_PREV_SELECT],
+                }
+            )
             .difference({Goals.ROOT_ID})
         )
         rows: list[RenderRow] = [
@@ -72,7 +77,7 @@ class Zoom(Graph):
             for r in render_result.rows
             if r.goal_id in visible_goals
         ]
-        if render_result.select[1] == Goals.ROOT_ID:
+        if render_result.global_opts[OPTION_PREV_SELECT] == Goals.ROOT_ID:
             rows.append(
                 RenderRow(
                     -1,
@@ -88,8 +93,8 @@ class Zoom(Graph):
                 )
             )
         new_select = (
-            _replace_with_fake(render_result.select[0]),
-            _replace_with_fake(render_result.select[1]),
+            _replace_with_fake(render_result.global_opts[OPTION_SELECT]),
+            _replace_with_fake(render_result.global_opts[OPTION_PREV_SELECT]),
         )
         all_ids: set[GoalId] = {r.goal_id for r in rows}
         linked_ids: set[GoalId] = {goal_id for r in rows for goal_id, _ in r.edges}

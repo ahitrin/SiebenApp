@@ -5,6 +5,7 @@ from typing import Any
 from collections.abc import Mapping
 
 from siebenapp.autolink import ToggleAutoLink
+from siebenapp.goaltree import OPTION_SELECT, OPTION_PREV_SELECT
 from siebenapp.render import GoalsHolder
 from siebenapp.domain import (
     ToggleClose,
@@ -68,9 +69,9 @@ def fmt(render_result: RenderResult, row: RenderRow, id_width: int) -> str:
         return f"[{op}]" if row.is_switchable else f" {op} "
 
     def selection() -> str:
-        if render_result.select[0] == row.goal_id:
+        if render_result.global_opts[OPTION_SELECT] == row.goal_id:
             return ">"
-        elif render_result.select[1] == row.goal_id:
+        elif render_result.global_opts[OPTION_PREV_SELECT] == row.goal_id:
             return "_"
         return " "
 

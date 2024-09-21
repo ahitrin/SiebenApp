@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import Any, Optional, Protocol
 
 from siebenapp.domain import Graph, EdgeType, GoalId, RenderResult, Command
+from siebenapp.goaltree import OPTION_SELECT, OPTION_PREV_SELECT
 from siebenapp.render_next import full_render
 from siebenapp.system import save
 
@@ -90,6 +91,7 @@ class Renderer:
             select=self.render_result.select,
             node_opts=self.node_opts,
             roots=self.render_result.roots,
+            global_opts=self.render_result.global_opts,
         )
 
     def split_by_layers(self) -> None:
@@ -346,11 +348,17 @@ class GoalsHolder:
                     # eager exit on any change in rows
                     return []
             result: list[GoalId] = []
-            if self.previous.select[0] != new_result.select[0]:
-                result.append(self.previous.select[0])
-                result.append(new_result.select[0])
-            if self.previous.select[1] != new_result.select[1]:
-                result.append(self.previous.select[1])
-                result.append(new_result.select[1])
+            if (
+                self.previous.global_opts[OPTION_SELECT]
+                != new_result.global_opts[OPTION_SELECT]
+            ):
+                result.append(self.previous.global_opts[OPTION_SELECT])
+                result.append(new_result.global_opts[OPTION_SELECT])
+            if (
+                self.previous.global_opts[OPTION_PREV_SELECT]
+                != new_result.global_opts[OPTION_PREV_SELECT]
+            ):
+                result.append(self.previous.global_opts[OPTION_PREV_SELECT])
+                result.append(new_result.global_opts[OPTION_PREV_SELECT])
             return result
         return []

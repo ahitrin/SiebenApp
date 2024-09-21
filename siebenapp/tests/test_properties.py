@@ -29,7 +29,7 @@ from siebenapp.domain import (
     Graph,
 )
 from siebenapp.filter_view import FilterBy
-from siebenapp.goaltree import Goals
+from siebenapp.goaltree import Goals, OPTION_SELECT, OPTION_PREV_SELECT
 from siebenapp.layers import all_layers
 from siebenapp.open_view import ToggleOpenView
 from siebenapp.switchable_view import ToggleSwitchableView
@@ -89,7 +89,10 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         self._accept(Select(random_goal))
         # Any valid goal must be selectable
         render_result = self.goaltree.q()
-        assert render_result.by_id(random_goal).goal_id == render_result.select[0]
+        assert (
+            render_result.by_id(random_goal).goal_id
+            == render_result.global_opts[OPTION_SELECT]
+        )
 
     @rule()
     def hold_selection(self) -> None:
@@ -98,7 +101,15 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 
     @rule()
     # Run insert only when two different goals are selected
-    @precondition(lambda self: len(set(self.goaltree.q().select).difference({-1})) > 1)
+    @precondition(
+        lambda self: len(
+            {
+                self.goaltree.q().global_opts[OPTION_SELECT],
+                self.goaltree.q().global_opts[OPTION_PREV_SELECT],
+            }.difference({-1})
+        )
+        > 1
+    )
     def insert(self) -> None:
         event("insert")
         self._accept(Insert("i"))
@@ -191,8 +202,12 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     @invariant()
     def there_is_always_one_selected_goal_and_at_most_one_previous(self) -> None:
         render_result = self.goaltree.q()
-        assert render_result.select[0] != 0, str(render_result.select)
-        assert render_result.select[1] != 0, str(render_result.select)
+        assert render_result.global_opts[OPTION_SELECT] != 0, str(
+            render_result.global_opts
+        )
+        assert render_result.global_opts[OPTION_PREV_SELECT] != 0, str(
+            render_result.global_opts
+        )
 
     @invariant()
     def root_goals_should_not_have_incoming_edges(self) -> None:
