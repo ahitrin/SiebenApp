@@ -28,6 +28,14 @@ OPTION_SELECT = "select"
 OPTION_PREV_SELECT = "prev_select"
 
 
+class Selectable(Graph):
+    def __init__(self, goals: Graph, data: OptionsData | None = None):
+        super().__init__(goals)
+
+    def q(self) -> RenderResult:
+        return self.goaltree.q()
+
+
 class Goals(Graph):
     ROOT_ID = 1
 

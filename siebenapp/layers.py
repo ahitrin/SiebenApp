@@ -1,7 +1,7 @@
 from siebenapp.autolink import AutoLink, AutoLinkData
 from siebenapp.domain import Graph
 from siebenapp.filter_view import FilterView
-from siebenapp.goaltree import Goals
+from siebenapp.goaltree import Goals, Selectable
 from siebenapp.open_view import OpenView
 from siebenapp.progress_view import ProgressView
 from siebenapp.switchable_view import SwitchableView
@@ -14,7 +14,7 @@ def persistent_layers(
     autolink_data: AutoLinkData | None = None,
 ) -> Graph:
     """Wrap given graph with all standard persistent logic layers"""
-    return Zoom(AutoLink(graph, autolink_data), zoom_data)
+    return Zoom(AutoLink(Selectable(graph), autolink_data), zoom_data)
 
 
 def view_layers(graph: Graph) -> Graph:

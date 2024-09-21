@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from siebenapp.goaltree import Goals, OPTION_SELECT, OPTION_PREV_SELECT
+from siebenapp.goaltree import Goals, OPTION_SELECT, OPTION_PREV_SELECT, Selectable
 from siebenapp.domain import (
     EdgeType,
     HoldSelect,
@@ -23,7 +23,7 @@ from siebenapp.tests.dsl import build_goaltree, open_, clos_
 class GoalsTest(TestCase):
     def setUp(self):
         self.messages = []
-        self.goals = Goals("Root", self._register_message)
+        self.goals = Selectable(Goals("Root", self._register_message))
 
     def _register_message(self, msg):
         self.messages.append(msg)

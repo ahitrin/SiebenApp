@@ -1,5 +1,5 @@
 from siebenapp.domain import Add, Select, HoldSelect, RenderRow, RenderResult, child
-from siebenapp.goaltree import Goals, OPTION_SELECT, OPTION_PREV_SELECT
+from siebenapp.goaltree import Goals, OPTION_SELECT, OPTION_PREV_SELECT, Selectable
 from siebenapp.layers import persistent_layers
 from siebenapp.switchable_view import ToggleSwitchableView, SwitchableView
 from siebenapp.tests.dsl import build_goaltree, open_
@@ -66,7 +66,7 @@ def test_do_not_hide_unswitchable_goals_when_they_have_selection() -> None:
 
 
 def test_non_switchable_goals_disappear_on_selection_change() -> None:
-    e = SwitchableView(Goals("root"))
+    e = SwitchableView(Selectable(Goals("root")))
     e.accept_all(Add("1"), Add("2"), Select(2), ToggleSwitchableView(), Select(2))
     assert e.q() == RenderResult(
         [

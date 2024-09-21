@@ -12,7 +12,7 @@ from siebenapp.domain import (
     RenderRow,
     RenderResult,
 )
-from siebenapp.goaltree import Goals, OPTION_SELECT, OPTION_PREV_SELECT
+from siebenapp.goaltree import Goals, OPTION_SELECT, OPTION_PREV_SELECT, Selectable
 from siebenapp.tests.dsl import build_goaltree, open_, clos_
 from siebenapp.zoom import Zoom, ToggleZoom
 
@@ -22,7 +22,7 @@ def _zoom_events(goals: Graph) -> list[tuple]:
 
 
 def test_single_goal_could_not_be_zoomed() -> None:
-    goals = Zoom(Goals("Root goal"))
+    goals = Zoom(Selectable(Goals("Root goal")))
     assert goals.q() == RenderResult(
         [RenderRow(1, 1, "Root goal", True, True, [])],
         roots={1},
