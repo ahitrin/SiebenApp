@@ -40,5 +40,8 @@ class SwitchableView(Graph):
             if row.is_switchable or row.goal_id in list(render_result.select)
         ]
         return RenderResult(
-            rows, select=render_result.select, roots={r.goal_id for r in rows}
+            rows,
+            select=render_result.select,
+            roots={r.goal_id for r in rows},
+            global_opts=render_result.global_opts,
         )

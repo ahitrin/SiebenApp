@@ -3,6 +3,7 @@ from collections.abc import Iterable
 from dataclasses import replace
 
 from siebenapp.domain import Graph, Select, GoalId, RenderResult, RenderRow
+from siebenapp.goaltree import OPTION_SELECT, OPTION_PREV_SELECT
 
 
 class BidirectionalIndex:
@@ -70,6 +71,11 @@ class Enumeration(Graph):
             rows,
             select=new_select,
             roots={index.forward(goal_id) for goal_id in render_result.roots},
+            global_opts=render_result.global_opts
+            | {
+                OPTION_SELECT: new_select[0],
+                OPTION_PREV_SELECT: new_select[1],
+            },
         )
 
     def accept_Select(self, command: Select):

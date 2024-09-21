@@ -12,7 +12,7 @@ from siebenapp.domain import (
     RenderRow,
     RenderResult,
 )
-from siebenapp.goaltree import Goals
+from siebenapp.goaltree import Goals, OPTION_SELECT, OPTION_PREV_SELECT
 from siebenapp.tests.dsl import build_goaltree, open_, clos_
 from siebenapp.zoom import Zoom, ToggleZoom
 
@@ -24,11 +24,17 @@ def _zoom_events(goals: Graph) -> list[tuple]:
 def test_single_goal_could_not_be_zoomed() -> None:
     goals = Zoom(Goals("Root goal"))
     assert goals.q() == RenderResult(
-        [RenderRow(1, 1, "Root goal", True, True, [])], select=(1, 1), roots={1}
+        [RenderRow(1, 1, "Root goal", True, True, [])],
+        select=(1, 1),
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
+        roots={1},
     )
     goals.accept(ToggleZoom())
     assert goals.q() == RenderResult(
-        [RenderRow(1, 1, "Root goal", True, True, [])], select=(1, 1), roots={1}
+        [RenderRow(1, 1, "Root goal", True, True, [])],
+        select=(1, 1),
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
+        roots={1},
     )
 
 
@@ -47,6 +53,7 @@ def test_skip_intermediate_goal_during_zoom() -> None:
             RenderRow(3, 3, "Zoomed", True, True, [], {"Zoom": "Root goal"}),
         ],
         select=(3, 3),
+        global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 3},
         roots={3},
     )
 
@@ -67,6 +74,7 @@ def test_hide_neighbour_goals_during_zoom() -> None:
             RenderRow(2, 2, "Zoomed", True, True, [], {"Zoom": "Root goal"}),
         ],
         select=(2, 2),
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={2},
     )
 
@@ -87,6 +95,7 @@ def test_do_not_hide_subgoals() -> None:
             RenderRow(3, 3, "Visible", True, True, []),
         ],
         select=(2, 2),
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={2},
     )
     goals.accept(Add("More children", 3))
@@ -97,6 +106,7 @@ def test_do_not_hide_subgoals() -> None:
             RenderRow(4, 4, "More children", True, True, []),
         ],
         select=(2, 2),
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={2},
     )
 
@@ -118,6 +128,7 @@ def test_hide_subgoals_of_blockers() -> None:
             RenderRow(3, 3, "Blocker", True, False, []),
         ],
         select=(2, 2),
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={2},
     )
 
@@ -137,6 +148,7 @@ def test_double_zoom_means_unzoom() -> None:
             RenderRow(2, 2, "Zoomed", True, True, [], {"Zoom": "Root goal"}),
         ],
         select=(2, 2),
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={2},
     )
     goals.accept(ToggleZoom())
@@ -147,6 +159,7 @@ def test_double_zoom_means_unzoom() -> None:
             RenderRow(3, 3, "Hidden", True, True, []),
         ],
         select=(2, 2),
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={1},
     )
 
@@ -172,6 +185,7 @@ def test_stacked_zoom() -> None:
             RenderRow(5, 5, "Top", True, True, []),
         ],
         select=(4, 3),
+        global_opts={OPTION_SELECT: 4, OPTION_PREV_SELECT: 3},
         roots={3},
     )
     goals.accept(ToggleZoom())
@@ -191,6 +205,7 @@ def test_stacked_zoom() -> None:
             RenderRow(5, 5, "Top", True, True, []),
         ],
         select=(4, 3),
+        global_opts={OPTION_SELECT: 4, OPTION_PREV_SELECT: 3},
         roots={3},
     )
 
@@ -213,6 +228,7 @@ def test_selection_should_not_be_changed_if_selected_goal_is_visible() -> None:
             RenderRow(3, 3, "Previous selected", True, True, []),
         ],
         select=(2, 3),
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 3},
         roots={2},
     )
 
@@ -236,6 +252,7 @@ def test_selection_should_not_be_changed_if_selected_goal_is_sibling_to_zoom_roo
             RenderRow(3, 3, "Zoomed", True, True, [], {"Zoom": "Root goal"}),
         ],
         select=(3, 2),
+        global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 2},
         roots={2, 3},
     )
 
@@ -261,6 +278,7 @@ def test_selection_should_not_be_changed_if_selected_goal_is_not_a_child_of_zoom
             RenderRow(4, 4, "Zoomed", True, False, [blocker(2)], {"Zoom": "Root goal"}),
         ],
         select=(4, 3),
+        global_opts={OPTION_SELECT: 4, OPTION_PREV_SELECT: 3},
         roots={4},
     )
 
@@ -312,6 +330,7 @@ def test_selection_should_not_be_changed_on_stacked_unzoom_a_long_chain_of_block
             RenderRow(4, 4, "E", True, True, []),
         ],
         select=(3, 4),
+        global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 4},
         roots={2},
     )
     goals.verify()
@@ -340,6 +359,7 @@ def test_unlink_for_goal_outside_of_zoomed_tree_should_not_cause_selection_chang
             RenderRow(3, 3, "Zoom root", True, True, [], {"Zoom": "Root goal"}),
         ],
         select=(2, 3),
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 3},
         roots={2, 3},
     )
 
@@ -361,6 +381,7 @@ def test_closing_zoom_root_should_cause_unzoom() -> None:
             RenderRow(3, 3, "Zoom here", False, True, []),
         ],
         select=(2, 2),
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={1},
     )
 
@@ -383,6 +404,7 @@ def test_goal_closing_must_not_cause_root_selection() -> None:
             RenderRow(3, 3, "Close me", True, True, []),
         ],
         select=(2, 2),
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={2},
     )
     goals.accept_all(Select(3), ToggleClose())
@@ -392,6 +414,7 @@ def test_goal_closing_must_not_cause_root_selection() -> None:
             RenderRow(3, 3, "Close me", False, True, []),
         ],
         select=(2, 2),
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={2},
     )
 
@@ -416,6 +439,7 @@ def test_goal_reopening_must_not_change_selection() -> None:
             RenderRow(3, 3, "Reopen me", False, True, []),
         ],
         select=(2, 2),
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={2},
     )
     goals.accept_all(Select(3), ToggleClose())
@@ -427,6 +451,7 @@ def test_goal_reopening_must_not_change_selection() -> None:
             RenderRow(3, 3, "Reopen me", True, True, []),
         ],
         select=(3, 2),
+        global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 2},
         roots={2},
     )
 
@@ -447,6 +472,7 @@ def test_deleting_zoom_root_should_cause_unzoom() -> None:
             RenderRow(2, 2, "Intermediate", True, True, []),
         ],
         select=(2, 2),
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={1},
     )
 
@@ -469,6 +495,7 @@ def test_deleting_parent_goal_should_cause_unzoom() -> None:
             RenderRow(5, 5, "Final zoom", True, True, [], {"Zoom": "Root goal"}),
         ],
         select=(5, 2),
+        global_opts={OPTION_SELECT: 5, OPTION_PREV_SELECT: 2},
         roots={2, 5},
     )
     assert _zoom_events(goals) == [
@@ -482,6 +509,7 @@ def test_deleting_parent_goal_should_cause_unzoom() -> None:
             RenderRow(1, 1, "Root goal", True, True, []),
         ],
         select=(1, 1),
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         roots={1},
     )
     assert _zoom_events(goals) == [
@@ -513,6 +541,7 @@ def test_goal_deletion_must_not_cause_root_selection() -> None:
             RenderRow(4, 4, "Deleted", True, True, []),
         ],
         select=(3, 3),
+        global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 3},
         roots={3},
     )
     goals.accept_all(Select(4), Delete())
@@ -521,6 +550,7 @@ def test_goal_deletion_must_not_cause_root_selection() -> None:
             RenderRow(3, 3, "Zoom root", True, True, [], {"Zoom": "Root goal"}),
         ],
         select=(3, 3),
+        global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 3},
         roots={3},
     )
 
@@ -559,6 +589,7 @@ def test_do_not_duplicate_parent_prev_selection() -> None:
             RenderRow(-1, -1, "Root goal", True, False, [blocker(2)]),
         ],
         select=(2, -1),
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: -1},
         roots={-1},
     )
 
@@ -579,6 +610,7 @@ def test_global_root_is_isolated() -> None:
             RenderRow(-1, -1, "Root goal", True, False, []),
         ],
         select=(3, -1),
+        global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: -1},
         roots={3, -1},
     )
 
@@ -595,6 +627,7 @@ def test_zoom_root_must_not_be_switchable() -> None:
             RenderRow(2, 2, "Closed", False, True, []),
         ],
         select=(2, 1),
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 1},
         roots={1},
     )
     goals.accept(ToggleZoom())
@@ -604,6 +637,7 @@ def test_zoom_root_must_not_be_switchable() -> None:
             RenderRow(-1, -1, "Root goal", True, False, [blocker(2)]),
         ],
         select=(2, -1),
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: -1},
         roots={-1},
     )
 
@@ -630,6 +664,7 @@ def test_zoom_attempt_out_of_stack() -> None:
             RenderRow(4, 4, "Top", True, True, []),
         ],
         select=(2, 2),
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={2, 3},
     )
     assert goals.q() == expected

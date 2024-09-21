@@ -11,7 +11,7 @@ from siebenapp.domain import (
     RenderRow,
     blocker,
 )
-from siebenapp.goaltree import Goals
+from siebenapp.goaltree import Goals, OPTION_SELECT, OPTION_PREV_SELECT
 
 
 @dataclass(frozen=True)
@@ -94,7 +94,13 @@ class Zoom(Graph):
         all_ids: set[GoalId] = {r.goal_id for r in rows}
         linked_ids: set[GoalId] = {goal_id for r in rows for goal_id, _ in r.edges}
         new_roots: set[GoalId] = all_ids.difference(linked_ids)
-        return RenderResult(rows, select=new_select, roots=new_roots)
+        return RenderResult(
+            rows,
+            select=new_select,
+            roots=new_roots,
+            global_opts=render_result.global_opts
+            | {OPTION_SELECT: new_select[0], OPTION_PREV_SELECT: new_select[1]},
+        )
 
     def accept_ToggleClose(self, command: ToggleClose):
         if self.settings("selection") == self.zoom_root[-1]:

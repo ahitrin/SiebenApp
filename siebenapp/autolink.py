@@ -141,7 +141,10 @@ class AutoLink(Graph):
             for row in render_result.rows
         ]
         return RenderResult(
-            rows, select=render_result.select, roots=render_result.roots
+            rows,
+            select=render_result.select,
+            roots=render_result.roots,
+            global_opts=render_result.global_opts,
         )
 
     @staticmethod

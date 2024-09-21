@@ -5,6 +5,7 @@ import pytest
 
 from siebenapp.domain import Select, child, RenderRow, RenderResult
 from siebenapp.enumeration import Enumeration
+from siebenapp.goaltree import OPTION_SELECT, OPTION_PREV_SELECT
 from siebenapp.layers import all_layers, persistent_layers
 from siebenapp.manage import main, dot_export, extract_subtree
 from siebenapp.system import save, load
@@ -25,6 +26,7 @@ def test_create_default_db_on_migrate_missing_file() -> None:
         [RenderRow(1, 1, "Rename me", True, True, [])],
         roots={1},
         select=(1, 1),
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )
 
 
@@ -224,5 +226,6 @@ def test_extract_misordered() -> None:
             RenderRow(2, 2, "Top", True, True, []),
         ],
         select=(1, 1),
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         roots={1},
     )

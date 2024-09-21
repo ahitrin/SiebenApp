@@ -9,6 +9,7 @@ from siebenapp.domain import (
     RenderResult,
 )
 from siebenapp.enumeration import Enumeration, BidirectionalIndex
+from siebenapp.goaltree import OPTION_SELECT, OPTION_PREV_SELECT
 from siebenapp.layers import all_layers
 from siebenapp.switchable_view import ToggleSwitchableView, SwitchableView
 from siebenapp.tests.dsl import build_goaltree, open_
@@ -57,6 +58,7 @@ def test_simple_enumeration_is_not_changed() -> None:
             RenderRow(3, 3, "c", True, True, []),
         ],
         select=(3, 2),
+        global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 2},
         roots={1},
     )
 
@@ -77,6 +79,7 @@ def test_apply_mapping_for_the_10th_element(goal_chain_10) -> None:
             RenderRow(0, 10, "j", True, True, []),
         ],
         select=(1, 1),
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         roots={1},
     )
 
@@ -98,6 +101,7 @@ def test_apply_mapping_for_the_11th_element(goal_chain_11) -> None:
             RenderRow(21, 11, "k", True, True, []),
         ],
         select=(11, 11),
+        global_opts={OPTION_SELECT: 11, OPTION_PREV_SELECT: 11},
         roots={11},
     )
 
@@ -119,6 +123,7 @@ def test_use_mapping_in_selection(goal_chain_10) -> None:
             RenderRow(0, 10, "j", True, True, []),
         ],
         select=(0, 1),
+        global_opts={OPTION_SELECT: 0, OPTION_PREV_SELECT: 1},
         roots={1},
     )
 
@@ -142,6 +147,7 @@ def test_do_not_select_goal_by_partial_id(goal_chain_11) -> None:
             RenderRow(21, 11, "k", True, True, []),
         ],
         select=(11, 11),
+        global_opts={OPTION_SELECT: 11, OPTION_PREV_SELECT: 11},
         roots={11},
     )
 
@@ -164,6 +170,7 @@ def test_select_goal_by_id_parts(goal_chain_11) -> None:
             RenderRow(21, 11, "k", True, True, []),
         ],
         select=(16, 11),
+        global_opts={OPTION_SELECT: 16, OPTION_PREV_SELECT: 11},
         roots={11},
     )
 
@@ -185,6 +192,7 @@ def test_select_goal_by_full_id(goal_chain_11) -> None:
             RenderRow(21, 11, "k", True, True, []),
         ],
         select=(11, 11),
+        global_opts={OPTION_SELECT: 11, OPTION_PREV_SELECT: 11},
         roots={11},
     )
     e.accept(Select(13))
@@ -203,6 +211,7 @@ def test_select_goal_by_full_id(goal_chain_11) -> None:
             RenderRow(21, 11, "k", True, True, []),
         ],
         select=(13, 11),
+        global_opts={OPTION_SELECT: 13, OPTION_PREV_SELECT: 11},
         roots={11},
     )
 
@@ -224,6 +233,7 @@ def test_select_goal_by_full_id_with_non_empty_cache(goal_chain_11) -> None:
             RenderRow(21, 11, "k", True, True, []),
         ],
         select=(11, 11),
+        global_opts={OPTION_SELECT: 11, OPTION_PREV_SELECT: 11},
         roots={11},
     )
     e.accept_all(Select(2), Select(13))
@@ -242,6 +252,7 @@ def test_select_goal_by_full_id_with_non_empty_cache(goal_chain_11) -> None:
             RenderRow(21, 11, "k", True, True, []),
         ],
         select=(13, 11),
+        global_opts={OPTION_SELECT: 13, OPTION_PREV_SELECT: 11},
         roots={11},
     )
 
@@ -259,6 +270,7 @@ def test_enumerated_goals_must_have_the_same_dimension() -> None:
             RenderRow(3, 20, "x", True, True, []),
         ],
         select=(1, 1),
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         roots={1},
     )
 
@@ -276,6 +288,7 @@ def test_selection_cache_should_be_reset_after_view_switch(goal_chain_11) -> Non
             RenderRow(3, 12, "Also top", True, True, []),
         ],
         select=(1, 1),
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         roots={1, 2, 3},
     )
     # Select(2) is being applied without any effect from the previous selection
@@ -288,6 +301,7 @@ def test_selection_cache_should_be_reset_after_view_switch(goal_chain_11) -> Non
             RenderRow(3, 12, "Also top", True, True, []),
         ],
         select=(2, 1),
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 1},
         roots={1, 2, 3},
     )
 
@@ -320,6 +334,7 @@ def test_do_not_enumerate_goals_with_negative_id() -> None:
             RenderRow(-1, -1, "Root goal", True, False, [blocker(2)]),
         ],
         select=(2, -1),
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: -1},
         roots={-1},
     )
     e = Enumeration(g)
@@ -330,6 +345,7 @@ def test_do_not_enumerate_goals_with_negative_id() -> None:
             RenderRow(-1, -1, "Root goal", True, False, [blocker(1)]),
         ],
         select=(1, -1),
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: -1},
         roots={-1},
     )
 

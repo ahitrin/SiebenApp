@@ -8,6 +8,7 @@ from siebenapp.domain import (
     child,
     blocker,
 )
+from siebenapp.goaltree import OPTION_SELECT, OPTION_PREV_SELECT
 from siebenapp.progress_view import ProgressView, ToggleProgress
 from siebenapp.tests.dsl import build_goaltree, open_
 
@@ -34,6 +35,7 @@ def test_no_progress_by_default(goaltree) -> None:
             RenderRow(4, 4, "Top goal", True, True, []),
         ],
         select=(1, 1),
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         roots={1},
     )
 
@@ -74,6 +76,7 @@ def test_show_progress(goaltree) -> None:
             ),
         ],
         select=(1, 1),
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         roots={1},
     )
 
@@ -88,6 +91,7 @@ def test_toggle_hide_progress(goaltree) -> None:
             RenderRow(4, 4, "Top goal", True, True, []),
         ],
         select=(1, 1),
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         roots={1},
     )
 
@@ -128,6 +132,7 @@ def test_change_progress_on_close(goaltree) -> None:
             ),
         ],
         select=(1, 1),
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         roots={1},
     )
     goaltree.accept_all(Select(2), ToggleClose())
@@ -171,5 +176,6 @@ def test_change_progress_on_close(goaltree) -> None:
             ),
         ],
         select=(1, 1),
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         roots={1},
     )

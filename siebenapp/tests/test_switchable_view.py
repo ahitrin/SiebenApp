@@ -1,5 +1,5 @@
 from siebenapp.domain import Add, Select, HoldSelect, RenderRow, RenderResult, child
-from siebenapp.goaltree import Goals
+from siebenapp.goaltree import Goals, OPTION_SELECT, OPTION_PREV_SELECT
 from siebenapp.layers import persistent_layers
 from siebenapp.switchable_view import ToggleSwitchableView, SwitchableView
 from siebenapp.tests.dsl import build_goaltree, open_
@@ -21,6 +21,7 @@ def test_toggle_hide_non_switchable_goals() -> None:
             RenderRow(3, 3, "Switchable 2", True, True, []),
         ],
         select=(2, 2),
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={1},
     )
     e.accept(ToggleSwitchableView())
@@ -30,6 +31,7 @@ def test_toggle_hide_non_switchable_goals() -> None:
             RenderRow(3, 3, "Switchable 2", True, True, []),
         ],
         select=(2, 2),
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={2, 3},
     )
     e.accept(ToggleSwitchableView())
@@ -40,6 +42,7 @@ def test_toggle_hide_non_switchable_goals() -> None:
             RenderRow(3, 3, "Switchable 2", True, True, []),
         ],
         select=(2, 2),
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={1},
     )
 
@@ -61,6 +64,7 @@ def test_do_not_hide_unswitchable_goals_when_they_have_selection() -> None:
             RenderRow(3, 3, "Switchable", True, True, []),
         ],
         select=(1, 2),
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 2},
         roots={1, 2, 3},
     )
 
@@ -75,6 +79,7 @@ def test_non_switchable_goals_disappear_on_selection_change() -> None:
             RenderRow(3, 3, "2", True, True, []),
         ],
         select=(2, 1),
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 1},
         roots={1, 2, 3},
     )
     e.accept(HoldSelect())
@@ -84,6 +89,7 @@ def test_non_switchable_goals_disappear_on_selection_change() -> None:
             RenderRow(3, 3, "2", True, True, []),
         ],
         select=(2, 2),
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={2, 3},
     )
 
@@ -103,6 +109,7 @@ def test_how_should_we_deal_with_zooming() -> None:
             RenderRow(3, 3, "Ex-top", True, True, []),
         ],
         select=(2, 2),
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={2, 3},
     )
     v.accept(Add("Unexpectedly hidden"))
@@ -112,6 +119,7 @@ def test_how_should_we_deal_with_zooming() -> None:
             RenderRow(3, 3, "Ex-top", True, True, []),
         ],
         select=(2, 2),
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         roots={2, 3},
     )
 

@@ -24,6 +24,10 @@ EdgesData = list[tuple[int, int, EdgeType]]
 OptionsData = list[tuple[str, int]]
 
 
+OPTION_SELECT = "select"
+OPTION_PREV_SELECT = "prev_select"
+
+
 class Goals(Graph):
     ROOT_ID = 1
 
@@ -132,6 +136,10 @@ class Goals(Graph):
             rows,
             select=(self.selection, self.previous_selection),
             roots={Goals.ROOT_ID},
+            global_opts={
+                OPTION_SELECT: self.selection,
+                OPTION_PREV_SELECT: self.previous_selection,
+            },
         )
 
     def _switchable(self, key: int) -> bool:

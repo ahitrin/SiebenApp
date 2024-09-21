@@ -54,5 +54,8 @@ class OpenView(Graph):
             {e[0] for row in rows for e in row.edges}
         )
         return RenderResult(
-            rows, select=render_result.select, roots=render_result.roots.union(dangling)
+            rows,
+            select=render_result.select,
+            roots=render_result.roots.union(dangling),
+            global_opts=render_result.global_opts,
         )
