@@ -1,3 +1,5 @@
+from typing import TypeVar
+
 from siebenapp.autolink import AutoLink, AutoLinkData
 from siebenapp.domain import Graph
 from siebenapp.filter_view import FilterView
@@ -33,11 +35,14 @@ def all_layers(
     return view_layers(persistent_layers(graph, options_data, zoom_data, autolink_data))
 
 
-def get_root(graph: Graph) -> Goals:
+G = TypeVar("G", bound=Graph)
+
+
+def get_root(graph: Graph, target_type: type[G]) -> G:
     """Find the deepest layer that contains goaltree data"""
     max_reasonable_depth: int = 10
     for _ in range(max_reasonable_depth):
-        if isinstance(graph, Goals):
+        if isinstance(graph, target_type):
             return graph
         graph = graph.goaltree
     raise Exception(f"Cannot find root layer after {max_reasonable_depth} attempts")

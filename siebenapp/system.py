@@ -123,7 +123,7 @@ def save(goals: Graph, filename: str) -> None:
 
 def save_connection(goals: Graph, connection) -> None:
     run_migrations(connection)
-    root_goals: Goals = get_root(goals)
+    root_goals: Goals = get_root(goals, Goals)
     goals_export, edges_export, select_export = Goals.export(root_goals)
     zoom_goals = goals
     while not isinstance(zoom_goals, Zoom):

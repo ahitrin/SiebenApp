@@ -59,7 +59,7 @@ def merge(args: Namespace, io: IO) -> None:
     merged_db = Goals("Merged")
     delta = 1
     for source_db in sources:
-        source_root = get_root(load(source_db))
+        source_root = get_root(load(source_db), Goals)
         merged_db.goals |= {
             goal_id + delta: name for goal_id, name in source_root.goals.items()
         }
@@ -231,7 +231,7 @@ def _format_md_row(render_result: RenderResult, row: RenderRow, shift: int) -> s
 
 
 def extract_subtree(source_goals: Graph, goal_id: int) -> Graph:
-    root_goaltree: Goals = get_root(source_goals)
+    root_goaltree: Goals = get_root(source_goals, Goals)
     render_result = root_goaltree.q()
     assert (
         render_result.by_id(goal_id) is not None
