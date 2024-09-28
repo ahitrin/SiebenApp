@@ -81,7 +81,10 @@ class Selectable(Graph):
 
     def accept_Delete(self, command: Delete) -> None:
         target = command.goal_id or self.selection
-        self.goaltree.accept(replace(command, goal_id=target))
+        parent: int = self.goaltree._parent(target)
+        if self._command_approved(replace(command, goal_id=target)):
+            self.accept_Select(Select(parent))
+            self.accept_HoldSelect(HoldSelect())
 
     def _command_approved(self, command: Command) -> bool:
         events_before: int = len(self.events())
@@ -309,10 +312,7 @@ class Goals(Graph):
         if (goal_id := command.goal_id) == Goals.ROOT_ID:
             self.error("Root goal can't be deleted")
             return
-        parent: int = self._parent(goal_id)
         self._delete_subtree(goal_id)
-        self.accept_Select(Select(parent))
-        self.accept(HoldSelect())
 
     def _delete_subtree(self, goal_id: int) -> None:
         parent: int = self._parent(goal_id)
