@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from siebenapp.goaltree import Goals, OPTION_SELECT, OPTION_PREV_SELECT, Selectable
+from siebenapp.goaltree import Goals
 from siebenapp.domain import (
     EdgeType,
     ToggleClose,
@@ -26,12 +26,9 @@ class GoalsTest(TestCase):
     def _register_message(self, msg):
         self.messages.append(msg)
 
-    def build(self, *goal_prototypes, select: tuple[int, int]) -> Selectable:
-        return Selectable(
-            build_goaltree(
-                *goal_prototypes, select=select, message_fn=self._register_message
-            ),
-            [("selection", select[0]), ("previous_selection", select[1])],
+    def build(self, *goal_prototypes, select: tuple[int, int]) -> Goals:
+        return build_goaltree(
+            *goal_prototypes, select=select, message_fn=self._register_message
         )
 
     def test_there_is_one_goal_at_start(self) -> None:
@@ -105,7 +102,7 @@ class GoalsTest(TestCase):
         self.goals = self.build(
             open_(1, "Root", [2, 3]), open_(2, "A"), open_(3, "B"), select=(3, 2)
         )
-        self.goals.accept(Insert("Wow"))
+        self.goals.accept(Insert("Wow", 2, 3))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
@@ -114,7 +111,6 @@ class GoalsTest(TestCase):
                 RenderRow(4, 4, "Wow", True, False, [blocker(3)]),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 2},
         )
 
     def test_reverse_insertion(self) -> None:
@@ -131,7 +127,6 @@ class GoalsTest(TestCase):
                 RenderRow(3, 3, "Intermediate?", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 2},
         )
 
     def test_close_single_goal(self) -> None:
@@ -153,16 +148,14 @@ class GoalsTest(TestCase):
                 RenderRow(2, 2, "A", False, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         )
-        self.goals.accept(ToggleClose())
+        self.goals.accept(ToggleClose(2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2)]),
                 RenderRow(2, 2, "A", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         )
 
     def test_close_goal_again(self) -> None:
@@ -177,7 +170,6 @@ class GoalsTest(TestCase):
                 RenderRow(3, 3, "Ab", False, False, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         )
         self.goals.accept(ToggleClose(2))
         assert self.goals.q() == RenderResult(
@@ -187,7 +179,6 @@ class GoalsTest(TestCase):
                 RenderRow(3, 3, "Ab", False, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         )
         self.goals.accept(ToggleClose(2))
         assert self.goals.q() == RenderResult(
@@ -197,7 +188,6 @@ class GoalsTest(TestCase):
                 RenderRow(3, 3, "Ab", False, False, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         )
 
     def test_closed_leaf_goal_could_not_be_reopened(self) -> None:
@@ -211,10 +201,9 @@ class GoalsTest(TestCase):
                 RenderRow(3, 3, "B", False, False, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         )
         self.goals.accept(ToggleClose(3))
-        # nothing should change except select
+        # nothing should change
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, True, [child(2)]),
@@ -222,7 +211,6 @@ class GoalsTest(TestCase):
                 RenderRow(3, 3, "B", False, False, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         )
 
     def test_goal_in_the_middle_could_not_be_closed(self) -> None:
@@ -233,7 +221,7 @@ class GoalsTest(TestCase):
             open_(4, "C"),
             select=(3, 3),
         )
-        self.goals.accept(ToggleClose())
+        self.goals.accept(ToggleClose(3))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
@@ -242,7 +230,6 @@ class GoalsTest(TestCase):
                 RenderRow(4, 4, "C", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 3},
         )
 
     def test_blocker_could_not_be_switchable(self) -> None:
@@ -262,10 +249,9 @@ class GoalsTest(TestCase):
                 RenderRow(4, 4, "Blocker", False, False, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         )
         # Goal 4 could only become switchable when we reopen goal 2
-        self.goals.accept(ToggleClose())
+        self.goals.accept(ToggleClose(2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
@@ -274,43 +260,39 @@ class GoalsTest(TestCase):
                 RenderRow(4, 4, "Blocker", False, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         )
 
     def test_delete_single_goal(self) -> None:
         self.goals = self.build(open_(1, "Root", [2]), open_(2, "A"), select=(2, 2))
-        self.goals.accept(Delete())
+        self.goals.accept(Delete(2))
         assert self.goals.q() == RenderResult(
             [RenderRow(1, 1, "Root", True, True, [])],
             roots={1},
-            global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         )
 
     def test_delete_leaf_goal(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2, 3]), open_(2, "A"), open_(3, "B"), select=(2, 2)
         )
-        self.goals.accept(Delete())
+        self.goals.accept(Delete(2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(3)]),
                 RenderRow(3, 3, "B", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         )
 
     def test_delete_with_children(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2]), open_(2, "A", [3]), open_(3, "B"), select=(2, 2)
         )
-        self.goals.accept(Delete())
+        self.goals.accept(Delete(2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         )
 
     def test_delete_with_blocker(self) -> None:
@@ -320,14 +302,13 @@ class GoalsTest(TestCase):
             open_(3, "B"),
             select=(2, 2),
         )
-        self.goals.accept(Delete())
+        self.goals.accept(Delete(2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [blocker(3)]),
                 RenderRow(3, 3, "B", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         )
 
     def test_delete_with_relation(self) -> None:
@@ -337,14 +318,13 @@ class GoalsTest(TestCase):
             open_(3, "B"),
             select=(2, 2),
         )
-        self.goals.accept(Delete())
+        self.goals.accept(Delete(2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, True, [relation(3)]),
                 RenderRow(3, 3, "B", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         )
 
     def test_delete_with_relation_and_closed_root(self) -> None:
@@ -354,27 +334,25 @@ class GoalsTest(TestCase):
             open_(3, "B"),
             select=(2, 2),
         )
-        self.goals.accept(Delete())
+        self.goals.accept(Delete(2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", False, True, [relation(3)]),
                 RenderRow(3, 3, "B", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         )
 
     def test_remove_goal_chain_with_children(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2]), open_(2, "A", [3]), open_(3, "B"), select=(2, 2)
         )
-        self.goals.accept(Delete())
+        self.goals.accept(Delete(2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         )
 
     def test_relink_goal_chain_with_blockers(self) -> None:
@@ -384,14 +362,13 @@ class GoalsTest(TestCase):
             open_(3, "B"),
             select=(2, 2),
         )
-        self.goals.accept(Delete())
+        self.goals.accept(Delete(2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [blocker(3)]),
                 RenderRow(3, 3, "B", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         )
 
     def test_relink_goal_chain_with_relation(self) -> None:
@@ -401,14 +378,13 @@ class GoalsTest(TestCase):
             open_(3, "B"),
             select=(2, 2),
         )
-        self.goals.accept(Delete())
+        self.goals.accept(Delete(2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, True, [relation(3)]),
                 RenderRow(3, 3, "B", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         )
 
     def test_cannot_convert_relation_for_closed_goal(self) -> None:
@@ -421,9 +397,8 @@ class GoalsTest(TestCase):
                 RenderRow(2, 2, "Related", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 1},
         )
-        self.goals.accept(ToggleLink())
+        self.goals.accept(ToggleLink(1, 2))
         # Nothing should change
         assert self.goals.q() == RenderResult(
             [
@@ -431,7 +406,6 @@ class GoalsTest(TestCase):
                 RenderRow(2, 2, "Related", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 1},
         )
         # Error message is expected
         assert len(self.messages) == 1
@@ -443,14 +417,13 @@ class GoalsTest(TestCase):
             open_(3, "Delete me"),
             select=(3, 1),
         )
-        self.goals.accept(Delete())
+        self.goals.accept(Delete(3))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2)]),
                 RenderRow(2, 2, "Parent", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         )
 
     def test_add_blocker_link_between_goals(self) -> None:
@@ -464,9 +437,8 @@ class GoalsTest(TestCase):
                 RenderRow(3, 3, "B", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 2},
         )
-        self.goals.accept(ToggleLink())
+        self.goals.accept(ToggleLink(2, 3))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
@@ -474,7 +446,6 @@ class GoalsTest(TestCase):
                 RenderRow(3, 3, "B", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 2},
         )
 
     def test_add_relation_link_between_goals(self) -> None:
@@ -488,9 +459,8 @@ class GoalsTest(TestCase):
                 RenderRow(3, 3, "B", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 2},
         )
-        self.goals.accept(ToggleLink(edge_type=EdgeType.RELATION))
+        self.goals.accept(ToggleLink(2, 3, edge_type=EdgeType.RELATION))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
@@ -498,7 +468,6 @@ class GoalsTest(TestCase):
                 RenderRow(3, 3, "B", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 2},
         )
 
     def test_no_link_to_self_is_allowed(self) -> None:
@@ -516,7 +485,7 @@ class GoalsTest(TestCase):
             open_(4, "more"),
             select=(1, 4),
         )
-        self.goals.accept(ToggleLink())
+        self.goals.accept(ToggleLink(4, 1))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2)]),
@@ -525,7 +494,6 @@ class GoalsTest(TestCase):
                 RenderRow(4, 4, "more", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 4},
         )
 
     def test_new_parent_link_replaces_old_one(self) -> None:
@@ -536,7 +504,7 @@ class GoalsTest(TestCase):
             open_(4, "Child"),
             select=(4, 3),
         )
-        self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
+        self.goals.accept(ToggleLink(3, 4, edge_type=EdgeType.PARENT))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
@@ -545,7 +513,6 @@ class GoalsTest(TestCase):
                 RenderRow(4, 4, "Child", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 4, OPTION_PREV_SELECT: 3},
         )
 
     def test_new_parent_link_replaces_old_one_when_changed_from_blocker(self) -> None:
@@ -555,7 +522,7 @@ class GoalsTest(TestCase):
             open_(3, "B", blockers=[2]),
             select=(2, 3),
         )
-        self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
+        self.goals.accept(ToggleLink(3, 2, edge_type=EdgeType.PARENT))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [relation(2), child(3)]),
@@ -563,7 +530,6 @@ class GoalsTest(TestCase):
                 RenderRow(3, 3, "B", True, False, [child(2)]),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 3},
         )
 
     def test_remove_link_between_goals(self) -> None:
@@ -573,7 +539,7 @@ class GoalsTest(TestCase):
             open_(3, "B"),
             select=(3, 2),
         )
-        self.goals.accept(ToggleLink(edge_type=EdgeType.BLOCKER))
+        self.goals.accept(ToggleLink(2, 3, edge_type=EdgeType.BLOCKER))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
@@ -581,7 +547,6 @@ class GoalsTest(TestCase):
                 RenderRow(3, 3, "B", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 2},
         )
 
     def test_change_link_type(self) -> None:
@@ -594,34 +559,30 @@ class GoalsTest(TestCase):
                 RenderRow(2, 2, "Top", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 1},
         )
-        self.goals.accept(ToggleLink())
+        self.goals.accept(ToggleLink(1, 2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [blocker(2)]),
                 RenderRow(2, 2, "Top", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 1},
         )
-        self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
+        self.goals.accept(ToggleLink(1, 2, edge_type=EdgeType.PARENT))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2)]),
                 RenderRow(2, 2, "Top", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 1},
         )
-        self.goals.accept(ToggleLink(edge_type=EdgeType.RELATION))
+        self.goals.accept(ToggleLink(1, 2, edge_type=EdgeType.RELATION))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, True, [relation(2)]),
                 RenderRow(2, 2, "Top", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 1},
         )
 
     def test_remove_blocked_goal_without_children(self) -> None:
@@ -640,7 +601,6 @@ class GoalsTest(TestCase):
                 RenderRow(4, 4, "C", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 4, OPTION_PREV_SELECT: 4},
         )
         self.goals.accept(Delete(3))
         assert self.goals.q() == RenderResult(
@@ -650,7 +610,6 @@ class GoalsTest(TestCase):
                 RenderRow(4, 4, "C", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         )
 
     def test_children_of_blocked_goal_are_blocked_too(self) -> None:
@@ -669,10 +628,9 @@ class GoalsTest(TestCase):
                 RenderRow(4, 4, "Nested subgoal", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         )
         # Blocking a goal should lead to blocking of all its subgoals
-        self.goals.accept(Add("Overall blocker", edge_type=EdgeType.BLOCKER))
+        self.goals.accept(Add("Overall blocker", 1, edge_type=EdgeType.BLOCKER))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3), blocker(5)]),
@@ -682,7 +640,6 @@ class GoalsTest(TestCase):
                 RenderRow(5, 5, "Overall blocker", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         )
 
     def test_nested_subgoal_cannot_block_siblings_by_parent(self):
@@ -703,10 +660,9 @@ class GoalsTest(TestCase):
                 RenderRow(5, 5, "Top", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 4, OPTION_PREV_SELECT: 1},
         )
         # When a subgoal blocks parent, it shouldn't make all other subgoals and itself blocked
-        self.goals.accept(ToggleLink(EdgeType.BLOCKER))
+        self.goals.accept(ToggleLink(1, 4, EdgeType.BLOCKER))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3), blocker(4)]),
@@ -716,7 +672,6 @@ class GoalsTest(TestCase):
                 RenderRow(5, 5, "Top", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 4, OPTION_PREV_SELECT: 1},
         )
 
     def test_mutual_blocking(self) -> None:
@@ -733,10 +688,9 @@ class GoalsTest(TestCase):
                 RenderRow(3, 3, "Blocker-of-root", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 3},
         )
         # When we block a blocker, which goal should be switchable? Is such a move allowed?
-        self.goals.accept(ToggleLink())
+        self.goals.accept(ToggleLink(3, 2))
         # Seems not to be allowed
         assert self.goals.q() == RenderResult(
             [
@@ -745,7 +699,6 @@ class GoalsTest(TestCase):
                 RenderRow(3, 3, "Blocker-of-root", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 3},
         )
 
     def test_mutual_blocking_by_converting_parent_link(self) -> None:
@@ -762,7 +715,7 @@ class GoalsTest(TestCase):
             open_(3, "Goal 3", blockers=[2]),
             select=(3, 1),
         )
-        self.goals.accept(ToggleLink(edge_type=EdgeType.BLOCKER))
+        self.goals.accept(ToggleLink(1, 3, edge_type=EdgeType.BLOCKER))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), blocker(3)]),
@@ -770,7 +723,6 @@ class GoalsTest(TestCase):
                 RenderRow(3, 3, "Goal 3", True, False, [blocker(2)]),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 1},
         )
 
     def test_relation_edge_does_not_block(self) -> None:
@@ -787,7 +739,6 @@ class GoalsTest(TestCase):
                 RenderRow(3, 3, "Does not block", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         )
 
     def test_add_two_goals_to_root(self) -> None:
@@ -842,7 +793,7 @@ class GoalsTest(TestCase):
             open_(4, "C"),
             select=(2, 2),
         )
-        self.goals.accept(ToggleClose())
+        self.goals.accept(ToggleClose(2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3), child(4)]),
@@ -851,10 +802,10 @@ class GoalsTest(TestCase):
                 RenderRow(4, 4, "C", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 3},
         )
 
     def test_move_selection_to_previously_selected_goal_after_closing(self) -> None:
+        # NOTE: probably unneeded
         self.goals = self.build(
             open_(1, "Root", [2, 3, 4]),
             open_(2, "A"),
@@ -862,7 +813,7 @@ class GoalsTest(TestCase):
             open_(4, "C"),
             select=(2, 4),
         )
-        self.goals.accept(ToggleClose())
+        self.goals.accept(ToggleClose(2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3), child(4)]),
@@ -871,7 +822,6 @@ class GoalsTest(TestCase):
                 RenderRow(4, 4, "C", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 4, OPTION_PREV_SELECT: 4},
         )
 
     def test_move_selection_to_another_open_goal_with_given_root_after_closing(
@@ -885,7 +835,7 @@ class GoalsTest(TestCase):
             open_(5, "Closing"),
             select=(5, 5),
         )
-        self.goals.accept(ToggleClose(root=3))
+        self.goals.accept(ToggleClose(5, root=3))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
@@ -895,7 +845,6 @@ class GoalsTest(TestCase):
                 RenderRow(5, 5, "Closing", False, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 4, OPTION_PREV_SELECT: 4},
         )
 
     def test_do_not_select_unswitchable_goal_after_closing(self) -> None:
@@ -908,7 +857,7 @@ class GoalsTest(TestCase):
             open_(6, "Must be selected"),
             select=(5, 5),
         )
-        self.goals.accept(ToggleClose(root=3))
+        self.goals.accept(ToggleClose(5, root=3))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
@@ -919,7 +868,6 @@ class GoalsTest(TestCase):
                 RenderRow(6, 6, "Must be selected", True, True, []),
             ],
             roots={1},
-            global_opts={OPTION_SELECT: 6, OPTION_PREV_SELECT: 6},
         )
 
     def test_add_events(self) -> None:
@@ -955,14 +903,14 @@ class GoalsTest(TestCase):
             open_(3, "Upper", []),
             select=(3, 2),
         )
-        self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
+        self.goals.accept(ToggleLink(2, 3, edge_type=EdgeType.PARENT))
         assert list(self.goals.events())[-4:] == [
             ("link", 2, 3, EdgeType.PARENT),
             ("unlink", 2, 3, EdgeType.BLOCKER),
             ("link", 1, 3, EdgeType.RELATION),
             ("unlink", 1, 3, EdgeType.PARENT),
         ]
-        self.goals.accept(ToggleLink(edge_type=EdgeType.RELATION))
+        self.goals.accept(ToggleLink(2, 3, edge_type=EdgeType.RELATION))
         assert list(self.goals.events())[-2:] == [
             ("link", 2, 3, EdgeType.RELATION),
             ("unlink", 2, 3, EdgeType.PARENT),
@@ -978,12 +926,12 @@ class GoalsTest(TestCase):
 
     def test_message_on_wrong_add(self) -> None:
         self.goals = self.build(clos_(1, "Root"), select=(1, 1))
-        self.goals.accept(Add("Failed"))
+        self.goals.accept(Add("Failed", 1))
         assert len(self.messages) == 1
 
     def test_no_message_on_good_insert(self) -> None:
         self.goals = self.build(open_(1, "Root", [2]), open_(2, "Top"), select=(2, 1))
-        self.goals.accept(Insert("Success"))
+        self.goals.accept(Insert("Success", 1, 2))
         assert self.messages == []
 
     def test_message_on_insert_without_two_goals(self) -> None:
@@ -1007,7 +955,7 @@ class GoalsTest(TestCase):
 
     def test_message_on_closing_blocked_goal(self) -> None:
         self.goals = self.build(open_(1, "Root", [2]), open_(2, "Top"), select=(1, 1))
-        self.goals.accept(ToggleClose())
+        self.goals.accept(ToggleClose(1))
         assert len(self.messages) == 1
 
     def test_no_message_on_valid_reopening(self) -> None:
@@ -1019,7 +967,7 @@ class GoalsTest(TestCase):
         self.goals = self.build(
             clos_(1, "Root", [2]), clos_(2, "Top", []), select=(2, 2)
         )
-        self.goals.accept(ToggleClose())
+        self.goals.accept(ToggleClose(2))
         assert len(self.messages) == 1
 
     def test_no_message_on_delete_non_root_goal(self) -> None:
@@ -1031,7 +979,7 @@ class GoalsTest(TestCase):
 
     def test_message_on_delete_root_goal(self) -> None:
         self.goals = self.build(clos_(1, "Root", [2]), clos_(2, "Top"), select=(1, 1))
-        self.goals.accept(Delete())
+        self.goals.accept(Delete(1))
         assert len(self.messages) == 1
 
     def test_no_message_on_allowed_link(self) -> None:
@@ -1041,7 +989,7 @@ class GoalsTest(TestCase):
             open_(3, "Top", []),
             select=(3, 1),
         )
-        self.goals.accept(ToggleLink())
+        self.goals.accept(ToggleLink(1, 3))
         assert self.messages == []
 
     def test_message_on_link_to_self(self) -> None:
@@ -1061,7 +1009,7 @@ class GoalsTest(TestCase):
             open_(3, "Top", []),
             select=(3, 1),
         )
-        self.goals.accept(ToggleLink())
+        self.goals.accept(ToggleLink(1, 3))
         assert self.messages == []
 
     def test_message_when_remove_last_link(self) -> None:
