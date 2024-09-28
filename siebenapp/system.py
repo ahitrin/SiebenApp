@@ -5,7 +5,7 @@ from collections.abc import Callable
 from siebenapp.autolink import AutoLink, AutoLinkData
 from siebenapp.domain import Graph
 from siebenapp.enumeration import Enumeration
-from siebenapp.goaltree import Goals, OptionsData
+from siebenapp.goaltree import Goals, OptionsData, Selectable
 from siebenapp.layers import all_layers, get_root
 from siebenapp.zoom import Zoom, ZoomData
 
@@ -124,10 +124,12 @@ def save(goals: Graph, filename: str) -> None:
 def save_connection(goals: Graph, connection) -> None:
     run_migrations(connection)
     root_goals: Goals = get_root(goals, Goals)
-    goals_export, edges_export, select_export = Goals.export(root_goals)
-    zoom_goals = get_root(goals, Zoom)
+    goals_export, edges_export, _ = Goals.export(root_goals)
+    select_goals: Selectable = get_root(goals, Selectable)
+    select_export = Selectable.export(select_goals)
+    zoom_goals: Zoom = get_root(goals, Zoom)
     zoom_export = Zoom.export(zoom_goals)
-    autolink_goals = get_root(goals, AutoLink)
+    autolink_goals: AutoLink = get_root(goals, AutoLink)
     autolink_export = AutoLink.export(autolink_goals)
     cur = connection.cursor()
     cur.executemany("insert into goals values (?,?,?)", goals_export)
