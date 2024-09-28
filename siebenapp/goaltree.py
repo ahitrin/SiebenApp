@@ -99,6 +99,16 @@ class Selectable(Graph):
             },
         )
 
+    def settings(self, key: str) -> Any:
+        selection_settings = {
+            "selection": self.selection,
+            "previous_selection": self.previous_selection,
+        }
+        if key in selection_settings:
+            return selection_settings.get(key)
+
+        return self.goaltree.settings(key)
+
 
 class Goals(Graph):
     ROOT_ID = 1
@@ -145,10 +155,7 @@ class Goals(Graph):
         return self._strict_parent(goal) or Goals.ROOT_ID
 
     def settings(self, key: str) -> Any:
-        return {
-            "selection": self.selection,
-            "previous_selection": self.previous_selection,
-        }.get(key, 0)
+        return Graph.NO_VALUE
 
     def events(self) -> deque:
         return self._events
