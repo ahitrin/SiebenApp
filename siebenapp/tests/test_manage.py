@@ -54,7 +54,10 @@ def complex_goaltree_file():
         select=(4, 7),
     )
     file_name = NamedTemporaryFile().name
-    save(all_layers(g), file_name)
+    save(
+        all_layers(g, options_data=[("selection", 4), ("previous_selection", 7)]),
+        file_name,
+    )
     return file_name
 
 
@@ -173,7 +176,7 @@ def extract_source():
                 clos_(7, "Another external blocker NX"),
                 select=(1, 5),
             ),
-            [("selection", 1), ("previous_selection", 5)],
+            options_data=[("selection", 1), ("previous_selection", 5)],
         )
     )
 
@@ -188,7 +191,7 @@ def extract_target():
             clos_(4, "Closed subgoal"),
             select=(1, 1),
         ),
-        [("selection", 1), ("previous_selection", 1)],
+        options_data=[("selection", 1), ("previous_selection", 1)],
     )
 
 
@@ -218,7 +221,7 @@ def test_extract_misordered() -> None:
                 open_(3, "Extraction root", [2]),
                 select=(1, 1),
             ),
-            [("selection", 1), ("previous_selection", 1)],
+            options_data=[("selection", 1), ("previous_selection", 1)],
         )
     )
     result = extract_subtree(source, 3)
