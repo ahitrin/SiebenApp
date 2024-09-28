@@ -82,6 +82,10 @@ class Selectable(Graph):
         target = command.add_to or self.selection
         self.goaltree.accept(replace(command, add_to=target))
 
+    def accept_Delete(self, command: Delete) -> None:
+        target = command.goal_id or self.selection
+        self.goaltree.accept(replace(command, goal_id=target))
+
     def q(self) -> RenderResult:
         rr = self.goaltree.q()
         self.selection = self.goaltree.selection
@@ -285,7 +289,7 @@ class Goals(Graph):
         return min(candidates) if candidates else actual_root
 
     def accept_Delete(self, command: Delete) -> None:
-        if (goal_id := command.goal_id or self.selection) == Goals.ROOT_ID:
+        if (goal_id := command.goal_id) == Goals.ROOT_ID:
             self.error("Root goal can't be deleted")
             return
         parent: int = self._parent(goal_id)
