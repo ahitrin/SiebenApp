@@ -73,6 +73,11 @@ class Selectable(Graph):
         upper = command.upper or self.selection
         self.goaltree.accept(replace(command, lower=lower, upper=upper))
 
+    def accept_Insert(self, command: Insert) -> None:
+        lower = command.lower or self.previous_selection
+        upper = command.upper or self.selection
+        self.goaltree.accept(replace(command, lower=lower, upper=upper))
+
     def q(self) -> RenderResult:
         rr = self.goaltree.q()
         self.selection = self.goaltree.selection
@@ -228,9 +233,7 @@ class Goals(Graph):
         return False
 
     def accept_Insert(self, command: Insert) -> None:
-        if (lower := command.lower or self.previous_selection) == (
-            upper := command.upper or self.selection
-        ):
+        if (lower := command.lower) == (upper := command.upper):
             self.error("A new goal can be inserted only between two different goals")
             return
         edge_type: EdgeType = self.edges_forward[lower].get(upper, EdgeType.BLOCKER)
