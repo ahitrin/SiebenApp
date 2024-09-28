@@ -54,7 +54,19 @@ class Selectable(Graph):
 
     def accept_ToggleClose(self, command: ToggleClose) -> None:
         target = command.goal_id or self.selection
+        events_before: int = len(self.events())
         self.goaltree.accept(replace(command, goal_id=target))
+        events_after: int = len(self.events())
+
+        # Change selection only when goal was successfully closed
+        if events_after > events_before:
+            if target in self.goaltree.closed:
+                if self.previous_selection != target:
+                    self.accept(Select(self.previous_selection))
+                else:
+                    next_selection = self._first_open_and_switchable(command.root)
+                    self.accept(Select(next_selection))
+                    self.accept(HoldSelect())
 
     def q(self) -> RenderResult:
         rr = self.goaltree.q()
@@ -244,12 +256,6 @@ class Goals(Graph):
         else:
             self.closed.add(target)
             self._events.append(("toggle_close", False, target))
-            if self.previous_selection != target:
-                self.accept_Select(Select(self.previous_selection))
-            else:
-                next_selection = self._first_open_and_switchable(command.root)
-                self.accept_Select(Select(next_selection))
-                self.accept(HoldSelect())
 
     def _first_open_and_switchable(self, root: int) -> int:
         actual_root: int = max(root, Goals.ROOT_ID)
