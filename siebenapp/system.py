@@ -124,7 +124,7 @@ def save(goals: Graph, filename: str) -> None:
 def save_connection(goals: Graph, connection) -> None:
     run_migrations(connection)
     root_goals: Goals = get_root(goals, Goals)
-    goals_export, edges_export, _ = Goals.export(root_goals)
+    goals_export, edges_export = Goals.export(root_goals)
     select_goals: Selectable = get_root(goals, Selectable)
     select_export = Selectable.export(select_goals)
     zoom_goals: Zoom = get_root(goals, Zoom)

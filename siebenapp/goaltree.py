@@ -514,15 +514,11 @@ class Goals(Graph):
         return result
 
     @staticmethod
-    def export(goals: "Goals") -> tuple[GoalsData, EdgesData, OptionsData]:
+    def export(goals: "Goals") -> tuple[GoalsData, EdgesData]:
         nodes: GoalsData = [
             (g_id, g_name, g_id not in goals.closed)
             for g_id, g_name in goals.goals.items()
         ]
 
         edges: EdgesData = [(k[0], k[1], v) for k, v in goals.edges.items()]
-        settings: OptionsData = [
-            ("selection", goals.selection),
-            ("previous_selection", goals.previous_selection),
-        ]
-        return nodes, edges, settings
+        return nodes, edges
