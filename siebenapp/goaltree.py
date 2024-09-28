@@ -224,22 +224,23 @@ class Goals(Graph):
         self._events.append(("rename", command.new_name, command.goal_id))
 
     def accept_ToggleClose(self, command: ToggleClose) -> None:
-        is_closed = self.selection in self.closed
+        target = self.selection
+        is_closed = target in self.closed
         error_messages = {
             True: "This goal can't be reopened because other subgoals block it",
             False: "This goal can't be closed because it have open subgoals",
         }
-        if not self._switchable(self.selection):
+        if not self._switchable(target):
             self.error(error_messages[is_closed])
             return
 
         if is_closed:
-            self.closed.remove(self.selection)
-            self._events.append(("toggle_close", True, self.selection))
+            self.closed.remove(target)
+            self._events.append(("toggle_close", True, target))
         else:
-            self.closed.add(self.selection)
-            self._events.append(("toggle_close", False, self.selection))
-            if self.previous_selection != self.selection:
+            self.closed.add(target)
+            self._events.append(("toggle_close", False, target))
+            if self.previous_selection != target:
                 self.accept_Select(Select(self.previous_selection))
             else:
                 next_selection = self._first_open_and_switchable(command.root)
