@@ -91,7 +91,8 @@ def test_simple_open_enumeration_workflow() -> None:
         Selectable(
             build_goaltree(
                 open_(1, "Root", [2, 3]), open_(2, "1"), open_(3, "2"), select=(2, 1)
-            )
+            ),
+            [("selection", 2), ("previous_selection", 1)],
         )
     )
     assert e.q() == RenderResult(
@@ -158,7 +159,8 @@ def test_do_not_build_fake_links_to_far_closed_goals() -> None:
                 clos_(2, "Middle", blockers=[3]),
                 clos_(3, "Top"),
                 select=(3, 1),
-            )
+            ),
+            [("selection", 3), ("previous_selection", 1)],
         )
     )
     assert v.q() == RenderResult(
