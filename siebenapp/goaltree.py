@@ -68,6 +68,11 @@ class Selectable(Graph):
                     self.accept(Select(next_selection))
                     self.accept(HoldSelect())
 
+    def accept_ToggleLink(self, command: ToggleLink) -> None:
+        lower = command.lower or self.previous_selection
+        upper = command.upper or self.selection
+        self.goaltree.accept(replace(command, lower=lower, upper=upper))
+
     def q(self) -> RenderResult:
         rr = self.goaltree.q()
         self.selection = self.goaltree.selection
@@ -308,9 +313,7 @@ class Goals(Graph):
         self._events.append(("delete", goal_id))
 
     def accept_ToggleLink(self, command: ToggleLink) -> None:
-        if (lower := command.lower or self.previous_selection) == (
-            upper := command.upper or self.selection
-        ):
+        if (lower := command.lower) == (upper := command.upper):
             self.error("Goal can't be linked to itself")
             return
         if lower in self.closed and upper not in self.closed:
