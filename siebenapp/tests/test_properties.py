@@ -250,7 +250,7 @@ def build_goals(conn) -> Graph:
             f"Goals: {goal_list}, Edges: {edges}, Settings: {db_settings}, "
             "Zoom: {zoom_data}, Autolink: {autolink_data}"
         )
-        goals: Goals = Goals.build(goal_list, edges, db_settings)
+        goals: Goals = Goals.build(goal_list, edges)
         wrapped = all_layers(goals, db_settings, zoom_data, autolink_data)
         note(str(asdict(wrapped.q())))
         return wrapped

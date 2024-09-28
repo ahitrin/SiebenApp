@@ -138,8 +138,6 @@ class Goals(Graph):
             lambda: defaultdict(lambda: EdgeType.BLOCKER)
         )
         self.closed: set[int] = set()
-        self.selection: int = Goals.ROOT_ID
-        self.previous_selection: int = Goals.ROOT_ID
         self._events: deque = deque()
         self.message_fn: Callable[[str], None] | None = message_fn
         self._add_no_link(name)
@@ -479,7 +477,6 @@ class Goals(Graph):
     def build(
         goals: GoalsData,
         edges: EdgesData,
-        settings: OptionsData,
         message_fn: Callable[[str], None] | None = None,
     ) -> "Goals":
         result: Goals = Goals("", message_fn)
@@ -497,11 +494,6 @@ class Goals(Graph):
             result.edges[parent, child] = EdgeType(link_type)
             result.edges_forward[parent][child] = EdgeType(link_type)
             result.edges_backward[child][parent] = EdgeType(link_type)
-        selection_dict: dict[str, int] = dict(settings)
-        result.selection = selection_dict.get("selection", result.selection)
-        result.previous_selection = selection_dict.get(
-            "previous_selection", result.previous_selection
-        )
         result.verify()
         return result
 

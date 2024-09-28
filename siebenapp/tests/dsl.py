@@ -44,12 +44,5 @@ def build_goaltree(*goal_prototypes, select: tuple[int, int], message_fn=None) -
     return Goals.build(
         goals,
         edges,
-        [
-            ("selection", selection_id),
-            (
-                "previous_selection",
-                prev_selection_id,
-            ),
-        ],
         message_fn,
     )

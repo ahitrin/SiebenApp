@@ -192,7 +192,7 @@ def load(filename: str, message_fn: Callable[[str], None] | None = None) -> Enum
         zoom_data = list(cur.execute("select * from zoom"))
         autolink_data = list(cur.execute("select * from autolink"))
         cur.close()
-        goals = Goals.build(names, edges, settings, message_fn)
+        goals = Goals.build(names, edges, message_fn)
     else:
         goals = Goals("Rename me", message_fn)
     result = Enumeration(all_layers(goals, settings, zoom_data, autolink_data))
