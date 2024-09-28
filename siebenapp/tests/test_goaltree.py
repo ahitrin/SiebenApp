@@ -901,7 +901,7 @@ class GoalsTest(TestCase):
             open_(5, "Closing"),
             select=(5, 5),
         )
-        self.goals.accept(ToggleClose(3))
+        self.goals.accept(ToggleClose(root=3))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
@@ -924,7 +924,7 @@ class GoalsTest(TestCase):
             open_(6, "Must be selected"),
             select=(5, 5),
         )
-        self.goals.accept(ToggleClose(3))
+        self.goals.accept(ToggleClose(root=3))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),

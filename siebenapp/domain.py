@@ -209,6 +209,7 @@ class Rename(Command):
 class ToggleClose(Command):
     """Close an open selected goal. Re-open a closed selected goal"""
 
+    goal_id: int = 0
     root: int = 0
 
 
