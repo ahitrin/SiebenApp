@@ -42,7 +42,9 @@ class Selectable(Graph):
 
     def accept_Select(self, command: Select):
         goal_id: int = command.goal_id
-        self.selection = goal_id
+        if self.goaltree.goals.get(goal_id, None) is not None:
+            self.selection = goal_id
+            self._events.append(("select", goal_id))
         self.goaltree.accept(command)
 
     def accept_HoldSelect(self, command: HoldSelect):
@@ -191,7 +193,6 @@ class Goals(Graph):
         goal_id: int = command.goal_id
         if goal_id in self.goals and self.goals[goal_id] is not None:
             self.selection = goal_id
-            self._events.append(("select", goal_id))
 
     def q(self) -> RenderResult:
         rows: list[RenderRow] = []
