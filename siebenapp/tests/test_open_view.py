@@ -200,7 +200,8 @@ def test_do_not_add_dangling_goals_to_old_root_on_zoom() -> None:
                     clos_(4, "Previous top"),
                     open_(5, "Current top"),
                     select=(2, 4),
-                )
+                ),
+                [("selection", 2), ("previous_selection", 4)],
             )
         )
     )
