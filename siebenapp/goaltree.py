@@ -48,6 +48,10 @@ class Selectable(Graph):
         self.previous_selection = self.selection
         self.goaltree.accept(command)
 
+    def accept_Rename(self, command: Rename) -> None:
+        target = command.goal_id or self.selection
+        self.goaltree.accept(replace(command, goal_id=target))
+
     def q(self) -> RenderResult:
         rr = self.goaltree.q()
         self.selection = self.goaltree.selection
@@ -216,9 +220,8 @@ class Goals(Graph):
                 self.accept_ToggleLink(ToggleLink(lower, upper, edge_type))
 
     def accept_Rename(self, command: Rename) -> None:
-        goal_id: int = command.goal_id or self.selection
-        self.goals[goal_id] = command.new_name
-        self._events.append(("rename", command.new_name, goal_id))
+        self.goals[command.goal_id] = command.new_name
+        self._events.append(("rename", command.new_name, command.goal_id))
 
     def accept_ToggleClose(self, command: ToggleClose) -> None:
         is_closed = self.selection in self.closed
