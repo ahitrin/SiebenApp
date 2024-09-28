@@ -32,7 +32,8 @@ class GoalsTest(TestCase):
         return Selectable(
             build_goaltree(
                 *goal_prototypes, select=select, message_fn=self._register_message
-            )
+            ),
+            [("selection", select[0]), ("previous_selection", select[1])],
         )
 
     def test_there_is_one_goal_at_start(self) -> None:
