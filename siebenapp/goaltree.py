@@ -109,6 +109,13 @@ class Selectable(Graph):
 
         return self.goaltree.settings(key)
 
+    @staticmethod
+    def export(goals: "Selectable") -> OptionsData:
+        return [
+            ("selection", goals.selection),
+            ("previous_selection", goals.previous_selection),
+        ]
+
 
 class Goals(Graph):
     ROOT_ID = 1
