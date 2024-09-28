@@ -78,6 +78,10 @@ class Selectable(Graph):
         upper = command.upper or self.selection
         self.goaltree.accept(replace(command, lower=lower, upper=upper))
 
+    def accept_Add(self, command: Add) -> None:
+        target = command.add_to or self.selection
+        self.goaltree.accept(replace(command, add_to=target))
+
     def q(self) -> RenderResult:
         rr = self.goaltree.q()
         self.selection = self.goaltree.selection
@@ -146,7 +150,7 @@ class Goals(Graph):
         return self._events
 
     def accept_Add(self, command: Add) -> bool:
-        add_to: int = command.add_to or self.selection
+        add_to: int = command.add_to
         if add_to in self.closed:
             self.error("A new subgoal cannot be added to the closed one")
             return False
