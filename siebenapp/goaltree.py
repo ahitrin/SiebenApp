@@ -52,6 +52,10 @@ class Selectable(Graph):
         target = command.goal_id or self.selection
         self.goaltree.accept(replace(command, goal_id=target))
 
+    def accept_ToggleClose(self, command: ToggleClose) -> None:
+        target = command.goal_id or self.selection
+        self.goaltree.accept(replace(command, goal_id=target))
+
     def q(self) -> RenderResult:
         rr = self.goaltree.q()
         self.selection = self.goaltree.selection
@@ -224,7 +228,7 @@ class Goals(Graph):
         self._events.append(("rename", command.new_name, command.goal_id))
 
     def accept_ToggleClose(self, command: ToggleClose) -> None:
-        target = self.selection
+        target = command.goal_id
         is_closed = target in self.closed
         error_messages = {
             True: "This goal can't be reopened because other subgoals block it",
