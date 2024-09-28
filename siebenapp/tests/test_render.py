@@ -13,7 +13,7 @@ def get_in(data, column):
 
 
 def test_render_simplest_goal_tree() -> None:
-    goals = build_goaltree(open_(1, "Alone", []), select=(1, 1))
+    goals = build_goaltree(open_(1, "Alone", []))
     result = Renderer(goals).build().node_opts
     assert result == {
         1: {
@@ -31,7 +31,6 @@ def test_render_4_subgoals_in_a_row() -> None:
         open_(3, "B"),
         open_(4, "C"),
         open_(5, "D"),
-        select=(1, 1),
     )
     result = Renderer(goals).build().node_opts
     assert get_in(result, "row") == {
@@ -45,10 +44,7 @@ def test_render_4_subgoals_in_a_row() -> None:
 
 def test_render_add_fake_vertex() -> None:
     goals = build_goaltree(
-        open_(1, "Root", [2, 3]),
-        open_(2, "A", blockers=[3]),
-        open_(3, "B"),
-        select=(1, 1),
+        open_(1, "Root", [2, 3]), open_(2, "A", blockers=[3]), open_(3, "B")
     )
     result = Renderer(goals).build().node_opts
     assert get_in(result, "row") == {
@@ -66,7 +62,6 @@ def test_render_add_several_fake_vertex() -> None:
         open_(3, "B", [4]),
         open_(4, "C", blockers=[5]),
         open_(5, "top"),
-        select=(1, 1),
     )
     result = Renderer(goals).build().node_opts
     assert get_in(result, "row") == {
@@ -89,7 +84,6 @@ def test_render_5_subgoals_in_several_rows() -> None:
         open_(4, "Four"),
         open_(5, "Five"),
         open_(6, "Six"),
-        select=(1, 1),
     )
     result = Renderer(goals).build().node_opts
     assert get_in(result, "row") == {
@@ -110,7 +104,6 @@ def test_split_long_edges_using_fake_goals() -> None:
         open_(3, "B", [4]),
         open_(4, "C", [5]),
         open_(5, "top"),
-        select=(1, 1),
     )
     result = Renderer(goals).build().node_opts
     assert get_in(result, "edge_render") == {
@@ -127,7 +120,7 @@ def test_split_long_edges_using_fake_goals() -> None:
 
 def test_use_different_long_edge_types() -> None:
     goals = build_goaltree(
-        open_(1, "Root", [2], [3]), open_(2, "A", [3]), open_(3, "B", []), select=(1, 1)
+        open_(1, "Root", [2], [3]), open_(2, "A", [3]), open_(3, "B", [])
     )
     result = Renderer(goals).build().node_opts
     assert get_in(result, "edge_render") == {
@@ -146,7 +139,6 @@ def test_render_in_switchable_view() -> None:
         open_(4, "Quatro"),
         open_(5, "Cinco"),
         open_(6, "Sext"),
-        select=(6, 6),
     )
     view = Enumeration(
         SwitchableView(Selectable(goals, [("selection", 6), ("previous_selection", 6)]))
@@ -171,7 +163,7 @@ def test_render_in_switchable_view() -> None:
     ],
 )
 def test_place(before, after) -> None:
-    r = Renderer(build_goaltree(open_(1, "Root"), select=(1, 1)))
+    r = Renderer(build_goaltree(open_(1, "Root")))
     # NB: do we still need to test internal implementation of Renderer?
     # Not sure
     assert after == r.place(before)

@@ -30,9 +30,7 @@ class SelectableTest(TestCase):
 
     def build(self, *goal_prototypes, select: tuple[int, int]) -> Selectable:
         return Selectable(
-            build_goaltree(
-                *goal_prototypes, select=select, message_fn=self._register_message
-            ),
+            build_goaltree(*goal_prototypes, message_fn=self._register_message),
             [("selection", select[0]), ("previous_selection", select[1])],
         )
 

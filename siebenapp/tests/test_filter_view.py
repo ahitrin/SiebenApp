@@ -15,7 +15,6 @@ def goaltree():
                 open_(1, "Alpha", [2], [], []),
                 open_(2, "Beta", [3]),
                 open_(3, "Gamma", []),
-                select=(1, 1),
             )
         )
     )
@@ -30,7 +29,6 @@ def zoomed_goaltree():
                     open_(1, "Alpha", [2], [], []),
                     open_(2, "Beta", [3]),
                     open_(3, "Gamma", []),
-                    select=(1, 1),
                 )
             )
         )

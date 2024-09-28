@@ -26,9 +26,7 @@ from siebenapp.tests.dsl import build_goaltree, open_, clos_
 def tree_2_goals():
     return AutoLink(
         Selectable(
-            build_goaltree(
-                open_(1, "Root", [2]), open_(2, "Autolink on me"), select=(2, 2)
-            ),
+            build_goaltree(open_(1, "Root", [2]), open_(2, "Autolink on me")),
             [("selection", 2), ("previous_selection", 2)],
         )
     )
@@ -42,7 +40,6 @@ def tree_3v_goals():
                 open_(1, "Root", [2, 3]),
                 open_(2, "Autolink on me"),
                 open_(3, "Another subgoal"),
-                select=(2, 2),
             ),
             [("selection", 2), ("previous_selection", 2)],
         )
@@ -57,7 +54,6 @@ def tree_3i_goals():
                 open_(1, "Root", [2]),
                 open_(2, "Autolink on me", [3]),
                 open_(3, "Another subgoal"),
-                select=(2, 2),
             ),
             [("selection", 2), ("previous_selection", 2)],
         )
@@ -163,7 +159,6 @@ def test_do_not_add_autolink_to_closed_goals() -> None:
             build_goaltree(
                 open_(1, "Root", [2]),
                 clos_(2, "Well, it's closed"),
-                select=(2, 2),
                 message_fn=messages.append,
             ),
             [("selection", 2), ("previous_selection", 2)],
@@ -185,9 +180,7 @@ def test_do_not_add_autolink_to_closed_goals() -> None:
 def test_do_not_add_autolink_to_root_goal() -> None:
     messages: list[str] = []
     goals = AutoLink(
-        Selectable(
-            build_goaltree(open_(1, "Root"), select=(1, 1), message_fn=messages.append)
-        )
+        Selectable(build_goaltree(open_(1, "Root"), message_fn=messages.append))
     )
     goals.accept(ToggleAutoLink("misused"))
     assert goals.q() == RenderResult(

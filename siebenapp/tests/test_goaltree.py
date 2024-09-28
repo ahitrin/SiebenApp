@@ -27,9 +27,7 @@ class GoalsTest(TestCase):
         self.messages.append(msg)
 
     def build(self, *goal_prototypes) -> Goals:
-        return build_goaltree(
-            *goal_prototypes, select=(1, 1), message_fn=self._register_message
-        )
+        return build_goaltree(*goal_prototypes, message_fn=self._register_message)
 
     def test_there_is_one_goal_at_start(self) -> None:
         assert self.goals.q() == RenderResult(

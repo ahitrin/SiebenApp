@@ -22,7 +22,6 @@ def goaltree():
                 open_(2, "With blocker", [], [4]),
                 open_(3, "With subgoal", [4]),
                 open_(4, "Top goal"),
-                select=(1, 1),
             )
         )
     )

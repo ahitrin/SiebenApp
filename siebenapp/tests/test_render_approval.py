@@ -50,7 +50,6 @@ def default_tree():
             clos_(6, "Same 6", blockers=[7]),
             clos_(7, "Lucky 7", [8]),
             clos_(8, "Finally 8"),
-            select=(4, 7),
         ),
         [("selection", 4), ("previous_selection", 7)],
     )

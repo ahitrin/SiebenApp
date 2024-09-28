@@ -8,10 +8,7 @@ from siebenapp.zoom import ToggleZoom
 
 def test_toggle_hide_non_switchable_goals() -> None:
     g = build_goaltree(
-        open_(1, "Root", [2, 3]),
-        open_(2, "Switchable 1"),
-        open_(3, "Switchable 2"),
-        select=(2, 2),
+        open_(1, "Root", [2, 3]), open_(2, "Switchable 1"), open_(3, "Switchable 2")
     )
     e = SwitchableView(Selectable(g, [("selection", 2), ("previous_selection", 2)]))
     assert e.q() == RenderResult(
@@ -51,7 +48,6 @@ def test_do_not_hide_unswitchable_goals_when_they_have_selection() -> None:
                 open_(1, "Selected", [2]),
                 open_(2, "Prev-selected", [3]),
                 open_(3, "Switchable"),
-                select=(1, 2),
             ),
             [("selection", 1), ("previous_selection", 2)],
         )
@@ -93,10 +89,7 @@ def test_non_switchable_goals_disappear_on_selection_change() -> None:
 
 def test_how_should_we_deal_with_zooming() -> None:
     g = build_goaltree(
-        open_(1, "Root goal", [2]),
-        open_(2, "Zoomed", blockers=[3]),
-        open_(3, "Ex-top"),
-        select=(2, 2),
+        open_(1, "Root goal", [2]), open_(2, "Zoomed", blockers=[3]), open_(3, "Ex-top")
     )
     v = SwitchableView(
         persistent_layers(g, [("selection", 2), ("previous_selection", 2)])
@@ -122,11 +115,11 @@ def test_how_should_we_deal_with_zooming() -> None:
 
 
 def test_filter_switchable_setting_is_not_set_by_default() -> None:
-    v = SwitchableView(build_goaltree(open_(1, "only"), select=(1, 1)))
+    v = SwitchableView(build_goaltree(open_(1, "only")))
     assert v.settings("filter_switchable") == 0
 
 
 def test_filter_switchable_setting_is_changed_after_switch() -> None:
-    v = SwitchableView(build_goaltree(open_(1, "only"), select=(1, 1)))
+    v = SwitchableView(build_goaltree(open_(1, "only")))
     v.accept(ToggleSwitchableView())
     assert v.settings("filter_switchable") == 1

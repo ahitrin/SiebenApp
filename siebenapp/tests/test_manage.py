@@ -51,7 +51,6 @@ def complex_goaltree_file():
         clos_(10, "More nested 10", [11]),
         clos_(11, "Even more nested 11"),
         open_(12, "Informational 12"),
-        select=(4, 7),
     )
     file_name = NamedTemporaryFile().name
     save(
@@ -115,7 +114,6 @@ def test_dot_export() -> None:
         open_(5, "Many blockerz", blockers=[2, 4, 6, 7]),
         clos_(6, "!@#$%^&*()\\/,.?"),
         open_(7, ";:[{}]<>"),
-        select=(3, 7),
     )
     verify_file(dot_export(goals), ".dot")
 
@@ -174,7 +172,6 @@ def extract_source():
                 ),
                 clos_(6, "Closed subgoal", blockers=[7]),
                 clos_(7, "Another external blocker NX"),
-                select=(1, 5),
             ),
             options_data=[("selection", 1), ("previous_selection", 5)],
         )
@@ -189,7 +186,6 @@ def extract_target():
             open_(2, "Subgoal", blockers=[3]),
             open_(3, "Selected subgoal (selection will be lost)", [4]),
             clos_(4, "Closed subgoal"),
-            select=(1, 1),
         ),
         options_data=[("selection", 1), ("previous_selection", 1)],
     )
@@ -219,7 +215,6 @@ def test_extract_misordered() -> None:
                 open_(1, "Global root", [3]),
                 open_(2, "Top"),
                 open_(3, "Extraction root", [2]),
-                select=(1, 1),
             ),
             options_data=[("selection", 1), ("previous_selection", 1)],
         )

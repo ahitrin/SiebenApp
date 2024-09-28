@@ -30,17 +30,13 @@ def clos_(goal_id, name, children=None, blockers=None, relations=None):
     return _build_goal_prototype(goal_id, name, False, children, blockers, relations)
 
 
-def build_goaltree(*goal_prototypes, select: tuple[int, int], message_fn=None) -> Goals:
+def build_goaltree(*goal_prototypes, message_fn=None) -> Goals:
     goals = [(g.goal_id, g.name, g.open) for g in goal_prototypes]
     edges = []
     for g in goal_prototypes:
         edges.extend([(g.goal_id, e, EdgeType.PARENT) for e in g.children])
         edges.extend([(g.goal_id, e, EdgeType.BLOCKER) for e in g.blockers])
         edges.extend([(g.goal_id, e, EdgeType.RELATION) for e in g.relations])
-    selection_id, prev_selection_id = select
-    all_ids = {g.goal_id for g in goal_prototypes}
-    assert selection_id in all_ids
-    assert prev_selection_id in all_ids
     return Goals.build(
         goals,
         edges,

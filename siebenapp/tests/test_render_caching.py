@@ -32,7 +32,6 @@ def sample_tree():
             open_(4, "Blocked", blockers=[6]),
             clos_(5, "Closed intermediate", [6]),
             clos_(6, "Closed top"),
-            select=(2, 3),
         ),
         [("selection", 2), ("previous_selection", 3)],
     )

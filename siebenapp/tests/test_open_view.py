@@ -16,13 +16,13 @@ from siebenapp.zoom import Zoom, ToggleZoom
 
 @pytest.fixture
 def trivial():
-    g = build_goaltree(open_(1, "Start", [], []), select=(1, 1))
+    g = build_goaltree(open_(1, "Start", [], []))
     return OpenView(Selectable(g))
 
 
 @pytest.fixture
 def two_goals():
-    g = build_goaltree(open_(1, "Open", [2], []), clos_(2, "Closed"), select=(1, 1))
+    g = build_goaltree(open_(1, "Open", [2], []), clos_(2, "Closed"))
     return OpenView(Selectable(g))
 
 
@@ -89,9 +89,7 @@ def test_closed_goal_is_shown_after_switch(two_goals) -> None:
 def test_simple_open_enumeration_workflow() -> None:
     e = OpenView(
         Selectable(
-            build_goaltree(
-                open_(1, "Root", [2, 3]), open_(2, "1"), open_(3, "2"), select=(2, 1)
-            ),
+            build_goaltree(open_(1, "Root", [2, 3]), open_(2, "1"), open_(3, "2")),
             [("selection", 2), ("previous_selection", 1)],
         )
     )
@@ -123,7 +121,6 @@ def test_closed_goals_are_shown_when_selected() -> None:
                 clos_(2, "closed"),
                 clos_(3, "closed too", [4]),
                 clos_(4, "closed and not selected"),
-                select=(1, 1),
             )
         )
     )
@@ -158,7 +155,6 @@ def test_do_not_build_fake_links_to_far_closed_goals() -> None:
                 open_(1, "Root", blockers=[2]),
                 clos_(2, "Middle", blockers=[3]),
                 clos_(3, "Top"),
-                select=(3, 1),
             ),
             [("selection", 3), ("previous_selection", 1)],
         )
@@ -176,9 +172,7 @@ def test_do_not_build_fake_links_to_far_closed_goals() -> None:
 def test_still_show_root_when_it_is_closed_and_unselected() -> None:
     v = OpenView(
         Selectable(
-            build_goaltree(
-                clos_(1, "Hidden root", [2]), clos_(2, "Visible"), select=(2, 2)
-            ),
+            build_goaltree(clos_(1, "Hidden root", [2]), clos_(2, "Visible")),
             [("selection", 2), ("previous_selection", 2)],
         )
     )
@@ -202,7 +196,6 @@ def test_do_not_add_dangling_goals_to_old_root_on_zoom() -> None:
                     clos_(3, "Transitive", [4]),
                     clos_(4, "Previous top"),
                     open_(5, "Current top"),
-                    select=(2, 4),
                 ),
                 [("selection", 2), ("previous_selection", 4)],
             )

@@ -31,7 +31,6 @@ def goal_chain_10():
             open_(8, "h", [9]),
             open_(9, "i", [10]),
             open_(10, "j", []),
-            select=(1, 1),
         )
     )
 
@@ -48,10 +47,7 @@ def test_simple_enumeration_is_not_changed() -> None:
     e = Enumeration(
         Selectable(
             build_goaltree(
-                open_(1, "a", [2, 3]),
-                open_(2, "b", blockers=[3]),
-                open_(3, "c"),
-                select=(3, 2),
+                open_(1, "a", [2, 3]), open_(2, "b", blockers=[3]), open_(3, "c")
             ),
             [("selection", 3), ("previous_selection", 2)],
         )
@@ -255,9 +251,7 @@ def test_select_goal_by_full_id_with_non_empty_cache(goal_chain_11) -> None:
 def test_enumerated_goals_must_have_the_same_dimension() -> None:
     e = Enumeration(
         Selectable(
-            build_goaltree(
-                open_(1, "a", [2, 20]), open_(2, "b"), open_(20, "x"), select=(1, 1)
-            )
+            build_goaltree(open_(1, "a", [2, 20]), open_(2, "b"), open_(20, "x"))
         )
     )
     assert e.q() == RenderResult(
@@ -326,10 +320,7 @@ def test_selection_cache_should_avoid_overflow(goal_chain_11) -> None:
 def test_do_not_enumerate_goals_with_negative_id() -> None:
     g = all_layers(
         build_goaltree(
-            open_(1, "Root goal", [2]),
-            open_(2, "Zoomed", [3]),
-            open_(3, "Top"),
-            select=(2, 1),
+            open_(1, "Root goal", [2]), open_(2, "Zoomed", [3]), open_(3, "Top")
         ),
         [("selection", 2), ("previous_selection", 1)],
     )
