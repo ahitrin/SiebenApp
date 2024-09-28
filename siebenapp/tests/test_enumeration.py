@@ -52,7 +52,8 @@ def test_simple_enumeration_is_not_changed() -> None:
                 open_(2, "b", blockers=[3]),
                 open_(3, "c"),
                 select=(3, 2),
-            )
+            ),
+            [("selection", 3), ("previous_selection", 2)],
         )
     )
     assert e.q() == RenderResult(

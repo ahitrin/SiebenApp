@@ -13,7 +13,7 @@ def test_toggle_hide_non_switchable_goals() -> None:
         open_(3, "Switchable 2"),
         select=(2, 2),
     )
-    e = SwitchableView(Selectable(g))
+    e = SwitchableView(Selectable(g, [("selection", 2), ("previous_selection", 2)]))
     assert e.q() == RenderResult(
         [
             RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
@@ -52,7 +52,8 @@ def test_do_not_hide_unswitchable_goals_when_they_have_selection() -> None:
                 open_(2, "Prev-selected", [3]),
                 open_(3, "Switchable"),
                 select=(1, 2),
-            )
+            ),
+            [("selection", 1), ("previous_selection", 2)],
         )
     )
     v.accept_all(ToggleSwitchableView())

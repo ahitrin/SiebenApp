@@ -28,7 +28,8 @@ def tree_2_goals():
         Selectable(
             build_goaltree(
                 open_(1, "Root", [2]), open_(2, "Autolink on me"), select=(2, 2)
-            )
+            ),
+            [("selection", 2), ("previous_selection", 2)],
         )
     )
 
@@ -42,7 +43,8 @@ def tree_3v_goals():
                 open_(2, "Autolink on me"),
                 open_(3, "Another subgoal"),
                 select=(2, 2),
-            )
+            ),
+            [("selection", 2), ("previous_selection", 2)],
         )
     )
 
@@ -56,7 +58,8 @@ def tree_3i_goals():
                 open_(2, "Autolink on me", [3]),
                 open_(3, "Another subgoal"),
                 select=(2, 2),
-            )
+            ),
+            [("selection", 2), ("previous_selection", 2)],
         )
     )
 
@@ -162,7 +165,8 @@ def test_do_not_add_autolink_to_closed_goals() -> None:
                 clos_(2, "Well, it's closed"),
                 select=(2, 2),
                 message_fn=messages.append,
-            )
+            ),
+            [("selection", 2), ("previous_selection", 2)],
         )
     )
     goals.accept(ToggleAutoLink("Failed"))

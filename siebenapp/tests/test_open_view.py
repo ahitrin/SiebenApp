@@ -176,7 +176,8 @@ def test_still_show_root_when_it_is_closed_and_unselected() -> None:
         Selectable(
             build_goaltree(
                 clos_(1, "Hidden root", [2]), clos_(2, "Visible"), select=(2, 2)
-            )
+            ),
+            [("selection", 2), ("previous_selection", 2)],
         )
     )
     assert v.q() == RenderResult(

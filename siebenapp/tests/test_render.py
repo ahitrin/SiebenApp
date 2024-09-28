@@ -148,7 +148,9 @@ def test_render_in_switchable_view() -> None:
         open_(6, "Sext"),
         select=(6, 6),
     )
-    view = Enumeration(SwitchableView(Selectable(goals)))
+    view = Enumeration(
+        SwitchableView(Selectable(goals, [("selection", 6), ("previous_selection", 6)]))
+    )
     view.accept(ToggleSwitchableView())
     result = Renderer(view).build().node_opts
     # Just verify that it renders fine
