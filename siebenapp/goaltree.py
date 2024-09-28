@@ -18,6 +18,7 @@ from siebenapp.domain import (
     GoalId,
     RenderResult,
     RenderRow,
+    Command,
 )
 
 GoalsData = list[tuple[int, str | None, bool]]
@@ -54,12 +55,8 @@ class Selectable(Graph):
 
     def accept_ToggleClose(self, command: ToggleClose) -> None:
         target = command.goal_id or self.selection
-        events_before: int = len(self.events())
-        self.goaltree.accept(replace(command, goal_id=target))
-        events_after: int = len(self.events())
-
-        # Change selection only when goal was successfully closed
-        if events_after > events_before:
+        if self._command_approved(replace(command, goal_id=target)):
+            # Change selection only when goal was successfully closed
             if target in self.goaltree.closed:
                 if self.previous_selection != target:
                     self.accept_Select(Select(self.previous_selection))
@@ -85,6 +82,12 @@ class Selectable(Graph):
     def accept_Delete(self, command: Delete) -> None:
         target = command.goal_id or self.selection
         self.goaltree.accept(replace(command, goal_id=target))
+
+    def _command_approved(self, command: Command) -> bool:
+        events_before: int = len(self.events())
+        self.goaltree.accept(command)
+        events_after: int = len(self.events())
+        return events_after > events_before
 
     def q(self) -> RenderResult:
         rr = self.goaltree.q()
