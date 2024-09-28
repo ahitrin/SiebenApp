@@ -62,11 +62,11 @@ class Selectable(Graph):
         if events_after > events_before:
             if target in self.goaltree.closed:
                 if self.previous_selection != target:
-                    self.accept(Select(self.previous_selection))
+                    self.accept_Select(Select(self.previous_selection))
                 else:
                     next_selection = self._first_open_and_switchable(command.root)
-                    self.accept(Select(next_selection))
-                    self.accept(HoldSelect())
+                    self.accept_Select(Select(next_selection))
+                    self.accept_HoldSelect(HoldSelect())
 
     def accept_ToggleLink(self, command: ToggleLink) -> None:
         lower = command.lower or self.previous_selection
