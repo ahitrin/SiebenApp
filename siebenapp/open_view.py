@@ -47,10 +47,12 @@ class OpenView(Graph):
             if row.is_open
             or row.goal_id
             in render_result.roots.union(
-                {
-                    render_result.global_opts[OPTION_SELECT],
-                    render_result.global_opts[OPTION_PREV_SELECT],
+                goal_id
+                for goal_id in {
+                    render_result.global_opts.get(OPTION_SELECT, 0),
+                    render_result.global_opts.get(OPTION_PREV_SELECT, 0),
                 }
+                if goal_id != 0
             )
         }
         rows: list[RenderRow] = [
