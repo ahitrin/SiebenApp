@@ -42,7 +42,7 @@ class Selectable(Graph):
 
     def accept_Select(self, command: Select):
         goal_id: int = command.goal_id
-        if self.goaltree.goals.get(goal_id, None) is not None:
+        if self.goaltree.has_goal(goal_id):
             self.selection = goal_id
             self._events.append(("select", goal_id))
 
@@ -58,7 +58,7 @@ class Selectable(Graph):
         target = command.goal_id or self.selection
         if self._command_approved(replace(command, goal_id=target)):
             # Change selection only when goal was successfully closed
-            if target in self.goaltree.closed:
+            if self.goaltree.is_closed(target):
                 if self.previous_selection != target:
                     self.accept_Select(Select(self.previous_selection))
                 else:
@@ -82,7 +82,7 @@ class Selectable(Graph):
 
     def accept_Delete(self, command: Delete) -> None:
         target = command.goal_id or self.selection
-        parent: int = self.goaltree._parent(target)
+        parent: int = self.goaltree.parent(target)
         if self._command_approved(replace(command, goal_id=target)):
             self.accept_Select(Select(parent))
             self.accept_HoldSelect(HoldSelect())
@@ -142,6 +142,12 @@ class Goals(Graph):
         self.message_fn: Callable[[str], None] | None = message_fn
         self._add_no_link(name)
 
+    def has_goal(self, goal_id: int) -> bool:
+        return self.goals.get(goal_id, None) is not None
+
+    def is_closed(self, goal_id: int) -> bool:
+        return goal_id in self.closed
+
     def error(self, message: str) -> None:
         if self.message_fn:
             self.message_fn(message)
@@ -161,7 +167,7 @@ class Goals(Graph):
         }
         return parents.pop().source if parents else None
 
-    def _parent(self, goal: int) -> int:
+    def parent(self, goal: int) -> int:
         return self._strict_parent(goal) or Goals.ROOT_ID
 
     def settings(self, key: str) -> Any:
@@ -172,7 +178,7 @@ class Goals(Graph):
 
     def accept_Add(self, command: Add) -> bool:
         add_to: int = command.add_to
-        if add_to in self.closed:
+        if self.is_closed(add_to):
             self.error("A new subgoal cannot be added to the closed one")
             return False
         next_id: int = self._add_no_link(command.name)
@@ -196,7 +202,7 @@ class Goals(Graph):
                     key,
                     key,
                     name,
-                    key not in self.closed,
+                    not self.is_closed(key),
                     self._switchable(key),
                     edges,
                 )
@@ -207,15 +213,15 @@ class Goals(Graph):
         )
 
     def _switchable(self, key: int) -> bool:
-        if key in self.closed:
+        if self.is_closed(key):
             if back_edges := self._back_edges(key):
-                return all(e.source not in self.closed for e in back_edges)
+                return all(not self.is_closed(e.source) for e in back_edges)
             return True
         direct_blockers = [
             e for e in self._forward_edges(key) if e.type != EdgeType.RELATION
         ]
         no_direct_blockers_or_subgoals = all(
-            x.target in self.closed for x in direct_blockers
+            self.is_closed(x.target) for x in direct_blockers
         )
         return no_direct_blockers_or_subgoals and not self._blocked_by_parent(key)
 
@@ -228,7 +234,7 @@ class Goals(Graph):
                 e
                 for e in self._forward_edges(parent)
                 if e.type == EdgeType.BLOCKER
-                and e.target not in self.closed
+                and not self.is_closed(e.target)
                 and not self._is_direct_subgoal(parent, e.target)
             ]
             if parent_blockers:
@@ -264,7 +270,7 @@ class Goals(Graph):
 
     def accept_ToggleClose(self, command: ToggleClose) -> None:
         target = command.goal_id
-        is_closed = target in self.closed
+        is_closed = self.is_closed(target)
         error_messages = {
             True: "This goal can't be reopened because other subgoals block it",
             False: "This goal can't be closed because it have open subgoals",
@@ -289,7 +295,7 @@ class Goals(Graph):
             subgoals: list[int] = [
                 e.target
                 for e in self._forward_edges(next_goal)
-                if e.target not in self.closed and e.type == EdgeType.PARENT
+                if not self.is_closed(e.target) and e.type == EdgeType.PARENT
             ]
             front.extend(subgoals)
             candidates.extend(g for g in subgoals if self._switchable(g))
@@ -302,7 +308,7 @@ class Goals(Graph):
         self._delete_subtree(goal_id)
 
     def _delete_subtree(self, goal_id: int) -> None:
-        parent: int = self._parent(goal_id)
+        parent: int = self.parent(goal_id)
         self.goals[goal_id] = None
         self.closed.add(goal_id)
         forward_edges: list[Edge] = self._forward_edges(goal_id)
@@ -331,7 +337,7 @@ class Goals(Graph):
         if (lower := command.lower) == (upper := command.upper):
             self.error("Goal can't be linked to itself")
             return
-        if lower in self.closed and upper not in self.closed:
+        if self.is_closed(lower) and not self.is_closed(upper):
             self.error("Cannot add a blocking relation to the closed goal")
             return
         if self._has_link(lower, upper):
@@ -364,8 +370,8 @@ class Goals(Graph):
 
     def _create_new_link(self, lower: int, upper: int, edge_type: EdgeType) -> None:
         if (
-            lower in self.closed
-            and upper not in self.closed
+            self.is_closed(lower)
+            and self.is_closed(upper)
             and edge_type != EdgeType.RELATION
         ):
             self.error("An open goal can't block already closed one")
@@ -423,7 +429,7 @@ class Goals(Graph):
 
     def _verify_open_goals_are_not_blocked_by_closed_goals(self) -> None:
         b = all(
-            e.target in self.closed
+            self.is_closed(e.target)
             for p in self.closed
             for e in self._forward_edges(p)
             if e.type != EdgeType.RELATION
@@ -500,7 +506,7 @@ class Goals(Graph):
     @staticmethod
     def export(goals: "Goals") -> tuple[GoalsData, EdgesData]:
         nodes: GoalsData = [
-            (g_id, g_name, g_id not in goals.closed)
+            (g_id, g_name, not goals.is_closed(g_id))
             for g_id, g_name in goals.goals.items()
         ]
 

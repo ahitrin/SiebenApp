@@ -567,6 +567,40 @@ class GoalsTest(TestCase):
             roots={1},
         )
 
+    def test_has_goal(self) -> None:
+        self.goals = build_goaltree(
+            open_(1, "Root", [2, 3]),
+            clos_(2, "Closed"),
+            open_(3, "Intermediate", blockers=[4]),
+            clos_(4, "Blocker"),
+        )
+        assert self.goals.has_goal(1)
+        assert self.goals.has_goal(2)
+        assert self.goals.has_goal(3)
+        assert self.goals.has_goal(4)
+        assert not self.goals.has_goal(0)
+        assert not self.goals.has_goal(5)
+
+        self.goals.accept(Delete(4))
+        assert self.goals.has_goal(1)
+        assert self.goals.has_goal(2)
+        assert self.goals.has_goal(3)
+        assert not self.goals.has_goal(4)
+        assert not self.goals.has_goal(0)
+        assert not self.goals.has_goal(5)
+
+    def test_parent(self) -> None:
+        self.goals = build_goaltree(
+            open_(1, "Root", [2]),
+            open_(2, "Intermediate", [3]),
+            open_(3, "Intermediate", [4]),
+            clos_(4, "Top"),
+        )
+        assert self.goals.parent(1) == 1
+        assert self.goals.parent(2) == 1
+        assert self.goals.parent(3) == 2
+        assert self.goals.parent(4) == 3
+
     def test_children_of_blocked_goal_are_blocked_too(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2, 3]),
