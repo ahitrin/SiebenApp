@@ -10,7 +10,7 @@ def test_toggle_hide_non_switchable_goals() -> None:
     g = build_goaltree(
         open_(1, "Root", [2, 3]), open_(2, "Switchable 1"), open_(3, "Switchable 2")
     )
-    e = SwitchableView(Selectable(g, [("selection", 2), ("previous_selection", 2)]))
+    e = SwitchableView(g)
     assert e.q() == RenderResult(
         [
             RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
@@ -18,7 +18,6 @@ def test_toggle_hide_non_switchable_goals() -> None:
             RenderRow(3, 3, "Switchable 2", True, True, []),
         ],
         roots={1},
-        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
     )
     e.accept(ToggleSwitchableView())
     assert e.q() == RenderResult(
@@ -27,7 +26,6 @@ def test_toggle_hide_non_switchable_goals() -> None:
             RenderRow(3, 3, "Switchable 2", True, True, []),
         ],
         roots={2, 3},
-        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
     )
     e.accept(ToggleSwitchableView())
     assert e.q() == RenderResult(
@@ -37,7 +35,6 @@ def test_toggle_hide_non_switchable_goals() -> None:
             RenderRow(3, 3, "Switchable 2", True, True, []),
         ],
         roots={1},
-        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
     )
 
 

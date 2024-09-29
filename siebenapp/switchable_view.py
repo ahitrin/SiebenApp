@@ -41,8 +41,8 @@ class SwitchableView(Graph):
             if row.is_switchable
             or row.goal_id
             in [
-                render_result.global_opts[OPTION_SELECT],
-                render_result.global_opts[OPTION_PREV_SELECT],
+                render_result.global_opts.get(OPTION_SELECT, 0),
+                render_result.global_opts.get(OPTION_PREV_SELECT, 0),
             ]
         ]
         return replace(render_result, rows=rows, roots={r.goal_id for r in rows})
