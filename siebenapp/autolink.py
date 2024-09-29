@@ -63,7 +63,7 @@ class AutoLink(Graph):
         self.events().append(("add_autolink", target_id, keyword))
 
     def accept_ToggleClose(self, command: ToggleClose) -> None:
-        selected_id: int = self.settings("selection")
+        selected_id: int = command.goal_id
         if selected_id in self.back_kw:
             self.keywords.pop(self.back_kw[selected_id])
             self.back_kw.pop(selected_id)
@@ -89,11 +89,11 @@ class AutoLink(Graph):
     def accept_Rename(self, command: Rename) -> None:
         matching: list[int] = self._find_matching_goals(command.new_name)
         self.goaltree.accept(command)
-        selected_id: int = command.goal_id or self.settings("selection")
+        selected_id: int = command.goal_id
         self._make_links(matching, selected_id)
 
     def accept_Delete(self, command: Delete) -> None:
-        selected_id: int = command.goal_id or self.settings("selection")
+        selected_id: int = command.goal_id
         edges: dict[int, list[tuple[GoalId, EdgeType]]] = {
             row.raw_id: row.edges for row in self.goaltree.q().rows
         }
