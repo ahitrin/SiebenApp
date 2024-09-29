@@ -205,7 +205,7 @@ def test_remove_autolink_on_close(tree_2_goals) -> None:
         roots={1},
         global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
     )
-    goals.accept(ToggleClose(2))
+    goals.accept(ToggleClose())
     assert goals.q() == RenderResult(
         [
             RenderRow(1, 1, "Root", True, True, [child(2)]),
@@ -231,7 +231,7 @@ def test_remove_autolink_on_delete(tree_2_goals) -> None:
         roots={1},
         global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
     )
-    goals.accept(Delete(2))
+    goals.accept(Delete())
     assert goals.q() == RenderResult(
         [
             RenderRow(1, 1, "Root", True, True, []),
@@ -257,7 +257,7 @@ def test_remove_autolink_on_parent_delete(tree_3i_goals) -> None:
         roots={1},
         global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 2},
     )
-    goals.accept_all(Select(2), Delete(2))
+    goals.accept_all(Select(2), Delete())
     assert goals.q() == RenderResult(
         [
             RenderRow(1, 1, "Root", True, True, []),
