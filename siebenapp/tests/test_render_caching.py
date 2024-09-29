@@ -51,11 +51,11 @@ def test_no_diff_on_start(sample_holder):
 @pytest.mark.parametrize(
     "event",
     [
-        Add("New"),
-        Insert("Middle"),
-        Rename("New name"),
-        ToggleClose(),
-        Delete(),
+        Add("New", 2),
+        Insert("Middle", 3, 2),
+        Rename("New name", 2),
+        ToggleClose(2),
+        Delete(6),
         FilterBy("anything"),
         ToggleAutoLink("keyword", 2),
         ToggleProgress(),
