@@ -70,10 +70,15 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         event("add")
         self._accept(Add("a"))
 
-    @rule()
-    def delete_goal(self) -> None:
+    @rule(d=data())
+    def delete_goal(self, d) -> None:
         event("delete")
-        self._accept(Delete())
+        goal_keys = sorted(
+            list(row.goal_id for row in self.goaltree.q().rows if row.goal_id > 0)
+        )
+        assume(len(goal_keys) > 1)
+        selection = d.draw(sampled_from(goal_keys))
+        self._accept(Delete(selection))
 
     @rule(d=data())
     def select_random_goal(self, d) -> None:
@@ -151,9 +156,13 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         event("close/open")
         self._accept(ToggleClose())
 
-    @rule(t=text())
-    def rename(self, t) -> None:
+    @rule(t=text(), d=data())
+    def rename(self, t, d) -> None:
         event("rename")
+        goal_keys = sorted(
+            list(row.goal_id for row in self.goaltree.q().rows if row.goal_id > 0)
+        )
+        selection = d.draw(sampled_from(goal_keys))
         self._accept(Rename(t))
 
     @rule()
