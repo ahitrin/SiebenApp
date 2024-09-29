@@ -14,7 +14,7 @@ from siebenapp.domain import (
     RenderResult,
     RenderRow,
 )
-from siebenapp.goaltree import Goals, OPTION_SELECT
+from siebenapp.goaltree import Goals
 
 
 @dataclass(frozen=True)
@@ -38,9 +38,7 @@ class AutoLink(Graph):
 
     def accept_ToggleAutoLink(self, command: ToggleAutoLink) -> None:
         render_result: RenderResult = self.goaltree.q()
-        target_id: int = command.goal_id or int(
-            render_result.global_opts[OPTION_SELECT]
-        )
+        target_id: int = command.goal_id
         selected_goal = render_result.by_id(target_id)
         if not selected_goal.is_open:
             self.error("Autolink cannot be set for closed goals")
