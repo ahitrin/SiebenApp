@@ -16,14 +16,12 @@ from siebenapp.zoom import Zoom, ToggleZoom
 
 @pytest.fixture
 def trivial():
-    g = build_goaltree(open_(1, "Start", [], []))
-    return OpenView(Selectable(g))
+    return OpenView(build_goaltree(open_(1, "Start", [], [])))
 
 
 @pytest.fixture
 def two_goals():
-    g = build_goaltree(open_(1, "Open", [2], []), clos_(2, "Closed"))
-    return OpenView(Selectable(g))
+    return OpenView(build_goaltree(open_(1, "Open", [2], []), clos_(2, "Closed")))
 
 
 def test_open_goal_is_shown_by_default(trivial) -> None:
@@ -32,7 +30,6 @@ def test_open_goal_is_shown_by_default(trivial) -> None:
             RenderRow(1, 1, "Start", True, True, []),
         ],
         roots={1},
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )
 
 
@@ -43,7 +40,6 @@ def test_open_goal_is_shown_after_switch(trivial) -> None:
             RenderRow(1, 1, "Start", True, True, []),
         ],
         roots={1},
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )
 
 
@@ -62,7 +58,6 @@ def test_closed_goal_is_not_shown_by_default(two_goals) -> None:
             RenderRow(1, 1, "Open", True, True, []),
         ],
         roots={1},
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )
 
 
@@ -74,7 +69,6 @@ def test_closed_goal_is_shown_after_switch(two_goals) -> None:
             RenderRow(2, 2, "Closed", False, True, []),
         ],
         roots={1},
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )
     two_goals.accept(ToggleOpenView())
     assert two_goals.q() == RenderResult(
@@ -82,17 +76,11 @@ def test_closed_goal_is_shown_after_switch(two_goals) -> None:
             RenderRow(1, 1, "Open", True, True, []),
         ],
         roots={1},
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )
 
 
 def test_simple_open_enumeration_workflow() -> None:
-    e = OpenView(
-        Selectable(
-            build_goaltree(open_(1, "Root", [2, 3]), open_(2, "1"), open_(3, "2")),
-            [("selection", 2), ("previous_selection", 1)],
-        )
-    )
+    e = OpenView(build_goaltree(open_(1, "Root", [2, 3]), open_(2, "1"), open_(3, "2")))
     assert e.q() == RenderResult(
         [
             RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
@@ -100,16 +88,14 @@ def test_simple_open_enumeration_workflow() -> None:
             RenderRow(3, 3, "2", True, True, []),
         ],
         roots={1},
-        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 1},
     )
-    e.accept(ToggleClose())
+    e.accept(ToggleClose(2))
     assert e.q() == RenderResult(
         [
             RenderRow(1, 1, "Root", True, False, [child(3)]),
             RenderRow(3, 3, "2", True, True, []),
         ],
         roots={1},
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )
 
 
