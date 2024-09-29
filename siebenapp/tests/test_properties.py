@@ -134,13 +134,17 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
             ToggleLink(lower=prev_selection, upper=selection, edge_type=edge_type)
         )
 
-    @rule(c=sampled_from(" abcit"))
+    @rule(c=sampled_from(" abcit"), d=data())
     # Ignore trivial trees (without any subgoal)
     @precondition(lambda self: len(self.goaltree.q().rows) > 1)
-    def add_autolink(self, c) -> None:
+    def add_autolink(self, c, d) -> None:
         event("autolink")
         event("valid autolink")
-        self._accept(ToggleAutoLink(c))
+        goal_keys = sorted(
+            list(row.goal_id for row in self.goaltree.q().rows if row.goal_id > 0)
+        )
+        selection = d.draw(sampled_from(goal_keys))
+        self._accept(ToggleAutoLink(c, selection))
 
     @rule()
     def close_or_open(self) -> None:

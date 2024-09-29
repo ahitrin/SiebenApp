@@ -102,7 +102,7 @@ def fmt(render_result: RenderResult, row: RenderRow, id_width: int) -> str:
     )
 
 
-def build_actions(command: str) -> list[Command]:
+def build_actions(command: str, goals_holder: GoalsHolder) -> list[Command]:
     simple_commands: Mapping[str, Command] = {
         "c": ToggleClose(),
         "d": Delete(),
@@ -127,8 +127,9 @@ def build_actions(command: str) -> list[Command]:
         # Note: filter may be empty
         return [FilterBy(command.removeprefix("f").lstrip())]
     if command.startswith("`"):
+        target = int(goals_holder.goals.settings("selection"))
         # Note: autolink may be empty
-        return [ToggleAutoLink(command.removeprefix("`").lstrip())]
+        return [ToggleAutoLink(command.removeprefix("`").lstrip(), target)]
     if command in simple_commands:
         return [simple_commands[command]]
     return []
@@ -161,7 +162,7 @@ def loop(io: IO, goals: Graph, db_name: str) -> None:
             cmd = io.read().strip()
         except EOFError:
             break
-        actions = build_actions(cmd)
+        actions = build_actions(cmd, goals_holder)
         goals_holder.accept(*actions)
 
 

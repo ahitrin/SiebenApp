@@ -20,7 +20,7 @@ from siebenapp.goaltree import Goals, OPTION_SELECT
 @dataclass(frozen=True)
 class ToggleAutoLink(Command):
     keyword: str
-    goal_id: int = 0
+    goal_id: int
 
 
 AutoLinkData = list[tuple[int, str]]

@@ -348,7 +348,8 @@ class SiebenApp(QMainWindow):
         self.goals_holder.accept(FilterBy(text))
 
     def emit_autolink(self, text):
-        self.goals_holder.accept(ToggleAutoLink(text))
+        target = int(self.goals_holder.goals.settings("selection"))
+        self.goals_holder.accept(ToggleAutoLink(text, target))
 
     def emit_delete(self, text):
         if text == "yes":
