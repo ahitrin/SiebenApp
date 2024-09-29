@@ -10,6 +10,17 @@ from siebenapp.zoom import Zoom, ToggleZoom
 @fixture
 def goaltree():
     return FilterView(
+        build_goaltree(
+            open_(1, "Alpha", [2], [], []),
+            open_(2, "Beta", [3]),
+            open_(3, "Gamma", []),
+        )
+    )
+
+
+@fixture
+def selected_goaltree():
+    return FilterView(
         Selectable(
             build_goaltree(
                 open_(1, "Alpha", [2], [], []),
@@ -44,7 +55,6 @@ def test_empty_string_means_no_filter(goaltree) -> None:
             RenderRow(3, 3, "Gamma", True, True, []),
         ],
         roots={1},
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )
 
 
@@ -55,13 +65,12 @@ def test_filter_by_substring(goaltree) -> None:
             RenderRow(1, 1, "Alpha", True, False, [], {"Filter": "ph"}),
         ],
         roots={1},
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )
 
 
-def test_selected_goal_must_not_be_filtered_out(goaltree) -> None:
-    goaltree.accept_all(Select(3), HoldSelect(), FilterBy("Be"))
-    assert goaltree.q() == RenderResult(
+def test_selected_goal_must_not_be_filtered_out(selected_goaltree) -> None:
+    selected_goaltree.accept_all(Select(3), HoldSelect(), FilterBy("Be"))
+    assert selected_goaltree.q() == RenderResult(
         [
             RenderRow(2, 2, "Beta", True, False, [child(3)], {"Filter": "be"}),
             RenderRow(3, 3, "Gamma", True, True, []),
@@ -71,9 +80,9 @@ def test_selected_goal_must_not_be_filtered_out(goaltree) -> None:
     )
 
 
-def test_show_fake_goal_when_filter_matches_nothing(goaltree) -> None:
-    goaltree.accept_all(Select(3), FilterBy("matching no one"))
-    assert goaltree.q() == RenderResult(
+def test_show_fake_goal_when_filter_matches_nothing(selected_goaltree) -> None:
+    selected_goaltree.accept_all(Select(3), FilterBy("matching no one"))
+    assert selected_goaltree.q() == RenderResult(
         [
             RenderRow(1, 1, "Alpha", True, False, []),
             RenderRow(3, 3, "Gamma", True, True, []),
@@ -106,7 +115,6 @@ def test_empty_filter_string_means_resetting(goaltree) -> None:
             RenderRow(3, 3, "Gamma", True, True, []),
         ],
         roots={1},
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )
 
 
@@ -114,9 +122,7 @@ def test_filter_is_case_insensitive(goaltree) -> None:
     goaltree.accept(FilterBy("ETA"))
     assert goaltree.q() == RenderResult(
         [
-            RenderRow(1, 1, "Alpha", True, False, [child(2)]),
             RenderRow(2, 2, "Beta", True, False, [], {"Filter": "eta"}),
         ],
-        roots={1},
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
+        roots={2},
     )
