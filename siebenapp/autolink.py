@@ -20,6 +20,7 @@ from siebenapp.goaltree import Goals, OPTION_SELECT
 @dataclass(frozen=True)
 class ToggleAutoLink(Command):
     keyword: str
+    goal_id: int = 0
 
 
 AutoLinkData = list[tuple[int, str]]
@@ -37,19 +38,21 @@ class AutoLink(Graph):
 
     def accept_ToggleAutoLink(self, command: ToggleAutoLink) -> None:
         render_result: RenderResult = self.goaltree.q()
-        selected_id: int = int(render_result.global_opts[OPTION_SELECT])
-        selected_goal = render_result.by_id(selected_id)
+        target_id: int = command.goal_id or int(
+            render_result.global_opts[OPTION_SELECT]
+        )
+        selected_goal = render_result.by_id(target_id)
         if not selected_goal.is_open:
             self.error("Autolink cannot be set for closed goals")
             return
-        if selected_id == Goals.ROOT_ID:
+        if target_id == Goals.ROOT_ID:
             self.error("Autolink cannot be set for the root goal")
             return
         keyword: str = command.keyword.lower().strip()
-        if selected_id in self.back_kw:
-            self.keywords.pop(self.back_kw[selected_id])
-            self.back_kw.pop(selected_id)
-            self.events().append(("remove_autolink", selected_id))
+        if target_id in self.back_kw:
+            self.keywords.pop(self.back_kw[target_id])
+            self.back_kw.pop(target_id)
+            self.events().append(("remove_autolink", target_id))
         if keyword in self.keywords:
             old_id: int = self.keywords.pop(keyword)
             self.back_kw.pop(old_id)
@@ -57,9 +60,9 @@ class AutoLink(Graph):
         if not keyword:
             # empty keyword? exit right now
             return
-        self.keywords[keyword] = selected_id
-        self.back_kw[selected_id] = keyword
-        self.events().append(("add_autolink", selected_id, keyword))
+        self.keywords[keyword] = target_id
+        self.back_kw[target_id] = keyword
+        self.events().append(("add_autolink", target_id, keyword))
 
     def accept_ToggleClose(self, command: ToggleClose) -> None:
         selected_id: int = self.settings("selection")
