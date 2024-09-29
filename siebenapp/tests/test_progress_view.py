@@ -1,14 +1,12 @@
 from _pytest.fixtures import fixture
 
 from siebenapp.domain import (
-    Select,
     ToggleClose,
     RenderRow,
     RenderResult,
     child,
     blocker,
 )
-from siebenapp.goaltree import OPTION_SELECT, OPTION_PREV_SELECT, Selectable
 from siebenapp.progress_view import ProgressView, ToggleProgress
 from siebenapp.tests.dsl import build_goaltree, open_
 
@@ -16,13 +14,11 @@ from siebenapp.tests.dsl import build_goaltree, open_
 @fixture
 def goaltree():
     return ProgressView(
-        Selectable(
-            build_goaltree(
-                open_(1, "Root", [2, 3]),
-                open_(2, "With blocker", [], [4]),
-                open_(3, "With subgoal", [4]),
-                open_(4, "Top goal"),
-            )
+        build_goaltree(
+            open_(1, "Root", [2, 3]),
+            open_(2, "With blocker", [], [4]),
+            open_(3, "With subgoal", [4]),
+            open_(4, "Top goal"),
         )
     )
 
@@ -36,7 +32,6 @@ def test_no_progress_by_default(goaltree) -> None:
             RenderRow(4, 4, "Top goal", True, True, []),
         ],
         roots={1},
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )
 
 
@@ -76,7 +71,6 @@ def test_show_progress(goaltree) -> None:
             ),
         ],
         roots={1},
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )
 
 
@@ -90,12 +84,11 @@ def test_toggle_hide_progress(goaltree) -> None:
             RenderRow(4, 4, "Top goal", True, True, []),
         ],
         roots={1},
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )
 
 
 def test_change_progress_on_close(goaltree) -> None:
-    goaltree.accept_all(ToggleProgress(), Select(4), ToggleClose())
+    goaltree.accept_all(ToggleProgress(), ToggleClose(4))
     assert goaltree.q() == RenderResult(
         [
             RenderRow(
@@ -130,9 +123,8 @@ def test_change_progress_on_close(goaltree) -> None:
             ),
         ],
         roots={1},
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )
-    goaltree.accept_all(Select(2), ToggleClose())
+    goaltree.accept(ToggleClose(2))
     assert goaltree.q() == RenderResult(
         [
             RenderRow(
@@ -173,5 +165,4 @@ def test_change_progress_on_close(goaltree) -> None:
             ),
         ],
         roots={1},
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )
