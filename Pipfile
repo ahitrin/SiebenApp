@@ -4,7 +4,7 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-hypothesis = "==6.112.1"
+hypothesis = "==6.112.2"
 mypy = "==1.11.2"
 mypy-extensions = "==1.0.0"
 pytest = "==8.3.3"
