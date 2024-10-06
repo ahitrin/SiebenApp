@@ -18,6 +18,8 @@ from siebenapp.goaltree import Goals, OPTION_SELECT, OPTION_PREV_SELECT
 class ToggleZoom(Command):
     """Hide or show all goals blocked by the current one"""
 
+    goal_id: int = 0
+
 
 ZoomData = list[tuple[int, int]]
 
@@ -32,18 +34,18 @@ class Zoom(Graph):
         self.zoom_root: list[int] = [x[1] for x in zoom_data] if zoom_data else [1]
 
     def accept_ToggleZoom(self, command: ToggleZoom):
-        selection = self.settings("selection")
-        if selection == self.zoom_root[-1] and len(self.zoom_root) > 1:
+        target = command.goal_id or self.settings("selection")
+        if target == self.zoom_root[-1] and len(self.zoom_root) > 1:
             # unzoom
             last_zoom = self.zoom_root.pop(-1)
             self.events().append(("unzoom", last_zoom))
-        elif selection not in self.zoom_root:
+        elif target not in self.zoom_root:
             # try to zoom
             render_result = self.goaltree.q()
             visible_goals = self._build_visible_goals(render_result)
-            if selection in visible_goals:
-                self.zoom_root.append(selection)
-                self.events().append(("zoom", len(self.zoom_root), selection))
+            if target in visible_goals:
+                self.zoom_root.append(target)
+                self.events().append(("zoom", len(self.zoom_root), target))
             else:
                 self.error("Zooming outside of current zoom root is not allowed!")
 
@@ -109,7 +111,7 @@ class Zoom(Graph):
 
     def accept_ToggleClose(self, command: ToggleClose):
         if self.settings("selection") == self.zoom_root[-1]:
-            self.accept_ToggleZoom(ToggleZoom())
+            self.accept_ToggleZoom(ToggleZoom(self.zoom_root[-1]))
         # Note: zoom_root may be changed inside accept_ToggleZoom
         self.goaltree.accept(ToggleClose(root=self.zoom_root[-1]))
 
