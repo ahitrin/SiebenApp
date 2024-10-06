@@ -2,7 +2,6 @@ from dataclasses import dataclass, replace
 from typing import Any
 
 from siebenapp.domain import Command, Graph, RenderResult, RenderRow
-from siebenapp.goaltree import OPTION_SELECT, OPTION_PREV_SELECT
 
 
 @dataclass(frozen=True)
@@ -38,11 +37,6 @@ class SwitchableView(Graph):
         rows: list[RenderRow] = [
             replace(row, edges=[])
             for row in render_result.rows
-            if row.is_switchable
-            or row.goal_id
-            in [
-                render_result.global_opts.get(OPTION_SELECT, 0),
-                render_result.global_opts.get(OPTION_PREV_SELECT, 0),
-            ]
+            if row.is_switchable or row.goal_id in render_result.global_opts.values()
         ]
         return replace(render_result, rows=rows, roots={r.goal_id for r in rows})
