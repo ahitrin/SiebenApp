@@ -2,7 +2,6 @@ from dataclasses import dataclass, replace
 from typing import Any
 
 from siebenapp.domain import Graph, Command, RenderResult, RenderRow, GoalId
-from siebenapp.goaltree import OPTION_SELECT, OPTION_PREV_SELECT
 
 
 @dataclass(frozen=True)
@@ -40,11 +39,8 @@ class FilterView(Graph):
         }
         all_ids: set[GoalId] = accepted_ids.union(
             goal_id
-            for goal_id in {
-                render_result.global_opts.get(OPTION_SELECT, 0),
-                render_result.global_opts.get(OPTION_PREV_SELECT, 0),
-            }
-            if goal_id != 0
+            for goal_id in render_result.global_opts.values()
+            if isinstance(goal_id, int)
         )
         rows: list[RenderRow] = [
             replace(
