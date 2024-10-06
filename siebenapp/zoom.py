@@ -11,7 +11,7 @@ from siebenapp.domain import (
     RenderRow,
     blocker,
 )
-from siebenapp.goaltree import Goals, OPTION_SELECT, OPTION_PREV_SELECT
+from siebenapp.goaltree import Goals
 
 
 @dataclass(frozen=True)
@@ -57,12 +57,7 @@ class Zoom(Graph):
         assert origin_root.goal_id == Goals.ROOT_ID
         visible_goals = (
             self._build_visible_goals(render_result)
-            .union(
-                {
-                    render_result.global_opts[OPTION_SELECT],
-                    render_result.global_opts[OPTION_PREV_SELECT],
-                }
-            )
+            .union(render_result.global_opts.values())
             .difference({Goals.ROOT_ID})
         )
         rows: list[RenderRow] = [
@@ -79,7 +74,7 @@ class Zoom(Graph):
             for r in render_result.rows
             if r.goal_id in visible_goals
         ]
-        if render_result.global_opts[OPTION_PREV_SELECT] == Goals.ROOT_ID:
+        if Goals.ROOT_ID in render_result.global_opts.values():
             rows.append(
                 RenderRow(
                     -1,
@@ -94,10 +89,9 @@ class Zoom(Graph):
                     ],
                 )
             )
-        new_select = (
-            _replace_with_fake(render_result.global_opts[OPTION_SELECT]),
-            _replace_with_fake(render_result.global_opts[OPTION_PREV_SELECT]),
-        )
+        new_global_opts = {
+            k: _replace_with_fake(v) for k, v in render_result.global_opts.items()
+        }
         all_ids: set[GoalId] = {r.goal_id for r in rows}
         linked_ids: set[GoalId] = {goal_id for r in rows for goal_id, _ in r.edges}
         new_roots: set[GoalId] = all_ids.difference(linked_ids)
@@ -105,8 +99,7 @@ class Zoom(Graph):
             render_result,
             rows=rows,
             roots=new_roots,
-            global_opts=render_result.global_opts
-            | {OPTION_SELECT: new_select[0], OPTION_PREV_SELECT: new_select[1]},
+            global_opts=new_global_opts,
         )
 
     def accept_ToggleClose(self, command: ToggleClose):
