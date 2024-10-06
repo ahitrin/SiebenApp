@@ -187,7 +187,7 @@ def test_do_not_add_dangling_goals_to_old_root_on_zoom() -> None:
             )
         )
     )
-    v.accept(ToggleZoom())
+    v.accept(ToggleZoom(2))
     assert v.q() == RenderResult(
         [
             RenderRow(

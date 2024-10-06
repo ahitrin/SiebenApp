@@ -94,7 +94,7 @@ def test_show_fake_goal_when_filter_matches_nothing(selected_goaltree) -> None:
 
 
 def test_zoomed_parent_goal_must_not_be_filtered_out(zoomed_goaltree) -> None:
-    zoomed_goaltree.accept_all(HoldSelect(), Select(2), ToggleZoom(), FilterBy("mm"))
+    zoomed_goaltree.accept_all(HoldSelect(), Select(2), ToggleZoom(2), FilterBy("mm"))
     assert zoomed_goaltree.q() == RenderResult(
         [
             RenderRow(2, 2, "Beta", True, False, [child(3)], {"Zoom": "Alpha"}),

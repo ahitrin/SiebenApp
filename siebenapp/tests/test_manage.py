@@ -63,7 +63,7 @@ def complex_goaltree_file():
 @pytest.fixture
 def zoomed_complex_goaltree_file(complex_goaltree_file):
     g = load(complex_goaltree_file)
-    g.accept(ToggleZoom())
+    g.accept(ToggleZoom(4))
     file_name = NamedTemporaryFile().name
     save(g, file_name)
     return file_name
@@ -203,8 +203,8 @@ def test_extract_successful(extract_source, extract_target) -> None:
 
 def test_zoom_after_extract(extract_source, extract_target) -> None:
     result = extract_subtree(extract_source, 2)
-    result.accept_all(Select(3), ToggleZoom())
-    extract_target.accept_all(Select(3), ToggleZoom())
+    result.accept_all(Select(3), ToggleZoom(3))
+    extract_target.accept_all(Select(3), ToggleZoom(3))
     assert extract_target.q() == result.q()
 
 

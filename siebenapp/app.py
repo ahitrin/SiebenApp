@@ -396,7 +396,8 @@ class SiebenApp(QMainWindow):
             )
 
     def toggle_zoom(self):
-        self.goals_holder.accept(ToggleZoom())
+        target = int(self.goals_holder.goals.settings("selection"))
+        self.goals_holder.accept(ToggleZoom(target))
         self.refresh.emit()
 
     def show_keys_help(self):

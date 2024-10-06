@@ -136,7 +136,7 @@ def test_save_and_load() -> None:
         Select(4),
         ToggleClose(),
         Select(2),
-        ToggleZoom(),
+        ToggleZoom(2),
     )
     save(goals, file_name)
     new_goals = load(file_name)

@@ -163,12 +163,16 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
             list(row.goal_id for row in self.goaltree.q().rows if row.goal_id > 0)
         )
         selection = d.draw(sampled_from(goal_keys))
-        self._accept(Rename(t))
+        self._accept(Rename(t, selection))
 
-    @rule()
-    def zoom(self) -> None:
+    @rule(d=data())
+    def zoom(self, d) -> None:
         event("zoom")
-        self._accept(ToggleZoom())
+        goal_keys = sorted(
+            list(row.goal_id for row in self.goaltree.q().rows if row.goal_id > 0)
+        )
+        selection = d.draw(sampled_from(goal_keys))
+        self._accept(ToggleZoom(selection))
 
     @rule()
     def switchable_view(self) -> None:

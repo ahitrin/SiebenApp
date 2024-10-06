@@ -59,7 +59,7 @@ def test_no_diff_on_start(sample_holder):
         FilterBy("anything"),
         ToggleAutoLink("keyword", 2),
         ToggleProgress(),
-        ToggleZoom(),
+        ToggleZoom(2),
         ToggleSwitchableView(),
         ToggleOpenView(),
     ],

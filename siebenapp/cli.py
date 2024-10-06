@@ -103,6 +103,7 @@ def fmt(render_result: RenderResult, row: RenderRow, id_width: int) -> str:
 
 
 def build_actions(command: str, goals_holder: GoalsHolder) -> list[Command]:
+    target = int(goals_holder.goals.settings("selection"))
     simple_commands: Mapping[str, Command] = {
         "c": ToggleClose(),
         "d": Delete(),
@@ -113,7 +114,7 @@ def build_actions(command: str, goals_holder: GoalsHolder) -> list[Command]:
         "n": ToggleOpenView(),
         "p": ToggleProgress(),
         "t": ToggleSwitchableView(),
-        "z": ToggleZoom(),
+        "z": ToggleZoom(target),
     }
     if command and all(c in "1234567890" for c in command):
         return [Select(int(c)) for c in command]
@@ -127,7 +128,6 @@ def build_actions(command: str, goals_holder: GoalsHolder) -> list[Command]:
         # Note: filter may be empty
         return [FilterBy(command.removeprefix("f").lstrip())]
     if command.startswith("`"):
-        target = int(goals_holder.goals.settings("selection"))
         # Note: autolink may be empty
         return [ToggleAutoLink(command.removeprefix("`").lstrip(), target)]
     if command in simple_commands:
