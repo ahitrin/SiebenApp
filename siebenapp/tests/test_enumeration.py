@@ -19,19 +19,17 @@ from siebenapp.zoom import ToggleZoom
 @pytest.fixture
 def goal_chain_10():
     """a → b → c → ... → j"""
-    return Selectable(
-        build_goaltree(
-            open_(1, "a", [2]),
-            open_(2, "b", [3]),
-            open_(3, "c", [4]),
-            open_(4, "d", [5]),
-            open_(5, "e", [6]),
-            open_(6, "f", [7]),
-            open_(7, "g", [8]),
-            open_(8, "h", [9]),
-            open_(9, "i", [10]),
-            open_(10, "j", []),
-        )
+    return build_goaltree(
+        open_(1, "a", [2]),
+        open_(2, "b", [3]),
+        open_(3, "c", [4]),
+        open_(4, "d", [5]),
+        open_(5, "e", [6]),
+        open_(6, "f", [7]),
+        open_(7, "g", [8]),
+        open_(8, "h", [9]),
+        open_(9, "i", [10]),
+        open_(10, "j", []),
     )
 
 
@@ -39,17 +37,14 @@ def goal_chain_10():
 def goal_chain_11(goal_chain_10):
     """a → b → c → ... → j → k"""
     goals = goal_chain_10
-    goals.accept_all(Select(10), Add("k"), Select(1))
+    goals.accept(Add("k", 10))
     return goals
 
 
 def test_simple_enumeration_is_not_changed() -> None:
     e = Enumeration(
-        Selectable(
-            build_goaltree(
-                open_(1, "a", [2, 3]), open_(2, "b", blockers=[3]), open_(3, "c")
-            ),
-            [("selection", 3), ("previous_selection", 2)],
+        build_goaltree(
+            open_(1, "a", [2, 3]), open_(2, "b", blockers=[3]), open_(3, "c")
         )
     )
     assert e.q() == RenderResult(
@@ -59,7 +54,6 @@ def test_simple_enumeration_is_not_changed() -> None:
             RenderRow(3, 3, "c", True, True, []),
         ],
         roots={1},
-        global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 2},
     )
 
 
@@ -79,7 +73,6 @@ def test_apply_mapping_for_the_10th_element(goal_chain_10) -> None:
             RenderRow(0, 10, "j", True, True, []),
         ],
         roots={1},
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )
 
 
@@ -100,12 +93,11 @@ def test_apply_mapping_for_the_11th_element(goal_chain_11) -> None:
             RenderRow(21, 11, "k", True, True, []),
         ],
         roots={11},
-        global_opts={OPTION_SELECT: 11, OPTION_PREV_SELECT: 11},
     )
 
 
 def test_use_mapping_in_selection(goal_chain_10) -> None:
-    e = Enumeration(goal_chain_10)
+    e = Enumeration(Selectable(goal_chain_10))
     e.accept(Select(0))
     assert e.q() == RenderResult(
         [
@@ -126,7 +118,7 @@ def test_use_mapping_in_selection(goal_chain_10) -> None:
 
 
 def test_do_not_select_goal_by_partial_id(goal_chain_11) -> None:
-    e = Enumeration(goal_chain_11)
+    e = Enumeration(Selectable(goal_chain_11))
     # Select(1) is kept in cache, and selection is not changed yet
     e.accept_all(Select(1))
     assert e.q() == RenderResult(
@@ -149,7 +141,7 @@ def test_do_not_select_goal_by_partial_id(goal_chain_11) -> None:
 
 
 def test_select_goal_by_id_parts(goal_chain_11) -> None:
-    e = Enumeration(goal_chain_11)
+    e = Enumeration(Selectable(goal_chain_11))
     e.accept_all(Select(1), Select(6))
     assert e.q() == RenderResult(
         [
@@ -171,7 +163,7 @@ def test_select_goal_by_id_parts(goal_chain_11) -> None:
 
 
 def test_select_goal_by_full_id(goal_chain_11) -> None:
-    e = Enumeration(goal_chain_11)
+    e = Enumeration(Selectable(goal_chain_11))
     assert e.q() == RenderResult(
         [
             RenderRow(11, 1, "a", True, False, [child(12)]),
@@ -210,7 +202,7 @@ def test_select_goal_by_full_id(goal_chain_11) -> None:
 
 
 def test_select_goal_by_full_id_with_non_empty_cache(goal_chain_11) -> None:
-    e = Enumeration(goal_chain_11)
+    e = Enumeration(Selectable(goal_chain_11))
     assert e.q() == RenderResult(
         [
             RenderRow(11, 1, "a", True, False, [child(12)]),
@@ -250,9 +242,7 @@ def test_select_goal_by_full_id_with_non_empty_cache(goal_chain_11) -> None:
 
 def test_enumerated_goals_must_have_the_same_dimension() -> None:
     e = Enumeration(
-        Selectable(
-            build_goaltree(open_(1, "a", [2, 20]), open_(2, "b"), open_(20, "x"))
-        )
+        build_goaltree(open_(1, "a", [2, 20]), open_(2, "b"), open_(20, "x"))
     )
     assert e.q() == RenderResult(
         [
@@ -261,12 +251,11 @@ def test_enumerated_goals_must_have_the_same_dimension() -> None:
             RenderRow(3, 20, "x", True, True, []),
         ],
         roots={1},
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )
 
 
 def test_selection_cache_should_be_reset_after_view_switch(goal_chain_11) -> None:
-    e = Enumeration(SwitchableView(goal_chain_11))
+    e = Enumeration(SwitchableView(Selectable(goal_chain_11)))
     e.accept_all(Add("Also top"))
     e.accept(Select(1))
     # Select(1) is kept in a cache and not applied yet
@@ -295,7 +284,7 @@ def test_selection_cache_should_be_reset_after_view_switch(goal_chain_11) -> Non
 
 
 def test_selection_cache_should_avoid_overflow(goal_chain_11) -> None:
-    e = Enumeration(goal_chain_11)
+    e = Enumeration(Selectable(goal_chain_11))
     assert e.q().global_opts == {
         OPTION_SELECT: 11,
         OPTION_PREV_SELECT: 11,
