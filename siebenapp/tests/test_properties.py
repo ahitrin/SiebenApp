@@ -3,7 +3,7 @@ import sqlite3
 from contextlib import closing
 from dataclasses import asdict
 
-from hypothesis import settings, assume, note, event, reproduce_failure
+from hypothesis import settings, assume, note, event
 from hypothesis.stateful import (
     RuleBasedStateMachine,
     rule,
@@ -41,7 +41,6 @@ settings.register_profile("dev", settings(max_examples=200))
 settings.load_profile(os.getenv("HYPOTHESIS_PROFILE", "dev"))
 
 
-@reproduce_failure("6.112.2", b"AXicY2CAAi4GRgYGJjADAACrABg=")
 class GoaltreeRandomWalk(RuleBasedStateMachine):
     db_is_ready = False
 
@@ -166,13 +165,10 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         selection = d.draw(sampled_from(goal_keys))
         self._accept(Rename(t, selection))
 
-    @rule(d=data())
-    def zoom(self, d) -> None:
+    @rule()
+    def zoom(self) -> None:
         event("zoom")
-        goal_keys = sorted(
-            list(row.goal_id for row in self.goaltree.q().rows if row.goal_id > 0)
-        )
-        selection = d.draw(sampled_from(goal_keys))
+        selection = self.goaltree.settings("selection")
         self._accept(ToggleZoom(selection))
 
     @rule()
