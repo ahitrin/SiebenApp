@@ -8,7 +8,6 @@ from siebenapp.domain import (
     GoalId,
     RenderRow,
 )
-from siebenapp.goaltree import OPTION_SELECT, OPTION_PREV_SELECT
 
 
 @dataclass(frozen=True)
@@ -48,11 +47,8 @@ class OpenView(Graph):
             or row.goal_id
             in render_result.roots.union(
                 goal_id
-                for goal_id in {
-                    render_result.global_opts.get(OPTION_SELECT, 0),
-                    render_result.global_opts.get(OPTION_PREV_SELECT, 0),
-                }
-                if goal_id != 0
+                for goal_id in render_result.global_opts.values()
+                if isinstance(goal_id, int)
             )
         }
         rows: list[RenderRow] = [
