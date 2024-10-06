@@ -18,7 +18,7 @@ from siebenapp.goaltree import Goals, OPTION_SELECT, OPTION_PREV_SELECT
 class ToggleZoom(Command):
     """Hide or show all goals blocked by the current one"""
 
-    goal_id: int = 0
+    goal_id: int
 
 
 ZoomData = list[tuple[int, int]]
@@ -34,7 +34,7 @@ class Zoom(Graph):
         self.zoom_root: list[int] = [x[1] for x in zoom_data] if zoom_data else [1]
 
     def accept_ToggleZoom(self, command: ToggleZoom):
-        target = command.goal_id or self.settings("selection")
+        target = command.goal_id
         if target == self.zoom_root[-1] and len(self.zoom_root) > 1:
             # unzoom
             last_zoom = self.zoom_root.pop(-1)
