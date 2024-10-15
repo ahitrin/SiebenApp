@@ -1,4 +1,5 @@
 import sys
+import shutil
 from argparse import ArgumentParser
 from operator import itemgetter
 from typing import Any
@@ -41,6 +42,9 @@ class IO:
     def read(self) -> str:
         raise NotImplementedError
 
+    def width(self) -> int:
+        return 40
+
 
 class ConsoleIO(IO):
     def __init__(self, prompt: str):
@@ -53,6 +57,9 @@ class ConsoleIO(IO):
 
     def read(self) -> str:
         return input(self.prompt)
+
+    def width(self) -> int:
+        return shutil.get_terminal_size((80, 20))[0]
 
 
 def update_message(message: str = "") -> None:
@@ -153,6 +160,7 @@ def loop(io: IO, goals: Graph, db_name: str) -> None:
             reverse=True,
         )
         id_width: int = len(str(max(r.goal_id for r in render_result.rows)))
+        io.write('-' * io.width())
         for row, _, __ in index:
             io.write(fmt(render_result, row, id_width))
         if USER_MESSAGE:

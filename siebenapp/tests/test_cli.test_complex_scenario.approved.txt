@@ -1,24 +1,30 @@
+----------------------------------------
 1[ ]>Rename me
 > r Cover all current features
 
+----------------------------------------
 1[ ]>Cover all current features
 > a Filter view
 
+----------------------------------------
 1   >Cover all current features [2 /  | ]
 2[ ] Filter view
 > a Toggle show open/closed goals
 
+----------------------------------------
 1   >Cover all current features [2,3 /  | ]
 3[ ] Toggle show open/closed goals
 2[ ] Filter view
 > a Toggle show goal progress
 
+----------------------------------------
 1   >Cover all current features [2,3,4 /  | ]
 4[ ] Toggle show goal progress
 3[ ] Toggle show open/closed goals
 2[ ] Filter view
 > a Toggle show switchable goals
 
+----------------------------------------
 1   >Cover all current features [2,3,4,5 /  | ]
 5[ ] Toggle show switchable goals
 4[ ] Toggle show goal progress
@@ -26,6 +32,7 @@
 2[ ] Filter view
 > a Toggle zoom and unzoom
 
+----------------------------------------
 1   >Cover all current features [2,3,4,5,6 /  | ]
 6[ ] Toggle zoom and unzoom
 5[ ] Toggle show switchable goals
@@ -34,6 +41,7 @@
 2[ ] Filter view
 > 2
 
+----------------------------------------
 1   _Cover all current features [2,3,4,5,6 /  | ]
 6[ ] Toggle zoom and unzoom
 5[ ] Toggle show switchable goals
@@ -42,6 +50,7 @@
 2[ ]>Filter view
 > h
 
+----------------------------------------
 1    Cover all current features [2,3,4,5,6 /  | ]
 6[ ] Toggle zoom and unzoom
 5[ ] Toggle show switchable goals
@@ -50,6 +59,7 @@
 2[ ]>Filter view
 > 6
 
+----------------------------------------
 1    Cover all current features [2,3,4,5,6 /  | ]
 6[ ]>Toggle zoom and unzoom
 5[ ] Toggle show switchable goals
@@ -58,6 +68,7 @@
 2[ ]_Filter view
 > l
 
+----------------------------------------
 1    Cover all current features [2,3,4,5,6 /  | ]
 2   _Filter view [ / 6 | ]
 6[ ]>Toggle zoom and unzoom
@@ -66,6 +77,7 @@
 3[ ] Toggle show open/closed goals
 > 2
 
+----------------------------------------
 1    Cover all current features [2,3,4,5,6 /  | ]
 2   >Filter view [ / 6 | ]
 6[ ] Toggle zoom and unzoom
@@ -74,17 +86,21 @@
 3[ ] Toggle show open/closed goals
 > z
 
+----------------------------------------
 1   >Filter view [ / 2 | ] [Zoom: Cover all current features]
 2[ ] Toggle zoom and unzoom
 > 2
 
+----------------------------------------
 1   _Filter view [ / 2 | ] [Zoom: Cover all current features]
 2[ ]>Toggle zoom and unzoom
 > c
 
+----------------------------------------
 1[ ]>Filter view [Zoom: Cover all current features]
 > z
 
+----------------------------------------
 1    Cover all current features [2,3,4,5 /  | ]
 5[ ] Toggle show switchable goals
 4[ ] Toggle show goal progress
@@ -92,12 +108,14 @@
 2[ ]>Filter view
 > f Toggle
 
+----------------------------------------
 4[ ] Toggle show switchable goals [Filter: toggle]
 3[ ] Toggle show goal progress [Filter: toggle]
 2[ ] Toggle show open/closed goals [Filter: toggle]
 1[ ]>Filter view
 > n
 
+----------------------------------------
 1[ ]>Filter view [ / 5 | ]
 4[ ] Toggle show switchable goals [Filter: toggle]
 3[ ] Toggle show goal progress [Filter: toggle]
@@ -105,6 +123,7 @@
 2[ ] Toggle show open/closed goals [Filter: toggle]
 > 2
 
+----------------------------------------
 1[ ]_Filter view [ / 5 | ]
 4[ ] Toggle show switchable goals [Filter: toggle]
 3[ ] Toggle show goal progress [Filter: toggle]
@@ -112,6 +131,7 @@
 2[ ]>Toggle show open/closed goals [Filter: toggle]
 > c
 
+----------------------------------------
 1[ ]>Filter view [ / 5 | ]
 4[ ] Toggle show switchable goals [Filter: toggle]
 3[ ] Toggle show goal progress [Filter: toggle]
@@ -119,6 +139,7 @@
 2[x] Toggle show open/closed goals [Filter: toggle]
 > f
 
+----------------------------------------
 1    Cover all current features [2,3,4,5,6 /  | ]
 2[ ]>Filter view [ / 6 | ]
 6[x] Toggle zoom and unzoom
@@ -127,6 +148,7 @@
 3[x] Toggle show open/closed goals
 > p
 
+----------------------------------------
 1    Cover all current features [2,3,4,5,6 /  | ] [Id: 1,Progress: 33% (2/6)]
 2[ ]>Filter view [ / 6 | ] [Id: 2,Progress: 0% (0/1)]
 6[x] Toggle zoom and unzoom [Id: 6,Progress: 100% (1/1)]
@@ -135,6 +157,7 @@
 3[x] Toggle show open/closed goals [Id: 3,Progress: 100% (1/1)]
 > t
 
+----------------------------------------
 5[x] Toggle zoom and unzoom [Id: 6,Progress: 100% (1/1)]
 4[ ] Toggle show switchable goals [Id: 5,Progress: 0% (0/1)]
 3[ ] Toggle show goal progress [Id: 4,Progress: 0% (0/1)]
@@ -142,40 +165,48 @@
 1[ ]>Filter view [Id: 2,Progress: 0% (0/1)]
 > n
 
+----------------------------------------
 3[ ] Toggle show switchable goals [Id: 5,Progress: 0% (0/1)]
 2[ ] Toggle show goal progress [Id: 4,Progress: 0% (0/1)]
 1[ ]>Filter view [Id: 2,Progress: 0% (0/1)]
 > t
 
+----------------------------------------
 1    Cover all current features [2,3,4 /  | ] [Id: 1,Progress: 33% (2/6)]
 4[ ] Toggle show switchable goals [Id: 5,Progress: 0% (0/1)]
 3[ ] Toggle show goal progress [Id: 4,Progress: 0% (0/1)]
 2[ ]>Filter view [Id: 2,Progress: 0% (0/1)]
 > 4
 
+----------------------------------------
 1    Cover all current features [2,3,4 /  | ] [Id: 1,Progress: 33% (2/6)]
 4[ ]>Toggle show switchable goals [Id: 5,Progress: 0% (0/1)]
 3[ ] Toggle show goal progress [Id: 4,Progress: 0% (0/1)]
 2[ ]_Filter view [Id: 2,Progress: 0% (0/1)]
 > c
 
+----------------------------------------
 1    Cover all current features [2,3 /  | ] [Id: 1,Progress: 50% (3/6)]
 3[ ] Toggle show goal progress [Id: 4,Progress: 0% (0/1)]
 2[ ]>Filter view [Id: 2,Progress: 0% (0/1)]
 > 2
 
+----------------------------------------
 1    Cover all current features [2,3 /  | ] [Id: 1,Progress: 50% (3/6)]
 3[ ] Toggle show goal progress [Id: 4,Progress: 0% (0/1)]
 2[ ]>Filter view [Id: 2,Progress: 0% (0/1)]
 > c
 
+----------------------------------------
 1    Cover all current features [2 /  | ] [Id: 1,Progress: 66% (4/6)]
 2[ ]>Toggle show goal progress [Id: 4,Progress: 0% (0/1)]
 > p
 
+----------------------------------------
 1    Cover all current features [2 /  | ]
 2[ ]>Toggle show goal progress
 > c
 
+----------------------------------------
 1[ ]>Cover all current features
 > q
