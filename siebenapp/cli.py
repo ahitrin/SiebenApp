@@ -160,7 +160,7 @@ def loop(io: IO, goals: Graph, db_name: str) -> None:
             reverse=True,
         )
         id_width: int = len(str(max(r.goal_id for r in render_result.rows)))
-        io.write('-' * io.width())
+        io.write("-" * io.width())
         for row, _, __ in index:
             io.write(fmt(render_result, row, id_width))
         if USER_MESSAGE:
