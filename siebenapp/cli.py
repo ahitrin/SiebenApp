@@ -6,15 +6,13 @@ from typing import Any
 from collections.abc import Mapping
 
 from siebenapp.autolink import ToggleAutoLink
-from siebenapp.selectable import OPTION_SELECT, OPTION_PREV_SELECT
+from siebenapp.selectable import OPTION_SELECT, OPTION_PREV_SELECT, Select, HoldSelect
 from siebenapp.render import GoalsHolder
 from siebenapp.domain import (
     ToggleClose,
     Delete,
-    HoldSelect,
     ToggleLink,
     EdgeType,
-    Select,
     Add,
     Insert,
     Rename,

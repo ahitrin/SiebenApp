@@ -5,12 +5,11 @@ from tempfile import NamedTemporaryFile
 import pytest
 
 from siebenapp.domain import (
-    HoldSelect,
     ToggleClose,
     ToggleLink,
     Add,
-    Select,
 )
+from siebenapp.selectable import Select, HoldSelect
 from siebenapp.enumeration import Enumeration
 from siebenapp.goaltree import Goals
 from siebenapp.layers import all_layers

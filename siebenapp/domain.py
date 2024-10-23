@@ -175,26 +175,12 @@ class Add(Command):
 
 
 @dataclass(frozen=True)
-class Select(Command):
-    """Select a goal by its id whether it exist. Do nothing in other case"""
-
-    goal_id: int
-
-
-@dataclass(frozen=True)
 class Insert(Command):
     """Add an intermediate goal between two selected goals"""
 
     name: str
     lower: int = 0
     upper: int = 0
-
-
-@dataclass(frozen=True)
-class HoldSelect(Command):
-    """Saves current selection into the "previous selection" state"""
-
-    goal_id: int = 0
 
 
 @dataclass(frozen=True)

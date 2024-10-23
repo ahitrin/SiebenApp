@@ -1,14 +1,18 @@
 import pytest
 
 from siebenapp.domain import (
-    Select,
     ToggleClose,
-    HoldSelect,
     child,
     RenderRow,
     RenderResult,
 )
-from siebenapp.selectable import Selectable, OPTION_SELECT, OPTION_PREV_SELECT
+from siebenapp.selectable import (
+    Selectable,
+    OPTION_SELECT,
+    OPTION_PREV_SELECT,
+    Select,
+    HoldSelect,
+)
 from siebenapp.open_view import ToggleOpenView, OpenView
 from siebenapp.tests.dsl import build_goaltree, open_, clos_
 from siebenapp.zoom import Zoom, ToggleZoom

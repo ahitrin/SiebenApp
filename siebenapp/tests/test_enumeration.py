@@ -2,14 +2,13 @@ import pytest
 
 from siebenapp.domain import (
     Add,
-    Select,
     child,
     blocker,
     RenderRow,
     RenderResult,
 )
 from siebenapp.enumeration import Enumeration, BidirectionalIndex
-from siebenapp.selectable import Selectable, OPTION_SELECT, OPTION_PREV_SELECT
+from siebenapp.selectable import Selectable, OPTION_SELECT, OPTION_PREV_SELECT, Select
 from siebenapp.layers import all_layers
 from siebenapp.switchable_view import ToggleSwitchableView, SwitchableView
 from siebenapp.tests.dsl import build_goaltree, open_

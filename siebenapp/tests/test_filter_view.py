@@ -1,8 +1,14 @@
 from _pytest.fixtures import fixture
 
-from siebenapp.domain import Select, HoldSelect, child, blocker, RenderRow, RenderResult
+from siebenapp.domain import child, blocker, RenderRow, RenderResult
 from siebenapp.filter_view import FilterBy, FilterView
-from siebenapp.selectable import Selectable, OPTION_SELECT, OPTION_PREV_SELECT
+from siebenapp.selectable import (
+    Selectable,
+    OPTION_SELECT,
+    OPTION_PREV_SELECT,
+    Select,
+    HoldSelect,
+)
 from siebenapp.tests.dsl import build_goaltree, open_
 from siebenapp.zoom import Zoom, ToggleZoom
 

@@ -1,11 +1,9 @@
 from siebenapp.domain import (
     EdgeType,
-    HoldSelect,
     ToggleClose,
     Delete,
     ToggleLink,
     Add,
-    Select,
     Graph,
     child,
     blocker,
@@ -13,7 +11,13 @@ from siebenapp.domain import (
     RenderResult,
 )
 from siebenapp.goaltree import Goals
-from siebenapp.selectable import Selectable, OPTION_SELECT, OPTION_PREV_SELECT
+from siebenapp.selectable import (
+    Selectable,
+    OPTION_SELECT,
+    OPTION_PREV_SELECT,
+    Select,
+    HoldSelect,
+)
 from siebenapp.tests.dsl import build_goaltree, open_, clos_
 from siebenapp.zoom import Zoom, ToggleZoom
 

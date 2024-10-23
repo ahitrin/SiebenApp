@@ -1,15 +1,19 @@
 from unittest import TestCase
 
 from siebenapp.goaltree import Goals
-from siebenapp.selectable import Selectable, OPTION_SELECT, OPTION_PREV_SELECT
+from siebenapp.selectable import (
+    Selectable,
+    OPTION_SELECT,
+    OPTION_PREV_SELECT,
+    Select,
+    HoldSelect,
+)
 from siebenapp.domain import (
     EdgeType,
-    HoldSelect,
     ToggleClose,
     Delete,
     ToggleLink,
     Add,
-    Select,
     Insert,
     Rename,
     RenderRow,

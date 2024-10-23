@@ -7,9 +7,8 @@ from siebenapp.domain import (
     ToggleClose,
     Delete,
     Insert,
-    Select,
-    HoldSelect,
 )
+from siebenapp.selectable import Select, HoldSelect
 from siebenapp.filter_view import FilterBy
 from siebenapp.layers import all_layers
 from siebenapp.open_view import ToggleOpenView

@@ -16,12 +16,10 @@ from hypothesis.strategies import data, integers, text, sampled_from
 from siebenapp.autolink import ToggleAutoLink
 from siebenapp.domain import (
     EdgeType,
-    HoldSelect,
     ToggleClose,
     Delete,
     ToggleLink,
     Add,
-    Select,
     Insert,
     Rename,
     Command,
@@ -30,7 +28,7 @@ from siebenapp.domain import (
 )
 from siebenapp.filter_view import FilterBy
 from siebenapp.goaltree import Goals
-from siebenapp.selectable import OPTION_SELECT, OPTION_PREV_SELECT
+from siebenapp.selectable import OPTION_SELECT, OPTION_PREV_SELECT, Select, HoldSelect
 from siebenapp.layers import all_layers
 from siebenapp.open_view import ToggleOpenView
 from siebenapp.switchable_view import ToggleSwitchableView

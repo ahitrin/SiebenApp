@@ -3,9 +3,9 @@ from tempfile import NamedTemporaryFile
 
 import pytest
 
-from siebenapp.domain import Select, child, RenderRow, RenderResult
+from siebenapp.domain import child, RenderRow, RenderResult
 from siebenapp.enumeration import Enumeration
-from siebenapp.selectable import OPTION_SELECT, OPTION_PREV_SELECT
+from siebenapp.selectable import OPTION_SELECT, OPTION_PREV_SELECT, Select
 from siebenapp.layers import all_layers, persistent_layers
 from siebenapp.manage import main, dot_export, extract_subtree
 from siebenapp.system import save, load
