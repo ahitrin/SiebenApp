@@ -5,7 +5,7 @@ import pytest
 
 from siebenapp.domain import Select, child, RenderRow, RenderResult
 from siebenapp.enumeration import Enumeration
-from siebenapp.goaltree import OPTION_SELECT, OPTION_PREV_SELECT
+from siebenapp.selectable import OPTION_SELECT, OPTION_PREV_SELECT
 from siebenapp.layers import all_layers, persistent_layers
 from siebenapp.manage import main, dot_export, extract_subtree
 from siebenapp.system import save, load

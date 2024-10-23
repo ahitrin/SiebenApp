@@ -5,7 +5,8 @@ from os import path
 
 from siebenapp.cli import IO, ConsoleIO
 from siebenapp.domain import EdgeType, Graph, RenderRow, GoalId, RenderResult
-from siebenapp.goaltree import Goals, GoalsData, EdgesData, OptionsData
+from siebenapp.goaltree import Goals, GoalsData, EdgesData
+from siebenapp.selectable import OptionsData
 from siebenapp.layers import get_root, persistent_layers, all_layers
 from siebenapp.open_view import ToggleOpenView
 from siebenapp.progress_view import ToggleProgress

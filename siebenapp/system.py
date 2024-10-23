@@ -5,7 +5,8 @@ from collections.abc import Callable
 from siebenapp.autolink import AutoLink, AutoLinkData
 from siebenapp.domain import Graph
 from siebenapp.enumeration import Enumeration
-from siebenapp.goaltree import Goals, OptionsData, Selectable
+from siebenapp.goaltree import Goals
+from siebenapp.selectable import Selectable, OptionsData
 from siebenapp.layers import all_layers, get_root
 from siebenapp.zoom import Zoom, ZoomData
 

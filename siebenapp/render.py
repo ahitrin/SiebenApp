@@ -3,7 +3,7 @@ from dataclasses import dataclass, replace
 from typing import Any, Optional, Protocol
 
 from siebenapp.domain import Graph, EdgeType, GoalId, RenderResult, Command
-from siebenapp.goaltree import OPTION_SELECT, OPTION_PREV_SELECT
+from siebenapp.selectable import OPTION_SELECT, OPTION_PREV_SELECT
 from siebenapp.render_next import full_render
 from siebenapp.system import save
 

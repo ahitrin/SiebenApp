@@ -3,7 +3,8 @@ from typing import TypeVar
 from siebenapp.autolink import AutoLink, AutoLinkData
 from siebenapp.domain import Graph
 from siebenapp.filter_view import FilterView
-from siebenapp.goaltree import Goals, Selectable, OptionsData
+from siebenapp.goaltree import Goals
+from siebenapp.selectable import Selectable, OptionsData
 from siebenapp.open_view import OpenView
 from siebenapp.progress_view import ProgressView
 from siebenapp.switchable_view import SwitchableView

@@ -1,7 +1,7 @@
 import pytest
 
 from siebenapp.enumeration import Enumeration
-from siebenapp.goaltree import Selectable
+from siebenapp.selectable import Selectable
 from siebenapp.switchable_view import ToggleSwitchableView, SwitchableView
 from siebenapp.domain import EdgeType, child, blocker
 from siebenapp.render import Renderer

@@ -8,7 +8,7 @@ from siebenapp.domain import (
     RenderRow,
     RenderResult,
 )
-from siebenapp.goaltree import OPTION_SELECT, OPTION_PREV_SELECT, Selectable
+from siebenapp.selectable import Selectable, OPTION_SELECT, OPTION_PREV_SELECT
 from siebenapp.open_view import ToggleOpenView, OpenView
 from siebenapp.tests.dsl import build_goaltree, open_, clos_
 from siebenapp.zoom import Zoom, ToggleZoom

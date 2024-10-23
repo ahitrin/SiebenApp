@@ -6,7 +6,7 @@ from typing import Any
 
 import pytest
 
-from siebenapp.goaltree import Selectable
+from siebenapp.selectable import Selectable
 from siebenapp.render import (
     Renderer,
     GeometryProvider,

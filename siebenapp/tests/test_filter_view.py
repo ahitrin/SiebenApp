@@ -2,7 +2,7 @@ from _pytest.fixtures import fixture
 
 from siebenapp.domain import Select, HoldSelect, child, blocker, RenderRow, RenderResult
 from siebenapp.filter_view import FilterBy, FilterView
-from siebenapp.goaltree import OPTION_SELECT, OPTION_PREV_SELECT, Selectable
+from siebenapp.selectable import Selectable, OPTION_SELECT, OPTION_PREV_SELECT
 from siebenapp.tests.dsl import build_goaltree, open_
 from siebenapp.zoom import Zoom, ToggleZoom
 

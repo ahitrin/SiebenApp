@@ -15,7 +15,7 @@ from PySide6.QtWidgets import (  # type: ignore
 )
 
 from siebenapp.autolink import ToggleAutoLink
-from siebenapp.goaltree import OPTION_SELECT, OPTION_PREV_SELECT
+from siebenapp.selectable import OPTION_SELECT, OPTION_PREV_SELECT
 from siebenapp.progress_view import ToggleProgress
 from siebenapp.filter_view import FilterBy
 from siebenapp.domain import (

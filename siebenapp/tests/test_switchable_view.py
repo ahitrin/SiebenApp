@@ -1,5 +1,6 @@
 from siebenapp.domain import Add, Select, HoldSelect, RenderRow, RenderResult, child
-from siebenapp.goaltree import Goals, OPTION_SELECT, OPTION_PREV_SELECT, Selectable
+from siebenapp.goaltree import Goals
+from siebenapp.selectable import Selectable, OPTION_SELECT, OPTION_PREV_SELECT
 from siebenapp.layers import persistent_layers
 from siebenapp.switchable_view import ToggleSwitchableView, SwitchableView
 from siebenapp.tests.dsl import build_goaltree, open_

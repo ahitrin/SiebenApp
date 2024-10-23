@@ -1,6 +1,7 @@
 from unittest import TestCase
 
-from siebenapp.goaltree import Goals, OPTION_SELECT, OPTION_PREV_SELECT, Selectable
+from siebenapp.goaltree import Goals
+from siebenapp.selectable import Selectable, OPTION_SELECT, OPTION_PREV_SELECT
 from siebenapp.domain import (
     EdgeType,
     HoldSelect,
