@@ -6,7 +6,7 @@ from os import path
 from siebenapp.cli import IO, ConsoleIO
 from siebenapp.domain import EdgeType, Graph, RenderRow, GoalId, RenderResult
 from siebenapp.goaltree import Goals, GoalsData, EdgesData
-from siebenapp.selectable import OptionsData
+from siebenapp.selectable import SelectableData
 from siebenapp.layers import get_root, persistent_layers, all_layers
 from siebenapp.open_view import ToggleOpenView
 from siebenapp.progress_view import ToggleProgress
@@ -241,7 +241,7 @@ def extract_subtree(source_goals: Graph, goal_id: int) -> Graph:
     goals_to_add: set[GoalId] = {goal_id}
     goals_data: GoalsData = []
     edges_data: EdgesData = []
-    options_data: OptionsData = []
+    options_data: SelectableData = []
     while goals_to_add:
         goal = goals_to_add.pop()
         row = render_result.by_id(goal)

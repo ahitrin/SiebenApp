@@ -4,7 +4,7 @@ from siebenapp.autolink import AutoLink, AutoLinkData
 from siebenapp.domain import Graph
 from siebenapp.filter_view import FilterView
 from siebenapp.goaltree import Goals
-from siebenapp.selectable import Selectable, OptionsData
+from siebenapp.selectable import Selectable, SelectableData
 from siebenapp.open_view import OpenView
 from siebenapp.progress_view import ProgressView
 from siebenapp.switchable_view import SwitchableView
@@ -13,7 +13,7 @@ from siebenapp.zoom import Zoom, ZoomData
 
 def persistent_layers(
     graph: Goals,
-    options_data: OptionsData | None = None,
+    options_data: SelectableData | None = None,
     zoom_data: ZoomData | None = None,
     autolink_data: AutoLinkData | None = None,
 ) -> Graph:
@@ -28,7 +28,7 @@ def view_layers(graph: Graph) -> Graph:
 
 def all_layers(
     graph: Goals,
-    options_data: OptionsData | None = None,
+    options_data: SelectableData | None = None,
     zoom_data: ZoomData | None = None,
     autolink_data: AutoLinkData | None = None,
 ) -> Graph:

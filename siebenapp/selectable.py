@@ -16,14 +16,14 @@ from siebenapp.domain import (
 )
 
 
-OptionsData = list[tuple[str, int]]
+SelectableData = list[tuple[str, int]]
 
 OPTION_SELECT = "select"
 OPTION_PREV_SELECT = "prev_select"
 
 
 class Selectable(Graph):
-    def __init__(self, goals: Graph, data: OptionsData | None = None):
+    def __init__(self, goals: Graph, data: SelectableData | None = None):
         super().__init__(goals)
         selection_dict: dict[str, int] = dict(data or [])
         original_root = int(list(goals.q().roots)[0])
@@ -107,7 +107,7 @@ class Selectable(Graph):
         return self.goaltree.settings(key)
 
     @staticmethod
-    def export(goals: "Selectable") -> OptionsData:
+    def export(goals: "Selectable") -> SelectableData:
         return [
             ("selection", goals.selection),
             ("previous_selection", goals.previous_selection),
