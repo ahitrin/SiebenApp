@@ -939,7 +939,7 @@ class GoalsTest(TestCase):
 
     def test_no_message_on_delete_non_root_goal(self) -> None:
         self.goals = self.build(clos_(1, "Root", [2]), clos_(2, "Top", []))
-        self.goals.accept(Delete())
+        self.goals.accept(Delete(2))
         assert self.messages == []
 
     def test_message_on_delete_root_goal(self) -> None:

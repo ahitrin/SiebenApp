@@ -293,7 +293,7 @@ class SelectableTest(TestCase):
 
     def test_delete_single_goal(self) -> None:
         self.goals = self.build(open_(1, "Root", [2]), open_(2, "A"), select=(2, 2))
-        self.goals.accept(Delete())
+        self.goals.accept(Delete(2))
         assert self.goals.q() == RenderResult(
             [RenderRow(1, 1, "Root", True, True, [])],
             roots={1},
@@ -304,7 +304,7 @@ class SelectableTest(TestCase):
         self.goals = self.build(
             open_(1, "Root", [2, 3]), open_(2, "A"), open_(3, "B"), select=(2, 2)
         )
-        self.goals.accept(Delete())
+        self.goals.accept(Delete(2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(3)]),
@@ -318,7 +318,7 @@ class SelectableTest(TestCase):
         self.goals = self.build(
             open_(1, "Root", [2]), open_(2, "A", [3]), open_(3, "B"), select=(2, 2)
         )
-        self.goals.accept(Delete())
+        self.goals.accept(Delete(2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, True, []),
@@ -334,7 +334,7 @@ class SelectableTest(TestCase):
             open_(3, "B"),
             select=(2, 2),
         )
-        self.goals.accept(Delete())
+        self.goals.accept(Delete(2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [blocker(3)]),
@@ -351,7 +351,7 @@ class SelectableTest(TestCase):
             open_(3, "B"),
             select=(2, 2),
         )
-        self.goals.accept(Delete())
+        self.goals.accept(Delete(2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, True, [relation(3)]),
@@ -368,7 +368,7 @@ class SelectableTest(TestCase):
             open_(3, "B"),
             select=(2, 2),
         )
-        self.goals.accept(Delete())
+        self.goals.accept(Delete(2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", False, True, [relation(3)]),
@@ -382,7 +382,7 @@ class SelectableTest(TestCase):
         self.goals = self.build(
             open_(1, "Root", [2]), open_(2, "A", [3]), open_(3, "B"), select=(2, 2)
         )
-        self.goals.accept(Delete())
+        self.goals.accept(Delete(2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, True, []),
@@ -398,7 +398,7 @@ class SelectableTest(TestCase):
             open_(3, "B"),
             select=(2, 2),
         )
-        self.goals.accept(Delete())
+        self.goals.accept(Delete(2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [blocker(3)]),
@@ -415,7 +415,7 @@ class SelectableTest(TestCase):
             open_(3, "B"),
             select=(2, 2),
         )
-        self.goals.accept(Delete())
+        self.goals.accept(Delete(2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, True, [relation(3)]),
@@ -457,7 +457,7 @@ class SelectableTest(TestCase):
             open_(3, "Delete me"),
             select=(3, 1),
         )
-        self.goals.accept(Delete())
+        self.goals.accept(Delete(3))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2)]),
@@ -657,7 +657,7 @@ class SelectableTest(TestCase):
             roots={1},
             global_opts={OPTION_SELECT: 4, OPTION_PREV_SELECT: 4},
         )
-        self.goals.accept_all(Select(3), Delete())
+        self.goals.accept_all(Select(3), Delete(3))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2)]),
@@ -954,7 +954,7 @@ class SelectableTest(TestCase):
         self.goals = self.build(
             open_(1, "Root", [2]), open_(2, "broken"), select=(2, 2)
         )
-        self.goals.accept_all(Delete(), Select(2))
+        self.goals.accept_all(Delete(2), Select(2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, True, []),
@@ -1077,7 +1077,7 @@ class SelectableTest(TestCase):
         assert self.goals.events()[-1] == ("rename", "New", 1)
 
     def test_delete_events(self) -> None:
-        self.goals.accept_all(Add("Sheep"), Select(2), Delete())
+        self.goals.accept_all(Add("Sheep"), Select(2), Delete(2))
         assert self.goals.events()[-3] == ("delete", 2)
         assert self.goals.events()[-2] == ("select", 1)
         assert self.goals.events()[-1] == ("hold_select", 1)
@@ -1168,12 +1168,12 @@ class SelectableTest(TestCase):
         self.goals = self.build(
             clos_(1, "Root", [2]), clos_(2, "Top", []), select=(2, 2)
         )
-        self.goals.accept(Delete())
+        self.goals.accept(Delete(2))
         assert self.messages == []
 
     def test_message_on_delete_root_goal(self) -> None:
         self.goals = self.build(clos_(1, "Root", [2]), clos_(2, "Top"), select=(1, 1))
-        self.goals.accept(Delete())
+        self.goals.accept(Delete(1))
         assert len(self.messages) == 1
 
     def test_no_message_on_allowed_link(self) -> None:

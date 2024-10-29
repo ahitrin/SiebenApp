@@ -111,7 +111,7 @@ def build_actions(command: str, goals_holder: GoalsHolder) -> list[Command]:
     target = int(goals_holder.goals.settings("selection"))
     simple_commands: Mapping[str, Command] = {
         "c": ToggleClose(),
-        "d": Delete(),
+        "d": Delete(target),
         "h": HoldSelect(),
         "k": ToggleLink(edge_type=EdgeType.PARENT),
         "l": ToggleLink(),

@@ -560,7 +560,7 @@ def test_goal_deletion_must_not_cause_root_selection() -> None:
         roots={3},
         global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 3},
     )
-    goals.accept_all(Select(4), Delete())
+    goals.accept_all(Select(4), Delete(4))
     assert goals.q() == RenderResult(
         [
             RenderRow(3, 3, "Zoom root", True, True, [], {"Zoom": "Root goal"}),

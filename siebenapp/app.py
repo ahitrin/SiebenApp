@@ -351,7 +351,8 @@ class SiebenApp(QMainWindow):
 
     def emit_delete(self, text):
         if text == "yes":
-            self.goals_holder.accept(Delete())
+            target = int(self.goals_holder.goals.settings("selection"))
+            self.goals_holder.accept(Delete(target))
 
     def _current_goal_label(self):
         render_result = self.goals_holder.goals.q()

@@ -212,4 +212,4 @@ class ToggleLink(Command):
 class Delete(Command):
     """Remove given or selected goal whether it exists. Do nothing in other case"""
 
-    goal_id: int = 0
+    goal_id: int
