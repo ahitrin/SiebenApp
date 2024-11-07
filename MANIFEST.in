@@ -1,1 +1,2 @@
 include siebenapp/ui/*.ui
+include siebenapp/ui/Logo.png

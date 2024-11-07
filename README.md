@@ -1,6 +1,6 @@
 # SiebenApp: experimental dependency-aware goal manager
 
-![Logo](doc/Logo.png)
+![Logo](siebenapp/ui/Logo.png)
 
 ## Motivation
 
