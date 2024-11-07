@@ -1,7 +1,7 @@
 .PHONY: all serve prod-serve update-gems
 
 IMAGE=jekyll/jekyll
-ifeq ($(shell uname -m),arm64)
+ifneq (,$(filter arm64 aarch64,$(shell uname -m)))
 	EXTRA_OPTS := --platform linux/amd64
 else
 	EXTRA_OPTS :=
