@@ -2,4 +2,4 @@
 from siebenapp.app import main
 
 if __name__ == "__main__":
-    main(__file__)
+    main()

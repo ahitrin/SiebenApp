@@ -420,7 +420,7 @@ def loadUi(file_path: str, parent) -> QWidget:
     return widget
 
 
-def main(root_script):
+def main():
     parser = ArgumentParser()
     parser.add_argument(
         "db",
@@ -437,7 +437,7 @@ def main(root_script):
     )
     args = parser.parse_args()
     app = QApplication(sys.argv)
-    root = dirname(realpath(root_script))
+    root = dirname(realpath(__file__))
     sieben = SiebenApp(args.db, args.experimental)
     w = loadUi(join(root, "ui", "main.ui"), sieben)
     sieben.about = loadUi(join(root, "ui", "about.ui"), sieben)

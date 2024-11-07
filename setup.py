@@ -8,6 +8,8 @@ setup(
     author='Andrey Hitrin',
     author_email='andrey.hitrin@gmail.com',
     url='https://github.com/ahitrin/SiebenApp',
-    packages=['siebenapp'],
+    packages=['siebenapp', 'siebenapp.ui'],
     scripts=['clieben', 'sieben', 'sieben-manage'],
+    install_requires=['PySide6'],
+    include_package_data=True,
 )
