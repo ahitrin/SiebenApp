@@ -44,6 +44,16 @@ pipenv shell
 
 ### System-wide installation
 
+#### Installation via pipx
+
+You could install SiebenApp as a terminal application simply by calling:
+
+```shell
+pipx install git+https://github.com/ahitrin/SiebenApp
+```
+
+#### Installation from source
+
 The only Python dependency required is `PySide6` (needed to draw user interface).
 If it's installed locally, you could run `sieben` right away.
 
