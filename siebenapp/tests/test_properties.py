@@ -140,7 +140,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
 
     @rule(c=sampled_from(" abcit"), d=data())
     # Ignore trivial trees (without any subgoal)
-    @precondition(lambda self: len(self.goaltree.q().rows) > 1)
+    @precondition(lambda self: len([1 for row in self.goaltree.q().rows if row.goal_id > 0]) > 1)
     def add_autolink(self, c, d) -> None:
         event("autolink")
         event("valid autolink")
