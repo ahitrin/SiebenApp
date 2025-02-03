@@ -9,3 +9,4 @@ build
 htmlcov
 sieben.db
 *.svg
+.approval_tests_temp
