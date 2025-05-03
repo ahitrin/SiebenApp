@@ -9,8 +9,8 @@ from siebenapp.selectable import OPTION_SELECT, OPTION_PREV_SELECT, Select
 from siebenapp.layers import all_layers, persistent_layers
 from siebenapp.manage import main, dot_export, extract_subtree
 from siebenapp.system import save, load
-from siebenapp.tests.dsl import build_goaltree, open_, clos_
-from siebenapp.tests.test_cli import DummyIO, verify_file
+from tests.dsl import build_goaltree, open_, clos_
+from tests.test_cli import DummyIO, verify_file
 from siebenapp.zoom import ToggleZoom
 
 

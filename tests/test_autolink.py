@@ -16,7 +16,7 @@ from siebenapp.domain import (
     ToggleLink,
     EdgeType,
 )
-from siebenapp.tests.dsl import build_goaltree, open_, clos_
+from tests.dsl import build_goaltree, open_, clos_
 
 
 @pytest.fixture()

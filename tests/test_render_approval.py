@@ -14,8 +14,8 @@ from siebenapp.render import (
     Point,
 )
 from siebenapp.render_next import full_render
-from siebenapp.tests.dsl import build_goaltree, open_, clos_
-from siebenapp.tests.test_cli import verify_file
+from tests.dsl import build_goaltree, open_, clos_
+from tests.test_cli import verify_file
 
 
 class FakeGeometry(GeometryProvider):

@@ -14,7 +14,7 @@ from siebenapp.selectable import (
     HoldSelect,
 )
 from siebenapp.open_view import ToggleOpenView, OpenView
-from siebenapp.tests.dsl import build_goaltree, open_, clos_
+from tests.dsl import build_goaltree, open_, clos_
 from siebenapp.zoom import Zoom, ToggleZoom
 
 

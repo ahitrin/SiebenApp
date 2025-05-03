@@ -5,7 +5,7 @@ from siebenapp.selectable import Selectable
 from siebenapp.switchable_view import ToggleSwitchableView, SwitchableView
 from siebenapp.domain import EdgeType, child, blocker
 from siebenapp.render import Renderer
-from siebenapp.tests.dsl import build_goaltree, open_
+from tests.dsl import build_goaltree, open_
 
 
 def get_in(data, column):

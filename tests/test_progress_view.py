@@ -8,7 +8,7 @@ from siebenapp.domain import (
     blocker,
 )
 from siebenapp.progress_view import ProgressView, ToggleProgress
-from siebenapp.tests.dsl import build_goaltree, open_
+from tests.dsl import build_goaltree, open_
 
 
 @fixture

@@ -5,44 +5,39 @@ all: check venv test
 check:
 	if [ ! `which python3` ] ; then echo Please install Python 3.10 or greater ; exit 1; fi
 	if [ `python3 -V | cut -d. -f2` -lt 10 ]; then echo Please install Python 3.10 or greater; exit 1; fi
-	if [ ! `which pipenv` ] ; then echo Please install pipenv ; exit 1; fi
+	if [ ! `which poetry` ] ; then echo Please install poetry ; exit 1; fi
 
 venv:
-	$([ which pipenv ] || pip install pipenv)
-	pipenv install -d --python $(shell which python3)
+	poetry install
 
 prepare: codestyle format test mypy
 
 test:
-	pipenv run py.test
+	poetry run pytest
 
 test-cov:
-	pipenv run py.test --cov=siebenapp --cov-report=html
+	poetry run pytest --cov=siebenapp --cov-report=html
 
 test-prop-ci: export HYPOTHESIS_PROFILE=ci
 test-prop-ci:
-	pipenv run py.test -k test_properties
+	poetry run pytest -k test_properties
 
 analysis:
-	pipenv run radon cc -nc -s siebenapp/*.py
-
-install:
-	pipenv run python3 setup.py install
+	poetry run radon cc -nc -s siebenapp/*.py
 
 codestyle:
-	find siebenapp -type f -name \*.py | grep -v ui | xargs pipenv run pyupgrade --py310-plus
+	find siebenapp -type f -name \*.py | grep -v ui | xargs poetry run pyupgrade --py310-plus
 
 format:
-	pipenv run black sieben siebenapp clieben sieben-manage
+	poetry run black siebenapp
 
 mypy:
-	pipenv run mypy --pretty -p siebenapp
+	poetry run mypy --pretty -p siebenapp
+	poetry run mypy --pretty -p tests
 
 run:
-	pipenv run ./sieben
+	poetry run sieben
 
 clean:
 	find . -name \*.pyc -delete
-
-distclean:
-	pipenv --rm
+	rm -rf build dist

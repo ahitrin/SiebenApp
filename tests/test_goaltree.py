@@ -15,7 +15,7 @@ from siebenapp.domain import (
     blocker,
     relation,
 )
-from siebenapp.tests.dsl import build_goaltree, open_, clos_
+from tests.dsl import build_goaltree, open_, clos_
 
 
 class GoalsTest(TestCase):

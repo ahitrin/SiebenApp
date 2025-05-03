@@ -9,7 +9,7 @@ from siebenapp.selectable import (
 )
 from siebenapp.layers import persistent_layers
 from siebenapp.switchable_view import ToggleSwitchableView, SwitchableView
-from siebenapp.tests.dsl import build_goaltree, open_
+from tests.dsl import build_goaltree, open_
 from siebenapp.zoom import ToggleZoom
 
 

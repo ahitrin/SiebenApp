@@ -11,7 +11,7 @@ from siebenapp.enumeration import Enumeration, BidirectionalIndex
 from siebenapp.selectable import Selectable, OPTION_SELECT, OPTION_PREV_SELECT, Select
 from siebenapp.layers import all_layers
 from siebenapp.switchable_view import ToggleSwitchableView, SwitchableView
-from siebenapp.tests.dsl import build_goaltree, open_
+from tests.dsl import build_goaltree, open_
 from siebenapp.zoom import ToggleZoom
 
 

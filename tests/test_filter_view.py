@@ -9,7 +9,7 @@ from siebenapp.selectable import (
     Select,
     HoldSelect,
 )
-from siebenapp.tests.dsl import build_goaltree, open_
+from tests.dsl import build_goaltree, open_
 from siebenapp.zoom import Zoom, ToggleZoom
 
 

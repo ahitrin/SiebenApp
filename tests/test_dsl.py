@@ -1,6 +1,6 @@
 import pytest
 
-from siebenapp.tests.dsl import build_goaltree, open_
+from tests.dsl import build_goaltree, open_
 
 
 def test_two_parents_for_one_goal_is_forbidden() -> None:
