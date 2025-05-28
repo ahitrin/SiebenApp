@@ -181,7 +181,7 @@ class SiebenApp(QMainWindow):
 
     def close_goal(self, goal_id):
         def inner():
-            self.goals_holder.accept(Select(goal_id), ToggleClose())
+            self.goals_holder.accept(ToggleClose(goal_id))
             self.refresh.emit()
 
         return inner
@@ -219,7 +219,7 @@ class SiebenApp(QMainWindow):
             ),
         )
         widget.clicked.connect(self.select_number(row.goal_id))
-        widget.check_open.clicked.connect(self.close_goal(row.goal_id))
+        widget.check_open.clicked.connect(self.close_goal(row.raw_id))
 
     def eventFilter(self, obj, event):
         if event.type() == QEvent.KeyPress:
