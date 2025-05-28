@@ -108,33 +108,34 @@ def fmt(render_result: RenderResult, row: RenderRow, id_width: int) -> str:
 
 
 def build_actions(command: str, goals_holder: GoalsHolder) -> list[Command]:
-    target = int(goals_holder.goals.settings("selection"))
+    selection = int(goals_holder.goals.settings("selection"))
+    prev_selection = int(goals_holder.goals.settings("previous_selection"))
     simple_commands: Mapping[str, Command] = {
-        "c": ToggleClose(),
-        "d": Delete(target),
-        "h": HoldSelect(),
-        "k": ToggleLink(edge_type=EdgeType.PARENT),
-        "l": ToggleLink(),
-        ";": ToggleLink(edge_type=EdgeType.RELATION),
+        "c": ToggleClose(selection),
+        "d": Delete(selection),
+        "h": HoldSelect(selection),
+        "k": ToggleLink(prev_selection, selection, EdgeType.PARENT),
+        "l": ToggleLink(prev_selection, selection, EdgeType.BLOCKER),
+        ";": ToggleLink(prev_selection, selection, EdgeType.RELATION),
         "n": ToggleOpenView(),
         "p": ToggleProgress(),
         "t": ToggleSwitchableView(),
-        "z": ToggleZoom(target),
+        "z": ToggleZoom(selection),
     }
     if command and all(c in "1234567890" for c in command):
         return [Select(int(c)) for c in command]
     if command.startswith("a "):
-        return [Add(command.removeprefix("a "))]
+        return [Add(command.removeprefix("a "), selection)]
     if command.startswith("i "):
-        return [Insert(command.removeprefix("i "))]
+        return [Insert(command.removeprefix("i "), prev_selection, selection)]
     if command.startswith("r "):
-        return [Rename(command.removeprefix("r "))]
+        return [Rename(command.removeprefix("r "), selection)]
     if command.startswith("f"):
         # Note: filter may be empty
         return [FilterBy(command.removeprefix("f").lstrip())]
     if command.startswith("`"):
         # Note: autolink may be empty
-        return [ToggleAutoLink(command.removeprefix("`").lstrip(), target)]
+        return [ToggleAutoLink(command.removeprefix("`").lstrip(), selection)]
     if command in simple_commands:
         return [simple_commands[command]]
     return []
