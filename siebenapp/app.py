@@ -445,3 +445,8 @@ def main():
     sieben.setup()
     w.showMaximized()
     sys.exit(app.exec_())
+
+
+if __name__ == "__main__":
+    # For debugging
+    main()
