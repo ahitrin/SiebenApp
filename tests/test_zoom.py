@@ -389,38 +389,31 @@ def test_unlink_for_goal_outside_of_zoomed_tree_should_not_cause_selection_chang
 
 def test_closing_leaf_goal_should_not_cause_unzoom() -> None:
     goals = Zoom(
-        Selectable(
-            build_goaltree(
-                open_(1, "Root goal", [2]),
-                open_(2, "Zoom root", [3]),
-                open_(3, "To close"),
-            ),
-            [("selection", 2), ("previous_selection", 2)],
+        build_goaltree(
+            open_(1, "Root goal", [2]),
+            open_(2, "Zoom root", [3]),
+            open_(3, "To close"),
         )
     )
-    goals.accept_all(ToggleZoom(2), Select(3), ToggleClose(3))
+    goals.accept_all(ToggleZoom(2), ToggleClose(3))
     assert goals.q() == RenderResult(
         [
             RenderRow(2, 2, "Zoom root", True, True, [child(3)], {'Zoom': 'Root goal'}),
             RenderRow(3, 3, "To close", False, True, []),
         ],
         roots={2},
-        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
     )
 
 
 def test_closing_zoom_root_should_cause_unzoom() -> None:
     goals = Zoom(
-        Selectable(
-            build_goaltree(
-                open_(1, "Root goal", [2]),
-                open_(2, "Intermediate", [3]),
-                open_(3, "Zoom here"),
-            ),
-            [("selection", 3), ("previous_selection", 3)],
+        build_goaltree(
+            open_(1, "Root goal", [2]),
+            open_(2, "Intermediate", [3]),
+            open_(3, "Zoom here"),
         )
     )
-    goals.accept_all(ToggleZoom(3), ToggleClose())
+    goals.accept_all(ToggleZoom(3), ToggleClose(3))
     assert goals.q() == RenderResult(
         [
             RenderRow(1, 1, "Root goal", True, False, [child(2)]),
@@ -428,7 +421,6 @@ def test_closing_zoom_root_should_cause_unzoom() -> None:
             RenderRow(3, 3, "Zoom here", False, True, []),
         ],
         roots={1},
-        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
     )
 
 
@@ -467,13 +459,10 @@ def test_goal_closing_must_not_cause_root_selection() -> None:
 
 def test_goal_closing_without_selection() -> None:
     goals = Zoom(
-        Selectable(
-            build_goaltree(
-                open_(1, "Root goal", [2, 3]),
-                open_(2, "To close"),
-                open_(3, "To be left")
-            ),
-            [("selection", 1), ("previous_selection", 1)],
+        build_goaltree(
+            open_(1, "Root goal", [2, 3]),
+            open_(2, "To close"),
+            open_(3, "To be left")
         )
     )
     goals.accept(ToggleClose(2))
@@ -482,7 +471,6 @@ def test_goal_closing_without_selection() -> None:
          RenderRow(2, 2, "To close", False, True, []),
          RenderRow(3, 3, "To be left", True, True, [])],
         roots={1},
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )
 
 
@@ -741,4 +729,4 @@ def test_zoom_attempt_out_of_stack() -> None:
     # Try to zoom out of current stack should not be allowed!
     goals.accept(ToggleZoom(2))
     assert goals.q() == expected
-    assert len(messages) == 1
+    assert messages == ["Zooming outside of current zoom root is not allowed!"]
