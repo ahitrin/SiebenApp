@@ -103,7 +103,9 @@ class Zoom(Graph):
         )
 
     def accept_ToggleClose(self, command: ToggleClose):
-        if self.settings("selection") == self.zoom_root[-1]:
+        selection = self.settings("selection")
+        target = command.goal_id or selection
+        if target == self.zoom_root[-1]:
             self.accept_ToggleZoom(ToggleZoom(self.zoom_root[-1]))
         # Note: zoom_root may be changed inside accept_ToggleZoom
         self.goaltree.accept(ToggleClose(root=self.zoom_root[-1]))

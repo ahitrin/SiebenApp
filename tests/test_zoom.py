@@ -387,6 +387,28 @@ def test_unlink_for_goal_outside_of_zoomed_tree_should_not_cause_selection_chang
     )
 
 
+def test_closing_leaf_goal_should_not_cause_unzoom() -> None:
+    goals = Zoom(
+        Selectable(
+            build_goaltree(
+                open_(1, "Root goal", [2]),
+                open_(2, "Zoom root", [3]),
+                open_(3, "To close"),
+            ),
+            [("selection", 2), ("previous_selection", 2)],
+        )
+    )
+    goals.accept_all(ToggleZoom(2), Select(3), ToggleClose(3))
+    assert goals.q() == RenderResult(
+        [
+            RenderRow(2, 2, "Zoom root", True, True, [child(3)], {'Zoom': 'Root goal'}),
+            RenderRow(3, 3, "To close", False, True, []),
+        ],
+        roots={2},
+        global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
+    )
+
+
 def test_closing_zoom_root_should_cause_unzoom() -> None:
     goals = Zoom(
         Selectable(
