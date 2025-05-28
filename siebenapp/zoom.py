@@ -108,7 +108,7 @@ class Zoom(Graph):
         if target == self.zoom_root[-1]:
             self.accept_ToggleZoom(ToggleZoom(self.zoom_root[-1]))
         # Note: zoom_root may be changed inside accept_ToggleZoom
-        self.goaltree.accept(ToggleClose(root=self.zoom_root[-1]))
+        self.goaltree.accept(ToggleClose(command.goal_id, self.zoom_root[-1]))
 
     def accept_Delete(self, command: Delete) -> None:
         ids_before: set[int] = {r.raw_id for r in self.goaltree.q().rows}

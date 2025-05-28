@@ -465,6 +465,27 @@ def test_goal_closing_must_not_cause_root_selection() -> None:
     )
 
 
+def test_goal_closing_without_selection() -> None:
+    goals = Zoom(
+        Selectable(
+            build_goaltree(
+                open_(1, "Root goal", [2, 3]),
+                open_(2, "To close"),
+                open_(3, "To be left")
+            ),
+            [("selection", 1), ("previous_selection", 1)],
+        )
+    )
+    goals.accept(ToggleClose(2))
+    assert goals.q() == RenderResult(
+        [RenderRow(1, 1, "Root goal", True, False, [child(2), child(3)]),
+         RenderRow(2, 2, "To close", False, True, []),
+         RenderRow(3, 3, "To be left", True, True, [])],
+        roots={1},
+        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
+    )
+
+
 def test_goal_reopening_must_not_change_selection() -> None:
     goals = Zoom(
         Selectable(
