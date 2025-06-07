@@ -62,8 +62,8 @@ class Selectable(Graph):
         target = command.goal_id or self.selection
         if self._command_approved(replace(command, goal_id=target)):
             # Change selection only when goal was successfully closed
-            if self.goaltree.is_closed(target):
-                if self.previous_selection != target:
+            if self.goaltree.is_closed(self.selection):
+                if self.previous_selection != self.selection:
                     self.accept_Select(Select(self.previous_selection))
                 else:
                     next_selection = self._first_open_and_switchable(command.root)

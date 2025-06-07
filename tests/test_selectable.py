@@ -854,7 +854,7 @@ class SelectableTest(TestCase):
             global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 1},
         )
 
-    def test_move_selection_to_another_open_goal_after_closing(self) -> None:
+    def test_keep_selection_after_closing_another_goal(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2, 3, 4]),
             open_(2, "A"),
@@ -862,7 +862,27 @@ class SelectableTest(TestCase):
             open_(4, "C"),
             select=(2, 2),
         )
-        self.goals.accept(ToggleClose())
+        self.goals.accept(ToggleClose(3))
+        assert self.goals.q() == RenderResult(
+            [
+                RenderRow(1, 1, "Root", True, False, [child(2), child(3), child(4)]),
+                RenderRow(2, 2, "A", True, True, []),
+                RenderRow(3, 3, "B", False, True, []),
+                RenderRow(4, 4, "C", True, True, []),
+            ],
+            roots={1},
+            global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
+        )
+
+    def test_move_selection_to_another_open_goal_after_closing_selected_goal(self) -> None:
+        self.goals = self.build(
+            open_(1, "Root", [2, 3, 4]),
+            open_(2, "A"),
+            open_(3, "B"),
+            open_(4, "C"),
+            select=(2, 2),
+        )
+        self.goals.accept(ToggleClose(2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3), child(4)]),
@@ -874,7 +894,7 @@ class SelectableTest(TestCase):
             global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 3},
         )
 
-    def test_move_selection_to_previously_selected_goal_after_closing(self) -> None:
+    def test_keep_selection_to_previously_selected_goal_after_closing_another_goal(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2, 3, 4]),
             open_(2, "A"),
@@ -882,7 +902,27 @@ class SelectableTest(TestCase):
             open_(4, "C"),
             select=(2, 4),
         )
-        self.goals.accept(ToggleClose())
+        self.goals.accept(ToggleClose(3))
+        assert self.goals.q() == RenderResult(
+            [
+                RenderRow(1, 1, "Root", True, False, [child(2), child(3), child(4)]),
+                RenderRow(2, 2, "A", True, True, []),
+                RenderRow(3, 3, "B", False, True, []),
+                RenderRow(4, 4, "C", True, True, []),
+            ],
+            roots={1},
+            global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 4},
+        )
+
+    def test_move_selection_to_previously_selected_goal_after_closing_selected_goal(self) -> None:
+        self.goals = self.build(
+            open_(1, "Root", [2, 3, 4]),
+            open_(2, "A"),
+            open_(3, "B"),
+            open_(4, "C"),
+            select=(2, 4),
+        )
+        self.goals.accept(ToggleClose(2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3), child(4)]),
