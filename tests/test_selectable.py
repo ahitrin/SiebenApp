@@ -451,7 +451,7 @@ class SelectableTest(TestCase):
             global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 1},
         )
         # Error message is expected
-        assert len(self.messages) == 1
+        assert self.messages == ["Cannot add a blocking relation to the closed goal"]
 
     def test_select_parent_after_delete(self) -> None:
         self.goals = self.build(
@@ -1177,7 +1177,7 @@ class SelectableTest(TestCase):
     def test_message_on_wrong_add(self) -> None:
         self.goals = self.build(clos_(1, "Root"), select=(1, 1))
         self.goals.accept(Add("Failed", self._selection()))
-        assert len(self.messages) == 1
+        assert self.messages == ["A new subgoal cannot be added to the closed one"]
 
     def test_no_message_on_good_insert(self) -> None:
         self.goals = self.build(open_(1, "Root", [2]), open_(2, "Top"), select=(2, 1))
@@ -1187,14 +1187,16 @@ class SelectableTest(TestCase):
     def test_message_on_insert_without_two_goals(self) -> None:
         self.goals = self.build(open_(1, "Root"), select=(1, 1))
         self.goals.accept(Insert("Failed"))
-        assert len(self.messages) == 1
+        assert self.messages == [
+            "A new goal can be inserted only between two different goals"
+        ]
 
     def test_message_on_circular_insert(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2]), open_(2, "Top", []), select=(1, 2)
         )
         self.goals.accept(Insert("Failed"))
-        assert len(self.messages) == 1
+        assert self.messages == ["Circular dependencies between goals are not allowed"]
 
     def test_no_message_on_valid_closing(self) -> None:
         self.goals = self.build(
@@ -1206,7 +1208,9 @@ class SelectableTest(TestCase):
     def test_message_on_closing_blocked_goal(self) -> None:
         self.goals = self.build(open_(1, "Root", [2]), open_(2, "Top"), select=(1, 1))
         self.goals.accept(ToggleClose())
-        assert len(self.messages) == 1
+        assert self.messages == [
+            "This goal can't be closed because it have open subgoals"
+        ]
 
     def test_no_message_on_valid_reopening(self) -> None:
         self.goals = self.build(clos_(1, "Root", [2]), clos_(2, "Top"), select=(1, 1))
@@ -1218,7 +1222,9 @@ class SelectableTest(TestCase):
             clos_(1, "Root", [2]), clos_(2, "Top", []), select=(2, 2)
         )
         self.goals.accept(ToggleClose())
-        assert len(self.messages) == 1
+        assert self.messages == [
+            "This goal can't be reopened because other subgoals block it"
+        ]
 
     def test_no_message_on_delete_non_root_goal(self) -> None:
         self.goals = self.build(
@@ -1230,7 +1236,7 @@ class SelectableTest(TestCase):
     def test_message_on_delete_root_goal(self) -> None:
         self.goals = self.build(clos_(1, "Root", [2]), clos_(2, "Top"), select=(1, 1))
         self.goals.accept(Delete(1))
-        assert len(self.messages) == 1
+        assert self.messages == ["Root goal can't be deleted"]
 
     def test_no_message_on_allowed_link(self) -> None:
         self.goals = self.build(
@@ -1250,7 +1256,7 @@ class SelectableTest(TestCase):
             select=(3, 3),
         )
         self.goals.accept(ToggleLink())
-        assert len(self.messages) == 1
+        assert self.messages == ["Goal can't be linked to itself"]
 
     def test_no_message_when_remove_not_last_link(self) -> None:
         self.goals = self.build(
@@ -1270,7 +1276,7 @@ class SelectableTest(TestCase):
             select=(3, 2),
         )
         self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
-        assert len(self.messages) == 1
+        assert self.messages == ["Can't remove the last link"]
 
     def test_message_when_closed_goal_is_blocked_by_open_one(self) -> None:
         self.goals = self.build(
@@ -1280,4 +1286,4 @@ class SelectableTest(TestCase):
             select=(3, 2),
         )
         self.goals.accept(ToggleLink())
-        assert len(self.messages) == 1
+        assert self.messages == ["Cannot add a blocking relation to the closed goal"]
