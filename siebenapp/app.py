@@ -340,7 +340,7 @@ class SiebenApp(QMainWindow):
         )
 
     def emit_rename(self, text):
-        self.goals_holder.accept(Rename(text))
+        self.goals_holder.accept(Rename(text, self.settings("selection")))
 
     def emit_filter(self, text):
         self.goals_holder.accept(FilterBy(text))
