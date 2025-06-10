@@ -330,7 +330,7 @@ class SiebenApp(QMainWindow):
             pass
 
     def emit_add(self, text):
-        self.goals_holder.accept(Add(text))
+        self.goals_holder.accept(Add(text, self.settings("selection")))
 
     def emit_insert(self, text):
         self.goals_holder.accept(Insert(text))
