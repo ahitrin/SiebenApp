@@ -70,7 +70,7 @@ def test_do_not_hide_unswitchable_goals_when_they_have_selection() -> None:
 
 def test_non_switchable_goals_disappear_on_selection_change() -> None:
     e = SwitchableView(Selectable(Goals("root")))
-    e.accept_all(Add("1"), Add("2"), Select(2), ToggleSwitchableView(), Select(2))
+    e.accept_all(Add("1", 1), Add("2", 1), Select(2), ToggleSwitchableView(), Select(2))
     assert e.q() == RenderResult(
         [
             RenderRow(1, 1, "root", True, False, []),
@@ -107,7 +107,7 @@ def test_how_should_we_deal_with_zooming() -> None:
         roots={2, 3},
         global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
     )
-    v.accept(Add("Unexpectedly hidden"))
+    v.accept(Add("Unexpectedly hidden", 2))
     assert v.q() == RenderResult(
         [
             RenderRow(2, 2, "Zoomed", True, False, [], {"Zoom": "Root goal"}),

@@ -170,7 +170,7 @@ class Add(Command):
     """Add a new goal to the existing tree"""
 
     name: str
-    add_to: int = 0
+    add_to: int
     edge_type: EdgeType = EdgeType.PARENT
 
 

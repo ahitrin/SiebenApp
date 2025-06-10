@@ -7,7 +7,6 @@ from siebenapp.domain import (
     ToggleClose,
     ToggleLink,
     Insert,
-    Add,
     Delete,
     Command,
     RenderResult,
@@ -79,10 +78,6 @@ class Selectable(Graph):
         lower = command.lower or self.previous_selection
         upper = command.upper or self.selection
         self.goaltree.accept(replace(command, lower=lower, upper=upper))
-
-    def accept_Add(self, command: Add) -> None:
-        target = command.add_to or self.selection
-        self.goaltree.accept(replace(command, add_to=target))
 
     def accept_Delete(self, command: Delete) -> None:
         target = command.goal_id or self.selection

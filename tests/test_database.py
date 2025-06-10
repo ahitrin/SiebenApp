@@ -66,8 +66,8 @@ def test_restore_goals_from_db() -> None:
     actual_goals.accept(ToggleOpenView())
     expected_goals = Enumeration(all_layers(Goals("Root")))
     expected_goals.accept_all(
-        Add("A"),
-        Add("B"),
+        Add("A", 1),
+        Add("B", 1),
         Select(2),
         HoldSelect(),
         Select(3),
@@ -125,13 +125,13 @@ def test_save_and_load() -> None:
     file_name = NamedTemporaryFile().name
     goals = Enumeration(all_layers(Goals("Root")))
     goals.accept_all(
-        Add("Top"),
-        Add("Middle"),
+        Add("Top", 1),
+        Add("Middle", 1),
         Select(3),
         HoldSelect(),
         Select(2),
         ToggleLink(),
-        Add("Closed"),
+        Add("Closed", 2),
         Select(4),
         ToggleClose(),
         Select(2),
@@ -148,7 +148,7 @@ def test_multiple_saves_works_fine() -> None:
     file_name = NamedTemporaryFile().name
     goals = all_layers(Goals("Root"))
     save(goals, file_name)
-    goals.accept(Add("Next"))
+    goals.accept(Add("Next", 1))
     save(goals, file_name)
     new_goals = load(file_name)
     assert goals.q() == new_goals.q()

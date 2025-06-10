@@ -865,7 +865,7 @@ class GoalsTest(TestCase):
         assert self.goals.events()[-1] == ("delete", 2)
 
     def test_link_events(self) -> None:
-        self.goals.accept_all(Add("Next"), Add("More"), ToggleLink(2, 3))
+        self.goals.accept_all(Add("Next", 1), Add("More", 1), ToggleLink(2, 3))
         assert self.goals.events()[-1] == ("link", 2, 3, EdgeType.BLOCKER)
         self.goals.accept(ToggleLink(2, 3))
         assert self.goals.events()[-1] == ("unlink", 2, 3, EdgeType.BLOCKER)
@@ -894,7 +894,7 @@ class GoalsTest(TestCase):
 
     def test_no_message_on_good_add(self) -> None:
         self.goals = self.build(open_(1, "Root"))
-        self.goals.accept(Add("Success"))
+        self.goals.accept(Add("Success", 1))
         assert self.messages == []
 
     def test_message_on_wrong_add(self) -> None:

@@ -255,7 +255,7 @@ def test_enumerated_goals_must_have_the_same_dimension() -> None:
 
 def test_selection_cache_should_be_reset_after_view_switch(goal_chain_11) -> None:
     e = Enumeration(SwitchableView(Selectable(goal_chain_11)))
-    e.accept_all(Add("Also top"))
+    e.accept_all(Add("Also top", 10))
     e.accept(Select(1))
     # Select(1) is kept in a cache and not applied yet
     e.accept(ToggleSwitchableView())
