@@ -29,7 +29,7 @@ codestyle:
 	find siebenapp -type f -name \*.py | grep -v ui | xargs poetry run pyupgrade --py310-plus
 
 format:
-	poetry run black siebenapp
+	poetry run black siebenapp tests
 
 mypy:
 	poetry run mypy --pretty -p siebenapp

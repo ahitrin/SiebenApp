@@ -398,7 +398,7 @@ def test_closing_leaf_goal_should_not_cause_unzoom() -> None:
     goals.accept_all(ToggleZoom(2), ToggleClose(3))
     assert goals.q() == RenderResult(
         [
-            RenderRow(2, 2, "Zoom root", True, True, [child(3)], {'Zoom': 'Root goal'}),
+            RenderRow(2, 2, "Zoom root", True, True, [child(3)], {"Zoom": "Root goal"}),
             RenderRow(3, 3, "To close", False, True, []),
         ],
         roots={2},
@@ -460,16 +460,16 @@ def test_goal_closing_must_not_cause_root_selection() -> None:
 def test_goal_closing_without_selection() -> None:
     goals = Zoom(
         build_goaltree(
-            open_(1, "Root goal", [2, 3]),
-            open_(2, "To close"),
-            open_(3, "To be left")
+            open_(1, "Root goal", [2, 3]), open_(2, "To close"), open_(3, "To be left")
         )
     )
     goals.accept(ToggleClose(2))
     assert goals.q() == RenderResult(
-        [RenderRow(1, 1, "Root goal", True, False, [child(2), child(3)]),
-         RenderRow(2, 2, "To close", False, True, []),
-         RenderRow(3, 3, "To be left", True, True, [])],
+        [
+            RenderRow(1, 1, "Root goal", True, False, [child(2), child(3)]),
+            RenderRow(2, 2, "To close", False, True, []),
+            RenderRow(3, 3, "To be left", True, True, []),
+        ],
         roots={1},
     )
 
