@@ -900,7 +900,7 @@ class GoalsTest(TestCase):
     def test_message_on_wrong_add(self) -> None:
         self.goals = self.build(clos_(1, "Root"))
         self.goals.accept(Add("Failed", 1))
-        assert len(self.messages) == 1
+        assert self.messages == ["A new subgoal cannot be added to the closed one"]
 
     def test_no_message_on_good_insert(self) -> None:
         self.goals = self.build(open_(1, "Root", [2]), open_(2, "Top"))
@@ -910,12 +910,16 @@ class GoalsTest(TestCase):
     def test_message_on_insert_without_two_goals(self) -> None:
         self.goals = self.build(open_(1, "Root"))
         self.goals.accept(Insert("Failed"))
-        assert len(self.messages) == 1
+        assert self.messages == [
+            "A new goal can be inserted only between two different goals"
+        ]
 
     def test_message_on_circular_insert(self) -> None:
         self.goals = self.build(open_(1, "Root", [2]), open_(2, "Top", []))
         self.goals.accept(Insert("Failed"))
-        assert len(self.messages) == 1
+        assert self.messages == [
+            "A new goal can be inserted only between two different goals"
+        ]
 
     def test_no_message_on_valid_closing(self) -> None:
         self.goals = self.build(open_(1, "Root", [2]), open_(2, "Top", []))
@@ -925,7 +929,9 @@ class GoalsTest(TestCase):
     def test_message_on_closing_blocked_goal(self) -> None:
         self.goals = self.build(open_(1, "Root", [2]), open_(2, "Top"))
         self.goals.accept(ToggleClose(1))
-        assert len(self.messages) == 1
+        assert self.messages == [
+            "This goal can't be closed because it have open subgoals"
+        ]
 
     def test_no_message_on_valid_reopening(self) -> None:
         self.goals = self.build(clos_(1, "Root", [2]), clos_(2, "Top"))
@@ -935,7 +941,9 @@ class GoalsTest(TestCase):
     def test_message_on_reopening_blocked_goal(self) -> None:
         self.goals = self.build(clos_(1, "Root", [2]), clos_(2, "Top", []))
         self.goals.accept(ToggleClose(2))
-        assert len(self.messages) == 1
+        assert self.messages == [
+            "This goal can't be reopened because other subgoals block it"
+        ]
 
     def test_no_message_on_delete_non_root_goal(self) -> None:
         self.goals = self.build(clos_(1, "Root", [2]), clos_(2, "Top", []))
@@ -945,7 +953,7 @@ class GoalsTest(TestCase):
     def test_message_on_delete_root_goal(self) -> None:
         self.goals = self.build(clos_(1, "Root", [2]), clos_(2, "Top"))
         self.goals.accept(Delete(1))
-        assert len(self.messages) == 1
+        assert self.messages == ["Root goal can't be deleted"]
 
     def test_no_message_on_allowed_link(self) -> None:
         self.goals = self.build(
@@ -959,7 +967,7 @@ class GoalsTest(TestCase):
             open_(1, "Root", [2]), open_(2, "Middle", [3]), open_(3, "Top", [])
         )
         self.goals.accept(ToggleLink())
-        assert len(self.messages) == 1
+        assert self.messages == ["Goal can't be linked to itself"]
 
     def test_no_message_when_remove_not_last_link(self) -> None:
         self.goals = self.build(
@@ -975,11 +983,11 @@ class GoalsTest(TestCase):
             open_(1, "Root", [2]), open_(2, "Middle", [3]), open_(3, "Top", [])
         )
         self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
-        assert len(self.messages) == 1
+        assert self.messages == ["Goal can't be linked to itself"]
 
     def test_message_when_closed_goal_is_blocked_by_open_one(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2, 3]), clos_(2, "Middle", []), open_(3, "Top", [])
         )
         self.goals.accept(ToggleLink())
-        assert len(self.messages) == 1
+        assert self.messages == ["Goal can't be linked to itself"]
