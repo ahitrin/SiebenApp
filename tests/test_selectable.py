@@ -27,12 +27,6 @@ class SelectableTest(TestCase):
         self.messages = []
         self.goals = Selectable(Goals("Root", self._register_message))
 
-    def _selection(self) -> int:
-        return int(self.goals.settings("selection"))
-
-    def _prev(self) -> int:
-        return int(self.goals.settings("previous_selection"))
-
     def _register_message(self, msg):
         self.messages.append(msg)
 
@@ -50,7 +44,7 @@ class SelectableTest(TestCase):
         )
 
     def test_add_goal(self) -> None:
-        self.goals.accept(Add("A", self._selection()))
+        self.goals.accept(Add("A", 1))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2)]),
@@ -60,20 +54,8 @@ class SelectableTest(TestCase):
             global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         )
 
-    def test_add_two_goals(self) -> None:
-        self.goals.accept_all(Add("A", self._selection()), Add("B", self._selection()))
-        assert self.goals.q() == RenderResult(
-            [
-                RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
-                RenderRow(2, 2, "A", True, True, []),
-                RenderRow(3, 3, "B", True, True, []),
-            ],
-            roots={1},
-            global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
-        )
-
     def test_add_two_goals_in_a_chain(self) -> None:
-        self.goals.accept_all(Add("A", self._selection()), Add("AA", 2))
+        self.goals.accept_all(Add("A", 1), Add("AA", 2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2)]),
@@ -185,7 +167,7 @@ class SelectableTest(TestCase):
             open_(4, "C"),
             select=(3, 3),
         )
-        self.goals.accept(ToggleClose(self._selection()))
+        self.goals.accept(ToggleClose(3))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
@@ -217,7 +199,7 @@ class SelectableTest(TestCase):
             global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         )
         # Goal 4 could only become switchable when we reopen goal 2
-        self.goals.accept(ToggleClose(self._selection()))
+        self.goals.accept(ToggleClose(2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
@@ -428,9 +410,7 @@ class SelectableTest(TestCase):
             global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         )
         # Blocking a goal should lead to blocking of all its subgoals
-        self.goals.accept(
-            Add("Overall blocker", self._selection(), edge_type=EdgeType.BLOCKER)
-        )
+        self.goals.accept(Add("Overall blocker", 1, edge_type=EdgeType.BLOCKER))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3), blocker(5)]),
@@ -468,7 +448,7 @@ class SelectableTest(TestCase):
             roots={1},
             global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         )
-        self.goals.accept(Add("A", self._selection()))
+        self.goals.accept(Add("A", 1))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2)]),
@@ -477,7 +457,7 @@ class SelectableTest(TestCase):
             roots={1},
             global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         )
-        self.goals.accept(Add("B", self._selection()))
+        self.goals.accept(Add("B", 1))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
@@ -489,7 +469,7 @@ class SelectableTest(TestCase):
         )
 
     def test_new_goal_is_added_to_the_selected_node(self) -> None:
-        self.goals.accept_all(Add("A", self._selection()), Select(2))
+        self.goals.accept_all(Add("A", 1), Select(2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2)]),
@@ -498,7 +478,7 @@ class SelectableTest(TestCase):
             roots={1},
             global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 1},
         )
-        self.goals.accept(Add("B", self._selection()))
+        self.goals.accept(Add("B", 2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2)]),
@@ -754,12 +734,12 @@ class SelectableTest(TestCase):
 
     def test_add_events(self) -> None:
         assert self.goals.events().pop() == ("add", 1, "Root", True)
-        self.goals.accept(Add("Next", self._selection()))
+        self.goals.accept(Add("Next", 1))
         assert self.goals.events()[-2] == ("add", 2, "Next", True)
         assert self.goals.events()[-1] == ("link", 1, 2, EdgeType.PARENT)
 
     def test_select_events(self) -> None:
-        self.goals.accept_all(Add("Next", self._selection()), Select(2))
+        self.goals.accept_all(Add("Next", 1), Select(2))
         assert self.goals.events()[-1] == ("select", 2)
         self.goals.accept_all(HoldSelect(), Select(1))
         assert self.goals.events()[-2] == ("hold_select", 2)
@@ -774,7 +754,7 @@ class SelectableTest(TestCase):
         assert self.goals.events()[-1] == ("toggle_close", True, 1)
 
     def test_delete_events(self) -> None:
-        self.goals.accept_all(Add("Sheep", self._selection()), Select(2), Delete(2))
+        self.goals.accept_all(Add("Sheep", 1), Select(2), Delete(2))
         assert self.goals.events()[-3] == ("delete", 2)
         assert self.goals.events()[-2] == ("select", 1)
         assert self.goals.events()[-1] == ("hold_select", 1)
@@ -784,12 +764,12 @@ class SelectableTest(TestCase):
 
     def test_no_message_on_good_add(self) -> None:
         self.goals = self.build(open_(1, "Root"), select=(1, 1))
-        self.goals.accept(Add("Success", self._selection()))
+        self.goals.accept(Add("Success", 1))
         assert self.messages == []
 
     def test_message_on_wrong_add(self) -> None:
         self.goals = self.build(clos_(1, "Root"), select=(1, 1))
-        self.goals.accept(Add("Failed", self._selection()))
+        self.goals.accept(Add("Failed", 1))
         assert self.messages == ["A new subgoal cannot be added to the closed one"]
 
     def test_no_message_on_valid_closing(self) -> None:
