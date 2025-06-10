@@ -181,11 +181,7 @@ class SiebenApp(QMainWindow):
         self.centralWidget().toggleProgress.setChecked(False)
 
     def close_goal(self, goal_id):
-        def inner():
-            self.goals_holder.accept(ToggleClose(goal_id))
-            self.refresh.emit()
-
-        return inner
+        return self.with_refresh(self.goals_holder.accept, ToggleClose(goal_id))
 
     def save_and_render(self):
         render_result, partial_change = self.goals_holder.render(self.columns)
@@ -244,7 +240,7 @@ class SiebenApp(QMainWindow):
             Qt.Key_9: self.select_number(9),
             Qt.Key_0: self.select_number(0),
             Qt.Key_A: self.start_edit("Add new goal", self.emit_add),
-            Qt.Key_C: self.with_refresh(self.goals_holder.accept, ToggleClose()),
+            Qt.Key_C: self.close_goal(self.settings("selection")),
             Qt.Key_D: self.start_edit('Type "yes" to delete a goal', self.emit_delete),
             Qt.Key_F: self.start_edit(
                 "Filter by substring (leave empty to reset filtration)",
