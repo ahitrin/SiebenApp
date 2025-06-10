@@ -375,7 +375,7 @@ def test_unlink_for_goal_outside_of_zoomed_tree_should_not_cause_selection_chang
         ToggleZoom(3),
         HoldSelect(),
         Select(2),
-        ToggleLink(),  # unlink 3 -> 2
+        ToggleLink(3, 2),  # unlink 3 -> 2
     )
     assert goals.q() == RenderResult(
         [

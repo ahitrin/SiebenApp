@@ -443,7 +443,7 @@ class SelectableTest(TestCase):
             roots={1},
             global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 1},
         )
-        self.goals.accept(ToggleLink())
+        self.goals.accept(ToggleLink(1, 2))
         # Nothing should change
         assert self.goals.q() == RenderResult(
             [
@@ -486,7 +486,7 @@ class SelectableTest(TestCase):
             roots={1},
             global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 2},
         )
-        self.goals.accept(ToggleLink())
+        self.goals.accept(ToggleLink(2, 3))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
@@ -510,7 +510,7 @@ class SelectableTest(TestCase):
             roots={1},
             global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 2},
         )
-        self.goals.accept(ToggleLink(edge_type=EdgeType.RELATION))
+        self.goals.accept(ToggleLink(2, 3, EdgeType.RELATION))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
@@ -522,7 +522,7 @@ class SelectableTest(TestCase):
         )
 
     def test_no_link_to_self_is_allowed(self) -> None:
-        self.goals.accept(ToggleLink())
+        self.goals.accept(ToggleLink(1, 1))
         assert self.goals.q() == RenderResult(
             [RenderRow(1, 1, "Root", True, True, [])],
             roots={1},
@@ -537,7 +537,7 @@ class SelectableTest(TestCase):
             open_(4, "more"),
             select=(1, 4),
         )
-        self.goals.accept(ToggleLink())
+        self.goals.accept(ToggleLink(4, 1))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2)]),
@@ -557,7 +557,7 @@ class SelectableTest(TestCase):
             open_(4, "Child"),
             select=(4, 3),
         )
-        self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
+        self.goals.accept(ToggleLink(3, 4, EdgeType.PARENT))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
@@ -576,7 +576,7 @@ class SelectableTest(TestCase):
             open_(3, "B", blockers=[2]),
             select=(2, 3),
         )
-        self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
+        self.goals.accept(ToggleLink(3, 2, EdgeType.PARENT))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [relation(2), child(3)]),
@@ -594,7 +594,7 @@ class SelectableTest(TestCase):
             open_(3, "B"),
             select=(3, 2),
         )
-        self.goals.accept(ToggleLink(edge_type=EdgeType.BLOCKER))
+        self.goals.accept(ToggleLink(2, 3, EdgeType.BLOCKER))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
@@ -617,7 +617,7 @@ class SelectableTest(TestCase):
             roots={1},
             global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 1},
         )
-        self.goals.accept(ToggleLink())
+        self.goals.accept(ToggleLink(1, 2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [blocker(2)]),
@@ -626,7 +626,7 @@ class SelectableTest(TestCase):
             roots={1},
             global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 1},
         )
-        self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
+        self.goals.accept(ToggleLink(1, 2, EdgeType.PARENT))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2)]),
@@ -635,7 +635,7 @@ class SelectableTest(TestCase):
             roots={1},
             global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 1},
         )
-        self.goals.accept(ToggleLink(edge_type=EdgeType.RELATION))
+        self.goals.accept(ToggleLink(1, 2, EdgeType.RELATION))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, True, [relation(2)]),
@@ -729,7 +729,7 @@ class SelectableTest(TestCase):
             global_opts={OPTION_SELECT: 4, OPTION_PREV_SELECT: 1},
         )
         # When a subgoal blocks parent, it shouldn't make all other subgoals and itself blocked
-        self.goals.accept(ToggleLink(EdgeType.BLOCKER))
+        self.goals.accept(ToggleLink(1, 4, EdgeType.BLOCKER))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3), blocker(4)]),
@@ -759,7 +759,7 @@ class SelectableTest(TestCase):
             global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 3},
         )
         # When we block a blocker, which goal should be switchable? Is such a move allowed?
-        self.goals.accept(ToggleLink())
+        self.goals.accept(ToggleLink(3, 2))
         # Seems not to be allowed
         assert self.goals.q() == RenderResult(
             [
@@ -785,7 +785,7 @@ class SelectableTest(TestCase):
             open_(3, "Goal 3", blockers=[2]),
             select=(3, 1),
         )
-        self.goals.accept(ToggleLink(edge_type=EdgeType.BLOCKER))
+        self.goals.accept(ToggleLink(1, 3, EdgeType.BLOCKER))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), blocker(3)]),
@@ -1143,10 +1143,10 @@ class SelectableTest(TestCase):
             Select(2),
             HoldSelect(),
             Select(3),
-            ToggleLink(),
+            ToggleLink(2, 3),
         )
         assert self.goals.events()[-1] == ("link", 2, 3, EdgeType.BLOCKER)
-        self.goals.accept(ToggleLink())
+        self.goals.accept(ToggleLink(2, 3))
         assert self.goals.events()[-1] == ("unlink", 2, 3, EdgeType.BLOCKER)
 
     def test_change_link_type_events(self) -> None:
@@ -1156,14 +1156,14 @@ class SelectableTest(TestCase):
             open_(3, "Upper", []),
             select=(3, 2),
         )
-        self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
+        self.goals.accept(ToggleLink(2, 3, EdgeType.PARENT))
         assert list(self.goals.events())[-4:] == [
             ("link", 2, 3, EdgeType.PARENT),
             ("unlink", 2, 3, EdgeType.BLOCKER),
             ("link", 1, 3, EdgeType.RELATION),
             ("unlink", 1, 3, EdgeType.PARENT),
         ]
-        self.goals.accept(ToggleLink(edge_type=EdgeType.RELATION))
+        self.goals.accept(ToggleLink(2, 3, EdgeType.RELATION))
         assert list(self.goals.events())[-2:] == [
             ("link", 2, 3, EdgeType.RELATION),
             ("unlink", 2, 3, EdgeType.PARENT),
@@ -1248,7 +1248,7 @@ class SelectableTest(TestCase):
             open_(3, "Top", []),
             select=(3, 1),
         )
-        self.goals.accept(ToggleLink())
+        self.goals.accept(ToggleLink(1, 3))
         assert self.messages == []
 
     def test_message_on_link_to_self(self) -> None:
@@ -1258,7 +1258,7 @@ class SelectableTest(TestCase):
             open_(3, "Top", []),
             select=(3, 3),
         )
-        self.goals.accept(ToggleLink())
+        self.goals.accept(ToggleLink(3, 3))
         assert self.messages == ["Goal can't be linked to itself"]
 
     def test_no_message_when_remove_not_last_link(self) -> None:
@@ -1268,7 +1268,7 @@ class SelectableTest(TestCase):
             open_(3, "Top", []),
             select=(3, 1),
         )
-        self.goals.accept(ToggleLink())
+        self.goals.accept(ToggleLink(1, 3))
         assert self.messages == []
 
     def test_message_when_remove_last_link(self) -> None:
@@ -1278,7 +1278,7 @@ class SelectableTest(TestCase):
             open_(3, "Top", []),
             select=(3, 2),
         )
-        self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
+        self.goals.accept(ToggleLink(2, 3, EdgeType.PARENT))
         assert self.messages == ["Can't remove the last link"]
 
     def test_message_when_closed_goal_is_blocked_by_open_one(self) -> None:
@@ -1288,5 +1288,5 @@ class SelectableTest(TestCase):
             open_(3, "Top", []),
             select=(3, 2),
         )
-        self.goals.accept(ToggleLink())
+        self.goals.accept(ToggleLink(2, 3))
         assert self.messages == ["Cannot add a blocking relation to the closed goal"]

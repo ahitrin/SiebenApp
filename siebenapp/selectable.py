@@ -4,7 +4,6 @@ from typing import Any
 from siebenapp.domain import (
     Graph,
     ToggleClose,
-    ToggleLink,
     Delete,
     Command,
     RenderResult,
@@ -61,11 +60,6 @@ class Selectable(Graph):
                     next_selection = self._first_open_and_switchable(command.root)
                     self.accept_Select(Select(next_selection))
                     self.accept_HoldSelect(HoldSelect())
-
-    def accept_ToggleLink(self, command: ToggleLink) -> None:
-        lower = command.lower or self.previous_selection
-        upper = command.upper or self.selection
-        self.goaltree.accept(replace(command, lower=lower, upper=upper))
 
     def accept_Delete(self, command: Delete) -> None:
         target = command.goal_id or self.selection

@@ -140,9 +140,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         goal_keys.remove(selection)
         prev_selection = d.draw(sampled_from(goal_keys))
         event("valid toggle link")
-        self._accept(
-            ToggleLink(lower=prev_selection, upper=selection, edge_type=edge_type)
-        )
+        self._accept(ToggleLink(prev_selection, selection, edge_type))
 
     @rule(c=sampled_from(" abcit"), d=data())
     # Ignore trivial trees (without any subgoal)

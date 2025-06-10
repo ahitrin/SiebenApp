@@ -203,8 +203,8 @@ class ToggleClose(Command):
 class ToggleLink(Command):
     """Create or remove a link between two given goals, if possible"""
 
-    lower: int = 0
-    upper: int = 0
+    lower: int
+    upper: int
     edge_type: EdgeType = EdgeType.BLOCKER
 
 

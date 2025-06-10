@@ -426,7 +426,7 @@ class GoalsTest(TestCase):
             ],
             roots={1},
         )
-        self.goals.accept(ToggleLink(2, 3, edge_type=EdgeType.RELATION))
+        self.goals.accept(ToggleLink(2, 3, EdgeType.RELATION))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
@@ -468,7 +468,7 @@ class GoalsTest(TestCase):
             open_(3, "New parent"),
             open_(4, "Child"),
         )
-        self.goals.accept(ToggleLink(3, 4, edge_type=EdgeType.PARENT))
+        self.goals.accept(ToggleLink(3, 4, EdgeType.PARENT))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
@@ -483,7 +483,7 @@ class GoalsTest(TestCase):
         self.goals = self.build(
             open_(1, "Root", [2, 3]), open_(2, "A"), open_(3, "B", blockers=[2])
         )
-        self.goals.accept(ToggleLink(3, 2, edge_type=EdgeType.PARENT))
+        self.goals.accept(ToggleLink(3, 2, EdgeType.PARENT))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [relation(2), child(3)]),
@@ -497,7 +497,7 @@ class GoalsTest(TestCase):
         self.goals = self.build(
             open_(1, "Root", [2, 3]), open_(2, "A", blockers=[3]), open_(3, "B")
         )
-        self.goals.accept(ToggleLink(2, 3, edge_type=EdgeType.BLOCKER))
+        self.goals.accept(ToggleLink(2, 3, EdgeType.BLOCKER))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
@@ -524,7 +524,7 @@ class GoalsTest(TestCase):
             ],
             roots={1},
         )
-        self.goals.accept(ToggleLink(1, 2, edge_type=EdgeType.PARENT))
+        self.goals.accept(ToggleLink(1, 2, EdgeType.PARENT))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2)]),
@@ -532,7 +532,7 @@ class GoalsTest(TestCase):
             ],
             roots={1},
         )
-        self.goals.accept(ToggleLink(1, 2, edge_type=EdgeType.RELATION))
+        self.goals.accept(ToggleLink(1, 2, EdgeType.RELATION))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, True, [relation(2)]),
@@ -700,7 +700,7 @@ class GoalsTest(TestCase):
             open_(2, "Goal 2"),
             open_(3, "Goal 3", blockers=[2]),
         )
-        self.goals.accept(ToggleLink(1, 3, edge_type=EdgeType.BLOCKER))
+        self.goals.accept(ToggleLink(1, 3, EdgeType.BLOCKER))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), blocker(3)]),
@@ -876,14 +876,14 @@ class GoalsTest(TestCase):
             open_(2, "Lower", blockers=[3]),
             open_(3, "Upper", []),
         )
-        self.goals.accept(ToggleLink(2, 3, edge_type=EdgeType.PARENT))
+        self.goals.accept(ToggleLink(2, 3, EdgeType.PARENT))
         assert list(self.goals.events())[-4:] == [
             ("link", 2, 3, EdgeType.PARENT),
             ("unlink", 2, 3, EdgeType.BLOCKER),
             ("link", 1, 3, EdgeType.RELATION),
             ("unlink", 1, 3, EdgeType.PARENT),
         ]
-        self.goals.accept(ToggleLink(2, 3, edge_type=EdgeType.RELATION))
+        self.goals.accept(ToggleLink(2, 3, EdgeType.RELATION))
         assert list(self.goals.events())[-2:] == [
             ("link", 2, 3, EdgeType.RELATION),
             ("unlink", 2, 3, EdgeType.PARENT),
@@ -966,7 +966,7 @@ class GoalsTest(TestCase):
         self.goals = self.build(
             open_(1, "Root", [2]), open_(2, "Middle", [3]), open_(3, "Top", [])
         )
-        self.goals.accept(ToggleLink())
+        self.goals.accept(ToggleLink(1, 1))
         assert self.messages == ["Goal can't be linked to itself"]
 
     def test_no_message_when_remove_not_last_link(self) -> None:
@@ -982,12 +982,12 @@ class GoalsTest(TestCase):
         self.goals = self.build(
             open_(1, "Root", [2]), open_(2, "Middle", [3]), open_(3, "Top", [])
         )
-        self.goals.accept(ToggleLink(edge_type=EdgeType.PARENT))
-        assert self.messages == ["Goal can't be linked to itself"]
+        self.goals.accept(ToggleLink(2, 3, EdgeType.PARENT))
+        assert self.messages == ["Can't remove the last link"]
 
     def test_message_when_closed_goal_is_blocked_by_open_one(self) -> None:
         self.goals = self.build(
             open_(1, "Root", [2, 3]), clos_(2, "Middle", []), open_(3, "Top", [])
         )
-        self.goals.accept(ToggleLink())
-        assert self.messages == ["Goal can't be linked to itself"]
+        self.goals.accept(ToggleLink(2, 3))
+        assert self.messages == ["Cannot add a blocking relation to the closed goal"]
