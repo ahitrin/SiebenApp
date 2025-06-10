@@ -247,10 +247,8 @@ class SiebenApp(QMainWindow):
                 self.emit_filter,
             ),
             Qt.Key_I: self.start_edit("Insert new goal", self.emit_insert),
-            Qt.Key_K: self.with_refresh(
-                self.goals_holder.accept, ToggleLink(edge_type=EdgeType.PARENT)
-            ),
-            Qt.Key_L: self.with_refresh(self.goals_holder.accept, ToggleLink()),
+            Qt.Key_K: self.link_goals(EdgeType.PARENT),
+            Qt.Key_L: self.link_goals(EdgeType.BLOCKER),
             Qt.Key_N: self.with_refresh(self.toggle_open_view, True),
             Qt.Key_O: self.show_open_dialog,
             Qt.Key_P: self.with_refresh(self.toggle_progress_view, True),
@@ -268,9 +266,7 @@ class SiebenApp(QMainWindow):
             Qt.Key_Minus: self.with_refresh(self.change_columns, -1),
             Qt.Key_Plus: self.with_refresh(self.change_columns, 1),
             Qt.Key_Slash: self.show_keys_help,
-            Qt.Key_Semicolon: self.with_refresh(
-                self.goals_holder.accept, ToggleLink(edge_type=EdgeType.RELATION)
-            ),
+            Qt.Key_Semicolon: self.link_goals(edge_type=EdgeType.RELATION),
             Qt.Key_Space: self.with_refresh(self.goals_holder.accept, HoldSelect()),
         }
         if event.key() in key_handlers:
@@ -372,6 +368,16 @@ class SiebenApp(QMainWindow):
             self.refresh.emit()
 
         return inner
+
+    def link_goals(self, edge_type: EdgeType):
+        return self.with_refresh(
+            self.goals_holder.accept,
+            ToggleLink(
+                self.settings("previous_selection"),
+                self.settings("selection"),
+                edge_type,
+            ),
+        )
 
     def toggle_open_view(self, update_ui):
         self.goals_holder.accept(ToggleOpenView())
