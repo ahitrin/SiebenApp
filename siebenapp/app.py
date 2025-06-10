@@ -2,6 +2,7 @@
 import sys
 from argparse import ArgumentParser
 from os.path import dirname, join, realpath
+from typing import Any
 
 from PySide6.QtCore import Signal, Qt, QRect, QFile, QIODevice, QEvent  # type: ignore
 from PySide6.QtGui import QPainter, QPen  # type: ignore
@@ -221,6 +222,9 @@ class SiebenApp(QMainWindow):
         widget.clicked.connect(self.select_number(row.goal_id))
         widget.check_open.clicked.connect(self.close_goal(row.raw_id))
 
+    def settings(self, name: str) -> Any:
+        return self.goals_holder.goals.settings(name)
+
     def eventFilter(self, obj, event):
         if event.type() == QEvent.KeyPress:
             self.keyPressEvent(event)
@@ -346,12 +350,12 @@ class SiebenApp(QMainWindow):
         self.goals_holder.accept(FilterBy(text))
 
     def emit_autolink(self, text):
-        target = int(self.goals_holder.goals.settings("selection"))
+        target = int(self.settings("selection"))
         self.goals_holder.accept(ToggleAutoLink(text, target))
 
     def emit_delete(self, text):
         if text == "yes":
-            target = int(self.goals_holder.goals.settings("selection"))
+            target = int(self.settings("selection"))
             self.goals_holder.accept(Delete(target))
 
     def _current_goal_label(self):
@@ -376,26 +380,24 @@ class SiebenApp(QMainWindow):
     def toggle_open_view(self, update_ui):
         self.goals_holder.accept(ToggleOpenView())
         if update_ui:
-            self.centralWidget().toggleOpen.setChecked(
-                self.goals_holder.goals.settings("filter_open")
-            )
+            self.centralWidget().toggleOpen.setChecked(self.settings("filter_open"))
 
     def toggle_switchable_view(self, update_ui):
         self.goals_holder.accept(ToggleSwitchableView())
         if update_ui:
             self.centralWidget().toggleSwitchable.setChecked(
-                self.goals_holder.goals.settings("filter_switchable")
+                self.settings("filter_switchable")
             )
 
     def toggle_progress_view(self, update_ui):
         self.goals_holder.accept(ToggleProgress())
         if update_ui:
             self.centralWidget().toggleProgress.setChecked(
-                self.goals_holder.goals.settings("filter_progress")
+                self.settings("filter_progress")
             )
 
     def toggle_zoom(self):
-        target = int(self.goals_holder.goals.settings("selection"))
+        target = int(self.settings("selection"))
         self.goals_holder.accept(ToggleZoom(target))
         self.refresh.emit()
 
