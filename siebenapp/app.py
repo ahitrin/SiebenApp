@@ -333,7 +333,11 @@ class SiebenApp(QMainWindow):
         self.goals_holder.accept(Add(text, self.settings("selection")))
 
     def emit_insert(self, text):
-        self.goals_holder.accept(Insert(text))
+        self.goals_holder.accept(
+            Insert(
+                text, self.settings("previous_selection"), self.settings("selection")
+            )
+        )
 
     def emit_rename(self, text):
         self.goals_holder.accept(Rename(text))
