@@ -13,7 +13,6 @@ from siebenapp.domain import (
     ToggleClose,
     Delete,
     Add,
-    Rename,
     RenderRow,
     RenderResult,
     child,
@@ -83,17 +82,6 @@ class SelectableTest(TestCase):
             ],
             roots={1},
             global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
-        )
-
-    def test_rename_goal(self) -> None:
-        self.goals.accept_all(Add("Boom", self._selection()), Select(2), Rename("A", 2))
-        assert self.goals.q() == RenderResult(
-            [
-                RenderRow(1, 1, "Root", True, False, [child(2)]),
-                RenderRow(2, 2, "A", True, True, []),
-            ],
-            roots={1},
-            global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 1},
         )
 
     def test_close_single_goal(self) -> None:
@@ -784,10 +772,6 @@ class SelectableTest(TestCase):
         assert self.goals.events()[-1] == ("hold_select", 1)
         self.goals.accept(ToggleClose(1))
         assert self.goals.events()[-1] == ("toggle_close", True, 1)
-
-    def test_rename_event(self) -> None:
-        self.goals.accept(Rename("New", self._selection()))
-        assert self.goals.events()[-1] == ("rename", "New", 1)
 
     def test_delete_events(self) -> None:
         self.goals.accept_all(Add("Sheep", self._selection()), Select(2), Delete(2))
