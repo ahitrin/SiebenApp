@@ -142,9 +142,5 @@ class AutoLink(Graph):
         return replace(render_result, rows=rows)
 
     @staticmethod
-    def fake_id(goal_id: GoalId) -> GoalId:
-        return -(goal_id + 10) if isinstance(goal_id, int) else goal_id
-
-    @staticmethod
     def export(goals: "AutoLink") -> AutoLinkData:
         return [(goal_id, kw) for goal_id, kw in goals.back_kw.items()]
