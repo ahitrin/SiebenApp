@@ -81,13 +81,6 @@ class RenderResult:
         self.roots = roots or set()
         self.index = {row.goal_id: i for i, row in enumerate(rows)}
 
-    def goals(self):
-        return [
-            (goal_id, attrs)
-            for goal_id, attrs in self.node_opts.items()
-            if isinstance(goal_id, int)
-        ]
-
     def by_id(self, goal_id: GoalId) -> RenderRow:
         assert goal_id in self.index
         return self.rows[self.index[goal_id]]
