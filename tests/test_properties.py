@@ -116,7 +116,13 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     )
     def insert(self) -> None:
         event("insert")
-        self._accept(Insert("i"))
+        self._accept(
+            Insert(
+                "i",
+                self.goaltree.settings("previous_selection"),
+                self.goaltree.settings("selection"),
+            )
+        )
 
     @rule(
         edge_type=integers(min_value=EdgeType.RELATION, max_value=EdgeType.PARENT),

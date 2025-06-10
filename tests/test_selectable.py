@@ -33,6 +33,9 @@ class SelectableTest(TestCase):
     def _selection(self) -> int:
         return int(self.goals.settings("selection"))
 
+    def _prev(self) -> int:
+        return int(self.goals.settings("previous_selection"))
+
     def _register_message(self, msg):
         self.messages.append(msg)
 
@@ -105,7 +108,7 @@ class SelectableTest(TestCase):
             roots={1},
             global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 1},
         )
-        self.goals.accept(Insert("A"))
+        self.goals.accept(Insert("A", self._prev(), self._selection()))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(3)]),
@@ -120,7 +123,7 @@ class SelectableTest(TestCase):
         self.goals = self.build(
             open_(1, "Root", [2, 3]), open_(2, "A"), open_(3, "B"), select=(3, 2)
         )
-        self.goals.accept(Insert("Wow"))
+        self.goals.accept(Insert("Wow", self._prev(), self._selection()))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
@@ -137,7 +140,7 @@ class SelectableTest(TestCase):
         self.goals = self.build(
             open_(1, "Root", [2]), open_(2, "Selected"), select=(1, 2)
         )
-        self.goals.accept(Insert("Intermediate?"))
+        self.goals.accept(Insert("Intermediate?", self._prev(), self._selection()))
         # No, it's not intermediate
         assert self.goals.q() == RenderResult(
             [
@@ -1181,12 +1184,12 @@ class SelectableTest(TestCase):
 
     def test_no_message_on_good_insert(self) -> None:
         self.goals = self.build(open_(1, "Root", [2]), open_(2, "Top"), select=(2, 1))
-        self.goals.accept(Insert("Success"))
+        self.goals.accept(Insert("Success", self._prev(), self._selection()))
         assert self.messages == []
 
     def test_message_on_insert_without_two_goals(self) -> None:
         self.goals = self.build(open_(1, "Root"), select=(1, 1))
-        self.goals.accept(Insert("Failed"))
+        self.goals.accept(Insert("Failed", self._prev(), self._selection()))
         assert self.messages == [
             "A new goal can be inserted only between two different goals"
         ]
@@ -1195,7 +1198,7 @@ class SelectableTest(TestCase):
         self.goals = self.build(
             open_(1, "Root", [2]), open_(2, "Top", []), select=(1, 2)
         )
-        self.goals.accept(Insert("Failed"))
+        self.goals.accept(Insert("Failed", self._prev(), self._selection()))
         assert self.messages == ["Circular dependencies between goals are not allowed"]
 
     def test_no_message_on_valid_closing(self) -> None:

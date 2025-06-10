@@ -909,14 +909,14 @@ class GoalsTest(TestCase):
 
     def test_message_on_insert_without_two_goals(self) -> None:
         self.goals = self.build(open_(1, "Root"))
-        self.goals.accept(Insert("Failed"))
+        self.goals.accept(Insert("Failed", 1, 1))
         assert self.messages == [
             "A new goal can be inserted only between two different goals"
         ]
 
     def test_message_on_circular_insert(self) -> None:
         self.goals = self.build(open_(1, "Root", [2]), open_(2, "Top", []))
-        self.goals.accept(Insert("Failed"))
+        self.goals.accept(Insert("Failed", 2, 2))
         assert self.messages == [
             "A new goal can be inserted only between two different goals"
         ]

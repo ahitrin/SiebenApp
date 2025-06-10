@@ -6,7 +6,6 @@ from siebenapp.domain import (
     Rename,
     ToggleClose,
     ToggleLink,
-    Insert,
     Delete,
     Command,
     RenderResult,
@@ -70,11 +69,6 @@ class Selectable(Graph):
                     self.accept_HoldSelect(HoldSelect())
 
     def accept_ToggleLink(self, command: ToggleLink) -> None:
-        lower = command.lower or self.previous_selection
-        upper = command.upper or self.selection
-        self.goaltree.accept(replace(command, lower=lower, upper=upper))
-
-    def accept_Insert(self, command: Insert) -> None:
         lower = command.lower or self.previous_selection
         upper = command.upper or self.selection
         self.goaltree.accept(replace(command, lower=lower, upper=upper))
