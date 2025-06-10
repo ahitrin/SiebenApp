@@ -52,8 +52,7 @@ class Selectable(Graph):
         self._events.append(("hold_select", self.selection))
 
     def accept_ToggleClose(self, command: ToggleClose) -> None:
-        target = command.goal_id or self.selection
-        if self._command_approved(replace(command, goal_id=target)):
+        if self._command_approved(command):
             # Change selection only when goal was successfully closed
             if self.goaltree.is_closed(self.selection):
                 if self.previous_selection != self.selection:

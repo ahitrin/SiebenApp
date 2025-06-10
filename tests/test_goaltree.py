@@ -923,7 +923,7 @@ class GoalsTest(TestCase):
 
     def test_no_message_on_valid_closing(self) -> None:
         self.goals = self.build(open_(1, "Root", [2]), open_(2, "Top", []))
-        self.goals.accept(ToggleClose())
+        self.goals.accept(ToggleClose(2))
         assert self.messages == []
 
     def test_message_on_closing_blocked_goal(self) -> None:
@@ -935,7 +935,7 @@ class GoalsTest(TestCase):
 
     def test_no_message_on_valid_reopening(self) -> None:
         self.goals = self.build(clos_(1, "Root", [2]), clos_(2, "Top"))
-        self.goals.accept(ToggleClose())
+        self.goals.accept(ToggleClose(1))
         assert self.messages == []
 
     def test_message_on_reopening_blocked_goal(self) -> None:

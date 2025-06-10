@@ -161,7 +161,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     @rule()
     def close_or_open(self) -> None:
         event("close/open")
-        self._accept(ToggleClose())
+        self._accept(ToggleClose(self.goaltree.settings("selection")))
 
     @rule(t=text(), d=data())
     def rename(self, t, d) -> None:

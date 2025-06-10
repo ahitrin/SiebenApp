@@ -158,7 +158,7 @@ class SelectableTest(TestCase):
             roots={1},
             global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         )
-        self.goals.accept(ToggleClose())
+        self.goals.accept(ToggleClose(1))
         assert self.goals.q() == RenderResult(
             [RenderRow(1, 1, "Root", False, True, [])],
             roots={1},
@@ -175,7 +175,7 @@ class SelectableTest(TestCase):
             roots={1},
             global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         )
-        self.goals.accept(ToggleClose())
+        self.goals.accept(ToggleClose(2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2)]),
@@ -189,7 +189,7 @@ class SelectableTest(TestCase):
         self.goals = self.build(
             open_(1, "Root", [2]), open_(2, "A", [3]), clos_(3, "Ab"), select=(1, 1)
         )
-        self.goals.accept_all(Select(2), ToggleClose())
+        self.goals.accept_all(Select(2), ToggleClose(2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, True, [child(2)]),
@@ -199,7 +199,7 @@ class SelectableTest(TestCase):
             roots={1},
             global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         )
-        self.goals.accept_all(Select(2), ToggleClose())
+        self.goals.accept_all(Select(2), ToggleClose(2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2)]),
@@ -209,7 +209,7 @@ class SelectableTest(TestCase):
             roots={1},
             global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 1},
         )
-        self.goals.accept_all(Select(2), ToggleClose())
+        self.goals.accept_all(Select(2), ToggleClose(2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, True, [child(2)]),
@@ -233,7 +233,7 @@ class SelectableTest(TestCase):
             roots={1},
             global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         )
-        self.goals.accept_all(Select(3), ToggleClose())
+        self.goals.accept_all(Select(3), ToggleClose(3))
         # nothing should change except select
         assert self.goals.q() == RenderResult(
             [
@@ -253,7 +253,7 @@ class SelectableTest(TestCase):
             open_(4, "C"),
             select=(3, 3),
         )
-        self.goals.accept(ToggleClose())
+        self.goals.accept(ToggleClose(self._selection()))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
@@ -285,7 +285,7 @@ class SelectableTest(TestCase):
             global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
         )
         # Goal 4 could only become switchable when we reopen goal 2
-        self.goals.accept(ToggleClose())
+        self.goals.accept(ToggleClose(self._selection()))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
@@ -959,7 +959,7 @@ class SelectableTest(TestCase):
             open_(5, "Closing"),
             select=(5, 5),
         )
-        self.goals.accept(ToggleClose(root=3))
+        self.goals.accept(ToggleClose(5, root=3))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
@@ -982,7 +982,7 @@ class SelectableTest(TestCase):
             open_(6, "Must be selected"),
             select=(5, 5),
         )
-        self.goals.accept(ToggleClose(root=3))
+        self.goals.accept(ToggleClose(5, root=3))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
@@ -1119,11 +1119,11 @@ class SelectableTest(TestCase):
         assert self.goals.events()[-1] == ("select", 1)
 
     def test_toggle_close_events(self) -> None:
-        self.goals.accept(ToggleClose())
+        self.goals.accept(ToggleClose(1))
         assert self.goals.events()[-3] == ("toggle_close", False, 1)
         assert self.goals.events()[-2] == ("select", 1)
         assert self.goals.events()[-1] == ("hold_select", 1)
-        self.goals.accept(ToggleClose())
+        self.goals.accept(ToggleClose(1))
         assert self.goals.events()[-1] == ("toggle_close", True, 1)
 
     def test_rename_event(self) -> None:
@@ -1205,26 +1205,26 @@ class SelectableTest(TestCase):
         self.goals = self.build(
             open_(1, "Root", [2]), open_(2, "Top", []), select=(2, 2)
         )
-        self.goals.accept(ToggleClose())
+        self.goals.accept(ToggleClose(2))
         assert self.messages == []
 
     def test_message_on_closing_blocked_goal(self) -> None:
         self.goals = self.build(open_(1, "Root", [2]), open_(2, "Top"), select=(1, 1))
-        self.goals.accept(ToggleClose())
+        self.goals.accept(ToggleClose(1))
         assert self.messages == [
             "This goal can't be closed because it have open subgoals"
         ]
 
     def test_no_message_on_valid_reopening(self) -> None:
         self.goals = self.build(clos_(1, "Root", [2]), clos_(2, "Top"), select=(1, 1))
-        self.goals.accept(ToggleClose())
+        self.goals.accept(ToggleClose(1))
         assert self.messages == []
 
     def test_message_on_reopening_blocked_goal(self) -> None:
         self.goals = self.build(
             clos_(1, "Root", [2]), clos_(2, "Top", []), select=(2, 2)
         )
-        self.goals.accept(ToggleClose())
+        self.goals.accept(ToggleClose(2))
         assert self.messages == [
             "This goal can't be reopened because other subgoals block it"
         ]

@@ -73,7 +73,7 @@ def test_restore_goals_from_db() -> None:
         Select(3),
         ToggleLink(),
         Select(3),
-        ToggleClose(),
+        ToggleClose(3),
         Select(1),
         HoldSelect(),
         Select(2),
@@ -133,7 +133,7 @@ def test_save_and_load() -> None:
         ToggleLink(),
         Add("Closed", 2),
         Select(4),
-        ToggleClose(),
+        ToggleClose(4),
         Select(2),
         ToggleZoom(2),
     )

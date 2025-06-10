@@ -446,7 +446,7 @@ def test_goal_closing_must_not_cause_root_selection() -> None:
         roots={2},
         global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
     )
-    goals.accept_all(Select(3), ToggleClose())
+    goals.accept_all(Select(3), ToggleClose(3))
     assert goals.q() == RenderResult(
         [
             RenderRow(2, 2, "Zoom root", True, True, [child(3)], {"Zoom": "Root goal"}),
@@ -488,7 +488,7 @@ def test_goal_reopening_must_not_change_selection() -> None:
     goals.accept_all(
         ToggleZoom(2),
         Select(3),
-        ToggleClose(),
+        ToggleClose(3),
     )
     assert goals.q() == RenderResult(
         [
@@ -498,7 +498,7 @@ def test_goal_reopening_must_not_change_selection() -> None:
         roots={2},
         global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
     )
-    goals.accept_all(Select(3), ToggleClose())
+    goals.accept_all(Select(3), ToggleClose(3))
     assert goals.q() == RenderResult(
         [
             RenderRow(
@@ -620,7 +620,7 @@ def test_zoom_events() -> None:
     assert goals.events()[-1] == ("zoom", 3, 4)
     goals.accept(ToggleZoom(4))
     assert goals.events()[-1] == ("unzoom", 4)
-    goals.accept_all(Select(5), ToggleClose())
+    goals.accept_all(Select(5), ToggleClose(5))
     assert goals.events()[-2] == ("toggle_close", False, 5)
     assert goals.events()[-1] == ("select", 4)
 
