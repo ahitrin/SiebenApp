@@ -188,7 +188,7 @@ class Rename(Command):
     """Change a name of the given goal"""
 
     new_name: str
-    goal_id: int = 0
+    goal_id: int
 
 
 @dataclass(frozen=True)

@@ -88,7 +88,7 @@ class SelectableTest(TestCase):
         )
 
     def test_rename_goal(self) -> None:
-        self.goals.accept_all(Add("Boom", self._selection()), Select(2), Rename("A"))
+        self.goals.accept_all(Add("Boom", self._selection()), Select(2), Rename("A", 2))
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, [child(2)]),
@@ -1127,7 +1127,7 @@ class SelectableTest(TestCase):
         assert self.goals.events()[-1] == ("toggle_close", True, 1)
 
     def test_rename_event(self) -> None:
-        self.goals.accept(Rename("New"))
+        self.goals.accept(Rename("New", self._selection()))
         assert self.goals.events()[-1] == ("rename", "New", 1)
 
     def test_delete_events(self) -> None:

@@ -3,7 +3,6 @@ from typing import Any
 
 from siebenapp.domain import (
     Graph,
-    Rename,
     ToggleClose,
     ToggleLink,
     Delete,
@@ -51,10 +50,6 @@ class Selectable(Graph):
     def accept_HoldSelect(self, command: HoldSelect):
         self.previous_selection = self.selection
         self._events.append(("hold_select", self.selection))
-
-    def accept_Rename(self, command: Rename) -> None:
-        target = command.goal_id or self.selection
-        self.goaltree.accept(replace(command, goal_id=target))
 
     def accept_ToggleClose(self, command: ToggleClose) -> None:
         target = command.goal_id or self.selection
