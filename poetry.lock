@@ -343,14 +343,14 @@ test = ["pytest (>=6)"]
 
 [[package]]
 name = "hypothesis"
-version = "6.135.3"
+version = "6.135.10"
 description = "A library for property-based testing"
 optional = false
 python-versions = ">=3.9"
 groups = ["dev"]
 files = [
-    {file = "hypothesis-6.135.3-py3-none-any.whl", hash = "sha256:0f9029cd1d2f0cd144ee191b76878c792e5b98dc304d79b8dbfea70c35483133"},
-    {file = "hypothesis-6.135.3.tar.gz", hash = "sha256:e0036bad4b8b7e36e485e949299f71a7e8eaeac1be2e8550e475a57c8e135127"},
+    {file = "hypothesis-6.135.10-py3-none-any.whl", hash = "sha256:275012ee9a7a1a64fd38745c2b7a07e838fc9f738d49c97a881d235b53fe28c1"},
+    {file = "hypothesis-6.135.10.tar.gz", hash = "sha256:ce224e310012e40b8e3aa6edba226c032c57bbcbdccad41212ab6d2d74b602cf"},
 ]
 
 [package.dependencies]
@@ -861,4 +861,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.14"
-content-hash = "48b35ecbe149d3497ca5bb8a0d096a634e7baf3bbb70103f2d3576bd6acde1d1"
+content-hash = "7c446d90d0d715f3bafcd64d2a9e2c24d3e770a362cee5fd44ddf4d808fd1e39"
