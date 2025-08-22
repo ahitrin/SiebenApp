@@ -50,6 +50,7 @@ class RenderRow:
     name: str
     is_open: bool
     is_switchable: bool
+    is_real: bool
     edges: list[tuple[GoalId, EdgeType]]
     attrs: dict[str, str] = field(default_factory=lambda: {})
 

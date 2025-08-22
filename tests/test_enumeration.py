@@ -48,9 +48,9 @@ def test_simple_enumeration_is_not_changed() -> None:
     )
     assert e.q() == RenderResult(
         [
-            RenderRow(1, 1, "a", True, False, [child(2), child(3)]),
-            RenderRow(2, 2, "b", True, False, [blocker(3)]),
-            RenderRow(3, 3, "c", True, True, []),
+            RenderRow(1, 1, "a", True, False, True, [child(2), child(3)]),
+            RenderRow(2, 2, "b", True, False, True, [blocker(3)]),
+            RenderRow(3, 3, "c", True, True, True, []),
         ],
         roots={1},
     )
@@ -60,16 +60,16 @@ def test_apply_mapping_for_the_10th_element(goal_chain_10) -> None:
     e = Enumeration(goal_chain_10)
     assert e.q() == RenderResult(
         [
-            RenderRow(1, 1, "a", True, False, [child(2)]),
-            RenderRow(2, 2, "b", True, False, [child(3)]),
-            RenderRow(3, 3, "c", True, False, [child(4)]),
-            RenderRow(4, 4, "d", True, False, [child(5)]),
-            RenderRow(5, 5, "e", True, False, [child(6)]),
-            RenderRow(6, 6, "f", True, False, [child(7)]),
-            RenderRow(7, 7, "g", True, False, [child(8)]),
-            RenderRow(8, 8, "h", True, False, [child(9)]),
-            RenderRow(9, 9, "i", True, False, [child(0)]),
-            RenderRow(0, 10, "j", True, True, []),
+            RenderRow(1, 1, "a", True, False, True, [child(2)]),
+            RenderRow(2, 2, "b", True, False, True, [child(3)]),
+            RenderRow(3, 3, "c", True, False, True, [child(4)]),
+            RenderRow(4, 4, "d", True, False, True, [child(5)]),
+            RenderRow(5, 5, "e", True, False, True, [child(6)]),
+            RenderRow(6, 6, "f", True, False, True, [child(7)]),
+            RenderRow(7, 7, "g", True, False, True, [child(8)]),
+            RenderRow(8, 8, "h", True, False, True, [child(9)]),
+            RenderRow(9, 9, "i", True, False, True, [child(0)]),
+            RenderRow(0, 10, "j", True, True, True, []),
         ],
         roots={1},
     )
@@ -79,17 +79,17 @@ def test_apply_mapping_for_the_11th_element(goal_chain_11) -> None:
     e = Enumeration(goal_chain_11)
     assert e.q() == RenderResult(
         [
-            RenderRow(11, 1, "a", True, False, [child(12)]),
-            RenderRow(12, 2, "b", True, False, [child(13)]),
-            RenderRow(13, 3, "c", True, False, [child(14)]),
-            RenderRow(14, 4, "d", True, False, [child(15)]),
-            RenderRow(15, 5, "e", True, False, [child(16)]),
-            RenderRow(16, 6, "f", True, False, [child(17)]),
-            RenderRow(17, 7, "g", True, False, [child(18)]),
-            RenderRow(18, 8, "h", True, False, [child(19)]),
-            RenderRow(19, 9, "i", True, False, [child(10)]),
-            RenderRow(10, 10, "j", True, False, [child(21)]),
-            RenderRow(21, 11, "k", True, True, []),
+            RenderRow(11, 1, "a", True, False, True, [child(12)]),
+            RenderRow(12, 2, "b", True, False, True, [child(13)]),
+            RenderRow(13, 3, "c", True, False, True, [child(14)]),
+            RenderRow(14, 4, "d", True, False, True, [child(15)]),
+            RenderRow(15, 5, "e", True, False, True, [child(16)]),
+            RenderRow(16, 6, "f", True, False, True, [child(17)]),
+            RenderRow(17, 7, "g", True, False, True, [child(18)]),
+            RenderRow(18, 8, "h", True, False, True, [child(19)]),
+            RenderRow(19, 9, "i", True, False, True, [child(10)]),
+            RenderRow(10, 10, "j", True, False, True, [child(21)]),
+            RenderRow(21, 11, "k", True, True, True, []),
         ],
         roots={11},
     )
@@ -100,16 +100,16 @@ def test_use_mapping_in_selection(goal_chain_10) -> None:
     e.accept(Select(0))
     assert e.q() == RenderResult(
         [
-            RenderRow(1, 1, "a", True, False, [child(2)]),
-            RenderRow(2, 2, "b", True, False, [child(3)]),
-            RenderRow(3, 3, "c", True, False, [child(4)]),
-            RenderRow(4, 4, "d", True, False, [child(5)]),
-            RenderRow(5, 5, "e", True, False, [child(6)]),
-            RenderRow(6, 6, "f", True, False, [child(7)]),
-            RenderRow(7, 7, "g", True, False, [child(8)]),
-            RenderRow(8, 8, "h", True, False, [child(9)]),
-            RenderRow(9, 9, "i", True, False, [child(0)]),
-            RenderRow(0, 10, "j", True, True, []),
+            RenderRow(1, 1, "a", True, False, True, [child(2)]),
+            RenderRow(2, 2, "b", True, False, True, [child(3)]),
+            RenderRow(3, 3, "c", True, False, True, [child(4)]),
+            RenderRow(4, 4, "d", True, False, True, [child(5)]),
+            RenderRow(5, 5, "e", True, False, True, [child(6)]),
+            RenderRow(6, 6, "f", True, False, True, [child(7)]),
+            RenderRow(7, 7, "g", True, False, True, [child(8)]),
+            RenderRow(8, 8, "h", True, False, True, [child(9)]),
+            RenderRow(9, 9, "i", True, False, True, [child(0)]),
+            RenderRow(0, 10, "j", True, True, True, []),
         ],
         roots={1},
         global_opts={OPTION_SELECT: 0, OPTION_PREV_SELECT: 1},
@@ -122,17 +122,17 @@ def test_do_not_select_goal_by_partial_id(goal_chain_11) -> None:
     e.accept_all(Select(1))
     assert e.q() == RenderResult(
         [
-            RenderRow(11, 1, "a", True, False, [child(12)]),
-            RenderRow(12, 2, "b", True, False, [child(13)]),
-            RenderRow(13, 3, "c", True, False, [child(14)]),
-            RenderRow(14, 4, "d", True, False, [child(15)]),
-            RenderRow(15, 5, "e", True, False, [child(16)]),
-            RenderRow(16, 6, "f", True, False, [child(17)]),
-            RenderRow(17, 7, "g", True, False, [child(18)]),
-            RenderRow(18, 8, "h", True, False, [child(19)]),
-            RenderRow(19, 9, "i", True, False, [child(10)]),
-            RenderRow(10, 10, "j", True, False, [child(21)]),
-            RenderRow(21, 11, "k", True, True, []),
+            RenderRow(11, 1, "a", True, False, True, [child(12)]),
+            RenderRow(12, 2, "b", True, False, True, [child(13)]),
+            RenderRow(13, 3, "c", True, False, True, [child(14)]),
+            RenderRow(14, 4, "d", True, False, True, [child(15)]),
+            RenderRow(15, 5, "e", True, False, True, [child(16)]),
+            RenderRow(16, 6, "f", True, False, True, [child(17)]),
+            RenderRow(17, 7, "g", True, False, True, [child(18)]),
+            RenderRow(18, 8, "h", True, False, True, [child(19)]),
+            RenderRow(19, 9, "i", True, False, True, [child(10)]),
+            RenderRow(10, 10, "j", True, False, True, [child(21)]),
+            RenderRow(21, 11, "k", True, True, True, []),
         ],
         roots={11},
         global_opts={OPTION_SELECT: 11, OPTION_PREV_SELECT: 11},
@@ -144,17 +144,17 @@ def test_select_goal_by_id_parts(goal_chain_11) -> None:
     e.accept_all(Select(1), Select(6))
     assert e.q() == RenderResult(
         [
-            RenderRow(11, 1, "a", True, False, [child(12)]),
-            RenderRow(12, 2, "b", True, False, [child(13)]),
-            RenderRow(13, 3, "c", True, False, [child(14)]),
-            RenderRow(14, 4, "d", True, False, [child(15)]),
-            RenderRow(15, 5, "e", True, False, [child(16)]),
-            RenderRow(16, 6, "f", True, False, [child(17)]),
-            RenderRow(17, 7, "g", True, False, [child(18)]),
-            RenderRow(18, 8, "h", True, False, [child(19)]),
-            RenderRow(19, 9, "i", True, False, [child(10)]),
-            RenderRow(10, 10, "j", True, False, [child(21)]),
-            RenderRow(21, 11, "k", True, True, []),
+            RenderRow(11, 1, "a", True, False, True, [child(12)]),
+            RenderRow(12, 2, "b", True, False, True, [child(13)]),
+            RenderRow(13, 3, "c", True, False, True, [child(14)]),
+            RenderRow(14, 4, "d", True, False, True, [child(15)]),
+            RenderRow(15, 5, "e", True, False, True, [child(16)]),
+            RenderRow(16, 6, "f", True, False, True, [child(17)]),
+            RenderRow(17, 7, "g", True, False, True, [child(18)]),
+            RenderRow(18, 8, "h", True, False, True, [child(19)]),
+            RenderRow(19, 9, "i", True, False, True, [child(10)]),
+            RenderRow(10, 10, "j", True, False, True, [child(21)]),
+            RenderRow(21, 11, "k", True, True, True, []),
         ],
         roots={11},
         global_opts={OPTION_SELECT: 16, OPTION_PREV_SELECT: 11},
@@ -165,17 +165,17 @@ def test_select_goal_by_full_id(goal_chain_11) -> None:
     e = Enumeration(Selectable(goal_chain_11))
     assert e.q() == RenderResult(
         [
-            RenderRow(11, 1, "a", True, False, [child(12)]),
-            RenderRow(12, 2, "b", True, False, [child(13)]),
-            RenderRow(13, 3, "c", True, False, [child(14)]),
-            RenderRow(14, 4, "d", True, False, [child(15)]),
-            RenderRow(15, 5, "e", True, False, [child(16)]),
-            RenderRow(16, 6, "f", True, False, [child(17)]),
-            RenderRow(17, 7, "g", True, False, [child(18)]),
-            RenderRow(18, 8, "h", True, False, [child(19)]),
-            RenderRow(19, 9, "i", True, False, [child(10)]),
-            RenderRow(10, 10, "j", True, False, [child(21)]),
-            RenderRow(21, 11, "k", True, True, []),
+            RenderRow(11, 1, "a", True, False, True, [child(12)]),
+            RenderRow(12, 2, "b", True, False, True, [child(13)]),
+            RenderRow(13, 3, "c", True, False, True, [child(14)]),
+            RenderRow(14, 4, "d", True, False, True, [child(15)]),
+            RenderRow(15, 5, "e", True, False, True, [child(16)]),
+            RenderRow(16, 6, "f", True, False, True, [child(17)]),
+            RenderRow(17, 7, "g", True, False, True, [child(18)]),
+            RenderRow(18, 8, "h", True, False, True, [child(19)]),
+            RenderRow(19, 9, "i", True, False, True, [child(10)]),
+            RenderRow(10, 10, "j", True, False, True, [child(21)]),
+            RenderRow(21, 11, "k", True, True, True, []),
         ],
         roots={11},
         global_opts={OPTION_SELECT: 11, OPTION_PREV_SELECT: 11},
@@ -183,17 +183,17 @@ def test_select_goal_by_full_id(goal_chain_11) -> None:
     e.accept(Select(13))
     assert e.q() == RenderResult(
         [
-            RenderRow(11, 1, "a", True, False, [child(12)]),
-            RenderRow(12, 2, "b", True, False, [child(13)]),
-            RenderRow(13, 3, "c", True, False, [child(14)]),
-            RenderRow(14, 4, "d", True, False, [child(15)]),
-            RenderRow(15, 5, "e", True, False, [child(16)]),
-            RenderRow(16, 6, "f", True, False, [child(17)]),
-            RenderRow(17, 7, "g", True, False, [child(18)]),
-            RenderRow(18, 8, "h", True, False, [child(19)]),
-            RenderRow(19, 9, "i", True, False, [child(10)]),
-            RenderRow(10, 10, "j", True, False, [child(21)]),
-            RenderRow(21, 11, "k", True, True, []),
+            RenderRow(11, 1, "a", True, False, True, [child(12)]),
+            RenderRow(12, 2, "b", True, False, True, [child(13)]),
+            RenderRow(13, 3, "c", True, False, True, [child(14)]),
+            RenderRow(14, 4, "d", True, False, True, [child(15)]),
+            RenderRow(15, 5, "e", True, False, True, [child(16)]),
+            RenderRow(16, 6, "f", True, False, True, [child(17)]),
+            RenderRow(17, 7, "g", True, False, True, [child(18)]),
+            RenderRow(18, 8, "h", True, False, True, [child(19)]),
+            RenderRow(19, 9, "i", True, False, True, [child(10)]),
+            RenderRow(10, 10, "j", True, False, True, [child(21)]),
+            RenderRow(21, 11, "k", True, True, True, []),
         ],
         roots={11},
         global_opts={OPTION_SELECT: 13, OPTION_PREV_SELECT: 11},
@@ -204,17 +204,17 @@ def test_select_goal_by_full_id_with_non_empty_cache(goal_chain_11) -> None:
     e = Enumeration(Selectable(goal_chain_11))
     assert e.q() == RenderResult(
         [
-            RenderRow(11, 1, "a", True, False, [child(12)]),
-            RenderRow(12, 2, "b", True, False, [child(13)]),
-            RenderRow(13, 3, "c", True, False, [child(14)]),
-            RenderRow(14, 4, "d", True, False, [child(15)]),
-            RenderRow(15, 5, "e", True, False, [child(16)]),
-            RenderRow(16, 6, "f", True, False, [child(17)]),
-            RenderRow(17, 7, "g", True, False, [child(18)]),
-            RenderRow(18, 8, "h", True, False, [child(19)]),
-            RenderRow(19, 9, "i", True, False, [child(10)]),
-            RenderRow(10, 10, "j", True, False, [child(21)]),
-            RenderRow(21, 11, "k", True, True, []),
+            RenderRow(11, 1, "a", True, False, True, [child(12)]),
+            RenderRow(12, 2, "b", True, False, True, [child(13)]),
+            RenderRow(13, 3, "c", True, False, True, [child(14)]),
+            RenderRow(14, 4, "d", True, False, True, [child(15)]),
+            RenderRow(15, 5, "e", True, False, True, [child(16)]),
+            RenderRow(16, 6, "f", True, False, True, [child(17)]),
+            RenderRow(17, 7, "g", True, False, True, [child(18)]),
+            RenderRow(18, 8, "h", True, False, True, [child(19)]),
+            RenderRow(19, 9, "i", True, False, True, [child(10)]),
+            RenderRow(10, 10, "j", True, False, True, [child(21)]),
+            RenderRow(21, 11, "k", True, True, True, []),
         ],
         roots={11},
         global_opts={OPTION_SELECT: 11, OPTION_PREV_SELECT: 11},
@@ -222,17 +222,17 @@ def test_select_goal_by_full_id_with_non_empty_cache(goal_chain_11) -> None:
     e.accept_all(Select(2), Select(13))
     assert e.q() == RenderResult(
         [
-            RenderRow(11, 1, "a", True, False, [child(12)]),
-            RenderRow(12, 2, "b", True, False, [child(13)]),
-            RenderRow(13, 3, "c", True, False, [child(14)]),
-            RenderRow(14, 4, "d", True, False, [child(15)]),
-            RenderRow(15, 5, "e", True, False, [child(16)]),
-            RenderRow(16, 6, "f", True, False, [child(17)]),
-            RenderRow(17, 7, "g", True, False, [child(18)]),
-            RenderRow(18, 8, "h", True, False, [child(19)]),
-            RenderRow(19, 9, "i", True, False, [child(10)]),
-            RenderRow(10, 10, "j", True, False, [child(21)]),
-            RenderRow(21, 11, "k", True, True, []),
+            RenderRow(11, 1, "a", True, False, True, [child(12)]),
+            RenderRow(12, 2, "b", True, False, True, [child(13)]),
+            RenderRow(13, 3, "c", True, False, True, [child(14)]),
+            RenderRow(14, 4, "d", True, False, True, [child(15)]),
+            RenderRow(15, 5, "e", True, False, True, [child(16)]),
+            RenderRow(16, 6, "f", True, False, True, [child(17)]),
+            RenderRow(17, 7, "g", True, False, True, [child(18)]),
+            RenderRow(18, 8, "h", True, False, True, [child(19)]),
+            RenderRow(19, 9, "i", True, False, True, [child(10)]),
+            RenderRow(10, 10, "j", True, False, True, [child(21)]),
+            RenderRow(21, 11, "k", True, True, True, []),
         ],
         roots={11},
         global_opts={OPTION_SELECT: 13, OPTION_PREV_SELECT: 11},
@@ -245,9 +245,9 @@ def test_enumerated_goals_must_have_the_same_dimension() -> None:
     )
     assert e.q() == RenderResult(
         [
-            RenderRow(1, 1, "a", True, False, [child(2), child(3)]),
-            RenderRow(2, 2, "b", True, True, []),
-            RenderRow(3, 20, "x", True, True, []),
+            RenderRow(1, 1, "a", True, False, True, [child(2), child(3)]),
+            RenderRow(2, 2, "b", True, True, True, []),
+            RenderRow(3, 20, "x", True, True, True, []),
         ],
         roots={1},
     )
@@ -261,9 +261,9 @@ def test_selection_cache_should_be_reset_after_view_switch(goal_chain_11) -> Non
     e.accept(ToggleSwitchableView())
     assert e.q() == RenderResult(
         [
-            RenderRow(1, 1, "a", True, False, []),
-            RenderRow(2, 11, "k", True, True, []),
-            RenderRow(3, 12, "Also top", True, True, []),
+            RenderRow(1, 1, "a", True, False, True, []),
+            RenderRow(2, 11, "k", True, True, True, []),
+            RenderRow(3, 12, "Also top", True, True, True, []),
         ],
         roots={1, 2, 3},
         global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
@@ -273,9 +273,9 @@ def test_selection_cache_should_be_reset_after_view_switch(goal_chain_11) -> Non
     e.accept(Select(2))
     assert e.q() == RenderResult(
         [
-            RenderRow(1, 1, "a", True, False, []),
-            RenderRow(2, 11, "k", True, True, []),
-            RenderRow(3, 12, "Also top", True, True, []),
+            RenderRow(1, 1, "a", True, False, True, []),
+            RenderRow(2, 11, "k", True, True, True, []),
+            RenderRow(3, 12, "Also top", True, True, True, []),
         ],
         roots={1, 2, 3},
         global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 1},
@@ -315,9 +315,11 @@ def test_do_not_enumerate_goals_with_negative_id() -> None:
     g.accept(ToggleZoom(2))
     assert g.q() == RenderResult(
         [
-            RenderRow(2, 2, "Zoomed", True, False, [child(3)], {"Zoom": "Root goal"}),
-            RenderRow(3, 3, "Top", True, True, []),
-            RenderRow(-1, -1, "Root goal", True, False, [blocker(2)]),
+            RenderRow(
+                2, 2, "Zoomed", True, False, True, [child(3)], {"Zoom": "Root goal"}
+            ),
+            RenderRow(3, 3, "Top", True, True, True, []),
+            RenderRow(-1, -1, "Root goal", True, False, True, [blocker(2)]),
         ],
         roots={-1},
         global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: -1},
@@ -325,9 +327,11 @@ def test_do_not_enumerate_goals_with_negative_id() -> None:
     e = Enumeration(g)
     assert e.q() == RenderResult(
         [
-            RenderRow(1, 2, "Zoomed", True, False, [child(2)], {"Zoom": "Root goal"}),
-            RenderRow(2, 3, "Top", True, True, []),
-            RenderRow(-1, -1, "Root goal", True, False, [blocker(1)]),
+            RenderRow(
+                1, 2, "Zoomed", True, False, True, [child(2)], {"Zoom": "Root goal"}
+            ),
+            RenderRow(2, 3, "Top", True, True, True, []),
+            RenderRow(-1, -1, "Root goal", True, False, True, [blocker(1)]),
         ],
         roots={-1},
         global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: -1},

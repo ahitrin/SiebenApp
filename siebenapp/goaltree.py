@@ -103,6 +103,7 @@ class Goals(Graph):
                     name,
                     not self.is_closed(key),
                     self._switchable(key),
+                    True,
                     edges,
                 )
             )

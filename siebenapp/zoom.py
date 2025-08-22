@@ -82,6 +82,7 @@ class Zoom(Graph):
                     origin_root.name,
                     origin_root.is_open,
                     False,
+                    True,
                     [
                         blocker(goal_id)
                         for goal_id, _ in origin_root.edges

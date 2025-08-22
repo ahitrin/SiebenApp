@@ -37,20 +37,20 @@ class SelectableTest(TestCase):
 
     def test_there_is_one_goal_at_start(self) -> None:
         assert self.goals.q() == RenderResult(
-            [RenderRow(1, 1, "Root", True, True, [])],
+            [RenderRow(1, 1, "Root", True, True, True, [])],
             roots={1},
             global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         )
 
     def test_close_single_goal(self) -> None:
         assert self.goals.q() == RenderResult(
-            [RenderRow(1, 1, "Root", True, True, [])],
+            [RenderRow(1, 1, "Root", True, True, True, [])],
             roots={1},
             global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         )
         self.goals.accept(ToggleClose(1))
         assert self.goals.q() == RenderResult(
-            [RenderRow(1, 1, "Root", False, True, [])],
+            [RenderRow(1, 1, "Root", False, True, True, [])],
             roots={1},
             global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         )
@@ -59,8 +59,8 @@ class SelectableTest(TestCase):
         self.goals = self.build(open_(1, "Root", [2]), clos_(2, "A"), select=(2, 2))
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", True, True, [child(2)]),
-                RenderRow(2, 2, "A", False, True, []),
+                RenderRow(1, 1, "Root", True, True, True, [child(2)]),
+                RenderRow(2, 2, "A", False, True, True, []),
             ],
             roots={1},
             global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
@@ -68,8 +68,8 @@ class SelectableTest(TestCase):
         self.goals.accept(ToggleClose(2))
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", True, False, [child(2)]),
-                RenderRow(2, 2, "A", True, True, []),
+                RenderRow(1, 1, "Root", True, False, True, [child(2)]),
+                RenderRow(2, 2, "A", True, True, True, []),
             ],
             roots={1},
             global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
@@ -82,9 +82,9 @@ class SelectableTest(TestCase):
         self.goals.accept_all(Select(2), ToggleClose(2))
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", True, True, [child(2)]),
-                RenderRow(2, 2, "A", False, True, [child(3)]),
-                RenderRow(3, 3, "Ab", False, False, []),
+                RenderRow(1, 1, "Root", True, True, True, [child(2)]),
+                RenderRow(2, 2, "A", False, True, True, [child(3)]),
+                RenderRow(3, 3, "Ab", False, False, True, []),
             ],
             roots={1},
             global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
@@ -92,9 +92,9 @@ class SelectableTest(TestCase):
         self.goals.accept_all(Select(2), ToggleClose(2))
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", True, False, [child(2)]),
-                RenderRow(2, 2, "A", True, True, [child(3)]),
-                RenderRow(3, 3, "Ab", False, True, []),
+                RenderRow(1, 1, "Root", True, False, True, [child(2)]),
+                RenderRow(2, 2, "A", True, True, True, [child(3)]),
+                RenderRow(3, 3, "Ab", False, True, True, []),
             ],
             roots={1},
             global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 1},
@@ -102,9 +102,9 @@ class SelectableTest(TestCase):
         self.goals.accept_all(Select(2), ToggleClose(2))
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", True, True, [child(2)]),
-                RenderRow(2, 2, "A", False, True, [child(3)]),
-                RenderRow(3, 3, "Ab", False, False, []),
+                RenderRow(1, 1, "Root", True, True, True, [child(2)]),
+                RenderRow(2, 2, "A", False, True, True, [child(3)]),
+                RenderRow(3, 3, "Ab", False, False, True, []),
             ],
             roots={1},
             global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
@@ -116,9 +116,9 @@ class SelectableTest(TestCase):
         )
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", True, True, [child(2)]),
-                RenderRow(2, 2, "A", False, True, [child(3)]),
-                RenderRow(3, 3, "B", False, False, []),
+                RenderRow(1, 1, "Root", True, True, True, [child(2)]),
+                RenderRow(2, 2, "A", False, True, True, [child(3)]),
+                RenderRow(3, 3, "B", False, False, True, []),
             ],
             roots={1},
             global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
@@ -127,9 +127,9 @@ class SelectableTest(TestCase):
         # nothing should change except select
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", True, True, [child(2)]),
-                RenderRow(2, 2, "A", False, True, [child(3)]),
-                RenderRow(3, 3, "B", False, False, []),
+                RenderRow(1, 1, "Root", True, True, True, [child(2)]),
+                RenderRow(2, 2, "A", False, True, True, [child(3)]),
+                RenderRow(3, 3, "B", False, False, True, []),
             ],
             roots={1},
             global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 1},
@@ -146,10 +146,10 @@ class SelectableTest(TestCase):
         self.goals.accept(ToggleClose(3))
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
-                RenderRow(2, 2, "A", True, False, [blocker(4)]),
-                RenderRow(3, 3, "B", True, False, [child(4)]),
-                RenderRow(4, 4, "C", True, True, []),
+                RenderRow(1, 1, "Root", True, False, True, [child(2), child(3)]),
+                RenderRow(2, 2, "A", True, False, True, [blocker(4)]),
+                RenderRow(3, 3, "B", True, False, True, [child(4)]),
+                RenderRow(4, 4, "C", True, True, True, []),
             ],
             roots={1},
             global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 3},
@@ -166,10 +166,10 @@ class SelectableTest(TestCase):
         # Goal 4 should not be switchable when goal 2 is closed
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
-                RenderRow(2, 2, "Blocked", False, True, [blocker(4)]),
-                RenderRow(3, 3, "Intermediate", True, True, [child(4)]),
-                RenderRow(4, 4, "Blocker", False, False, []),
+                RenderRow(1, 1, "Root", True, False, True, [child(2), child(3)]),
+                RenderRow(2, 2, "Blocked", False, True, True, [blocker(4)]),
+                RenderRow(3, 3, "Intermediate", True, True, True, [child(4)]),
+                RenderRow(4, 4, "Blocker", False, False, True, []),
             ],
             roots={1},
             global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
@@ -178,10 +178,10 @@ class SelectableTest(TestCase):
         self.goals.accept(ToggleClose(2))
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
-                RenderRow(2, 2, "Blocked", True, True, [blocker(4)]),
-                RenderRow(3, 3, "Intermediate", True, True, [child(4)]),
-                RenderRow(4, 4, "Blocker", False, True, []),
+                RenderRow(1, 1, "Root", True, False, True, [child(2), child(3)]),
+                RenderRow(2, 2, "Blocked", True, True, True, [blocker(4)]),
+                RenderRow(3, 3, "Intermediate", True, True, True, [child(4)]),
+                RenderRow(4, 4, "Blocker", False, True, True, []),
             ],
             roots={1},
             global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
@@ -191,7 +191,7 @@ class SelectableTest(TestCase):
         self.goals = self.build(open_(1, "Root", [2]), open_(2, "A"), select=(2, 2))
         self.goals.accept(Delete(2))
         assert self.goals.q() == RenderResult(
-            [RenderRow(1, 1, "Root", True, True, [])],
+            [RenderRow(1, 1, "Root", True, True, True, [])],
             roots={1},
             global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         )
@@ -203,8 +203,8 @@ class SelectableTest(TestCase):
         self.goals.accept(Delete(2))
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", True, False, [child(3)]),
-                RenderRow(3, 3, "B", True, True, []),
+                RenderRow(1, 1, "Root", True, False, True, [child(3)]),
+                RenderRow(3, 3, "B", True, True, True, []),
             ],
             roots={1},
             global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
@@ -217,7 +217,7 @@ class SelectableTest(TestCase):
         self.goals.accept(Delete(2))
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", True, True, []),
+                RenderRow(1, 1, "Root", True, True, True, []),
             ],
             roots={1},
             global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
@@ -233,8 +233,8 @@ class SelectableTest(TestCase):
         self.goals.accept(Delete(2))
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", True, False, [blocker(3)]),
-                RenderRow(3, 3, "B", True, True, []),
+                RenderRow(1, 1, "Root", True, False, True, [blocker(3)]),
+                RenderRow(3, 3, "B", True, True, True, []),
             ],
             roots={1},
             global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
@@ -250,8 +250,8 @@ class SelectableTest(TestCase):
         self.goals.accept(Delete(2))
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", True, True, [relation(3)]),
-                RenderRow(3, 3, "B", True, True, []),
+                RenderRow(1, 1, "Root", True, True, True, [relation(3)]),
+                RenderRow(3, 3, "B", True, True, True, []),
             ],
             roots={1},
             global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
@@ -267,8 +267,8 @@ class SelectableTest(TestCase):
         self.goals.accept(Delete(2))
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", False, True, [relation(3)]),
-                RenderRow(3, 3, "B", True, True, []),
+                RenderRow(1, 1, "Root", False, True, True, [relation(3)]),
+                RenderRow(3, 3, "B", True, True, True, []),
             ],
             roots={1},
             global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
@@ -281,7 +281,7 @@ class SelectableTest(TestCase):
         self.goals.accept(Delete(2))
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", True, True, []),
+                RenderRow(1, 1, "Root", True, True, True, []),
             ],
             roots={1},
             global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
@@ -297,8 +297,8 @@ class SelectableTest(TestCase):
         self.goals.accept(Delete(2))
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", True, False, [blocker(3)]),
-                RenderRow(3, 3, "B", True, True, []),
+                RenderRow(1, 1, "Root", True, False, True, [blocker(3)]),
+                RenderRow(3, 3, "B", True, True, True, []),
             ],
             roots={1},
             global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
@@ -314,8 +314,8 @@ class SelectableTest(TestCase):
         self.goals.accept(Delete(2))
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", True, True, [relation(3)]),
-                RenderRow(3, 3, "B", True, True, []),
+                RenderRow(1, 1, "Root", True, True, True, [relation(3)]),
+                RenderRow(3, 3, "B", True, True, True, []),
             ],
             roots={1},
             global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
@@ -331,8 +331,8 @@ class SelectableTest(TestCase):
         self.goals.accept(Delete(3))
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", True, False, [child(2)]),
-                RenderRow(2, 2, "Parent", True, True, []),
+                RenderRow(1, 1, "Root", True, False, True, [child(2)]),
+                RenderRow(2, 2, "Parent", True, True, True, []),
             ],
             roots={1},
             global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
@@ -348,10 +348,10 @@ class SelectableTest(TestCase):
         )
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
-                RenderRow(2, 2, "A", True, False, [child(4)]),
-                RenderRow(3, 3, "B", True, False, [blocker(4)]),
-                RenderRow(4, 4, "C", True, True, []),
+                RenderRow(1, 1, "Root", True, False, True, [child(2), child(3)]),
+                RenderRow(2, 2, "A", True, False, True, [child(4)]),
+                RenderRow(3, 3, "B", True, False, True, [blocker(4)]),
+                RenderRow(4, 4, "C", True, True, True, []),
             ],
             roots={1},
             global_opts={OPTION_SELECT: 4, OPTION_PREV_SELECT: 4},
@@ -359,9 +359,9 @@ class SelectableTest(TestCase):
         self.goals.accept_all(Select(3), Delete(3))
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", True, False, [child(2)]),
-                RenderRow(2, 2, "A", True, False, [child(4)]),
-                RenderRow(4, 4, "C", True, True, []),
+                RenderRow(1, 1, "Root", True, False, True, [child(2)]),
+                RenderRow(2, 2, "A", True, False, True, [child(4)]),
+                RenderRow(4, 4, "C", True, True, True, []),
             ],
             roots={1},
             global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
@@ -376,9 +376,9 @@ class SelectableTest(TestCase):
         )
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
-                RenderRow(2, 2, "Have a relation", True, True, [relation(3)]),
-                RenderRow(3, 3, "Does not block", True, True, []),
+                RenderRow(1, 1, "Root", True, False, True, [child(2), child(3)]),
+                RenderRow(2, 2, "Have a relation", True, True, True, [relation(3)]),
+                RenderRow(3, 3, "Does not block", True, True, True, []),
             ],
             roots={1},
             global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
@@ -395,10 +395,12 @@ class SelectableTest(TestCase):
         self.goals.accept(ToggleClose(3))
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", True, False, [child(2), child(3), child(4)]),
-                RenderRow(2, 2, "A", True, True, []),
-                RenderRow(3, 3, "B", False, True, []),
-                RenderRow(4, 4, "C", True, True, []),
+                RenderRow(
+                    1, 1, "Root", True, False, True, [child(2), child(3), child(4)]
+                ),
+                RenderRow(2, 2, "A", True, True, True, []),
+                RenderRow(3, 3, "B", False, True, True, []),
+                RenderRow(4, 4, "C", True, True, True, []),
             ],
             roots={1},
             global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 2},
@@ -417,10 +419,12 @@ class SelectableTest(TestCase):
         self.goals.accept(ToggleClose(2))
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", True, False, [child(2), child(3), child(4)]),
-                RenderRow(2, 2, "A", False, True, []),
-                RenderRow(3, 3, "B", True, True, []),
-                RenderRow(4, 4, "C", True, True, []),
+                RenderRow(
+                    1, 1, "Root", True, False, True, [child(2), child(3), child(4)]
+                ),
+                RenderRow(2, 2, "A", False, True, True, []),
+                RenderRow(3, 3, "B", True, True, True, []),
+                RenderRow(4, 4, "C", True, True, True, []),
             ],
             roots={1},
             global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 3},
@@ -439,10 +443,12 @@ class SelectableTest(TestCase):
         self.goals.accept(ToggleClose(3))
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", True, False, [child(2), child(3), child(4)]),
-                RenderRow(2, 2, "A", True, True, []),
-                RenderRow(3, 3, "B", False, True, []),
-                RenderRow(4, 4, "C", True, True, []),
+                RenderRow(
+                    1, 1, "Root", True, False, True, [child(2), child(3), child(4)]
+                ),
+                RenderRow(2, 2, "A", True, True, True, []),
+                RenderRow(3, 3, "B", False, True, True, []),
+                RenderRow(4, 4, "C", True, True, True, []),
             ],
             roots={1},
             global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 4},
@@ -461,10 +467,12 @@ class SelectableTest(TestCase):
         self.goals.accept(ToggleClose(2))
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", True, False, [child(2), child(3), child(4)]),
-                RenderRow(2, 2, "A", False, True, []),
-                RenderRow(3, 3, "B", True, True, []),
-                RenderRow(4, 4, "C", True, True, []),
+                RenderRow(
+                    1, 1, "Root", True, False, True, [child(2), child(3), child(4)]
+                ),
+                RenderRow(2, 2, "A", False, True, True, []),
+                RenderRow(3, 3, "B", True, True, True, []),
+                RenderRow(4, 4, "C", True, True, True, []),
             ],
             roots={1},
             global_opts={OPTION_SELECT: 4, OPTION_PREV_SELECT: 4},
@@ -484,11 +492,11 @@ class SelectableTest(TestCase):
         self.goals.accept(ToggleClose(5, root=3))
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
-                RenderRow(2, 2, "Should not be selected", True, True, []),
-                RenderRow(3, 3, "Subroot", True, False, [child(4), child(5)]),
-                RenderRow(4, 4, "Must be selected", True, True, []),
-                RenderRow(5, 5, "Closing", False, True, []),
+                RenderRow(1, 1, "Root", True, False, True, [child(2), child(3)]),
+                RenderRow(2, 2, "Should not be selected", True, True, True, []),
+                RenderRow(3, 3, "Subroot", True, False, True, [child(4), child(5)]),
+                RenderRow(4, 4, "Must be selected", True, True, True, []),
+                RenderRow(5, 5, "Closing", False, True, True, []),
             ],
             roots={1},
             global_opts={OPTION_SELECT: 4, OPTION_PREV_SELECT: 4},
@@ -507,12 +515,12 @@ class SelectableTest(TestCase):
         self.goals.accept(ToggleClose(5, root=3))
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
-                RenderRow(2, 2, "Should not be selected", True, True, []),
-                RenderRow(3, 3, "Subroot", True, False, [child(4), child(5)]),
-                RenderRow(4, 4, "Intermediate", True, False, [child(6)]),
-                RenderRow(5, 5, "Closing", False, True, []),
-                RenderRow(6, 6, "Must be selected", True, True, []),
+                RenderRow(1, 1, "Root", True, False, True, [child(2), child(3)]),
+                RenderRow(2, 2, "Should not be selected", True, True, True, []),
+                RenderRow(3, 3, "Subroot", True, False, True, [child(4), child(5)]),
+                RenderRow(4, 4, "Intermediate", True, False, True, [child(6)]),
+                RenderRow(5, 5, "Closing", False, True, True, []),
+                RenderRow(6, 6, "Must be selected", True, True, True, []),
             ],
             roots={1},
             global_opts={OPTION_SELECT: 6, OPTION_PREV_SELECT: 6},
@@ -521,7 +529,7 @@ class SelectableTest(TestCase):
     def test_ignore_wrong_selection(self) -> None:
         self.goals.accept(Select(2))
         assert self.goals.q() == RenderResult(
-            [RenderRow(1, 1, "Root", True, True, [])],
+            [RenderRow(1, 1, "Root", True, True, True, [])],
             roots={1},
             global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
         )
@@ -533,7 +541,7 @@ class SelectableTest(TestCase):
         self.goals.accept_all(Delete(2), Select(2))
         assert self.goals.q() == RenderResult(
             [
-                RenderRow(1, 1, "Root", True, True, []),
+                RenderRow(1, 1, "Root", True, True, True, []),
             ],
             roots={1},
             global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
@@ -563,6 +571,7 @@ class SelectableTest(TestCase):
                     "Root",
                     True,
                     False,
+                    True,
                     [
                         child(2),
                         child(3),
@@ -576,16 +585,16 @@ class SelectableTest(TestCase):
                         child(11),
                     ],
                 ),
-                RenderRow(2, 2, "A", True, True, []),
-                RenderRow(3, 3, "B", True, True, []),
-                RenderRow(4, 4, "C", True, True, []),
-                RenderRow(5, 5, "D", True, True, []),
-                RenderRow(6, 6, "E", True, True, []),
-                RenderRow(7, 7, "F", True, True, []),
-                RenderRow(8, 8, "G", True, True, []),
-                RenderRow(9, 9, "H", True, True, []),
-                RenderRow(10, 10, "I", True, True, []),
-                RenderRow(11, 11, "J", True, True, []),
+                RenderRow(2, 2, "A", True, True, True, []),
+                RenderRow(3, 3, "B", True, True, True, []),
+                RenderRow(4, 4, "C", True, True, True, []),
+                RenderRow(5, 5, "D", True, True, True, []),
+                RenderRow(6, 6, "E", True, True, True, []),
+                RenderRow(7, 7, "F", True, True, True, []),
+                RenderRow(8, 8, "G", True, True, True, []),
+                RenderRow(9, 9, "H", True, True, True, []),
+                RenderRow(10, 10, "I", True, True, True, []),
+                RenderRow(11, 11, "J", True, True, True, []),
             ],
             roots={1},
             global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: 1},
@@ -599,6 +608,7 @@ class SelectableTest(TestCase):
                     "Root",
                     True,
                     False,
+                    True,
                     [
                         child(2),
                         child(3),
@@ -612,16 +622,16 @@ class SelectableTest(TestCase):
                         child(11),
                     ],
                 ),
-                RenderRow(2, 2, "A", True, True, []),
-                RenderRow(3, 3, "B", True, True, []),
-                RenderRow(4, 4, "C", True, True, []),
-                RenderRow(5, 5, "D", True, True, []),
-                RenderRow(6, 6, "E", True, True, []),
-                RenderRow(7, 7, "F", True, True, []),
-                RenderRow(8, 8, "G", True, True, []),
-                RenderRow(9, 9, "H", True, True, []),
-                RenderRow(10, 10, "I", True, True, []),
-                RenderRow(11, 11, "J", True, True, []),
+                RenderRow(2, 2, "A", True, True, True, []),
+                RenderRow(3, 3, "B", True, True, True, []),
+                RenderRow(4, 4, "C", True, True, True, []),
+                RenderRow(5, 5, "D", True, True, True, []),
+                RenderRow(6, 6, "E", True, True, True, []),
+                RenderRow(7, 7, "F", True, True, True, []),
+                RenderRow(8, 8, "G", True, True, True, []),
+                RenderRow(9, 9, "H", True, True, True, []),
+                RenderRow(10, 10, "I", True, True, True, []),
+                RenderRow(11, 11, "J", True, True, True, []),
             ],
             roots={1},
             global_opts={OPTION_SELECT: 11, OPTION_PREV_SELECT: 1},

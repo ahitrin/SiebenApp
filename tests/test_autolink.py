@@ -54,16 +54,18 @@ def test_show_new_pseudogoal_on_autolink_event(tree_2_goals) -> None:
     goals = tree_2_goals
     assert goals.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, False, [child(2)]),
-            RenderRow(2, 2, "Autolink on me", True, True, []),
+            RenderRow(1, 1, "Root", True, False, True, [child(2)]),
+            RenderRow(2, 2, "Autolink on me", True, True, True, []),
         ],
         roots={1},
     )
     goals.accept(ToggleAutoLink("heLLO", 2))
     assert goals.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, False, [child(2)]),
-            RenderRow(2, 2, "Autolink on me", True, True, [], {"Autolink": "hello"}),
+            RenderRow(1, 1, "Root", True, False, True, [child(2)]),
+            RenderRow(
+                2, 2, "Autolink on me", True, True, True, [], {"Autolink": "hello"}
+            ),
         ],
         roots={1},
     )
@@ -75,8 +77,10 @@ def test_replace_old_autolink_with_new_one(tree_2_goals) -> None:
     goals.accept_all(ToggleAutoLink("first", 2), ToggleAutoLink("second", 2))
     assert goals.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, False, [child(2)]),
-            RenderRow(2, 2, "Autolink on me", True, True, [], {"Autolink": "second"}),
+            RenderRow(1, 1, "Root", True, False, True, [child(2)]),
+            RenderRow(
+                2, 2, "Autolink on me", True, True, True, [], {"Autolink": "second"}
+            ),
         ],
         roots={1},
     )
@@ -92,8 +96,8 @@ def test_remove_autolink_by_sending_empty_keyword(tree_2_goals) -> None:
     goals.accept_all(ToggleAutoLink("lalala", 2), ToggleAutoLink("", 2))
     assert goals.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, False, [child(2)]),
-            RenderRow(2, 2, "Autolink on me", True, True, []),
+            RenderRow(1, 1, "Root", True, False, True, [child(2)]),
+            RenderRow(2, 2, "Autolink on me", True, True, True, []),
         ],
         roots={1},
     )
@@ -108,8 +112,8 @@ def test_remove_autolink_by_sending_whitespace(tree_2_goals) -> None:
     goals.accept_all(ToggleAutoLink("lalala", 2), ToggleAutoLink(" ", 2))
     assert goals.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, False, [child(2)]),
-            RenderRow(2, 2, "Autolink on me", True, True, []),
+            RenderRow(1, 1, "Root", True, False, True, [child(2)]),
+            RenderRow(2, 2, "Autolink on me", True, True, True, []),
         ],
         roots={1},
     )
@@ -124,8 +128,8 @@ def test_do_not_add_autolink_on_whitespace(tree_2_goals) -> None:
     goals.accept_all(ToggleAutoLink(" ", 2))
     assert goals.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, False, [child(2)]),
-            RenderRow(2, 2, "Autolink on me", True, True, []),
+            RenderRow(1, 1, "Root", True, False, True, [child(2)]),
+            RenderRow(2, 2, "Autolink on me", True, True, True, []),
         ],
         roots={1},
     )
@@ -144,8 +148,8 @@ def test_do_not_add_autolink_to_closed_goals() -> None:
     goals.accept(ToggleAutoLink("Failed", 2))
     assert goals.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, True, [child(2)]),
-            RenderRow(2, 2, "Well, it's closed", False, True, []),
+            RenderRow(1, 1, "Root", True, True, True, [child(2)]),
+            RenderRow(2, 2, "Well, it's closed", False, True, True, []),
         ],
         roots={1},
     )
@@ -159,7 +163,7 @@ def test_do_not_add_autolink_to_root_goal() -> None:
     goals.accept(ToggleAutoLink("misused", 1))
     assert goals.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, True, []),
+            RenderRow(1, 1, "Root", True, True, True, []),
         ],
         roots={1},
     )
@@ -172,16 +176,18 @@ def test_remove_autolink_on_close(tree_2_goals) -> None:
     goals.accept(ToggleAutoLink("test", 2))
     assert goals.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, False, [child(2)]),
-            RenderRow(2, 2, "Autolink on me", True, True, [], {"Autolink": "test"}),
+            RenderRow(1, 1, "Root", True, False, True, [child(2)]),
+            RenderRow(
+                2, 2, "Autolink on me", True, True, True, [], {"Autolink": "test"}
+            ),
         ],
         roots={1},
     )
     goals.accept(ToggleClose(2))
     assert goals.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, True, [child(2)]),
-            RenderRow(2, 2, "Autolink on me", False, True, []),
+            RenderRow(1, 1, "Root", True, True, True, [child(2)]),
+            RenderRow(2, 2, "Autolink on me", False, True, True, []),
         ],
         roots={1},
     )
@@ -196,15 +202,17 @@ def test_remove_autolink_on_delete(tree_2_goals) -> None:
     goals.accept(ToggleAutoLink("test", 2))
     assert goals.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, False, [child(2)]),
-            RenderRow(2, 2, "Autolink on me", True, True, [], {"Autolink": "test"}),
+            RenderRow(1, 1, "Root", True, False, True, [child(2)]),
+            RenderRow(
+                2, 2, "Autolink on me", True, True, True, [], {"Autolink": "test"}
+            ),
         ],
         roots={1},
     )
     goals.accept(Delete(2))
     assert goals.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, True, []),
+            RenderRow(1, 1, "Root", True, True, True, []),
         ],
         roots={1},
     )
@@ -219,16 +227,18 @@ def test_remove_autolink_on_parent_delete(tree_3i_goals) -> None:
     goals.accept(ToggleAutoLink("test", 3))
     assert goals.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, False, [child(2)]),
-            RenderRow(2, 2, "Autolink on me", True, False, [child(3)]),
-            RenderRow(3, 3, "Another subgoal", True, True, [], {"Autolink": "test"}),
+            RenderRow(1, 1, "Root", True, False, True, [child(2)]),
+            RenderRow(2, 2, "Autolink on me", True, False, True, [child(3)]),
+            RenderRow(
+                3, 3, "Another subgoal", True, True, True, [], {"Autolink": "test"}
+            ),
         ],
         roots={1},
     )
     goals.accept(Delete(2))
     assert goals.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, True, []),
+            RenderRow(1, 1, "Root", True, True, True, []),
         ],
         roots={1},
     )
@@ -243,9 +253,11 @@ def test_replace_same_autolink(tree_3v_goals) -> None:
     goals.accept_all(ToggleAutoLink("same", 2), ToggleAutoLink("same", 3))
     assert goals.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
-            RenderRow(2, 2, "Autolink on me", True, True, []),
-            RenderRow(3, 3, "Another subgoal", True, True, [], {"Autolink": "same"}),
+            RenderRow(1, 1, "Root", True, False, True, [child(2), child(3)]),
+            RenderRow(2, 2, "Autolink on me", True, True, True, []),
+            RenderRow(
+                3, 3, "Another subgoal", True, True, True, [], {"Autolink": "same"}
+            ),
         ],
         roots={1},
     )
@@ -263,9 +275,11 @@ def test_do_not_make_a_link_on_not_matching_add(tree_2_goals) -> None:
     goals.accept(Add("Goodbye", 1))
     assert goals.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
-            RenderRow(2, 2, "Autolink on me", True, True, [], {"Autolink": "hello"}),
-            RenderRow(3, 3, "Goodbye", True, True, []),
+            RenderRow(1, 1, "Root", True, False, True, [child(2), child(3)]),
+            RenderRow(
+                2, 2, "Autolink on me", True, True, True, [], {"Autolink": "hello"}
+            ),
+            RenderRow(3, 3, "Goodbye", True, True, True, []),
         ],
         roots={1},
     )
@@ -281,11 +295,18 @@ def test_make_a_link_on_matching_add(tree_2_goals) -> None:
     goals.accept(Add("Link ME please", 1))
     assert goals.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, False, [child(2), relation(3)]),
+            RenderRow(1, 1, "Root", True, False, True, [child(2), relation(3)]),
             RenderRow(
-                2, 2, "Autolink on me", True, False, [child(3)], {"Autolink": "me"}
+                2,
+                2,
+                "Autolink on me",
+                True,
+                False,
+                True,
+                [child(3)],
+                {"Autolink": "me"},
             ),
-            RenderRow(3, 3, "Link ME please", True, True, []),
+            RenderRow(3, 3, "Link ME please", True, True, True, []),
         ],
         roots={1},
     )
@@ -301,9 +322,11 @@ def test_do_not_make_a_link_on_not_old_matching_add(tree_2_goals) -> None:
     goals.accept(Add("This is old subgoal", 1))
     assert goals.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
-            RenderRow(2, 2, "Autolink on me", True, True, [], {"Autolink": "new"}),
-            RenderRow(3, 3, "This is old subgoal", True, True, []),
+            RenderRow(1, 1, "Root", True, False, True, [child(2), child(3)]),
+            RenderRow(
+                2, 2, "Autolink on me", True, True, True, [], {"Autolink": "new"}
+            ),
+            RenderRow(3, 3, "This is old subgoal", True, True, True, []),
         ],
         roots={1},
     )
@@ -321,12 +344,19 @@ def test_make_a_link_on_matching_insert(tree_3v_goals) -> None:
     goals.accept(Insert("Link ME please", 1, 3))
     assert goals.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, False, [child(2), relation(4)]),
+            RenderRow(1, 1, "Root", True, False, True, [child(2), relation(4)]),
             RenderRow(
-                2, 2, "Autolink on me", True, False, [child(4)], {"Autolink": "me"}
+                2,
+                2,
+                "Autolink on me",
+                True,
+                False,
+                True,
+                [child(4)],
+                {"Autolink": "me"},
             ),
-            RenderRow(3, 3, "Another subgoal", True, True, []),
-            RenderRow(4, 4, "Link ME please", True, False, [child(3)]),
+            RenderRow(3, 3, "Another subgoal", True, True, True, []),
+            RenderRow(4, 4, "Link ME please", True, False, True, [child(3)]),
         ],
         roots={1},
     )
@@ -338,11 +368,18 @@ def test_make_a_link_on_matching_rename(tree_3v_goals) -> None:
     goals.accept(Rename("Link ME please", 3))
     assert goals.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, False, [child(2), relation(3)]),
+            RenderRow(1, 1, "Root", True, False, True, [child(2), relation(3)]),
             RenderRow(
-                2, 2, "Autolink on me", True, False, [child(3)], {"Autolink": "me"}
+                2,
+                2,
+                "Autolink on me",
+                True,
+                False,
+                True,
+                [child(3)],
+                {"Autolink": "me"},
             ),
-            RenderRow(3, 3, "Link ME please", True, True, []),
+            RenderRow(3, 3, "Link ME please", True, True, True, []),
         ],
         roots={1},
     )
@@ -355,11 +392,18 @@ def test_do_not_make_a_link_on_matching_subgoal_add(tree_2_goals) -> None:
     goals.accept(Add("Do NOT link me please", 2))
     assert goals.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, False, [child(2)]),
+            RenderRow(1, 1, "Root", True, False, True, [child(2)]),
             RenderRow(
-                2, 2, "Autolink on me", True, False, [child(3)], {"Autolink": "me"}
+                2,
+                2,
+                "Autolink on me",
+                True,
+                False,
+                True,
+                [child(3)],
+                {"Autolink": "me"},
             ),
-            RenderRow(3, 3, "Do NOT link me please", True, True, []),
+            RenderRow(3, 3, "Do NOT link me please", True, True, True, []),
         ],
         roots={1},
     )
@@ -372,12 +416,19 @@ def test_do_not_make_a_link_on_matching_subgoal_insert(tree_3i_goals) -> None:
     goals.accept(Insert("Do NOT link me please", 2, 3))
     assert goals.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, False, [child(2)]),
+            RenderRow(1, 1, "Root", True, False, True, [child(2)]),
             RenderRow(
-                2, 2, "Autolink on me", True, False, [child(4)], {"Autolink": "me"}
+                2,
+                2,
+                "Autolink on me",
+                True,
+                False,
+                True,
+                [child(4)],
+                {"Autolink": "me"},
             ),
-            RenderRow(3, 3, "Another subgoal", True, True, []),
-            RenderRow(4, 4, "Do NOT link me please", True, False, [child(3)]),
+            RenderRow(3, 3, "Another subgoal", True, True, True, []),
+            RenderRow(4, 4, "Do NOT link me please", True, False, True, [child(3)]),
         ],
         roots={1},
     )
@@ -389,11 +440,18 @@ def test_do_not_make_a_link_on_matching_subgoal_rename(tree_3i_goals) -> None:
     goals.accept(Rename("Do NOT link me please", 3))
     assert goals.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, False, [child(2)]),
+            RenderRow(1, 1, "Root", True, False, True, [child(2)]),
             RenderRow(
-                2, 2, "Autolink on me", True, False, [child(3)], {"Autolink": "me"}
+                2,
+                2,
+                "Autolink on me",
+                True,
+                False,
+                True,
+                [child(3)],
+                {"Autolink": "me"},
             ),
-            RenderRow(3, 3, "Do NOT link me please", True, True, []),
+            RenderRow(3, 3, "Do NOT link me please", True, True, True, []),
         ],
         roots={1},
     )
@@ -405,9 +463,11 @@ def test_autolink_on_all_matching_goals(tree_3v_goals) -> None:
     goals.accept_all(ToggleAutoLink("me", 2), ToggleAutoLink("plea", 3))
     assert goals.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
-            RenderRow(2, 2, "Autolink on me", True, True, [], {"Autolink": "me"}),
-            RenderRow(3, 3, "Another subgoal", True, True, [], {"Autolink": "plea"}),
+            RenderRow(1, 1, "Root", True, False, True, [child(2), child(3)]),
+            RenderRow(2, 2, "Autolink on me", True, True, True, [], {"Autolink": "me"}),
+            RenderRow(
+                3, 3, "Another subgoal", True, True, True, [], {"Autolink": "plea"}
+            ),
         ],
         roots={1},
     )
@@ -421,15 +481,30 @@ def test_autolink_on_all_matching_goals(tree_3v_goals) -> None:
                 "Root",
                 True,
                 False,
+                True,
                 [child(2), child(3), relation(4)],
             ),
             RenderRow(
-                2, 2, "Autolink on me", True, True, [relation(4)], {"Autolink": "me"}
+                2,
+                2,
+                "Autolink on me",
+                True,
+                True,
+                True,
+                [relation(4)],
+                {"Autolink": "me"},
             ),
             RenderRow(
-                3, 3, "Another subgoal", True, False, [child(4)], {"Autolink": "plea"}
+                3,
+                3,
+                "Another subgoal",
+                True,
+                False,
+                True,
+                [child(4)],
+                {"Autolink": "plea"},
             ),
-            RenderRow(4, 4, "Link me to both please", True, True, []),
+            RenderRow(4, 4, "Link me to both please", True, True, True, []),
         ],
         roots={1},
     )
@@ -441,12 +516,19 @@ def test_relink_as_blocker(tree_3v_goals) -> None:
     goals.accept_all(ToggleAutoLink("target", 2), Add("relink target", 3))
     assert goals.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
+            RenderRow(1, 1, "Root", True, False, True, [child(2), child(3)]),
             RenderRow(
-                2, 2, "Autolink on me", True, False, [child(4)], {"Autolink": "target"}
+                2,
+                2,
+                "Autolink on me",
+                True,
+                False,
+                True,
+                [child(4)],
+                {"Autolink": "target"},
             ),
-            RenderRow(3, 3, "Another subgoal", True, True, [relation(4)]),
-            RenderRow(4, 4, "relink target", True, True, []),
+            RenderRow(3, 3, "Another subgoal", True, True, True, [relation(4)]),
+            RenderRow(4, 4, "relink target", True, True, True, []),
         ],
         roots={1},
     )
@@ -454,12 +536,19 @@ def test_relink_as_blocker(tree_3v_goals) -> None:
     goals.accept(ToggleLink(3, 4, EdgeType.BLOCKER))
     assert goals.q() == RenderResult(
         [
-            RenderRow(1, 1, "Root", True, False, [child(2), child(3)]),
+            RenderRow(1, 1, "Root", True, False, True, [child(2), child(3)]),
             RenderRow(
-                2, 2, "Autolink on me", True, False, [child(4)], {"Autolink": "target"}
+                2,
+                2,
+                "Autolink on me",
+                True,
+                False,
+                True,
+                [child(4)],
+                {"Autolink": "target"},
             ),
-            RenderRow(3, 3, "Another subgoal", True, False, [blocker(4)]),
-            RenderRow(4, 4, "relink target", True, True, []),
+            RenderRow(3, 3, "Another subgoal", True, False, True, [blocker(4)]),
+            RenderRow(4, 4, "relink target", True, True, True, []),
         ],
         roots={1},
     )

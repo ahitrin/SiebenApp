@@ -23,7 +23,7 @@ def test_create_default_db_on_migrate_missing_file() -> None:
     assert Path(file_name).exists()
     g = load(file_name)
     assert g.q() == RenderResult(
-        [RenderRow(1, 1, "Rename me", True, True, [])],
+        [RenderRow(1, 1, "Rename me", True, True, True, [])],
         roots={1},
         global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
     )
@@ -222,8 +222,8 @@ def test_extract_misordered() -> None:
     result = extract_subtree(source, 3)
     assert result.q() == RenderResult(
         [
-            RenderRow(1, 1, "Extraction root", True, False, [child(2)]),
-            RenderRow(2, 2, "Top", True, True, []),
+            RenderRow(1, 1, "Extraction root", True, False, True, [child(2)]),
+            RenderRow(2, 2, "Top", True, True, True, []),
         ],
         roots={1},
         global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
