@@ -669,7 +669,7 @@ def test_do_not_duplicate_parent_prev_selection() -> None:
     assert goals.q() == RenderResult(
         [
             RenderRow(2, 2, "Zoom root", True, True, True, [], {"Zoom": "Root goal"}),
-            RenderRow(-1, -1, "Root goal", True, False, True, [blocker(2)]),
+            RenderRow(-1, -1, "Root goal", True, False, False, [blocker(2)]),
         ],
         roots={-1},
         global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: -1},
@@ -691,7 +691,7 @@ def test_global_root_is_isolated() -> None:
     assert goals.q() == RenderResult(
         [
             RenderRow(3, 3, "Zoom target", True, True, True, [], {"Zoom": "Root goal"}),
-            RenderRow(-1, -1, "Root goal", True, False, True, []),
+            RenderRow(-1, -1, "Root goal", True, False, False, []),
         ],
         roots={3, -1},
         global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: -1},
@@ -717,7 +717,7 @@ def test_zoom_root_must_not_be_switchable() -> None:
     assert goals.q() == RenderResult(
         [
             RenderRow(2, 2, "Closed", False, True, True, [], {"Zoom": "Root goal"}),
-            RenderRow(-1, -1, "Root goal", True, False, True, [blocker(2)]),
+            RenderRow(-1, -1, "Root goal", True, False, False, [blocker(2)]),
         ],
         roots={-1},
         global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: -1},

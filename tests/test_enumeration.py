@@ -319,7 +319,7 @@ def test_do_not_enumerate_goals_with_negative_id() -> None:
                 2, 2, "Zoomed", True, False, True, [child(3)], {"Zoom": "Root goal"}
             ),
             RenderRow(3, 3, "Top", True, True, True, []),
-            RenderRow(-1, -1, "Root goal", True, False, True, [blocker(2)]),
+            RenderRow(-1, -1, "Root goal", True, False, False, [blocker(2)]),
         ],
         roots={-1},
         global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: -1},
@@ -331,7 +331,7 @@ def test_do_not_enumerate_goals_with_negative_id() -> None:
                 1, 2, "Zoomed", True, False, True, [child(2)], {"Zoom": "Root goal"}
             ),
             RenderRow(2, 3, "Top", True, True, True, []),
-            RenderRow(-1, -1, "Root goal", True, False, True, [blocker(1)]),
+            RenderRow(-1, -1, "Root goal", True, False, False, [blocker(1)]),
         ],
         roots={-1},
         global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: -1},

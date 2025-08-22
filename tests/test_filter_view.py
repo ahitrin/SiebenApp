@@ -105,7 +105,7 @@ def test_zoomed_parent_goal_must_not_be_filtered_out(zoomed_goaltree) -> None:
         [
             RenderRow(2, 2, "Beta", True, False, True, [child(3)], {"Zoom": "Alpha"}),
             RenderRow(3, 3, "Gamma", True, True, True, [], {"Filter": "mm"}),
-            RenderRow(-1, -1, "Alpha", True, False, True, [blocker(2)]),
+            RenderRow(-1, -1, "Alpha", True, False, False, [blocker(2)]),
         ],
         roots={-1},
         global_opts={OPTION_SELECT: 2, OPTION_PREV_SELECT: -1},
