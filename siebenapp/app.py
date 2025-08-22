@@ -59,7 +59,7 @@ class GoalWidget(QWidget, Ui_GoalBody):
         frame_color = "red" if row.is_open else "green"
         border = 2 if row.is_switchable else 1
         self.frame.setStyleSheet(f".QFrame{{ border: {border}px solid {frame_color} }}")
-        if isinstance(row.goal_id, int) and row.goal_id >= 0:
+        if row.is_real:
             self.label_number.setText(str(row.goal_id))
         if row.attrs:
             row_text = "\n".join(f"{k}: {split_long(row.attrs[k])}" for k in row.attrs)
