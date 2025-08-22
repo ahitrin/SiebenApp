@@ -209,7 +209,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         fake_goals = [
             (row.goal_id, row.is_switchable)
             for row in self.goaltree.q().rows
-            if isinstance(row.goal_id, int) and row.goal_id < 0
+            if not row.is_real
         ]
         switchable_fakes = [g for g, sw in fake_goals if sw]
         assert not switchable_fakes, f"Switchable fake goals: {switchable_fakes}"
