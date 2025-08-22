@@ -67,7 +67,7 @@ def update_message(message: str = "") -> None:
 
 def fmt(render_result: RenderResult, row: RenderRow, id_width: int) -> str:
     def show_id() -> str:
-        return " " * id_width if -10 <= int(row.goal_id) < 0 else str(row.goal_id)
+        return str(row.goal_id) if row.is_real else " " * id_width
 
     def status() -> str:
         op: str = " " if row.is_open else "x"
