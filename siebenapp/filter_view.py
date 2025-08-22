@@ -59,7 +59,7 @@ class FilterView(Graph):
                 f"Filter by '{self.pattern}'",
                 True,
                 False,
-                True,
+                False,
                 [],
             )
             all_ids.add(-2)

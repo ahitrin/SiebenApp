@@ -92,7 +92,7 @@ def test_show_fake_goal_when_filter_matches_nothing(selected_goaltree) -> None:
         [
             RenderRow(1, 1, "Alpha", True, False, True, []),
             RenderRow(3, 3, "Gamma", True, True, True, []),
-            RenderRow(-2, -2, "Filter by 'matching no one'", True, False, True, []),
+            RenderRow(-2, -2, "Filter by 'matching no one'", True, False, False, []),
         ],
         roots={1, 3, -2},
         global_opts={OPTION_SELECT: 3, OPTION_PREV_SELECT: 1},
