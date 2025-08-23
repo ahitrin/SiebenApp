@@ -50,7 +50,7 @@ def test_render_add_fake_vertex() -> None:
     assert get_in(result, "row") == {
         3: 0,
         2: 1,
-        "1_1": 1,
+        -10: 1,
         1: 2,
     }
 
@@ -67,11 +67,11 @@ def test_render_add_several_fake_vertex() -> None:
     assert get_in(result, "row") == {
         5: 0,
         4: 1,
-        "1_1": 1,
+        -10: 1,
         3: 2,
-        "1_2": 2,
+        -11: 2,
         2: 3,
-        "1_3": 3,
+        -12: 3,
         1: 4,
     }
 
@@ -92,7 +92,7 @@ def test_render_5_subgoals_in_several_rows() -> None:
         4: 0,
         5: 0,
         6: 1,
-        "1_1": 1,
+        -10: 1,
         1: 2,
     }
 
@@ -109,12 +109,12 @@ def test_split_long_edges_using_fake_goals() -> None:
     assert get_in(result, "edge_render") == {
         5: [],
         4: [child(5)],
-        "1_1": [blocker(5)],
+        -10: [blocker(5)],
         3: [child(4)],
-        "1_2": [("1_1", EdgeType.BLOCKER)],
+        -11: [(-10, EdgeType.BLOCKER)],
         2: [child(3)],
-        "1_3": [("1_2", EdgeType.BLOCKER)],
-        1: [child(2), ("1_3", EdgeType.BLOCKER)],
+        -12: [(-11, EdgeType.BLOCKER)],
+        1: [child(2), (-12, EdgeType.BLOCKER)],
     }
 
 
@@ -126,8 +126,8 @@ def test_use_different_long_edge_types() -> None:
     assert get_in(result, "edge_render") == {
         3: [],
         2: [child(3)],
-        "1_1": [blocker(3)],
-        1: [child(2), ("1_1", EdgeType.BLOCKER)],
+        -10: [blocker(3)],
+        1: [child(2), (-10, EdgeType.BLOCKER)],
     }
 
 

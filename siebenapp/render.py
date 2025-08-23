@@ -71,6 +71,7 @@ class Renderer:
                 if upper_goal not in self.back_edges:
                     self.back_edges[upper_goal] = []
                 self.back_edges[upper_goal].append(row.goal_id)
+        self.next_fake_id: int = -10
         self.layers: dict[int, Layer] = defaultdict(list)
         self.positions: dict[GoalId, int] = {}
         self.edge_types: dict[tuple[GoalId, GoalId], EdgeType] = {
@@ -78,7 +79,7 @@ class Renderer:
             for parent in self.node_opts
             for child, edge_type in self.render_result.by_id(parent).edges
         }
-        self.result_edge_options: dict[str, tuple[int, int, int]] = {}
+        self.result_edge_options: dict[GoalId, tuple[int, int, int]] = {}
 
     def build(self) -> RenderResult:
         self.split_by_layers()
@@ -112,7 +113,7 @@ class Renderer:
             incoming_edges = incoming_edges.difference(set(new_layer))
             connect_to: set[GoalId] = sorted_goals.difference(set(new_layer))
             for original_id in incoming_edges:
-                new_goal_name: str = self._insert_fake_goal(
+                new_goal_name: GoalId = self._insert_fake_goal(
                     original_id, connect_to, current_layer
                 )
                 new_layer.append(new_goal_name)
@@ -130,8 +131,9 @@ class Renderer:
 
     def _insert_fake_goal(
         self, original_id: GoalId, connect_to: set[GoalId], current_layer: int
-    ) -> str:
-        new_goal_name: str = f"{original_id}_{current_layer}"
+    ) -> GoalId:
+        new_goal_name: GoalId = self.next_fake_id
+        self.next_fake_id -= 1
         self.edges[new_goal_name] = [
             g for g in self.edges[original_id] if g in connect_to
         ]
@@ -211,11 +213,11 @@ class Renderer:
 
         for row_vals in result_index.values():
             left: int = 0
-            edges: list[str] = []
+            edges: list[GoalId] = []
             phase: str = "goals"
 
             for _, new_goal_id in sorted(row_vals.items(), key=lambda x: x[0]):
-                if isinstance(new_goal_id, int):
+                if isinstance(new_goal_id, int) and new_goal_id >= 0:
                     if phase == "edges":
                         self._write_edges(edges, left)
                         edges = []
@@ -226,7 +228,7 @@ class Renderer:
                     edges.append(new_goal_id)
             self._write_edges(edges, left)
 
-    def _write_edges(self, edges: list[str], left: int) -> None:
+    def _write_edges(self, edges: list[GoalId], left: int) -> None:
         self.result_edge_options |= {
             e: (left, i + 1, len(edges) + 1) for i, e in enumerate(edges)
         }
@@ -270,7 +272,7 @@ def render_lines(
     for goal_id, attrs in render_result.node_opts.items():
         for e_target, e_type in attrs["edge_render"]:
             target_attrs = render_result.node_opts[e_target]
-            if isinstance(goal_id, int):
+            if isinstance(goal_id, int) and goal_id >= 0:
                 row, col = attrs["row"], attrs["col"]
                 start = middle_point(
                     gp.top_left(row, col), gp.top_right(row, col), 1, 2
@@ -287,7 +289,7 @@ def render_lines(
                 else:
                     edges[goal_id]["bottom"] = start
                     edges[goal_id]["style"] = max(edges[goal_id]["style"], e_type)
-            if isinstance(e_target, int):
+            if isinstance(e_target, int) and e_target >= 0:
                 row, col = target_attrs["row"], target_attrs["col"]
                 end = middle_point(
                     gp.bottom_left(row, col), gp.bottom_right(row, col), 1, 2
