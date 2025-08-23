@@ -21,9 +21,8 @@ class Command:
     pass
 
 
-# GoalId for real nodes is integer: -1, 4, 34, etc
-# GoalId for fake nodes (used to build edges) is str: '3_5', '1_1', etc
-GoalId = Union[str, int]
+# GoalId type
+GoalId = int
 
 
 def child(goal_id: GoalId) -> tuple[GoalId, EdgeType]:
