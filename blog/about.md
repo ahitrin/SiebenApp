@@ -6,7 +6,7 @@ permalink: /about/
 
 [SiebenApp][SiebenApp] is an experimental dependency-aware desktop goal manager.
 
-![overview](images/main.png)
+![overview](/SiebenApp/images/main.png)
 
 Please visit [github page][SiebenApp] for more information.
 
