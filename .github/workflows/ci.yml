@@ -2,8 +2,8 @@ name: CI build
 on:
   push:
     paths:
-      - siebenapp
-      - tests
+      - 'siebenapp/**'
+      - 'tests/**'
       - pyproject.toml
       - poetry.lock
 jobs:
