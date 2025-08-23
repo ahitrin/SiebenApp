@@ -4,7 +4,7 @@ title: About
 permalink: /about/
 ---
 
-[SiebenApp][SiebenApp] is an experimental dependency-aware desktop goal manager.
+[SiebenApp][SiebenApp] is an experimental dependency-aware desktop goal manager written in Python and Qt.
 
 ![overview](/SiebenApp/images/main.png)
 
