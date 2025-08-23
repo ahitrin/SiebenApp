@@ -4,6 +4,8 @@ on:
     paths:
       - siebenapp
       - tests
+      - pyproject.toml
+      - poetry.lock
 jobs:
   build:
     runs-on: ubuntu-latest
