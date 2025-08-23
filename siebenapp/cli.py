@@ -25,7 +25,7 @@ from siebenapp.progress_view import ToggleProgress
 from siebenapp.filter_view import FilterBy
 from siebenapp.open_view import ToggleOpenView
 from siebenapp.switchable_view import ToggleSwitchableView
-from siebenapp.system import save, load
+from siebenapp.system import load
 from siebenapp.zoom import ToggleZoom
 
 USER_MESSAGE: str = ""
