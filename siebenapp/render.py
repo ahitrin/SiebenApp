@@ -8,7 +8,7 @@ from siebenapp.render_next import full_render
 from siebenapp.system import save
 
 # Layer is a row of GoalIds, possibly with holes (marked with None)
-# E.g.: [17, "3_4", None, 5]
+# E.g.: [17, None, 5]
 Layer = list[Optional[GoalId]]
 
 
