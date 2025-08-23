@@ -46,9 +46,7 @@ class OpenView(Graph):
             if row.is_open
             or row.goal_id
             in render_result.roots.union(
-                goal_id
-                for goal_id in render_result.global_opts.values()
-                if isinstance(goal_id, int)
+                goal_id for goal_id in render_result.global_opts.values()
             )
         }
         rows: list[RenderRow] = [

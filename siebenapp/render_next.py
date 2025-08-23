@@ -139,7 +139,6 @@ def normalize_cols(rr: RenderResult, width: int) -> RenderResult:
         goal_id: idx
         for v in [sorted(v1) for v1 in order1.values()]
         for idx, goal_id in enumerate([t[1] for t in v])
-        if isinstance(goal_id, int)
     }
     new_opts = {
         goal_id: opts | {"col": indexed[goal_id]}

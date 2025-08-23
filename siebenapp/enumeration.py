@@ -10,17 +10,10 @@ class BidirectionalIndex:
     NOT_FOUND = -2
 
     def __init__(self, goals: Iterable[GoalId]):
-        self.m = {
-            g: i + 1
-            for i, g in enumerate(
-                sorted(g for g in goals if isinstance(g, int) and g > 0)
-            )
-        }
+        self.m = {g: i + 1 for i, g in enumerate(sorted(g for g in goals if g > 0))}
         self.length = len(self.m)
 
     def forward(self, goal_id: GoalId) -> int:
-        if isinstance(goal_id, str):
-            return BidirectionalIndex.NOT_FOUND
         if goal_id < 0:
             return goal_id
         goal_id = self.m[goal_id]
@@ -80,7 +73,7 @@ class Enumeration(Graph):
             self.selection_cache = []
         if self.selection_cache:
             goal_id = 10 * self.selection_cache.pop() + goal_id
-            if goal_id > max(index.forward(k) for k in goals if isinstance(k, int)):
+            if goal_id > max(index.forward(k) for k in goals):
                 goal_id %= int(pow(10, int(math.log(goal_id, 10))))
         if (original_id := index.backward(goal_id)) != BidirectionalIndex.NOT_FOUND:
             self.goaltree.accept(Select(original_id))

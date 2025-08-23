@@ -148,9 +148,7 @@ def main(argv: list[str] | None = None, io: IO | None = None) -> None:
 def _format_name(row: RenderRow) -> str:
     goal_name = escape(row.name)
     label = split_long(
-        f"{row.goal_id}: {goal_name}"
-        if isinstance(row.goal_id, int) and row.goal_id >= 0
-        else f"{goal_name}"
+        f"{row.goal_id}: {goal_name}" if row.goal_id >= 0 else f"{goal_name}"
     )
     attrs: list[str] = [f"{k}: {split_long(v)}" for k, v in row.attrs.items()]
     return '"' + "\n".join([label] + attrs) + '"'

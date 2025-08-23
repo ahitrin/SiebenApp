@@ -99,9 +99,7 @@ class AutoLink(Graph):
         while goals_to_check:
             goal_id: int = goals_to_check.pop()
             goals_to_check.extend(
-                e[0]
-                for e in edges[goal_id]
-                if e[1] == EdgeType.PARENT and isinstance(e[0], int)
+                e[0] for e in edges[goal_id] if e[1] == EdgeType.PARENT
             )
             if goal_id in self.back_kw:
                 added_kw: str = self.back_kw.pop(goal_id)

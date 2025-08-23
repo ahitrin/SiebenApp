@@ -38,9 +38,7 @@ class FilterView(Graph):
             if self.pattern in row.name.lower()
         }
         all_ids: set[GoalId] = accepted_ids.union(
-            goal_id
-            for goal_id in render_result.global_opts.values()
-            if isinstance(goal_id, int)
+            goal_id for goal_id in render_result.global_opts.values()
         )
         rows: list[RenderRow] = [
             replace(

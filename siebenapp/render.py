@@ -217,7 +217,7 @@ class Renderer:
             phase: str = "goals"
 
             for _, new_goal_id in sorted(row_vals.items(), key=lambda x: x[0]):
-                if isinstance(new_goal_id, int) and new_goal_id >= 0:
+                if new_goal_id >= 0:
                     if phase == "edges":
                         self._write_edges(edges, left)
                         edges = []
@@ -254,8 +254,6 @@ class Renderer:
 def goal_key(tup: tuple[GoalId, int]) -> tuple[int, int]:
     """Sort goals by position first and by id second (transform str ids into ints)"""
     goal_id, goal_pos = tup
-    if isinstance(goal_id, str):
-        return goal_pos, int(goal_id.split("_")[0])
     return goal_pos, goal_id
 
 
@@ -272,7 +270,7 @@ def render_lines(
     for goal_id, attrs in render_result.node_opts.items():
         for e_target, e_type in attrs["edge_render"]:
             target_attrs = render_result.node_opts[e_target]
-            if isinstance(goal_id, int) and goal_id >= 0:
+            if goal_id >= 0:
                 row, col = attrs["row"], attrs["col"]
                 start = middle_point(
                     gp.top_left(row, col), gp.top_right(row, col), 1, 2
@@ -289,7 +287,7 @@ def render_lines(
                 else:
                     edges[goal_id]["bottom"] = start
                     edges[goal_id]["style"] = max(edges[goal_id]["style"], e_type)
-            if isinstance(e_target, int) and e_target >= 0:
+            if e_target >= 0:
                 row, col = target_attrs["row"], target_attrs["col"]
                 end = middle_point(
                     gp.bottom_left(row, col), gp.bottom_right(row, col), 1, 2
