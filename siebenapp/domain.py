@@ -150,7 +150,7 @@ class Graph:
     def verify(self) -> None:
         """Check all inner data for correctness. Raise exception on violations."""
         if self.__has_goaltree():
-            return self.goaltree.verify()
+            self.goaltree.verify()
 
 
 # == Command implementations ==
