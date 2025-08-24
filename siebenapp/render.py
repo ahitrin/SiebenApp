@@ -113,9 +113,7 @@ class Renderer:
             incoming_edges = incoming_edges.difference(set(new_layer))
             connect_to: set[GoalId] = sorted_goals.difference(set(new_layer))
             for original_id in incoming_edges:
-                new_goal_name: GoalId = self._insert_fake_goal(
-                    original_id, connect_to, current_layer
-                )
+                new_goal_name: GoalId = self._insert_fake_goal(original_id, connect_to)
                 new_layer.append(new_goal_name)
                 sorted_goals.add(new_goal_name)
             self.layers[current_layer] = new_layer
@@ -129,9 +127,7 @@ class Renderer:
             if g is not None
         }
 
-    def _insert_fake_goal(
-        self, original_id: GoalId, connect_to: set[GoalId], current_layer: int
-    ) -> GoalId:
+    def _insert_fake_goal(self, original_id: GoalId, connect_to: set[GoalId]) -> GoalId:
         new_goal_name: GoalId = self.next_fake_id
         self.next_fake_id -= 1
         self.edges[new_goal_name] = [
