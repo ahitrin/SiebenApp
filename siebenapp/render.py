@@ -10,6 +10,7 @@ from siebenapp.system import save
 # Layer is a row of GoalIds, possibly with holes (marked with None)
 # E.g.: [17, None, 5]
 Layer = list[Optional[GoalId]]
+FAKE_ID_START = -10
 
 
 @dataclass(frozen=True)
@@ -71,7 +72,7 @@ class Renderer:
                 if upper_goal not in self.back_edges:
                     self.back_edges[upper_goal] = []
                 self.back_edges[upper_goal].append(row.goal_id)
-        self.next_fake_id: int = -10
+        self.next_fake_id: int = FAKE_ID_START
         self.layers: dict[int, Layer] = defaultdict(list)
         self.positions: dict[GoalId, int] = {}
         self.edge_types: dict[tuple[GoalId, GoalId], EdgeType] = {
@@ -266,7 +267,7 @@ def render_lines(
     for goal_id, attrs in render_result.node_opts.items():
         for e_target, e_type in attrs["edge_render"]:
             target_attrs = render_result.node_opts[e_target]
-            if goal_id >= 0:
+            if goal_id > FAKE_ID_START:
                 row, col = attrs["row"], attrs["col"]
                 start = middle_point(
                     gp.top_left(row, col), gp.top_right(row, col), 1, 2
@@ -283,7 +284,7 @@ def render_lines(
                 else:
                     edges[goal_id]["bottom"] = start
                     edges[goal_id]["style"] = max(edges[goal_id]["style"], e_type)
-            if e_target >= 0:
+            if e_target > FAKE_ID_START:
                 row, col = target_attrs["row"], target_attrs["col"]
                 end = middle_point(
                     gp.bottom_left(row, col), gp.bottom_right(row, col), 1, 2
