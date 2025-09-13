@@ -52,7 +52,9 @@ def tube(step: RenderStep, width: int) -> RenderStep:
             opts,
             {
                 "row": len(step.layers) if goal_id in new_layer else None,
-                "col": new_layer.index(goal_id) if goal_id in new_layer else None,
+                "col": (
+                    new_layer.index(goal_id) if goal_id in new_layer else None
+                ),  # TODO: we could do better by targeting connected goals from previous layers, or using a middle point for a single goal
             },
         )
         for goal_id, opts in step.rr.node_opts.items()
