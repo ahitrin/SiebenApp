@@ -36,6 +36,25 @@ def find_previous(rr: RenderResult) -> dict[GoalId, list[GoalId]]:
     return result
 
 
+def uniform_locations(width: int, num: int) -> list[int]:
+    """Return indices for 'num' items that are spread over 'width' locations in a uniform manner."""
+    assert 0 < num <= width
+    min_part_len = width // num
+    remain = width - min_part_len * num
+    all_indices = [i for i in range(width)]
+    slice_low, slice_high = 0, min_part_len
+    result = []
+
+    for n in range(num):
+        if n < remain:
+            slice_high += 1
+        result.append(int(avg(all_indices[slice_low:slice_high])))
+        slice_low = slice_high
+        slice_high += min_part_len
+
+    return result
+
+
 def tube(width: int, step: RenderStep) -> RenderStep:
     """Node placing algorithm that uses a "tube" with a fixed width."""
     new_layer: list[GoalId] = []
@@ -48,14 +67,15 @@ def tube(width: int, step: RenderStep) -> RenderStep:
     new_roots: list[GoalId] = step.roots[len(new_layer) :] + [
         e[0] for gid in new_layer for e in step.rr.by_id(gid).edges
     ]
+    locs = uniform_locations(width, len(new_layer))
     new_opts: dict[GoalId, dict] = {
         goal_id: add_if_not(
             opts,
             {
                 "row": len(step.layers) if goal_id in new_layer else None,
                 "col": (
-                    new_layer.index(goal_id) if goal_id in new_layer else None
-                ),  # TODO: we could do better by targeting connected goals from previous layers, or using a middle point for a single goal
+                    locs[new_layer.index(goal_id)] if goal_id in new_layer else None
+                ),
             },
         )
         for goal_id, opts in step.rr.node_opts.items()
