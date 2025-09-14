@@ -1,4 +1,5 @@
 from dataclasses import dataclass, replace
+from functools import partial
 from typing import Any
 from collections.abc import Callable
 
@@ -35,7 +36,7 @@ def find_previous(rr: RenderResult) -> dict[GoalId, list[GoalId]]:
     return result
 
 
-def tube(step: RenderStep, width: int) -> RenderStep:
+def tube(width: int, step: RenderStep) -> RenderStep:
     """Node placing algorithm that uses a "tube" with a fixed width."""
     new_layer: list[GoalId] = []
     already_added: set[GoalId] = {g for l in step.layers for g in l}
@@ -75,13 +76,11 @@ def tube(step: RenderStep, width: int) -> RenderStep:
     )
 
 
-def build_with(
-    rr: RenderResult, fn: Callable[[RenderStep, int], RenderStep], width: int
-) -> RenderStep:
+def build_with(fn: Callable[[RenderStep], RenderStep], rr: RenderResult) -> RenderStep:
     """Invoke node placing algorithm in a loop while there are nodes to place."""
     step = RenderStep(rr, list(rr.roots), [], find_previous(rr))
     while step.roots:
-        step = fn(step, width)
+        step = fn(step)
     return step
 
 
@@ -190,7 +189,7 @@ def full_render(
     """Main entrance point for the rendering process."""
     r0: RenderResult = g.q()
     r0.node_opts = {row.goal_id: {} for row in r0.rows}
-    r1: RenderStep = build_with(r0, tube, width)
+    r1: RenderStep = build_with(partial(tube, width), r0)
     __log(listener, "Graph", r1)
     r2: RenderResult = revert_rows(r1.rr)
     __log(listener, "Invert rows", r2)
