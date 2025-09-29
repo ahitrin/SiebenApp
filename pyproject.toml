@@ -22,7 +22,7 @@ sieben-manage = "siebenapp.manage:main"
 [tool.poetry]
 
 [tool.poetry.group.dev.dependencies]
-hypothesis = "^6.139.2"
+hypothesis = "^6.140.2"
 mypy = "^1.18.1"
 mypy-extensions = "^1.1.0"
 pytest = "^8.4.2"
