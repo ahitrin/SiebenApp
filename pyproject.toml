@@ -30,7 +30,7 @@ pytest-cov = "^7.0.0"
 black = "^25.1.0"
 approvaltests-minimal = "^15.3.2"
 radon = "^6.0.1"
-pyupgrade = "^3.21.0"
+pyupgrade = "^3.21.1"
 typing-extensions = "^4.15.0"
 py-spy = "^0.4.1"
 
