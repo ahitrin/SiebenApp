@@ -2,14 +2,14 @@
 
 [[package]]
 name = "approvaltests-minimal"
-version = "17.0.0"
+version = "17.1.0"
 description = "Assertion/verification library to aid testing with the minimal required dependencies + the ability to opt in for the others "
 optional = false
 python-versions = ">=3.8"
 groups = ["dev"]
 files = [
-    {file = "approvaltests_minimal-17.0.0-py3-none-any.whl", hash = "sha256:183ae6c1f94e1b6ccae5c1f679d74203147e3d5c1bb628147facce3702288861"},
-    {file = "approvaltests_minimal-17.0.0.tar.gz", hash = "sha256:ce94e05456dfa96b39ee3e1c57241a21ac6dc06b532d184a339eb5573474b499"},
+    {file = "approvaltests_minimal-17.1.0-py3-none-any.whl", hash = "sha256:9ee0ddad67c3add85655a835aff80daaa077c3d24e809f2baa27e9fea93ba081"},
+    {file = "approvaltests_minimal-17.1.0.tar.gz", hash = "sha256:790f10083d565fc9bd2af85b8be1418d56ff4a9c7fffca6b542c10f305d7fd00"},
 ]
 
 [package.dependencies]
@@ -1027,4 +1027,4 @@ zstd = ["backports-zstd (>=1.0.0) ; python_version < \"3.14\""]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.14"
-content-hash = "1465c3b846b246136fb5fb72d89d6d07440a45bdd323f82c7943a66c84712a02"
+content-hash = "34c0038a633969df9a7f78081f2ed91787ae7495c5475dbdad6242c4c637227e"
