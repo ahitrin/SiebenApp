@@ -904,15 +904,15 @@ class GoalsTest(TestCase):
         )
         self.goals.accept(ToggleLink(2, 3, EdgeType.PARENT))
         assert list(self.goals.events())[-4:] == [
-            ("link", 2, 3, EdgeType.PARENT),
             ("unlink", 2, 3, EdgeType.BLOCKER),
-            ("link", 1, 3, EdgeType.RELATION),
+            ("link", 2, 3, EdgeType.PARENT),
             ("unlink", 1, 3, EdgeType.PARENT),
+            ("link", 1, 3, EdgeType.RELATION),
         ]
         self.goals.accept(ToggleLink(2, 3, EdgeType.RELATION))
         assert list(self.goals.events())[-2:] == [
-            ("link", 2, 3, EdgeType.RELATION),
             ("unlink", 2, 3, EdgeType.PARENT),
+            ("link", 2, 3, EdgeType.RELATION),
         ]
 
     def test_no_messages_at_start(self) -> None:

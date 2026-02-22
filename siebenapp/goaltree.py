@@ -308,8 +308,8 @@ class Goals(Graph):
         self.edges[(lower, upper)] = edge_type
         self.edges_forward[lower][upper] = edge_type
         self.edges_backward[upper][lower] = edge_type
-        self._events.append(("link", lower, upper, edge_type))
         self._events.append(("unlink", lower, upper, old_edge_type))
+        self._events.append(("link", lower, upper, edge_type))
 
     def _lower_is_reachable_from_upper(self, lower: int, upper: int) -> bool:
         front: set[int] = {upper}
