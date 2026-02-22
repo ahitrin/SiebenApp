@@ -9,7 +9,6 @@ from siebenapp.domain import (
     RenderResult,
 )
 
-
 SelectableData = list[tuple[str, int]]
 
 OPTION_SELECT = "select"
