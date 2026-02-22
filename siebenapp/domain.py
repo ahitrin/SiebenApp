@@ -5,9 +5,9 @@ from typing import Any, Optional
 
 
 class EdgeType(IntEnum):
-    RELATION = 0
-    BLOCKER = 1
-    PARENT = 2
+    RELATION = 1
+    BLOCKER = 2
+    PARENT = 3
 
 
 @dataclass(frozen=True)

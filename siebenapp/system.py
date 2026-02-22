@@ -107,6 +107,21 @@ MIGRATIONS = [
             foreign key (goal) references goals(goal_id)
         )""",
     ],
+    # 9
+    [
+        "create table tmp_edges as select * from edges",
+        "drop table edges",
+        """create table edges (
+            parent integer not null,
+            child integer not null,
+            reltype integer not null default 2,
+            primary key(parent, child),
+            foreign key(parent) references goals(goal_id),
+            foreign key(child) references goals(goal_id)
+        )""",
+        "insert into edges (parent, child, reltype) select parent, child, reltype + 1 from tmp_edges",
+        "drop table tmp_edges",
+    ],
 ]
 
 
