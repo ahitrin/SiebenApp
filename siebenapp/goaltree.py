@@ -237,7 +237,11 @@ class Goals(Graph):
         if (lower := command.lower) == (upper := command.upper):
             self.error("Goal can't be linked to itself")
             return
-        if self.is_closed(lower) and not self.is_closed(upper):
+        if (
+            self.is_closed(lower)
+            and not self.is_closed(upper)
+            and command.edge_type != EdgeType.RELATION
+        ):
             self.error("Cannot add a blocking relation to the closed goal")
             return
         if self._has_link(lower, upper):

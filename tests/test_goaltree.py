@@ -567,6 +567,24 @@ class GoalsTest(TestCase):
             roots={1},
         )
 
+    def test_remove_non_blocking_relation(self):
+        self.goals = self.build(
+            open_(1, "Root", [2, 3]),
+            clos_(2, "Closed", [], [], [3]),
+            open_(3, "Top", []),
+        )
+        # Remove relation 2->3
+        self.goals.accept(ToggleLink(2, 3, EdgeType.RELATION))
+        assert self.goals.q() == RenderResult(
+            [
+                RenderRow(1, 1, "Root", True, False, True, [child(2), child(3)]),
+                RenderRow(2, 2, "Closed", False, True, True, []),
+                RenderRow(3, 3, "Top", True, True, True, []),
+            ],
+            roots={1},
+        )
+        assert self.messages == []
+
     def test_has_goal(self) -> None:
         self.goals = build_goaltree(
             open_(1, "Root", [2, 3]),
