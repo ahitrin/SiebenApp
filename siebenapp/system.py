@@ -121,6 +121,8 @@ MIGRATIONS = [
         "insert into edges (parent, child, reltype) select parent, child, reltype + 1 from tmp_edges",
         "drop table tmp_edges",
     ],
+    # 10
+    ["drop table zoom"],
 ]
 
 
