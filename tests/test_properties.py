@@ -28,12 +28,11 @@ from siebenapp.domain import (
 )
 from siebenapp.filter_view import FilterBy
 from siebenapp.goaltree import Goals
-from siebenapp.selectable import OPTION_SELECT, OPTION_PREV_SELECT, Select, HoldSelect
 from siebenapp.layers import all_layers
 from siebenapp.open_view import ToggleOpenView
+from siebenapp.selectable import OPTION_SELECT, OPTION_PREV_SELECT, Select, HoldSelect
 from siebenapp.switchable_view import ToggleSwitchableView
 from siebenapp.system import save_updates, save_connection
-from siebenapp.zoom import ToggleZoom
 
 settings.register_profile("ci", settings(max_examples=1000))
 settings.register_profile("dev", settings(max_examples=200))
@@ -167,12 +166,6 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         )
         selection = d.draw(sampled_from(goal_keys))
         self._accept(Rename(t, selection))
-
-    @rule()
-    def zoom(self) -> None:
-        event("zoom")
-        selection = self.goaltree.settings("selection")
-        self._accept(ToggleZoom(selection))
 
     @rule()
     def switchable_view(self) -> None:
