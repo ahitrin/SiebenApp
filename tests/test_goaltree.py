@@ -111,13 +111,13 @@ class GoalsTest(TestCase):
 
     def test_reverse_insertion(self) -> None:
         """Not sure whether such trick should be legal"""
-        self.goals = self.build(open_(1, "Root", [2]), open_(2, "Selected"))
+        self.goals = self.build(open_(1, "Root", [2]), open_(2, "Top"))
         self.goals.accept(Insert("Intermediate?", 2, 1))
         # No, it's not intermediate
         assert self.goals.q() == RenderResult(
             [
                 RenderRow(1, 1, "Root", True, False, True, [child(2)]),
-                RenderRow(2, 2, "Selected", True, False, True, [blocker(3)]),
+                RenderRow(2, 2, "Top", True, False, True, [blocker(3)]),
                 RenderRow(3, 3, "Intermediate?", True, True, True, []),
             ],
             roots={1},
