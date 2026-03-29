@@ -1,14 +1,14 @@
 import sqlite3
-from os import path
 from collections.abc import Callable
+from os import path
 
 from siebenapp.autolink import AutoLink, AutoLinkData
 from siebenapp.domain import Graph
 from siebenapp.enumeration import Enumeration
 from siebenapp.goaltree import Goals
-from siebenapp.selectable import Selectable, SelectableData
 from siebenapp.layers import all_layers, get_root
-from siebenapp.zoom import Zoom, ZoomData
+from siebenapp.selectable import Selectable, SelectableData
+from siebenapp.zoom import Zoom
 
 MIGRATIONS = [
     # 0
@@ -177,8 +177,6 @@ def save_updates(goals: Graph, connection: sqlite3.Connection) -> None:
             "delete from edges where child=?",
             "delete from edges where parent=?",
         ],
-        "zoom": ["insert into zoom values (?, ?)"],
-        "unzoom": ["delete from zoom where goal=?"],
         "add_autolink": ["insert into autolink values (?, ?)"],
         "remove_autolink": ["delete from autolink where goal=?"],
     }
@@ -196,7 +194,6 @@ def save_updates(goals: Graph, connection: sqlite3.Connection) -> None:
 
 def load(filename: str, message_fn: Callable[[str], None] | None = None) -> Enumeration:
     settings: SelectableData = []
-    zoom_data: ZoomData = []
     autolink_data: AutoLinkData = []
     if path.isfile(filename):
         connection = sqlite3.connect(filename)
@@ -211,7 +208,7 @@ def load(filename: str, message_fn: Callable[[str], None] | None = None) -> Enum
         goals = Goals.build(names, edges, message_fn)
     else:
         goals = Goals("Rename me", message_fn)
-    result = Enumeration(all_layers(goals, settings, zoom_data, autolink_data))
+    result = Enumeration(all_layers(goals, settings, autolink_data))
     result.verify()
     return result
 

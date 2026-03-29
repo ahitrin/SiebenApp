@@ -29,9 +29,9 @@ def _replace_with_fake(goal_id: GoalId):
 
 
 class Zoom(Graph):
-    def __init__(self, goaltree: Graph, zoom_data: ZoomData | None = None) -> None:
+    def __init__(self, goaltree: Graph) -> None:
         super().__init__(goaltree)
-        self.zoom_root: list[int] = [x[1] for x in zoom_data] if zoom_data else [1]
+        self.zoom_root: list[int] = [1]
 
     def accept_ToggleZoom(self, command: ToggleZoom):
         target = command.goal_id
