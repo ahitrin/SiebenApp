@@ -63,6 +63,7 @@ def complex_goaltree_file():
 @pytest.fixture
 def zoomed_complex_goaltree_file(complex_goaltree_file):
     g = load(complex_goaltree_file)
+    # NOTE: usage of zooming has no effect on persistency
     g.accept(ToggleZoom(4))
     file_name = NamedTemporaryFile().name
     save(g, file_name)
@@ -84,6 +85,7 @@ def test_print_dot_complex_tree_with_closed(complex_goaltree_file) -> None:
 def test_print_dot_zoomed_complex_tree_with_closed(
     zoomed_complex_goaltree_file,
 ) -> None:
+    # NOTE: usage of zooming has no effect on persistency
     io = DummyIO()
     main(["dot", "-n", zoomed_complex_goaltree_file], io)
     verify_file(io, ".dot")
@@ -138,6 +140,7 @@ def test_print_md_complex_tree_with_closed(complex_goaltree_file) -> None:
 
 
 def test_print_md_zoomed_complex_tree_with_closed(zoomed_complex_goaltree_file) -> None:
+    # NOTE: usage of zooming has no effect on persistency
     io = DummyIO()
     main(["md", "-n", zoomed_complex_goaltree_file], io)
     verify_file(io, ".md")
