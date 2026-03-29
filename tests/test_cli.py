@@ -2,7 +2,7 @@ from typing import Any
 
 from approvaltests import verify  # type: ignore
 from approvaltests.namer import get_default_namer  # type: ignore
-from approvaltests.reporters import GenericDiffReporterFactory  # type: ignore
+from approvaltests.reporters import PythonNativeReporter
 
 from siebenapp.cli import IO, update_message, loop
 from siebenapp.system import load
@@ -32,7 +32,7 @@ class DummyIO(IO):
 def verify_file(content: Any, extension: str | None = None) -> None:
     verify(
         content,
-        GenericDiffReporterFactory().get_first_working(),
+        PythonNativeReporter(),
         namer=get_default_namer(extension) if extension else None,
     )
 
