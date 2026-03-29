@@ -74,7 +74,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         goal_keys = sorted(
             list(row.goal_id for row in self.goaltree.q().rows if row.goal_id > 0)
         )
-        assume(len(goal_keys) > 1)
+        assume(len(goal_keys) > 0)
         selection = d.draw(sampled_from(goal_keys))
         self._accept(Delete(selection))
 
