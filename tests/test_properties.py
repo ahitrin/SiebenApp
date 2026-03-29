@@ -261,7 +261,6 @@ def build_goals(conn) -> Graph:
         goal_list = list(cur.execute("select * from goals"))
         edges = list(cur.execute("select parent, child, reltype from edges"))
         db_settings = list(cur.execute("select * from settings"))
-        zoom_data = list(cur.execute("select * from zoom"))
         autolink_data = list(cur.execute("select * from autolink"))
         note(
             f"Goals: {goal_list}, Edges: {edges}, Settings: {db_settings}, "

@@ -202,7 +202,6 @@ def load(filename: str, message_fn: Callable[[str], None] | None = None) -> Enum
         names = list(cur.execute("select * from goals"))
         edges = list(cur.execute("select parent, child, reltype from edges"))
         settings = list(cur.execute("select * from settings"))
-        zoom_data = list(cur.execute("select * from zoom"))
         autolink_data = list(cur.execute("select * from autolink"))
         cur.close()
         goals = Goals.build(names, edges, message_fn)
