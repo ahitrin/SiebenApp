@@ -1,7 +1,5 @@
 from unittest import TestCase
 
-import pytest
-
 from siebenapp.goaltree import Goals
 from siebenapp.domain import (
     EdgeType,
@@ -385,20 +383,6 @@ class GoalsTest(TestCase):
         # Error message is expected
         assert len(self.messages) == 1
 
-    @pytest.mark.skip
-    def test_select_parent_after_delete(self) -> None:
-        self.goals = self.build(
-            open_(1, "Root", [2]), open_(2, "Parent", [3]), open_(3, "Delete me")
-        )
-        self.goals.accept(Delete(3))
-        assert self.goals.q() == RenderResult(
-            [
-                RenderRow(1, 1, "Root", True, False, True, [child(2)]),
-                RenderRow(2, 2, "Parent", True, True, True, []),
-            ],
-            roots={1},
-        )
-
     def test_add_blocker_link_between_goals(self) -> None:
         self.goals = self.build(open_(1, "Root", [2, 3]), open_(2, "A"), open_(3, "B"))
         assert self.goals.q() == RenderResult(
@@ -771,109 +755,6 @@ class GoalsTest(TestCase):
                 RenderRow(1, 1, "Root", True, False, True, [child(2), child(3)]),
                 RenderRow(2, 2, "A", True, True, True, []),
                 RenderRow(3, 3, "B", True, True, True, []),
-            ],
-            roots={1},
-        )
-
-    @pytest.mark.skip
-    def test_new_goal_is_added_to_the_selected_node(self) -> None:
-        self.goals.accept_all(Add("A", 1))
-        assert self.goals.q() == RenderResult(
-            [
-                RenderRow(1, 1, "Root", True, False, True, [child(2)]),
-                RenderRow(2, 2, "A", True, True, True, []),
-            ],
-            roots={1},
-        )
-        self.goals.accept(Add("B", 2))
-        assert self.goals.q() == RenderResult(
-            [
-                RenderRow(1, 1, "Root", True, False, True, [child(2)]),
-                RenderRow(2, 2, "A", True, False, True, [child(3)]),
-                RenderRow(3, 3, "B", True, True, True, []),
-            ],
-            roots={1},
-        )
-
-    @pytest.mark.skip
-    def test_move_selection_to_another_open_goal_after_closing(self) -> None:
-        self.goals = self.build(
-            open_(1, "Root", [2, 3, 4]), open_(2, "A"), open_(3, "B"), open_(4, "C")
-        )
-        self.goals.accept(ToggleClose(2))
-        assert self.goals.q() == RenderResult(
-            [
-                RenderRow(
-                    1, 1, "Root", True, False, True, [child(2), child(3), child(4)]
-                ),
-                RenderRow(2, 2, "A", False, True, True, []),
-                RenderRow(3, 3, "B", True, True, True, []),
-                RenderRow(4, 4, "C", True, True, True, []),
-            ],
-            roots={1},
-        )
-
-    @pytest.mark.skip
-    def test_move_selection_to_previously_selected_goal_after_closing(self) -> None:
-        # NOTE: probably unneeded
-        self.goals = self.build(
-            open_(1, "Root", [2, 3, 4]), open_(2, "A"), open_(3, "B"), open_(4, "C")
-        )
-        self.goals.accept(ToggleClose(2))
-        assert self.goals.q() == RenderResult(
-            [
-                RenderRow(
-                    1, 1, "Root", True, False, True, [child(2), child(3), child(4)]
-                ),
-                RenderRow(2, 2, "A", False, True, True, []),
-                RenderRow(3, 3, "B", True, True, True, []),
-                RenderRow(4, 4, "C", True, True, True, []),
-            ],
-            roots={1},
-        )
-
-    @pytest.mark.skip
-    def test_move_selection_to_another_open_goal_with_given_root_after_closing(
-        self,
-    ) -> None:
-        self.goals = self.build(
-            open_(1, "Root", [2, 3]),
-            open_(2, "Should not be selected"),
-            open_(3, "Subroot", [4, 5]),
-            open_(4, "Must be selected"),
-            open_(5, "Closing"),
-        )
-        self.goals.accept(ToggleClose(5, root=3))
-        assert self.goals.q() == RenderResult(
-            [
-                RenderRow(1, 1, "Root", True, False, True, [child(2), child(3)]),
-                RenderRow(2, 2, "Should not be selected", True, True, True, []),
-                RenderRow(3, 3, "Subroot", True, False, True, [child(4), child(5)]),
-                RenderRow(4, 4, "Must be selected", True, True, True, []),
-                RenderRow(5, 5, "Closing", False, True, True, []),
-            ],
-            roots={1},
-        )
-
-    @pytest.mark.skip
-    def test_do_not_select_unswitchable_goal_after_closing(self) -> None:
-        self.goals = self.build(
-            open_(1, "Root", [2, 3]),
-            open_(2, "Should not be selected"),
-            open_(3, "Subroot", [4, 5]),
-            open_(4, "Intermediate", [6]),
-            open_(5, "Closing"),
-            open_(6, "Must be selected"),
-        )
-        self.goals.accept(ToggleClose(5, root=3))
-        assert self.goals.q() == RenderResult(
-            [
-                RenderRow(1, 1, "Root", True, False, True, [child(2), child(3)]),
-                RenderRow(2, 2, "Should not be selected", True, True, True, []),
-                RenderRow(3, 3, "Subroot", True, False, True, [child(4), child(5)]),
-                RenderRow(4, 4, "Intermediate", True, False, True, [child(6)]),
-                RenderRow(5, 5, "Closing", False, True, True, []),
-                RenderRow(6, 6, "Must be selected", True, True, True, []),
             ],
             roots={1},
         )
