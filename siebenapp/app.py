@@ -36,7 +36,7 @@ from siebenapp.open_view import ToggleOpenView
 from siebenapp.render import Renderer, GeometryProvider, render_lines, GoalsHolder
 from siebenapp.system import load, split_long
 from siebenapp.ui.goalwidget import Ui_GoalBody  # type: ignore
-from siebenapp.zoom import ToggleZoom
+from siebenapp.zoom_view import ToggleZoom
 
 
 class GoalWidget(QWidget, Ui_GoalBody):

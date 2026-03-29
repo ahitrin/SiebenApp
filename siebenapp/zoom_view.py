@@ -28,7 +28,7 @@ def _replace_with_fake(goal_id: GoalId):
     return goal_id if goal_id != Goals.ROOT_ID else -1
 
 
-class Zoom(Graph):
+class ZoomView(Graph):
     def __init__(self, goaltree: Graph) -> None:
         super().__init__(goaltree)
         self.zoom_root: list[int] = [1]

@@ -15,7 +15,7 @@ from siebenapp.selectable import (
 )
 from siebenapp.open_view import ToggleOpenView, OpenView
 from tests.dsl import build_goaltree, open_, clos_
-from siebenapp.zoom import Zoom, ToggleZoom
+from siebenapp.zoom_view import ZoomView, ToggleZoom
 
 
 @pytest.fixture
@@ -178,7 +178,7 @@ def test_still_show_root_when_it_is_closed_and_unselected() -> None:
 
 def test_do_not_add_dangling_goals_to_old_root_on_zoom() -> None:
     v = OpenView(
-        Zoom(
+        ZoomView(
             Selectable(
                 build_goaltree(
                     open_(1, "Root goal", [2]),

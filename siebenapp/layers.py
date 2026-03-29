@@ -8,7 +8,7 @@ from siebenapp.open_view import OpenView
 from siebenapp.progress_view import ProgressView
 from siebenapp.selectable import Selectable, SelectableData
 from siebenapp.switchable_view import SwitchableView
-from siebenapp.zoom import Zoom
+from siebenapp.zoom_view import ZoomView
 
 
 def persistent_layers(
@@ -22,7 +22,7 @@ def persistent_layers(
 
 def view_layers(graph: Graph) -> Graph:
     """Wrap given graph with all standard non-persistent (view) logic layers"""
-    return SwitchableView(FilterView(OpenView(ProgressView(Zoom(graph)))))
+    return SwitchableView(FilterView(OpenView(ProgressView(ZoomView(graph)))))
 
 
 def all_layers(

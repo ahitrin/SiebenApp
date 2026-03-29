@@ -10,7 +10,7 @@ from siebenapp.selectable import (
     HoldSelect,
 )
 from tests.dsl import build_goaltree, open_
-from siebenapp.zoom import Zoom, ToggleZoom
+from siebenapp.zoom_view import ZoomView, ToggleZoom
 
 
 @fixture
@@ -40,7 +40,7 @@ def selected_goaltree():
 @fixture
 def zoomed_goaltree():
     return FilterView(
-        Zoom(
+        ZoomView(
             Selectable(
                 build_goaltree(
                     open_(1, "Alpha", [2], [], []),

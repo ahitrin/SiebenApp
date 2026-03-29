@@ -12,7 +12,7 @@ from siebenapp.selectable import Selectable, OPTION_SELECT, OPTION_PREV_SELECT, 
 from siebenapp.layers import all_layers
 from siebenapp.switchable_view import ToggleSwitchableView, SwitchableView
 from tests.dsl import build_goaltree, open_
-from siebenapp.zoom import ToggleZoom
+from siebenapp.zoom_view import ToggleZoom
 
 
 @pytest.fixture

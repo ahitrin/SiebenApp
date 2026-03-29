@@ -16,7 +16,7 @@ from siebenapp.progress_view import ToggleProgress
 from siebenapp.render import GoalsHolder
 from siebenapp.switchable_view import ToggleSwitchableView
 from tests.dsl import build_goaltree, open_, clos_
-from siebenapp.zoom import ToggleZoom
+from siebenapp.zoom_view import ToggleZoom
 
 WIDTH = 3
 

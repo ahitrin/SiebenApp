@@ -8,7 +8,6 @@ from siebenapp.enumeration import Enumeration
 from siebenapp.goaltree import Goals
 from siebenapp.layers import all_layers, get_root
 from siebenapp.selectable import Selectable, SelectableData
-from siebenapp.zoom import Zoom
 
 MIGRATIONS = [
     # 0
@@ -143,7 +142,6 @@ def save_connection(goals: Graph, connection) -> None:
     goals_export, edges_export = Goals.export(root_goals)
     select_goals: Selectable = get_root(goals, Selectable)
     select_export = Selectable.export(select_goals)
-    zoom_goals: Zoom = get_root(goals, Zoom)
     autolink_goals: AutoLink = get_root(goals, AutoLink)
     autolink_export = AutoLink.export(autolink_goals)
     cur = connection.cursor()
