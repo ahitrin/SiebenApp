@@ -132,11 +132,8 @@ class Zoom(Graph):
         return visible_goals
 
     def verify(self) -> None:
+        # Probably, unneeded?
         self.goaltree.verify()
         assert (
             self.zoom_root[0] == Goals.ROOT_ID
         ), "Zoom stack must always start from the root"
-
-    @staticmethod
-    def export(goals: "Zoom") -> ZoomData:
-        return [(idx + 1, goal) for idx, goal in enumerate(goals.zoom_root)]
