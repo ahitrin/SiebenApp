@@ -109,7 +109,7 @@ class Graph:
         method_name = "accept_" + command.__class__.__name__
         if method := getattr(self, method_name):
             method(command)
-        elif parent := self.goaltree:
+        elif (parent := self.goaltree) != self:
             parent.accept(command)
         else:
             raise NotImplementedError(f"Cannot find method {method_name}")
