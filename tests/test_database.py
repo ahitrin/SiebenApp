@@ -16,7 +16,6 @@ from siebenapp.goaltree import Goals
 from siebenapp.layers import all_layers
 from siebenapp.open_view import ToggleOpenView
 from siebenapp.system import MIGRATIONS, run_migrations, load, save
-from siebenapp.zoom import ToggleZoom
 
 
 def test_initial_migration_on_empty_db() -> None:
@@ -140,7 +139,6 @@ def test_save_and_load() -> None:
         Select(4),
         ToggleClose(4),
         Select(2),
-        ToggleZoom(2),
     )
     save(goals, file_name)
     new_goals = load(file_name)
