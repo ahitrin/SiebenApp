@@ -11,7 +11,7 @@ from siebenapp.manage import main, dot_export, extract_subtree
 from siebenapp.system import save, load
 from tests.dsl import build_goaltree, open_, clos_
 from tests.test_cli import DummyIO, verify_file
-from siebenapp.zoom import ToggleZoom
+from siebenapp.zoom import ToggleZoom, Zoom
 
 
 def test_create_default_db_on_migrate_missing_file() -> None:
@@ -205,10 +205,11 @@ def test_extract_successful(extract_source, extract_target) -> None:
 
 
 def test_zoom_after_extract(extract_source, extract_target) -> None:
-    result = extract_subtree(extract_source, 2)
+    result = Zoom(extract_subtree(extract_source, 2))
     result.accept_all(Select(3), ToggleZoom(3))
-    extract_target.accept_all(Select(3), ToggleZoom(3))
-    assert extract_target.q() == result.q()
+    target = Zoom(extract_target)
+    target.accept_all(Select(3), ToggleZoom(3))
+    assert target.q() == result.q()
 
 
 def test_extract_misordered() -> None:

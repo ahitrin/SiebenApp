@@ -17,12 +17,12 @@ def persistent_layers(
     autolink_data: AutoLinkData | None = None,
 ) -> Graph:
     """Wrap given graph with all standard persistent logic layers"""
-    return Zoom(Selectable(AutoLink(graph, autolink_data), options_data))
+    return Selectable(AutoLink(graph, autolink_data), options_data)
 
 
 def view_layers(graph: Graph) -> Graph:
     """Wrap given graph with all standard non-persistent (view) logic layers"""
-    return SwitchableView(FilterView(OpenView(ProgressView(graph))))
+    return SwitchableView(FilterView(OpenView(ProgressView(Zoom(graph)))))
 
 
 def all_layers(
