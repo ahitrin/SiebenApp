@@ -6,7 +6,7 @@ from typing import Any
 
 import pytest
 
-from siebenapp.selectable import Selectable
+from siebenapp.selectable_view import SelectableView
 from siebenapp.render import (
     Renderer,
     GeometryProvider,
@@ -40,7 +40,7 @@ class FakeGeometry(GeometryProvider):
 
 @pytest.fixture
 def default_tree():
-    return Selectable(
+    return SelectableView(
         build_goaltree(
             open_(1, "Root", [2, 3, 4, 5, 6], [7, 8]),
             clos_(2, "Closed", blockers=[7]),

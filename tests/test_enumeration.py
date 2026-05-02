@@ -9,8 +9,8 @@ from siebenapp.domain import (
 )
 from siebenapp.enumeration import Enumeration, BidirectionalIndex
 from siebenapp.layers import all_layers
-from siebenapp.selectable import (
-    Selectable,
+from siebenapp.selectable_view import (
+    SelectableView,
     OPTION_SELECT,
     OPTION_PREV_SELECT,
     Select,
@@ -102,7 +102,7 @@ def test_apply_mapping_for_the_11th_element(goal_chain_11) -> None:
 
 
 def test_use_mapping_in_selection(goal_chain_10) -> None:
-    e = Enumeration(Selectable(goal_chain_10))
+    e = Enumeration(SelectableView(goal_chain_10))
     e.accept(Select(0))
     assert e.q() == RenderResult(
         [
@@ -123,7 +123,7 @@ def test_use_mapping_in_selection(goal_chain_10) -> None:
 
 
 def test_do_not_select_goal_by_partial_id(goal_chain_11) -> None:
-    e = Enumeration(Selectable(goal_chain_11))
+    e = Enumeration(SelectableView(goal_chain_11))
     # Select(1) is kept in cache, and selection is not changed yet
     e.accept_all(Select(1))
     assert e.q() == RenderResult(
@@ -146,7 +146,7 @@ def test_do_not_select_goal_by_partial_id(goal_chain_11) -> None:
 
 
 def test_select_goal_by_id_parts(goal_chain_11) -> None:
-    e = Enumeration(Selectable(goal_chain_11))
+    e = Enumeration(SelectableView(goal_chain_11))
     e.accept_all(Select(1), Select(6))
     assert e.q() == RenderResult(
         [
@@ -168,7 +168,7 @@ def test_select_goal_by_id_parts(goal_chain_11) -> None:
 
 
 def test_select_goal_by_full_id(goal_chain_11) -> None:
-    e = Enumeration(Selectable(goal_chain_11))
+    e = Enumeration(SelectableView(goal_chain_11))
     assert e.q() == RenderResult(
         [
             RenderRow(11, 1, "a", True, False, True, [child(12)]),
@@ -207,7 +207,7 @@ def test_select_goal_by_full_id(goal_chain_11) -> None:
 
 
 def test_select_goal_by_full_id_with_non_empty_cache(goal_chain_11) -> None:
-    e = Enumeration(Selectable(goal_chain_11))
+    e = Enumeration(SelectableView(goal_chain_11))
     assert e.q() == RenderResult(
         [
             RenderRow(11, 1, "a", True, False, True, [child(12)]),
@@ -260,7 +260,7 @@ def test_enumerated_goals_must_have_the_same_dimension() -> None:
 
 
 def test_selection_cache_should_be_reset_after_view_switch(goal_chain_11) -> None:
-    e = Enumeration(SwitchableView(Selectable(goal_chain_11)))
+    e = Enumeration(SwitchableView(SelectableView(goal_chain_11)))
     e.accept_all(Add("Also top", 10))
     e.accept(Select(1))
     # Select(1) is kept in a cache and not applied yet
@@ -289,7 +289,7 @@ def test_selection_cache_should_be_reset_after_view_switch(goal_chain_11) -> Non
 
 
 def test_selection_cache_should_avoid_overflow(goal_chain_11) -> None:
-    e = Enumeration(Selectable(goal_chain_11))
+    e = Enumeration(SelectableView(goal_chain_11))
     assert e.q().global_opts == {
         OPTION_SELECT: 11,
         OPTION_PREV_SELECT: 11,

@@ -1,8 +1,8 @@
 from siebenapp.domain import Add, RenderRow, RenderResult, child
 from siebenapp.goaltree import Goals
 from siebenapp.layers import persistent_layers
-from siebenapp.selectable import (
-    Selectable,
+from siebenapp.selectable_view import (
+    SelectableView,
     OPTION_SELECT,
     OPTION_PREV_SELECT,
     Select,
@@ -47,7 +47,7 @@ def test_toggle_hide_non_switchable_goals() -> None:
 
 def test_do_not_hide_unswitchable_goals_when_they_have_selection() -> None:
     v = SwitchableView(
-        Selectable(
+        SelectableView(
             build_goaltree(
                 open_(1, "Selected", [2]),
                 open_(2, "Prev-selected", [3]),
@@ -69,7 +69,7 @@ def test_do_not_hide_unswitchable_goals_when_they_have_selection() -> None:
 
 
 def test_non_switchable_goals_disappear_on_selection_change() -> None:
-    e = SwitchableView(Selectable(Goals("root")))
+    e = SwitchableView(SelectableView(Goals("root")))
     e.accept_all(Add("1", 1), Add("2", 1), Select(2), ToggleSwitchableView(), Select(2))
     assert e.q() == RenderResult(
         [
@@ -95,7 +95,7 @@ def test_how_should_we_deal_with_zooming() -> None:
     g = build_goaltree(
         open_(1, "Root goal", [2]), open_(2, "Zoomed", blockers=[3]), open_(3, "Ex-top")
     )
-    v = SwitchableView(ZoomView(Selectable(persistent_layers(g))))
+    v = SwitchableView(ZoomView(SelectableView(persistent_layers(g))))
     v.accept_all(Select(2), HoldSelect(), ToggleZoom(2), ToggleSwitchableView())
     assert v.q() == RenderResult(
         [

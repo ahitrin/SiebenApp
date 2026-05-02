@@ -14,7 +14,7 @@ from siebenapp.enumeration import Enumeration
 from siebenapp.goaltree import Goals
 from siebenapp.layers import all_layers
 from siebenapp.open_view import ToggleOpenView
-from siebenapp.selectable import HoldSelect
+from siebenapp.selectable_view import HoldSelect
 from siebenapp.system import MIGRATIONS, run_migrations, load, save
 
 

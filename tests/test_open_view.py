@@ -6,8 +6,8 @@ from siebenapp.domain import (
     RenderRow,
     RenderResult,
 )
-from siebenapp.selectable import (
-    Selectable,
+from siebenapp.selectable_view import (
+    SelectableView,
     OPTION_SELECT,
     OPTION_PREV_SELECT,
     Select,
@@ -105,7 +105,7 @@ def test_simple_open_enumeration_workflow() -> None:
 
 def test_closed_goals_are_shown_when_selected() -> None:
     v = OpenView(
-        Selectable(
+        SelectableView(
             build_goaltree(
                 open_(1, "Root", [2, 3]),
                 clos_(2, "closed"),
@@ -140,7 +140,7 @@ def test_closed_goals_are_shown_when_selected() -> None:
 
 def test_do_not_build_fake_links_to_far_closed_goals() -> None:
     v = OpenView(
-        Selectable(
+        SelectableView(
             build_goaltree(
                 open_(1, "Root", blockers=[2]),
                 clos_(2, "Middle", blockers=[3]),
@@ -161,7 +161,7 @@ def test_do_not_build_fake_links_to_far_closed_goals() -> None:
 
 def test_still_show_root_when_it_is_closed_and_unselected() -> None:
     v = OpenView(
-        Selectable(
+        SelectableView(
             build_goaltree(clos_(1, "Hidden root", [2]), clos_(2, "Visible")),
             [("selection", 2), ("previous_selection", 2)],
         )
@@ -179,7 +179,7 @@ def test_still_show_root_when_it_is_closed_and_unselected() -> None:
 def test_do_not_add_dangling_goals_to_old_root_on_zoom() -> None:
     v = OpenView(
         ZoomView(
-            Selectable(
+            SelectableView(
                 build_goaltree(
                     open_(1, "Root goal", [2]),
                     open_(2, "Zoom root", [3, 5]),

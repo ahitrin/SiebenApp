@@ -29,7 +29,7 @@ class HoldSelect(Command):
     goal_id: int = 0
 
 
-class Selectable(Graph):
+class SelectableView(Graph):
     def __init__(self, goals: Graph, data: SelectableData | None = None):
         super().__init__(goals)
         selection_dict: dict[str, int] = dict(data or [])

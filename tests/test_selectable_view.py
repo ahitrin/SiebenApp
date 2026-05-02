@@ -1,8 +1,8 @@
 from unittest import TestCase
 
 from siebenapp.goaltree import Goals
-from siebenapp.selectable import (
-    Selectable,
+from siebenapp.selectable_view import (
+    SelectableView,
     OPTION_SELECT,
     OPTION_PREV_SELECT,
     Select,
@@ -24,13 +24,13 @@ from tests.dsl import build_goaltree, open_, clos_
 class SelectableTest(TestCase):
     def setUp(self):
         self.messages = []
-        self.goals = Selectable(Goals("Root", self._register_message))
+        self.goals = SelectableView(Goals("Root", self._register_message))
 
     def _register_message(self, msg):
         self.messages.append(msg)
 
-    def build(self, *goal_prototypes, select: tuple[int, int]) -> Selectable:
-        return Selectable(
+    def build(self, *goal_prototypes, select: tuple[int, int]) -> SelectableView:
+        return SelectableView(
             build_goaltree(*goal_prototypes, message_fn=self._register_message),
             [("selection", select[0]), ("previous_selection", select[1])],
         )

@@ -13,7 +13,7 @@ from siebenapp.layers import all_layers
 from siebenapp.open_view import ToggleOpenView
 from siebenapp.progress_view import ToggleProgress
 from siebenapp.render import GoalsHolder
-from siebenapp.selectable import Select, HoldSelect
+from siebenapp.selectable_view import Select, HoldSelect
 from siebenapp.switchable_view import ToggleSwitchableView
 from siebenapp.zoom_view import ToggleZoom
 from tests.dsl import build_goaltree, open_, clos_

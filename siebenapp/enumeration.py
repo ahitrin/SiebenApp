@@ -3,7 +3,7 @@ from collections.abc import Iterable
 from dataclasses import replace
 
 from siebenapp.domain import Graph, GoalId, RenderResult, RenderRow
-from siebenapp.selectable import Select
+from siebenapp.selectable_view import Select
 
 
 class BidirectionalIndex:

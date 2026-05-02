@@ -30,7 +30,12 @@ from siebenapp.filter_view import FilterBy
 from siebenapp.goaltree import Goals
 from siebenapp.layers import all_layers
 from siebenapp.open_view import ToggleOpenView
-from siebenapp.selectable import OPTION_SELECT, OPTION_PREV_SELECT, Select, HoldSelect
+from siebenapp.selectable_view import (
+    OPTION_SELECT,
+    OPTION_PREV_SELECT,
+    Select,
+    HoldSelect,
+)
 from siebenapp.switchable_view import ToggleSwitchableView
 from siebenapp.system import save_connection, save_updates
 

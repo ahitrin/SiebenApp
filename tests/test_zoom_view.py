@@ -11,8 +11,8 @@ from siebenapp.domain import (
     RenderResult,
 )
 from siebenapp.goaltree import Goals
-from siebenapp.selectable import (
-    Selectable,
+from siebenapp.selectable_view import (
+    SelectableView,
     OPTION_SELECT,
     OPTION_PREV_SELECT,
     Select,
@@ -189,7 +189,7 @@ def test_stacked_zoom() -> None:
 
 def test_stacked_zoom_with_selection() -> None:
     goals = ZoomView(
-        Selectable(
+        SelectableView(
             build_goaltree(
                 open_(1, "Root goal", [2]),
                 open_(2, "Skip me", [3]),
@@ -236,7 +236,7 @@ def test_stacked_zoom_with_selection() -> None:
 
 def test_selection_should_not_be_changed_if_selected_goal_is_visible() -> None:
     goals = ZoomView(
-        Selectable(
+        SelectableView(
             build_goaltree(
                 open_(1, "Root goal", [2]),
                 open_(2, "Select root", [3]),
@@ -269,7 +269,7 @@ def test_selection_should_not_be_changed_if_selected_goal_is_sibling_to_zoom_roo
     None
 ):
     goals = ZoomView(
-        Selectable(
+        SelectableView(
             build_goaltree(
                 open_(1, "Root goal", [2, 3]),
                 open_(2, "Previous selected"),
@@ -294,7 +294,7 @@ def test_selection_should_not_be_changed_if_selected_goal_is_not_a_child_of_zoom
     None
 ):
     goals = ZoomView(
-        Selectable(
+        SelectableView(
             build_goaltree(
                 open_(1, "Root goal", [2, 4]),
                 open_(2, "Blocker", [3]),
@@ -321,7 +321,7 @@ def test_selection_should_not_be_changed_if_selected_goal_is_not_a_child_of_zoom
 
 def test_previous_selection_should_not_be_changed_or_reset_after_zoom() -> None:
     goals = ZoomView(
-        Selectable(
+        SelectableView(
             build_goaltree(
                 open_(1, "", blockers=[2, 3]),
                 open_(2, "", [4]),
@@ -344,7 +344,7 @@ def test_selection_should_not_be_changed_on_stacked_unzoom_a_long_chain_of_block
     None
 ):
     goals = ZoomView(
-        Selectable(
+        SelectableView(
             build_goaltree(
                 open_(1, "Root goal", blockers=[2]),
                 open_(2, "A", blockers=[3]),
@@ -381,7 +381,7 @@ def test_unlink_for_goal_outside_of_zoomed_tree_should_not_cause_selection_chang
     None
 ):
     goals = ZoomView(
-        Selectable(
+        SelectableView(
             build_goaltree(
                 open_(1, "Root goal", [2, 3]),
                 open_(2, "Out of zoom"),
@@ -447,7 +447,7 @@ def test_closing_zoom_root_should_cause_unzoom() -> None:
 
 def test_goal_closing_must_not_cause_root_selection() -> None:
     goals = ZoomView(
-        Selectable(
+        SelectableView(
             build_goaltree(
                 open_(1, "Root goal", [2]),
                 open_(2, "Zoom root", [3]),
@@ -499,7 +499,7 @@ def test_goal_closing_without_selection() -> None:
 
 def test_goal_reopening_must_not_change_selection() -> None:
     goals = ZoomView(
-        Selectable(
+        SelectableView(
             build_goaltree(
                 open_(1, "Root goal", [2]),
                 open_(2, "Zoom root", [3]),
@@ -595,7 +595,7 @@ def test_deleting_parent_goal_should_cause_unzoom() -> None:
 
 def test_goal_deletion_must_not_cause_root_selection() -> None:
     goals = ZoomView(
-        Selectable(
+        SelectableView(
             build_goaltree(
                 open_(1, "Root goal", [2]),
                 open_(2, "Hidden", [3]),
@@ -628,7 +628,7 @@ def test_goal_deletion_must_not_cause_root_selection() -> None:
 
 def test_zoom_events() -> None:
     goals = ZoomView(
-        Selectable(
+        SelectableView(
             build_goaltree(
                 open_(1, "Root goal", [2]),
                 open_(2, "First zoom", [3]),
@@ -652,7 +652,7 @@ def test_zoom_events() -> None:
 
 def test_do_not_duplicate_parent_prev_selection() -> None:
     goals = ZoomView(
-        Selectable(
+        SelectableView(
             build_goaltree(open_(1, "Root goal", [2]), open_(2, "Zoom root")),
             [("selection", 2), ("previous_selection", 1)],
         )
@@ -678,7 +678,7 @@ def test_do_not_duplicate_parent_prev_selection() -> None:
 
 def test_global_root_is_isolated() -> None:
     goals = ZoomView(
-        Selectable(
+        SelectableView(
             build_goaltree(
                 open_(1, "Root goal", [2]),
                 open_(2, "Intermediate", [3]),
@@ -700,7 +700,7 @@ def test_global_root_is_isolated() -> None:
 
 def test_zoom_root_must_not_be_switchable() -> None:
     goals = ZoomView(
-        Selectable(
+        SelectableView(
             build_goaltree(open_(1, "Root goal", [2]), clos_(2, "Closed", [])),
             [("selection", 2), ("previous_selection", 1)],
         )
@@ -727,7 +727,7 @@ def test_zoom_root_must_not_be_switchable() -> None:
 def test_zoom_attempt_out_of_stack() -> None:
     messages: list[str] = []
     goals = ZoomView(
-        Selectable(
+        SelectableView(
             build_goaltree(
                 open_(1, "Root goal", [2, 3]),
                 open_(2, "Selected and out of tree"),
