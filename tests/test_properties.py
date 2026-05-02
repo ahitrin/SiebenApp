@@ -126,7 +126,7 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         d=data(),
     )
     # Ignore trivial trees (without any subgoal)
-    @precondition(lambda self: len(self.goaltree.q().rows) > 1)
+    @precondition(lambda self: len([1 for row in self.goaltree.q().rows if row.goal_id > 0]) > 1)
     def toggle_link(self, edge_type, d) -> None:
         event("toggle link")
         goal_keys = sorted(
