@@ -8,11 +8,17 @@ from siebenapp.domain import (
     RenderResult,
 )
 from siebenapp.enumeration import Enumeration, BidirectionalIndex
-from siebenapp.selectable import Selectable, OPTION_SELECT, OPTION_PREV_SELECT, Select
 from siebenapp.layers import all_layers
+from siebenapp.selectable import (
+    Selectable,
+    OPTION_SELECT,
+    OPTION_PREV_SELECT,
+    Select,
+    HoldSelect,
+)
 from siebenapp.switchable_view import ToggleSwitchableView, SwitchableView
-from tests.dsl import build_goaltree, open_
 from siebenapp.zoom_view import ToggleZoom
+from tests.dsl import build_goaltree, open_
 
 
 @pytest.fixture
@@ -309,10 +315,9 @@ def test_do_not_enumerate_goals_with_negative_id() -> None:
     g = all_layers(
         build_goaltree(
             open_(1, "Root goal", [2]), open_(2, "Zoomed", [3]), open_(3, "Top")
-        ),
-        [("selection", 2), ("previous_selection", 1)],
+        )
     )
-    g.accept(ToggleZoom(2))
+    g.accept_all(Select(1), HoldSelect(), Select(2), ToggleZoom(2))
     assert g.q() == RenderResult(
         [
             RenderRow(

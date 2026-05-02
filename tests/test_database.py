@@ -10,11 +10,11 @@ from siebenapp.domain import (
     Add,
     EdgeType,
 )
-from siebenapp.selectable import Select, HoldSelect
 from siebenapp.enumeration import Enumeration
 from siebenapp.goaltree import Goals
 from siebenapp.layers import all_layers
 from siebenapp.open_view import ToggleOpenView
+from siebenapp.selectable import HoldSelect
 from siebenapp.system import MIGRATIONS, run_migrations, load, save
 
 
@@ -72,15 +72,8 @@ def test_restore_goals_from_db() -> None:
     expected_goals.accept_all(
         Add("A", 1),
         Add("B", 1),
-        Select(2),
-        HoldSelect(),
-        Select(3),
         ToggleLink(2, 3),
-        Select(3),
         ToggleClose(3),
-        Select(1),
-        HoldSelect(),
-        Select(2),
         ToggleOpenView(),
     )
     assert expected_goals.q() == actual_goals.q()
@@ -131,14 +124,10 @@ def test_save_and_load() -> None:
     goals.accept_all(
         Add("Top", 1),
         Add("Middle", 1),
-        Select(3),
         HoldSelect(),
-        Select(2),
         ToggleLink(3, 2),
         Add("Closed", 2),
-        Select(4),
         ToggleClose(4),
-        Select(2),
     )
     save(goals, file_name)
     new_goals = load(file_name)

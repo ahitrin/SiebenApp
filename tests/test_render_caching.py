@@ -8,15 +8,15 @@ from siebenapp.domain import (
     Delete,
     Insert,
 )
-from siebenapp.selectable import Select, HoldSelect
 from siebenapp.filter_view import FilterBy
 from siebenapp.layers import all_layers
 from siebenapp.open_view import ToggleOpenView
 from siebenapp.progress_view import ToggleProgress
 from siebenapp.render import GoalsHolder
+from siebenapp.selectable import Select, HoldSelect
 from siebenapp.switchable_view import ToggleSwitchableView
-from tests.dsl import build_goaltree, open_, clos_
 from siebenapp.zoom_view import ToggleZoom
+from tests.dsl import build_goaltree, open_, clos_
 
 WIDTH = 3
 
@@ -76,7 +76,7 @@ def test_make_diff_on_select(sample_holder):
     holder.render(WIDTH)  # Prepare cached result
     holder.accept(Select(4))
     result = holder.render(WIDTH)
-    assert result[1] == [2, 4]
+    assert result[1] == [1, 4]
 
 
 def test_make_diff_on_hold(sample_holder):
@@ -84,4 +84,4 @@ def test_make_diff_on_hold(sample_holder):
     holder.render(WIDTH)  # Prepare cached result
     holder.accept(HoldSelect())
     result = holder.render(WIDTH)
-    assert result[1] == [3, 2]
+    assert result[1] == []

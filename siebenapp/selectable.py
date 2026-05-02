@@ -94,6 +94,11 @@ class Selectable(Graph):
 
         return self.goaltree.settings(key)
 
+    def reconfigure_from(self, origin: Graph) -> None:
+        super().reconfigure_from(origin)
+        self.selection = origin.settings("selection")
+        self.previous_selection = origin.settings("previous_selection")
+
     @staticmethod
     def export(goals: "Selectable") -> SelectableData:
         return [

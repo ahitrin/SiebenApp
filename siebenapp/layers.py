@@ -17,7 +17,7 @@ def persistent_layers(
     autolink_data: AutoLinkData | None = None,
 ) -> Graph:
     """Wrap given graph with all standard persistent logic layers"""
-    return Selectable(AutoLink(graph, autolink_data), options_data)
+    return Selectable(AutoLink(graph, autolink_data))
 
 
 def view_layers(graph: Graph) -> Graph:

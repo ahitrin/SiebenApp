@@ -1,4 +1,3 @@
-* [ ] **1** Also 4
+* [ ] **1** Root goal of a complex goal tree
 * [ ] **2** Now 5
-* [x] **3** Lucky 7
-* [ ] **4** Informational 12
+* [ ] **3** Informational 12

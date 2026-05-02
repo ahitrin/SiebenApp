@@ -32,7 +32,7 @@ from siebenapp.layers import all_layers
 from siebenapp.open_view import ToggleOpenView
 from siebenapp.selectable import OPTION_SELECT, OPTION_PREV_SELECT, Select, HoldSelect
 from siebenapp.switchable_view import ToggleSwitchableView
-from siebenapp.system import save_updates, save_connection
+from siebenapp.system import save_connection, save_updates
 
 settings.register_profile("ci", settings(max_examples=1000))
 settings.register_profile("dev", settings(max_examples=200))
@@ -124,7 +124,9 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         d=data(),
     )
     # Ignore trivial trees (without any subgoal)
-    @precondition(lambda self: len([1 for row in self.goaltree.q().rows if row.goal_id > 0]) > 1)
+    @precondition(
+        lambda self: len([1 for row in self.goaltree.q().rows if row.goal_id > 0]) > 1
+    )
     def toggle_link(self, edge_type, d) -> None:
         event("toggle link")
         goal_keys = sorted(
