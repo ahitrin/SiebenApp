@@ -81,12 +81,10 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
     @rule(d=data())
     def select_random_goal(self, d) -> None:
         event("select")
-        max_key = max([r.goal_id for r in self.goaltree.q().rows])
-        assume(max_key >= 1)
-        event("valid select 1")
-        random_goal = d.draw(integers(min_value=1, max_value=max_key))
-        assume(random_goal in {r.goal_id for r in self.goaltree.q().rows})
-        event("valid select 2")
+        goal_keys = sorted(
+            list(row.goal_id for row in self.goaltree.q().rows if row.goal_id > 0)
+        )
+        random_goal = d.draw(sampled_from(goal_keys))
         self._accept(Select(random_goal))
         # Any valid goal must be selectable
         render_result = self.goaltree.q()
