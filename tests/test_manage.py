@@ -5,13 +5,13 @@ import pytest
 
 from siebenapp.domain import child, RenderRow, RenderResult
 from siebenapp.enumeration import Enumeration
-from siebenapp.selectable import OPTION_SELECT, OPTION_PREV_SELECT, Select
 from siebenapp.layers import all_layers, persistent_layers
 from siebenapp.manage import main, dot_export, extract_subtree
+from siebenapp.selectable import OPTION_SELECT, OPTION_PREV_SELECT, Select
 from siebenapp.system import save, load
+from siebenapp.zoom_view import ToggleZoom, ZoomView
 from tests.dsl import build_goaltree, open_, clos_
 from tests.test_cli import DummyIO, verify_file
-from siebenapp.zoom_view import ToggleZoom, ZoomView
 
 
 def test_create_default_db_on_migrate_missing_file() -> None:
@@ -190,7 +190,6 @@ def extract_target():
             open_(3, "Selected subgoal (selection will be lost)", [4]),
             clos_(4, "Closed subgoal"),
         ),
-        options_data=[("selection", 1), ("previous_selection", 1)],
     )
 
 

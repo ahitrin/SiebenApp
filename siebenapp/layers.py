@@ -13,7 +13,6 @@ from siebenapp.zoom_view import ZoomView
 
 def persistent_layers(
     graph: Goals,
-    options_data: SelectableData | None = None,
     autolink_data: AutoLinkData | None = None,
 ) -> Graph:
     """Wrap given graph with all standard persistent logic layers"""
@@ -31,7 +30,7 @@ def all_layers(
     autolink_data: AutoLinkData | None = None,
 ) -> Graph:
     """Wrap given Goals instance with all default logic layers"""
-    return view_layers(persistent_layers(graph, options_data, autolink_data))
+    return view_layers(persistent_layers(graph, autolink_data))
 
 
 G = TypeVar("G", bound=Graph)
