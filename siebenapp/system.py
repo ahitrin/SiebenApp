@@ -7,7 +7,6 @@ from siebenapp.domain import Graph
 from siebenapp.enumeration import Enumeration
 from siebenapp.goaltree import Goals
 from siebenapp.layers import all_layers, get_root
-from siebenapp.selectable import Selectable, SelectableData
 
 MIGRATIONS = [
     # 0
@@ -142,14 +141,11 @@ def save_connection(goals: Graph, connection) -> None:
     run_migrations(connection)
     root_goals: Goals = get_root(goals, Goals)
     goals_export, edges_export = Goals.export(root_goals)
-    select_goals: Selectable = get_root(goals, Selectable)
-    select_export = Selectable.export(select_goals)
     autolink_goals: AutoLink = get_root(goals, AutoLink)
     autolink_export = AutoLink.export(autolink_goals)
     cur = connection.cursor()
     cur.executemany("insert into goals values (?,?,?)", goals_export)
     cur.executemany("insert into edges values (?,?,?)", edges_export)
-    cur.executemany("insert into settings values (?,?)", select_export)
     cur.executemany("insert into autolink values(?, ?)", autolink_export)
     root_goals._events.clear()
     connection.commit()
@@ -162,14 +158,6 @@ def save_updates(goals: Graph, connection: sqlite3.Connection) -> None:
         "rename": ["update goals set name=? where goal_id=?"],
         "link": ["insert into edges values (?,?,?)"],
         "unlink": ["delete from edges where parent=? and child=? and reltype=?"],
-        "select": [
-            'delete from settings where name="selection"',
-            'insert into settings values ("selection", ?)',
-        ],
-        "hold_select": [
-            'delete from settings where name="previous_selection"',
-            'insert into settings values ("previous_selection", ?)',
-        ],
         "delete": [
             "delete from goals where goal_id=?",
             "delete from edges where child=?",
@@ -191,7 +179,6 @@ def save_updates(goals: Graph, connection: sqlite3.Connection) -> None:
 
 
 def load(filename: str, message_fn: Callable[[str], None] | None = None) -> Enumeration:
-    settings: SelectableData = []
     autolink_data: AutoLinkData = []
     if path.isfile(filename):
         connection = sqlite3.connect(filename)
@@ -199,7 +186,6 @@ def load(filename: str, message_fn: Callable[[str], None] | None = None) -> Enum
         cur = connection.cursor()
         names = list(cur.execute("select * from goals"))
         edges = list(cur.execute("select parent, child, reltype from edges"))
-        settings = list(cur.execute("select * from settings"))
         autolink_data = list(cur.execute("select * from autolink"))
         cur.close()
         goals = Goals.build(names, edges, message_fn)

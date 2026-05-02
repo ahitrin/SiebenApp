@@ -239,7 +239,6 @@ def extract_subtree(source_goals: Graph, goal_id: int) -> Graph:
     goals_to_add: set[GoalId] = {goal_id}
     goals_data: GoalsData = []
     edges_data: EdgesData = []
-    options_data: SelectableData = []
     while goals_to_add:
         goal = goals_to_add.pop()
         row = render_result.by_id(goal)
