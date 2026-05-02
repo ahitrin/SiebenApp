@@ -205,7 +205,7 @@ def load(filename: str, message_fn: Callable[[str], None] | None = None) -> Enum
         goals = Goals.build(names, edges, message_fn)
     else:
         goals = Goals("Rename me", message_fn)
-    result = Enumeration(all_layers(goals, settings, autolink_data))
+    result = Enumeration(all_layers(goals, autolink_data))
     result.verify()
     return result
 

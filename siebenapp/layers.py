@@ -6,7 +6,7 @@ from siebenapp.filter_view import FilterView
 from siebenapp.goaltree import Goals
 from siebenapp.open_view import OpenView
 from siebenapp.progress_view import ProgressView
-from siebenapp.selectable import Selectable, SelectableData
+from siebenapp.selectable import Selectable
 from siebenapp.switchable_view import SwitchableView
 from siebenapp.zoom_view import ZoomView
 
@@ -26,7 +26,6 @@ def view_layers(graph: Graph) -> Graph:
 
 def all_layers(
     graph: Goals,
-    options_data: SelectableData | None = None,
     autolink_data: AutoLinkData | None = None,
 ) -> Graph:
     """Wrap given Goals instance with all default logic layers"""

@@ -32,7 +32,6 @@ def sample_tree():
             clos_(5, "Closed intermediate", [6]),
             clos_(6, "Closed top"),
         ),
-        [("selection", 2), ("previous_selection", 3)],
     )
 
 
