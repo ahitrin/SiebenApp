@@ -7,7 +7,7 @@ from siebenapp.domain import child, RenderRow, RenderResult
 from siebenapp.enumeration import Enumeration
 from siebenapp.layers import all_layers, persistent_layers
 from siebenapp.manage import main, dot_export, extract_subtree
-from siebenapp.selectable import OPTION_SELECT, OPTION_PREV_SELECT, Select
+from siebenapp.selectable import OPTION_SELECT, OPTION_PREV_SELECT, Select, Selectable
 from siebenapp.system import save, load
 from siebenapp.zoom_view import ToggleZoom, ZoomView
 from tests.dsl import build_goaltree, open_, clos_
@@ -203,9 +203,9 @@ def test_extract_successful(extract_source, extract_target) -> None:
 
 
 def test_zoom_after_extract(extract_source, extract_target) -> None:
-    result = ZoomView(extract_subtree(extract_source, 2))
+    result = ZoomView(Selectable(extract_subtree(extract_source, 2)))
     result.accept_all(Select(3), ToggleZoom(3))
-    target = ZoomView(extract_target)
+    target = ZoomView(Selectable(extract_target))
     target.accept_all(Select(3), ToggleZoom(3))
     assert target.q() == result.q()
 
@@ -227,5 +227,5 @@ def test_extract_misordered() -> None:
             RenderRow(2, 2, "Top", True, True, True, []),
         ],
         roots={1},
-        global_opts={OPTION_SELECT: 1, OPTION_PREV_SELECT: 1},
+        global_opts={},
     )

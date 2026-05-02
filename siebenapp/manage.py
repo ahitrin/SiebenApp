@@ -9,7 +9,6 @@ from siebenapp.goaltree import Goals, GoalsData, EdgesData
 from siebenapp.layers import get_root, persistent_layers, all_layers
 from siebenapp.open_view import ToggleOpenView
 from siebenapp.progress_view import ToggleProgress
-from siebenapp.selectable import SelectableData
 from siebenapp.switchable_view import ToggleSwitchableView
 from siebenapp.system import load, save, split_long
 

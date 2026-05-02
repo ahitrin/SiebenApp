@@ -95,7 +95,7 @@ def test_how_should_we_deal_with_zooming() -> None:
     g = build_goaltree(
         open_(1, "Root goal", [2]), open_(2, "Zoomed", blockers=[3]), open_(3, "Ex-top")
     )
-    v = SwitchableView(ZoomView(persistent_layers(g)))
+    v = SwitchableView(ZoomView(Selectable(persistent_layers(g))))
     v.accept_all(Select(2), HoldSelect(), ToggleZoom(2), ToggleSwitchableView())
     assert v.q() == RenderResult(
         [
