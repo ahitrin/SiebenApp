@@ -122,6 +122,8 @@ MIGRATIONS = [
     ],
     # 10
     ["drop table zoom"],
+    # 11: clean settings table but do not delete it yet
+    ["delete from settings where name in ('selection', 'previous_selection')"],
 ]
 
 
