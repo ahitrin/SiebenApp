@@ -31,3 +31,4 @@ jobs:
         run: make venv test mypy
         env:
           HYPOTHESIS_PROFILE: ci
+          APPROVALTESTS_DISABLE_SCRIPT_DOWNLOADS: 1
