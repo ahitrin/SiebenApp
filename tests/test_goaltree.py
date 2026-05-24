@@ -573,7 +573,7 @@ class GoalsTest(TestCase):
         assert self.messages == []
 
     def test_has_goal(self) -> None:
-        self.goals = build_goaltree(
+        self.goals = self.build(
             open_(1, "Root", [2, 3]),
             clos_(2, "Closed"),
             open_(3, "Intermediate", blockers=[4]),
@@ -595,7 +595,7 @@ class GoalsTest(TestCase):
         assert not self.goals.has_goal(5)
 
     def test_parent(self) -> None:
-        self.goals = build_goaltree(
+        self.goals = self.build(
             open_(1, "Root", [2]),
             open_(2, "Intermediate", [3]),
             open_(3, "Intermediate", [4]),
