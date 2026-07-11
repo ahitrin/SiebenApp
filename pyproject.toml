@@ -31,7 +31,7 @@ black = "^26.5.0"
 approvaltests-minimal = "^18.0.0"
 radon = "^6.0.1"
 pyupgrade = "^3.21.2"
-typing-extensions = "^4.15.0"
+typing-extensions = "^4.16.0"
 py-spy = "^0.4.2"
 
 [build-system]
