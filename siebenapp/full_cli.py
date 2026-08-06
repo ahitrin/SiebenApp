@@ -1,10 +1,17 @@
 from argparse import ArgumentParser, Namespace
+from os import path
+
+from siebenapp.goaltree import Goals
+from siebenapp.layers import all_layers
+from siebenapp.system import save
 
 
 def new_file(args: Namespace) -> None:
     goal_file = args.goal_file
     description = args.description
-    print(f'file: {goal_file}, description: "{description}"')
+    assert not path.exists(goal_file), f"File {goal_file} already exists!"
+    db = Goals(description)
+    save(all_layers(db), goal_file)
 
 
 def view(args: Namespace) -> None:
