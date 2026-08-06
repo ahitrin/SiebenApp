@@ -73,6 +73,11 @@ class GoaltreeRandomWalk(RuleBasedStateMachine):
         event("add")
         self._accept(Add("a", self.goaltree.settings("selection")))
 
+    @rule(i=integers())
+    def add_goal_with_random_parent(self, i) -> None:
+        event("add")
+        self._accept(Add("rnd", i))
+
     @rule(d=data())
     def delete_goal(self, d) -> None:
         event("delete")

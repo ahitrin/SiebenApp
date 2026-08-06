@@ -18,6 +18,7 @@ sieben = "siebenapp.app:main"
 [project.scripts]
 clieben = "siebenapp.cli:main"
 sieben-manage = "siebenapp.manage:main"
+si = "siebenapp.full_cli:main"
 
 [tool.poetry]
 
