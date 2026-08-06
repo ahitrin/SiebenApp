@@ -21,6 +21,30 @@ def link(args: Namespace) -> None:
     pass
 
 
+def unlink(args: Namespace) -> None:
+    pass
+
+
+def rename(args: Namespace) -> None:
+    pass
+
+
+def autolink(args: Namespace) -> None:
+    pass
+
+
+def close_goal(args: Namespace) -> None:
+    pass
+
+
+def open_goal(args: Namespace) -> None:
+    pass
+
+
+def delete_goal(args: Namespace) -> None:
+    pass
+
+
 def main(argv: list[str] | None = None):
     parser = ArgumentParser()
     parser.add_argument("goal_file")
@@ -53,8 +77,31 @@ def main(argv: list[str] | None = None):
     parser_link.add_argument("first")
     parser_link.add_argument("second")
     parser_link.add_argument("link_type",
-                             default="--parent")
+                             default="--parent")    # TODO: --block --relate
     parser_link.set_defaults(func=link)
+
+    parser_unlink = subparsers.add_parser("unlink")
+    parser_unlink.add_argument("first")
+    parser_unlink.add_argument("second")
+    parser_unlink.set_defaults(func=unlink)
+
+    parser_rename = subparsers.add_parser("rename")
+    parser_rename.add_argument("goal_id")
+    parser_rename.add_argument("description")
+    parser_rename.set_defaults(func=rename)
+
+    parser_autolink = subparsers.add_parser("autolink")
+    parser_autolink.add_argument("goal_id")
+    parser_autolink.add_argument("marker")
+    parser_autolink.set_defaults(func=autolink)
+
+    parser_close = subparsers.add_parser("close")
+    parser_close.add_argument("goal_id")
+    parser_autolink.set_defaults(func=close_goal)
+
+    parser_open = subparsers.add_parser("open")
+    parser_open.add_argument("goal_id")
+    parser_open.set_defaults(func=open_goal)
 
     args = parser.parse_args(argv)
     if "func" in dir(args):
