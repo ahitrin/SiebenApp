@@ -181,6 +181,10 @@ def save_updates(goals: Graph, connection: sqlite3.Connection) -> None:
 
 
 def load(filename: str, message_fn: Callable[[str], None] | None = None) -> Enumeration:
+    return Enumeration(load_raw(filename, message_fn))
+
+
+def load_raw(filename: str, message_fn: Callable[[str], None] | None = None) -> Graph:
     autolink_data: AutoLinkData = []
     if path.isfile(filename):
         connection = sqlite3.connect(filename)
@@ -193,7 +197,7 @@ def load(filename: str, message_fn: Callable[[str], None] | None = None) -> Enum
         goals = Goals.build(names, edges, message_fn)
     else:
         goals = Goals("Rename me", message_fn)
-    result = Enumeration(all_layers(goals, autolink_data))
+    result = all_layers(goals, autolink_data)
     result.verify()
     return result
 

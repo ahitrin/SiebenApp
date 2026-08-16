@@ -3,7 +3,11 @@ from os import path
 
 from siebenapp.goaltree import Goals
 from siebenapp.layers import all_layers
-from siebenapp.system import save
+from siebenapp.manage import markdown_export
+from siebenapp.open_view import ToggleOpenView
+from siebenapp.progress_view import ToggleProgress
+from siebenapp.switchable_view import ToggleSwitchableView
+from siebenapp.system import save, load_raw
 
 
 def new_file(args: Namespace) -> None:
@@ -19,7 +23,14 @@ def view(args: Namespace) -> None:
     show_closed = args.not_only_open
     show_top = args.top
     show_progress = args.progress
-    print(f"file: {goal_file}, cls={show_closed}, top={show_top}, prog={show_progress}")
+    db = load_raw(goal_file)
+    if show_closed:
+        db.accept(ToggleOpenView())
+    if show_top:
+        db.accept(ToggleSwitchableView())
+    if show_progress:
+        db.accept(ToggleProgress())
+    print(markdown_export(db))
 
 
 def add(args: Namespace) -> None:
