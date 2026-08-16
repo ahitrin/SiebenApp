@@ -67,6 +67,18 @@ class GoalsTest(TestCase):
             roots={1},
         )
 
+    def test_add_goal_to_non_existing_parent(self):
+        self.goals.accept(Add("Should not be added", 10))
+        # Goal is not added
+        assert self.goals.q() == RenderResult(
+            [
+                RenderRow(1, 1, "Root", True, True, True, []),
+            ],
+            roots={1},
+        )
+        # Error message is expected
+        assert len(self.messages) == 1
+
     def test_rename_goal(self) -> None:
         self.goals.accept_all(Add("Boom", 1), Rename("A", 2))
         assert self.goals.q() == RenderResult(

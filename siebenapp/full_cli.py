@@ -1,6 +1,7 @@
 from argparse import ArgumentParser, Namespace
 from os import path
 
+from siebenapp.domain import Add
 from siebenapp.goaltree import Goals
 from siebenapp.layers import all_layers
 from siebenapp.manage import markdown_export
@@ -37,7 +38,15 @@ def add(args: Namespace) -> None:
     goal_file = args.goal_file
     parent = args.parent
     description = args.description
-    print(f'file: {goal_file}, parent: {parent}, description: "{description}"')
+    errors: list[str] = []
+    db = load_raw(goal_file, errors.append)
+    db.accept(Add(description, parent))
+    if errors:
+        for e in errors:
+            print(e)
+        exit(1)
+    else:
+        save(db, goal_file)
 
 
 def insert(args: Namespace) -> None:

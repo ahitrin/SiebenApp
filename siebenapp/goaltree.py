@@ -77,6 +77,9 @@ class Goals(Graph):
 
     def accept_Add(self, command: Add) -> bool:
         add_to: int = command.add_to
+        if add_to not in self.goals:
+            self.error(f"Parent goal doesn't exist: {add_to}")
+            return False
         if self.is_closed(add_to):
             self.error("A new subgoal cannot be added to the closed one")
             return False
