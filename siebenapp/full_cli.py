@@ -34,7 +34,9 @@ def insert(args: Namespace) -> None:
     first = args.first
     second = args.second
     description = args.description
-    print(f'file: {goal_file}, first={first}, second={second}, description: "{description}"')
+    print(
+        f'file: {goal_file}, first={first}, second={second}, description: "{description}"'
+    )
 
 
 def link(args: Namespace) -> None:
@@ -69,19 +71,19 @@ def autolink(args: Namespace) -> None:
 def close_goal(args: Namespace) -> None:
     goal_file = args.goal_file
     goal_id = args.goal_id
-    print(f'file: {goal_file}, goal_id={goal_id}')
+    print(f"file: {goal_file}, goal_id={goal_id}")
 
 
 def open_goal(args: Namespace) -> None:
     goal_file = args.goal_file
     goal_id = args.goal_id
-    print(f'file: {goal_file}, goal_id={goal_id}')
+    print(f"file: {goal_file}, goal_id={goal_id}")
 
 
 def delete_goal(args: Namespace) -> None:
     goal_file = args.goal_file
     goal_id = args.goal_id
-    print(f'file: {goal_file}, goal_id={goal_id}')
+    print(f"file: {goal_file}, goal_id={goal_id}")
 
 
 def main(argv: list[str] | None = None):
@@ -94,7 +96,9 @@ def main(argv: list[str] | None = None):
     parser_new.set_defaults(func=new_file)
 
     parser_view = subparsers.add_parser("view")
-    parser_view.add_argument("-n", "--not-only-open", required=False, action="store_true")
+    parser_view.add_argument(
+        "-n", "--not-only-open", required=False, action="store_true"
+    )
     parser_view.add_argument("-t", "--top", required=False, action="store_true")
     parser_view.add_argument("-p", "--progress", required=False, action="store_true")
     # parser_view.add_argument("-f")  # filter [by what]
