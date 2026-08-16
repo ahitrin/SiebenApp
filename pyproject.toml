@@ -23,16 +23,16 @@ si = "siebenapp.full_cli:main"
 [tool.poetry]
 
 [tool.poetry.group.dev.dependencies]
-hypothesis = "^6.152.7"
-mypy = "^2.1.0"
+hypothesis = "^6.165.2"
+mypy = "^2.3.0"
 mypy-extensions = "^1.1.0"
-pytest = "^9.0.2"
+pytest = "^9.1.1"
 pytest-cov = "^7.1.0"
 black = "^26.5.0"
 approvaltests-minimal = "^18.0.0"
 radon = "^6.0.1"
 pyupgrade = "^3.21.2"
-typing-extensions = "^4.15.0"
+typing-extensions = "^4.16.0"
 py-spy = "^0.4.2"
 
 [build-system]
