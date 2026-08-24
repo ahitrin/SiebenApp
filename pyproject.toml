@@ -23,7 +23,7 @@ si = "siebenapp.full_cli:main"
 [tool.poetry]
 
 [tool.poetry.group.dev.dependencies]
-hypothesis = "^6.165.2"
+hypothesis = "^6.165.10"
 mypy = "^2.3.0"
 mypy-extensions = "^1.1.0"
 pytest = "^9.1.1"
