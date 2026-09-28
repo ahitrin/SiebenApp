@@ -1,7 +1,7 @@
 from argparse import ArgumentParser, Namespace
 from os import path
 
-from siebenapp.domain import Add
+from siebenapp.domain import Add, Insert, ToggleLink, EdgeType
 from siebenapp.goaltree import Goals
 from siebenapp.layers import all_layers
 from siebenapp.manage import markdown_export
@@ -34,13 +34,10 @@ def view(args: Namespace) -> None:
     print(markdown_export(db))
 
 
-def add(args: Namespace) -> None:
-    goal_file = args.goal_file
-    parent = args.parent
-    description = args.description
+def _process_event(goal_file: str, event) -> None:
     errors: list[str] = []
     db = load_raw(goal_file, errors.append)
-    db.accept(Add(description, parent))
+    db.accept(event)
     if errors:
         for e in errors:
             print(e)
@@ -49,14 +46,19 @@ def add(args: Namespace) -> None:
         save(db, goal_file)
 
 
+def add(args: Namespace) -> None:
+    goal_file = args.goal_file
+    parent = args.parent
+    description = args.description
+    _process_event(goal_file, Add(description, parent))
+
+
 def insert(args: Namespace) -> None:
     goal_file = args.goal_file
     first = args.first
     second = args.second
     description = args.description
-    print(
-        f'file: {goal_file}, first={first}, second={second}, description: "{description}"'
-    )
+    _process_event(goal_file, Insert(description, first, second))
 
 
 def link(args: Namespace) -> None:
@@ -64,7 +66,7 @@ def link(args: Namespace) -> None:
     first = args.first
     second = args.second
     link_type = args.link_type
-    print(f'file: {goal_file}, first={first}, second={second}, type: "{link_type}"')
+    _process_event(goal_file, ToggleLink(first, second, link_type))
 
 
 def unlink(args: Namespace) -> None:
@@ -139,7 +141,12 @@ def main(argv: list[str] | None = None):
     parser_link = subparsers.add_parser("link")
     parser_link.add_argument("first", type=int)
     parser_link.add_argument("second", type=int)
-    parser_link.add_argument("link_type", default="--parent")  # TODO: --block --relate
+    parser_link.add_argument(
+        "link_type",
+        type=lambda s: EdgeType[s.upper()],
+        choices=list(EdgeType),
+        default=EdgeType.PARENT,
+    )
     parser_link.set_defaults(func=link)
 
     parser_unlink = subparsers.add_parser("unlink")
