@@ -78,7 +78,13 @@ def link(args: Namespace) -> None:
     def check(db: Graph):
         rr = db.q()
         parent_row = rr.by_id(first)
-        if any([1 for g_id, e_type in parent_row.edges if g_id == second]):
+        if any(
+            [
+                1
+                for g_id, e_type in parent_row.edges
+                if g_id == second and e_type == link_type
+            ]
+        ):
             raise ValueError(f"Link between goals {first} and {second} already exists")
 
     _process_event(goal_file, ToggleLink(first, second, link_type), check)
