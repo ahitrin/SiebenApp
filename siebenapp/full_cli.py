@@ -97,12 +97,11 @@ def unlink(args: Namespace) -> None:
     link_type = EdgeType.PARENT
 
     def check(db: Graph):
-        global link_type
         rr = db.q()
         parent_row = rr.by_id(first)
         e_types = {e_type for g_id, e_type in parent_row.edges if g_id == second}
         if e_types:
-            link_type = e_types.pop()
+            unlink.link_type = e_types.pop()
         else:
             raise ValueError(f"Link between goals {first} and {second} dosen't exist")
 
