@@ -2,7 +2,16 @@ from argparse import ArgumentParser, Namespace
 from os import path
 
 from siebenapp.autolink import ToggleAutoLink
-from siebenapp.domain import Add, Insert, ToggleLink, EdgeType, Graph, Rename
+from siebenapp.domain import (
+    Add,
+    Insert,
+    ToggleLink,
+    EdgeType,
+    Graph,
+    Rename,
+    ToggleClose,
+    Delete,
+)
 from siebenapp.goaltree import Goals
 from siebenapp.layers import all_layers
 from siebenapp.manage import markdown_export
@@ -126,19 +135,37 @@ def autolink(args: Namespace) -> None:
 def close_goal(args: Namespace) -> None:
     goal_file = args.goal_file
     goal_id = args.goal_id
-    print(f"file: {goal_file}, goal_id={goal_id}")
+
+    def check(db):
+        rr = db.q()
+        if goal_id not in rr.index:
+            raise ValueError(f"Goal {goal_id} is not open")
+        if not rr.by_id(goal_id).is_open:
+            raise ValueError(f"Goal {goal_id} is not open")
+
+    _process_event(goal_file, ToggleClose(goal_id), check)
 
 
 def open_goal(args: Namespace) -> None:
     goal_file = args.goal_file
     goal_id = args.goal_id
-    print(f"file: {goal_file}, goal_id={goal_id}")
+
+    def check(db):
+        rr = db.q()
+        if goal_id not in rr.index:
+            # Just ignore this case
+            return
+        if rr.by_id(goal_id).is_open:
+            raise ValueError(f"Goal {goal_id} is already open")
+
+    _process_event(goal_file, ToggleClose(goal_id), check)
 
 
 def delete_goal(args: Namespace) -> None:
     goal_file = args.goal_file
     goal_id = args.goal_id
-    print(f"file: {goal_file}, goal_id={goal_id}")
+
+    _process_event(goal_file, Delete(goal_id))
 
 
 def main(argv: list[str] | None = None):
