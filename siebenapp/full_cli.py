@@ -1,7 +1,8 @@
 from argparse import ArgumentParser, Namespace
 from os import path
 
-from siebenapp.domain import Add, Insert, ToggleLink, EdgeType, Graph
+from siebenapp.autolink import ToggleAutoLink
+from siebenapp.domain import Add, Insert, ToggleLink, EdgeType, Graph, Rename
 from siebenapp.goaltree import Goals
 from siebenapp.layers import all_layers
 from siebenapp.manage import markdown_export
@@ -112,14 +113,14 @@ def rename(args: Namespace) -> None:
     goal_file = args.goal_file
     goal_id = args.goal_id
     description = args.description
-    print(f'file: {goal_file}, first={goal_id}. description="{description}"')
+    _process_event(goal_file, Rename(description, goal_id))
 
 
 def autolink(args: Namespace) -> None:
     goal_file = args.goal_file
     goal_id = args.goal_id
     tag = args.tag
-    print(f'file: {goal_file}, goal_id={goal_id}. tag="{tag}"')
+    _process_event(goal_file, ToggleAutoLink(tag, goal_id))
 
 
 def close_goal(args: Namespace) -> None:
