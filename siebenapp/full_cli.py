@@ -1,7 +1,7 @@
 from argparse import ArgumentParser, Namespace
 from os import path
 
-from siebenapp.domain import Add, Insert, ToggleLink, EdgeType
+from siebenapp.domain import Add, Insert, ToggleLink, EdgeType, Graph
 from siebenapp.goaltree import Goals
 from siebenapp.layers import all_layers
 from siebenapp.manage import markdown_export
@@ -34,9 +34,17 @@ def view(args: Namespace) -> None:
     print(markdown_export(db))
 
 
-def _process_event(goal_file: str, event) -> None:
+def _process_event(goal_file: str, event, check_fn=None) -> None:
     errors: list[str] = []
     db = load_raw(goal_file, errors.append)
+
+    if check_fn is not None:
+        try:
+            check_fn(db)
+        except ValueError as e:
+            print(str(e))
+            exit(1)
+
     db.accept(event)
     if errors:
         for e in errors:
@@ -66,14 +74,33 @@ def link(args: Namespace) -> None:
     first = args.first
     second = args.second
     link_type = args.link_type
-    _process_event(goal_file, ToggleLink(first, second, link_type))
+
+    def check(db: Graph):
+        rr = db.q()
+        parent_row = rr.by_id(first)
+        if any([1 for g_id, e_type in parent_row.edges if g_id == second]):
+            raise ValueError(f"Link between goals {first} and {second} already exists")
+
+    _process_event(goal_file, ToggleLink(first, second, link_type), check)
 
 
 def unlink(args: Namespace) -> None:
     goal_file = args.goal_file
     first = args.first
     second = args.second
-    print(f'file: {goal_file}, first={first}, second={second}"')
+    link_type = EdgeType.PARENT
+
+    def check(db: Graph):
+        global link_type
+        rr = db.q()
+        parent_row = rr.by_id(first)
+        e_types = {e_type for g_id, e_type in parent_row.edges if g_id == second}
+        if e_types:
+            link_type = e_types.pop()
+        else:
+            raise ValueError(f"Link between goals {first} and {second} dosen't exist")
+
+    _process_event(goal_file, ToggleLink(first, second, link_type), check)
 
 
 def rename(args: Namespace) -> None:
