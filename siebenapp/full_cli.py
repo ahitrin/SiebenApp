@@ -51,8 +51,8 @@ def _process_event(goal_file: str, event, check_fn=None) -> None:
     if check_fn is not None:
         try:
             check_fn(db)
-        except ValueError as e:
-            print(str(e))
+        except ValueError as err:
+            print(str(err))
             exit(1)
 
     db.accept(event)
@@ -104,18 +104,18 @@ def unlink(args: Namespace) -> None:
     goal_file = args.goal_file
     first = args.first
     second = args.second
-    link_type = EdgeType.PARENT
+    link_type = [EdgeType.PARENT]
 
     def check(db: Graph):
         rr = db.q()
         parent_row = rr.by_id(first)
         e_types = {e_type for g_id, e_type in parent_row.edges if g_id == second}
         if e_types:
-            unlink.link_type = e_types.pop()
+            link_type[0] = e_types.pop()
         else:
             raise ValueError(f"Link between goals {first} and {second} dosen't exist")
 
-    _process_event(goal_file, ToggleLink(first, second, link_type), check)
+    _process_event(goal_file, ToggleLink(first, second, link_type[0]), check)
 
 
 def rename(args: Namespace) -> None:
