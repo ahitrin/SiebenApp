@@ -169,7 +169,12 @@ def delete_goal(args: Namespace) -> None:
 
 
 def main(argv: list[str] | None = None):
-    parser = ArgumentParser()
+    parser = ArgumentParser(
+        description=(
+            "SiebenApp is a CLI tool for managing goal trees. It allows you to "
+            "define, organize, and visualize project goals and their relationships."
+        )
+    )
     parser.add_argument("goal_file")
     subparsers = parser.add_subparsers(title="commands")
 
