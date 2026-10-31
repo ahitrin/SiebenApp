@@ -39,7 +39,7 @@ def view(args: argparse.Namespace) -> None:
     filter_line = args.filter
     zoom_root = args.zoom
     show_progress = args.progress
-    db = load_raw(goal_file)
+    db = load_raw(goal_file, use_selects=False)
     if show_closed:
         db.accept(ToggleOpenView())
     if show_top:

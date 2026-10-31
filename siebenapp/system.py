@@ -184,7 +184,11 @@ def load(filename: str, message_fn: Callable[[str], None] | None = None) -> Enum
     return Enumeration(load_raw(filename, message_fn))
 
 
-def load_raw(filename: str, message_fn: Callable[[str], None] | None = None) -> Graph:
+def load_raw(
+    filename: str,
+    message_fn: Callable[[str], None] | None = None,
+    use_selects: bool = True,
+) -> Graph:
     autolink_data: AutoLinkData = []
     if path.isfile(filename):
         connection = sqlite3.connect(filename)
@@ -197,7 +201,7 @@ def load_raw(filename: str, message_fn: Callable[[str], None] | None = None) -> 
         goals = Goals.build(names, edges, message_fn)
     else:
         goals = Goals("Rename me", message_fn)
-    result = all_layers(goals, autolink_data)
+    result = all_layers(goals, autolink_data, use_selects)
     result.verify()
     return result
 

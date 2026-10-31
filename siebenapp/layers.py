@@ -19,19 +19,19 @@ def persistent_layers(
     return AutoLink(graph, autolink_data)
 
 
-def view_layers(graph: Graph) -> Graph:
+def view_layers(graph: Graph, use_selects: bool = True) -> Graph:
     """Wrap given graph with all standard non-persistent (view) logic layers"""
-    return SwitchableView(
-        FilterView(OpenView(ProgressView(ZoomView(SelectableView(graph)))))
-    )
+    inner_layer = SelectableView(graph) if use_selects else graph
+    return SwitchableView(FilterView(OpenView(ProgressView(ZoomView(inner_layer)))))
 
 
 def all_layers(
     graph: Goals,
     autolink_data: AutoLinkData | None = None,
+    use_selects: bool = True,
 ) -> Graph:
     """Wrap given Goals instance with all default logic layers"""
-    return view_layers(persistent_layers(graph, autolink_data))
+    return view_layers(persistent_layers(graph, autolink_data), use_selects)
 
 
 G = TypeVar("G", bound=Graph)
