@@ -349,3 +349,8 @@ def main(argv: list[str] | None = None):
         args.func(args)
     else:
         parser.print_help()
+
+
+if __name__ == "__main__":
+    # For debugging
+    main(sys.argv[1:])
