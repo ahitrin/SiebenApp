@@ -1,5 +1,4 @@
 import io
-import sys
 from dataclasses import asdict
 from pprint import pprint
 from typing import Any
@@ -68,10 +67,6 @@ def test_render_example(default_tree) -> None:
         verify_file(out.getvalue())
 
 
-@pytest.mark.skipif(
-    sys.version_info >= (3, 12),
-    reason="Minor differences in printing of float values in py312",
-)
 def test_render_new_example(default_tree) -> None:
     width = 4
     listener: list[tuple[str, Any]] = []
