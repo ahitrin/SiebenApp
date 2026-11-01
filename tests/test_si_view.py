@@ -38,17 +38,36 @@ def format_quote(s: str) -> str:
 
 
 def test_default_view(capsys):
-    file_path = Path(__file__).parent / 'asset' / 'si-example.db'
+    file_path = Path(__file__).parent / "asset" / "si-example.db"
     db = load(str(file_path))
     db.accept(ToggleOpenView())
     rr = db.q()
     content_orig = "\n".join([fmt(rr, row, 60) for row in rr.rows])
-    full_cli.main([str(file_path), 'view'])
+    full_cli.main([str(file_path), "view"])
     out_err = capsys.readouterr()
     content = TEST_TEMPLATE.format(
         name="Default view",
         content_orig=content_orig,
         args="",
+        status="passes",
+        stdout=format_quote(out_err.out),
+        stderr=format_quote(out_err.err),
+    )
+    verify_file(content, ".md")
+
+
+def test_show_closed(capsys):
+    file_path = Path(__file__).parent / "asset" / "si-example.db"
+    db = load(str(file_path))
+    db.accept(ToggleOpenView())
+    rr = db.q()
+    content_orig = "\n".join([fmt(rr, row, 60) for row in rr.rows])
+    full_cli.main([str(file_path), "view", "-n"])
+    out_err = capsys.readouterr()
+    content = TEST_TEMPLATE.format(
+        name="Show closed",
+        content_orig=content_orig,
+        args="-n",
         status="passes",
         stdout=format_quote(out_err.out),
         stderr=format_quote(out_err.err),
