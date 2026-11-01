@@ -37,39 +37,28 @@ def format_quote(s: str) -> str:
     return "\n".join("> " + l for l in s.splitlines())
 
 
-def test_default_view(capsys):
+def _view_test(capsys, name: str, si_args: list[str]):
     file_path = Path(__file__).parent / "asset" / "si-example.db"
     db = load(str(file_path))
     db.accept(ToggleOpenView())
     rr = db.q()
     content_orig = "\n".join([fmt(rr, row, 60) for row in rr.rows])
-    full_cli.main([str(file_path), "view"])
+    full_cli.main([str(file_path), "view"] + si_args)
     out_err = capsys.readouterr()
     content = TEST_TEMPLATE.format(
-        name="Default view",
+        name=name,
         content_orig=content_orig,
-        args="",
+        args=" ".join(si_args),
         status="passes",
         stdout=format_quote(out_err.out),
         stderr=format_quote(out_err.err),
     )
     verify_file(content, ".md")
+
+
+def test_default_view(capsys):
+    _view_test(capsys, "Default view", [])
 
 
 def test_show_closed(capsys):
-    file_path = Path(__file__).parent / "asset" / "si-example.db"
-    db = load(str(file_path))
-    db.accept(ToggleOpenView())
-    rr = db.q()
-    content_orig = "\n".join([fmt(rr, row, 60) for row in rr.rows])
-    full_cli.main([str(file_path), "view", "-n"])
-    out_err = capsys.readouterr()
-    content = TEST_TEMPLATE.format(
-        name="Show closed",
-        content_orig=content_orig,
-        args="-n",
-        status="passes",
-        stdout=format_quote(out_err.out),
-        stderr=format_quote(out_err.err),
-    )
-    verify_file(content, ".md")
+    _view_test(capsys, "Show closed", ["-n"])
