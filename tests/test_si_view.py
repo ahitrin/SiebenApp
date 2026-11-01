@@ -43,7 +43,7 @@ def _view_test(capsys, name: str, si_args: list[str]):
     db.accept(ToggleOpenView())
     rr = db.q()
     content_orig = "\n".join([fmt(rr, row, 60) for row in rr.rows])
-    full_cli.main([str(file_path), "view"] + si_args)
+    full_cli.main([str(file_path), "view"] + [l.replace('"', "") for l in si_args])
     out_err = capsys.readouterr()
     content = TEST_TEMPLATE.format(
         name=name,
@@ -78,3 +78,7 @@ def test_show_filter(capsys):
 
 def test_show_zoom(capsys):
     _view_test(capsys, "Show zoom", ["-z", "2"])
+
+
+def test_closed_filter(capsys):
+    _view_test(capsys, "Closed + filter", ["-n", "-f", '"goal a"'])
