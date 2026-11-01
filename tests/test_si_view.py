@@ -82,3 +82,19 @@ def test_show_zoom(capsys):
 
 def test_closed_filter(capsys):
     _view_test(capsys, "Closed + filter", ["-n", "-f", '"goal a"'])
+
+
+def test_zoom_progress(capsys):
+    _view_test(capsys, "Zoom + progress", ["-z", "3", "-p"])
+
+
+def test_closed_top(capsys):
+    _view_test(capsys, "Closed + top", ["-n", "-t"])
+
+
+def test_progress_top(capsys):
+    _view_test(capsys, "Progress + top", ["-p", "-t"])
+
+
+def test_filter_zoom(capsys):
+    _view_test(capsys, "Filter + zoom", ["-f", "A2", "-z", "3"])
