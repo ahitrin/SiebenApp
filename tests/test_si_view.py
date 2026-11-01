@@ -62,3 +62,19 @@ def test_default_view(capsys):
 
 def test_show_closed(capsys):
     _view_test(capsys, "Show closed", ["-n"])
+
+
+def test_show_top(capsys):
+    _view_test(capsys, "Show top", ["-t"])
+
+
+def test_show_progress(capsys):
+    _view_test(capsys, "Show progress", ["-p"])
+
+
+def test_show_filter(capsys):
+    _view_test(capsys, "Show filter", ["-f", "none"])
+
+
+def test_show_zoom(capsys):
+    _view_test(capsys, "Show zoom", ["-z", "2"])
