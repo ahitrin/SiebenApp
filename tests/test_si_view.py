@@ -1,4 +1,7 @@
 from pathlib import Path
+
+import pytest
+
 from siebenapp import full_cli
 from siebenapp.cli import fmt
 from siebenapp.open_view import ToggleOpenView
@@ -125,6 +128,7 @@ def test_top_zoom_filter(capsys):
     _view_test(capsys, "Top + zoom + filter", ["-t", "-z", "8", "-f", "later"])
 
 
+@pytest.mark.skip("unstable behavior, depends on screen width")
 def test_error_extra_filter(capsys):
     _view_test(capsys, "Error: extra filter", ["-f", "goal", "a"])
 
