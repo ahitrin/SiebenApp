@@ -1,0 +1,93 @@
+import shutil
+from pathlib import Path
+
+from siebenapp import full_cli
+from siebenapp.cli import fmt
+from siebenapp.open_view import ToggleOpenView
+from siebenapp.system import load
+from tests.test_cli import verify_file
+
+TEST_TEMPLATE_EDIT = """
+# {name}
+
+## Given
+
+we have a goal file with the following content:
+```
+{content_orig}
+```
+
+## When
+
+a user calls `si` with the following arguments:
+
+```shell
+si <file.db> {args}
+```
+
+## Then
+
+an utility _{status}_ with the following output:
+{stdout}
+
+and the following error:
+```
+{stderr}
+```
+
+and goal file content will be the following:
+```
+{content_after}
+```
+"""
+
+
+def format_quote(s: str) -> str:
+    """Adds markdown quote sign (>) to every line of provided text."""
+    return "\n".join("> " + l for l in s.splitlines())
+
+
+def cleanup_stderr(s: str) -> str:
+    candidates = {"_jb_pytest_runner.py": 24, "pytest": 6}
+    for c, sp in candidates.items():
+        if c not in s:
+            continue
+        s = s.replace(c, "si")
+        s = s.replace(" " * sp, "  ")
+    return s
+
+
+def full_db_content(file_path):
+    db = load(str(file_path))
+    db.accept(ToggleOpenView())
+    rr = db.q()
+    db_content = "\n".join([fmt(rr, row, 60) for row in rr.rows])
+    return db_content
+
+
+def _edit_test(capsys, tmp_path, name: str, si_args: list[str]):
+    src_path = Path(__file__).parent / "asset" / "si-example.db"
+    file_path = tmp_path / "si.db"
+    shutil.copy(src_path, file_path)
+    content_orig = full_db_content(file_path)
+    status = "passes"
+    try:
+        full_cli.main([str(file_path)] + [l.replace('"', "") for l in si_args])
+    except SystemExit as sys_exit:
+        status = f"exits with code {sys_exit.code}"
+    out_err = capsys.readouterr()
+    content_after = full_db_content(file_path)
+    content = TEST_TEMPLATE_EDIT.format(
+        name=name,
+        content_orig=content_orig,
+        args=" ".join(si_args),
+        status=status,
+        stdout=format_quote(out_err.out),
+        stderr=cleanup_stderr(out_err.err),
+        content_after=content_after,
+    )
+    verify_file(content, ".md")
+
+
+def test_add(capsys, tmp_path):
+    _edit_test(capsys, tmp_path, "Add a goal", ["add", "5", '"New subgoal"'])

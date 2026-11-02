@@ -53,12 +53,17 @@ def cleanup_stderr(s: str) -> str:
     return s
 
 
-def _view_test(capsys, name: str, si_args: list[str]):
-    file_path = Path(__file__).parent / "asset" / "si-example.db"
+def full_db_content(file_path):
     db = load(str(file_path))
     db.accept(ToggleOpenView())
     rr = db.q()
-    content_orig = "\n".join([fmt(rr, row, 60) for row in rr.rows])
+    db_content = "\n".join([fmt(rr, row, 60) for row in rr.rows])
+    return db_content
+
+
+def _view_test(capsys, name: str, si_args: list[str]):
+    file_path = Path(__file__).parent / "asset" / "si-example.db"
+    content_orig = full_db_content(file_path)
     status = "passes"
     try:
         full_cli.main([str(file_path), "view"] + [l.replace('"', "") for l in si_args])
