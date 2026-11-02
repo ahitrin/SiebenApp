@@ -66,7 +66,7 @@ def _view_test(capsys, name: str, si_args: list[str]):
     content_orig = full_db_content(file_path)
     status = "passes"
     try:
-        full_cli.main([str(file_path), "view"] + [l.replace('"', "") for l in si_args])
+        full_cli.main([str(file_path)] + [l.replace('"', "") for l in si_args])
     except SystemExit as sys_exit:
         status = f"exits with code {sys_exit.code}"
     out_err = capsys.readouterr()
@@ -82,61 +82,61 @@ def _view_test(capsys, name: str, si_args: list[str]):
 
 
 def test_default_view(capsys):
-    _view_test(capsys, "Default view", [])
+    _view_test(capsys, "Default view", ["view"])
 
 
 def test_show_closed(capsys):
-    _view_test(capsys, "Show closed", ["-n"])
+    _view_test(capsys, "Show closed", ["view", "-n"])
 
 
 def test_show_top(capsys):
-    _view_test(capsys, "Show top", ["-t"])
+    _view_test(capsys, "Show top", ["view", "-t"])
 
 
 def test_show_progress(capsys):
-    _view_test(capsys, "Show progress", ["-p"])
+    _view_test(capsys, "Show progress", ["view", "-p"])
 
 
 def test_show_filter(capsys):
-    _view_test(capsys, "Show filter", ["-f", "none"])
+    _view_test(capsys, "Show filter", ["view", "-f", "none"])
 
 
 def test_show_zoom(capsys):
-    _view_test(capsys, "Show zoom", ["-z", "2"])
+    _view_test(capsys, "Show zoom", ["view", "-z", "2"])
 
 
 def test_closed_filter(capsys):
-    _view_test(capsys, "Closed + filter", ["-n", "-f", '"goal a"'])
+    _view_test(capsys, "Closed + filter", ["view", "-n", "-f", '"goal a"'])
 
 
 def test_zoom_progress(capsys):
-    _view_test(capsys, "Zoom + progress", ["-z", "3", "-p"])
+    _view_test(capsys, "Zoom + progress", ["view", "-z", "3", "-p"])
 
 
 def test_closed_top(capsys):
-    _view_test(capsys, "Closed + top", ["-n", "-t"])
+    _view_test(capsys, "Closed + top", ["view", "-n", "-t"])
 
 
 def test_progress_top(capsys):
-    _view_test(capsys, "Progress + top", ["-p", "-t"])
+    _view_test(capsys, "Progress + top", ["view", "-p", "-t"])
 
 
 def test_filter_zoom(capsys):
-    _view_test(capsys, "Filter + zoom", ["-f", "A2", "-z", "3"])
+    _view_test(capsys, "Filter + zoom", ["view", "-f", "A2", "-z", "3"])
 
 
 def test_progress_closed_zoom(capsys):
-    _view_test(capsys, "Progress + closed + zoom", ["-p", "-n", "-z", "2"])
+    _view_test(capsys, "Progress + closed + zoom", ["view", "-p", "-n", "-z", "2"])
 
 
 def test_top_zoom_filter(capsys):
-    _view_test(capsys, "Top + zoom + filter", ["-t", "-z", "8", "-f", "later"])
+    _view_test(capsys, "Top + zoom + filter", ["view", "-t", "-z", "8", "-f", "later"])
 
 
 @pytest.mark.skip("unstable behavior, depends on screen width")
 def test_error_extra_filter(capsys):
-    _view_test(capsys, "Error: extra filter", ["-f", "goal", "a"])
+    _view_test(capsys, "Error: extra filter", ["view", "-f", "goal", "a"])
 
 
 def test_error_zoom_wrong_goal_id(capsys):
-    _view_test(capsys, "Error: wrong goal id on zoom", ["-z", "12"])
+    _view_test(capsys, "Error: wrong goal id on zoom", ["view", "-z", "12"])

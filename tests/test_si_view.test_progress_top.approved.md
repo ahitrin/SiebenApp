@@ -21,7 +21,7 @@ we have a goal file with the following content:
 a user calls `si` with the following arguments:
 
 ```shell
-si <file.db> -p -t
+si <file.db> view -p -t
 ```
 
 ## Then
