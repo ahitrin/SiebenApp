@@ -83,6 +83,9 @@ class Goals(Graph):
         if self.is_closed(add_to):
             self.error("A new subgoal cannot be added to the closed one")
             return False
+        if not command.name:
+            self.error("New subgoal description cannot be empty")
+            return False
         next_id: int = self._add_no_link(command.name)
         self.accept_ToggleLink(ToggleLink(add_to, next_id, command.edge_type))
         return True

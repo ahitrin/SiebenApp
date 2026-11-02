@@ -91,3 +91,24 @@ def _edit_test(capsys, tmp_path, name: str, si_args: list[str]):
 
 def test_add(capsys, tmp_path):
     _edit_test(capsys, tmp_path, "Add a goal", ["add", "5", '"New subgoal"'])
+
+
+def test_add_error_incorrect_goal(capsys, tmp_path):
+    _edit_test(capsys, tmp_path, "Add to an incorrect goal", ["add", "15", "failed"])
+
+
+def test_add_error_extra_description(capsys, tmp_path):
+    _edit_test(
+        capsys,
+        tmp_path,
+        "Add with extra arguments",
+        ["add", "1", "extra", "arguments"],
+    )
+
+
+def test_add_error_missing_description(capsys, tmp_path):
+    _edit_test(capsys, tmp_path, "Add with missing description", ["add", "6"])
+
+
+def test_add_error_empty_description(capsys, tmp_path):
+    _edit_test(capsys, tmp_path, "Add with empty description", ["add", "6", '""'])
