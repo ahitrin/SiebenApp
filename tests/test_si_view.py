@@ -126,4 +126,8 @@ def test_top_zoom_filter(capsys):
 
 
 def test_error_extra_filter(capsys):
-    _view_test(capsys, "Show filter", ["-f", "goal", "a"])
+    _view_test(capsys, "Error: extra filter", ["-f", "goal", "a"])
+
+
+def test_error_zoom_wrong_goal_id(capsys):
+    _view_test(capsys, "Error: wrong goal id on zoom", ["-z", "12"])

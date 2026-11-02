@@ -39,7 +39,8 @@ def view(args: argparse.Namespace) -> None:
     filter_line = args.filter
     zoom_root = args.zoom
     show_progress = args.progress
-    db = load_raw(goal_file, use_selects=False)
+    messages: list[str] = []
+    db = load_raw(goal_file, message_fn=messages.append, use_selects=False)
     if show_closed:
         db.accept(ToggleOpenView())
     if show_top:
@@ -50,7 +51,11 @@ def view(args: argparse.Namespace) -> None:
         db.accept(FilterBy(filter_line))
     if zoom_root:
         db.accept(ToggleZoom(zoom_root))
-    print(markdown_export(db))
+    if not messages:
+        print(markdown_export(db))
+    else:
+        for m in messages:
+            print(m)
 
 
 def _process_event(goal_file: str, event, check_fn=None) -> None:
