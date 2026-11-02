@@ -33,4 +33,6 @@ an utility _passes_ with the following output:
 > * [ ] **5** Subgoal A2 [Id: 5,Progress: 0% (0/1)]
 
 and the following error:
+```
 
+```

@@ -30,4 +30,6 @@ an utility _passes_ with the following output:
 > * [ ] **5** Subgoal A2 [Filter: a2]
 
 and the following error:
+```
 
+```

@@ -29,12 +29,25 @@ an utility _{status}_ with the following output:
 {stdout}
 
 and the following error:
+```
 {stderr}
+```
 """
 
 
 def format_quote(s: str) -> str:
+    """Adds markdown quote sign (>) to every line of provided text."""
     return "\n".join("> " + l for l in s.splitlines())
+
+
+def cleanup_stderr(s: str) -> str:
+    candidates = {"_jb_pytest_runner.py": 24, "pytest": 6}
+    for c, sp in candidates.items():
+        if c not in s:
+            continue
+        s = s.replace(c, "si")
+        s = s.replace(" " * sp, "  ")
+    return s
 
 
 def _view_test(capsys, name: str, si_args: list[str]):
@@ -43,15 +56,19 @@ def _view_test(capsys, name: str, si_args: list[str]):
     db.accept(ToggleOpenView())
     rr = db.q()
     content_orig = "\n".join([fmt(rr, row, 60) for row in rr.rows])
-    full_cli.main([str(file_path), "view"] + [l.replace('"', "") for l in si_args])
+    status = "passes"
+    try:
+        full_cli.main([str(file_path), "view"] + [l.replace('"', "") for l in si_args])
+    except SystemExit as sys_exit:
+        status = f"exits with code {sys_exit.code}"
     out_err = capsys.readouterr()
     content = TEST_TEMPLATE.format(
         name=name,
         content_orig=content_orig,
         args=" ".join(si_args),
-        status="passes",
+        status=status,
         stdout=format_quote(out_err.out),
-        stderr=format_quote(out_err.err),
+        stderr=cleanup_stderr(out_err.err),
     )
     verify_file(content, ".md")
 
@@ -106,3 +123,7 @@ def test_progress_closed_zoom(capsys):
 
 def test_top_zoom_filter(capsys):
     _view_test(capsys, "Top + zoom + filter", ["-t", "-z", "8", "-f", "later"])
+
+
+def test_error_extra_filter(capsys):
+    _view_test(capsys, "Show filter", ["-f", "goal", "a"])
