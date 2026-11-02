@@ -65,7 +65,8 @@ def full_db_content(file_path):
     return db_content
 
 
-def _edit_test(capsys, tmp_path, name: str, si_args: list[str]):
+def _edit_test(monkeypatch, capsys, tmp_path, name: str, si_args: list[str]):
+    monkeypatch.setenv("COLUMNS", "80")
     src_path = Path(__file__).parent / "asset" / "si-example.db"
     file_path = tmp_path / "si.db"
     shutil.copy(src_path, file_path)
@@ -89,16 +90,25 @@ def _edit_test(capsys, tmp_path, name: str, si_args: list[str]):
     verify_file(content, ".md")
 
 
-def test_add(capsys, tmp_path):
-    _edit_test(capsys, tmp_path, "Add a goal", ["add", "5", '"New subgoal"'])
-
-
-def test_add_error_incorrect_goal(capsys, tmp_path):
-    _edit_test(capsys, tmp_path, "Add to an incorrect goal", ["add", "15", "failed"])
-
-
-def test_add_error_extra_description(capsys, tmp_path):
+def test_add(monkeypatch, capsys, tmp_path):
     _edit_test(
+        monkeypatch, capsys, tmp_path, "Add a goal", ["add", "5", '"New subgoal"']
+    )
+
+
+def test_add_error_incorrect_goal(monkeypatch, capsys, tmp_path):
+    _edit_test(
+        monkeypatch,
+        capsys,
+        tmp_path,
+        "Add to an incorrect goal",
+        ["add", "15", "failed"],
+    )
+
+
+def test_add_error_extra_description(monkeypatch, capsys, tmp_path):
+    _edit_test(
+        monkeypatch,
         capsys,
         tmp_path,
         "Add with extra arguments",
@@ -106,9 +116,13 @@ def test_add_error_extra_description(capsys, tmp_path):
     )
 
 
-def test_add_error_missing_description(capsys, tmp_path):
-    _edit_test(capsys, tmp_path, "Add with missing description", ["add", "6"])
+def test_add_error_missing_description(monkeypatch, capsys, tmp_path):
+    _edit_test(
+        monkeypatch, capsys, tmp_path, "Add with missing description", ["add", "6"]
+    )
 
 
-def test_add_error_empty_description(capsys, tmp_path):
-    _edit_test(capsys, tmp_path, "Add with empty description", ["add", "6", '""'])
+def test_add_error_empty_description(monkeypatch, capsys, tmp_path):
+    _edit_test(
+        monkeypatch, capsys, tmp_path, "Add with empty description", ["add", "6", '""']
+    )
