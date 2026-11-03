@@ -163,6 +163,12 @@ class Goals(Graph):
         if (lower := command.lower) == (upper := command.upper):
             self.error("A new goal can be inserted only between two different goals")
             return
+        if lower not in self.goals:
+            self.error("Id of a lower goal is unknown")
+            return
+        if upper not in self.goals:
+            self.error("Id of an upper goal is unknown")
+            return
         edge_type: EdgeType = self.edges_forward[lower].get(upper, EdgeType.BLOCKER)
         if self.accept_Add(Add(command.name, lower, edge_type)):
             key: int = len(self.goals)

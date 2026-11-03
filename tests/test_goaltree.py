@@ -131,6 +131,32 @@ class GoalsTest(TestCase):
             roots={1},
         )
 
+    def test_insert_goal_with_non_existing_lower_goal(self):
+        self.goals.accept(Add("Just a subgoal", 1))
+        self.goals.accept(Insert("Bad one", 7, 2))
+        # Should not add this goal
+        assert self.goals.q() == RenderResult(
+            [
+                RenderRow(1, 1, "Root", True, False, True, [child(2)]),
+                RenderRow(2, 2, "Just a subgoal", True, True, True, []),
+            ],
+            roots={1},
+        )
+        # Error message must appear
+        assert len(self.messages) == 1
+
+    def test_insert_goal_with_non_existing_upper_goal(self):
+        self.goals.accept(Insert("Bad one", 1, 7))
+        # Should not add this goal
+        assert self.goals.q() == RenderResult(
+            [
+                RenderRow(1, 1, "Root", True, True, True, []),
+            ],
+            roots={1},
+        )
+        # Error message must appear
+        assert len(self.messages) == 1
+
     def test_reverse_insertion(self) -> None:
         """Not sure whether such trick should be legal"""
         self.goals = self.build(open_(1, "Root", [2]), open_(2, "Top"))

@@ -129,3 +129,73 @@ def test_add_error_empty_description(monkeypatch, capsys, tmp_path):
     _edit_test(
         monkeypatch, capsys, tmp_path, "Add with empty description", ["add", "6", '""']
     )
+
+
+def test_insert_correct(monkeypatch, capsys, tmp_path):
+    _edit_test(
+        monkeypatch,
+        capsys,
+        tmp_path,
+        "Correct insert",
+        ["insert", "2", "5", '"Between A and A2"'],
+    )
+
+
+def test_insert_error_no_description(monkeypatch, capsys, tmp_path):
+    _edit_test(
+        monkeypatch,
+        capsys,
+        tmp_path,
+        "Insert without goal description",
+        ["insert", "2", "5"],
+    )
+
+
+def test_insert_error_empty_description(monkeypatch, capsys, tmp_path):
+    _edit_test(
+        monkeypatch,
+        capsys,
+        tmp_path,
+        "Insert with empty goal description",
+        ["insert", "2", "5", ""],
+    )
+
+
+def test_insert_error_extra_description(monkeypatch, capsys, tmp_path):
+    _edit_test(
+        monkeypatch,
+        capsys,
+        tmp_path,
+        "Insert with extra description",
+        ["insert", "2", "5", "I", "forgot", "to", "add", "quotes"],
+    )
+
+
+def test_insert_error_wrong_goal_order(monkeypatch, capsys, tmp_path):
+    _edit_test(
+        monkeypatch,
+        capsys,
+        tmp_path,
+        "Insert: wrong goal order",
+        ["insert", "5", "2", '"Create a loop with insert"'],
+    )
+
+
+def test_insert_error_incorrect_lower_goal(monkeypatch, capsys, tmp_path):
+    _edit_test(
+        monkeypatch,
+        capsys,
+        tmp_path,
+        "Insert: incorrect lower goal",
+        ["insert", "10", "2", '"Incorrect lower goal"'],
+    )
+
+
+def test_insert_error_incorrect_upper_goal(monkeypatch, capsys, tmp_path):
+    _edit_test(
+        monkeypatch,
+        capsys,
+        tmp_path,
+        "Insert: incorrect lower goal",
+        ["insert", "2", "10", '"Incorrect upper goal"'],
+    )
