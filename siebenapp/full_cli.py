@@ -187,6 +187,13 @@ def delete_goal(args: argparse.Namespace) -> None:
         )
 
 
+def _link_type(s: str):
+    try:
+        return EdgeType[s.upper()]
+    except KeyError:
+        return s
+
+
 def main(argv: list[str] | None = None):
     parser = argparse.ArgumentParser(
         description=(
@@ -278,7 +285,7 @@ def main(argv: list[str] | None = None):
     parser_link.add_argument("second", type=int, help="ID of an 'upper' goal to link.")
     parser_link.add_argument(
         "link_type",
-        type=lambda s: EdgeType[s.upper()],
+        type=_link_type,
         choices=list(EdgeType),
         help="New link type.",
     )

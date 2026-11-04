@@ -230,3 +230,33 @@ def test_link_relation(monkeypatch, capsys, tmp_path):
         "Link with just relation",
         ["link", "6", "7", "relation"],
     )
+
+
+def test_link_change_type(monkeypatch, capsys, tmp_path):
+    _edit_test(
+        monkeypatch,
+        capsys,
+        tmp_path,
+        "Change link type",
+        ["link", "7", "5", "relation"],
+    )
+
+
+def test_link_error_new_link_of_unknown_type(monkeypatch, capsys, tmp_path):
+    _edit_test(
+        monkeypatch,
+        capsys,
+        tmp_path,
+        "New link of unknown type",
+        ["link", "1", "5", "unknown"],
+    )
+
+
+def test_link_error_change_type_to_unknown(monkeypatch, capsys, tmp_path):
+    _edit_test(
+        monkeypatch,
+        capsys,
+        tmp_path,
+        "Unknown link type replaces known",
+        ["link", "7", "5", "unknown"],
+    )

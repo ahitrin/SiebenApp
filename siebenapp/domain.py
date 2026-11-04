@@ -9,6 +9,9 @@ class EdgeType(IntEnum):
     BLOCKER = 2
     PARENT = 3
 
+    def __str__(self):
+        return self.name.lower()
+
 
 @dataclass(frozen=True)
 class Edge:
