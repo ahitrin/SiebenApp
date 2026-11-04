@@ -200,3 +200,33 @@ def test_insert_error_incorrect_upper_goal(monkeypatch, capsys, tmp_path):
         "Insert: incorrect lower goal",
         ["insert", "2", "10", '"Incorrect upper goal"'],
     )
+
+
+def test_link_parent(monkeypatch, capsys, tmp_path):
+    _edit_test(
+        monkeypatch,
+        capsys,
+        tmp_path,
+        "Link with parent/child relation",
+        ["link", "2", "7", "parent"],
+    )
+
+
+def test_link_blocker(monkeypatch, capsys, tmp_path):
+    _edit_test(
+        monkeypatch,
+        capsys,
+        tmp_path,
+        "Link with blocker relation",
+        ["link", "7", "6", "blocker"],
+    )
+
+
+def test_link_relation(monkeypatch, capsys, tmp_path):
+    _edit_test(
+        monkeypatch,
+        capsys,
+        tmp_path,
+        "Link with just relation",
+        ["link", "6", "7", "relation"],
+    )
