@@ -278,7 +278,7 @@ def main(argv: list[str] | None = None):
     parser_link.add_argument("second", type=int, help="ID of an 'upper' goal to link.")
     parser_link.add_argument(
         "link_type",
-        choices=['relation', 'blocker', 'parent'],
+        choices=["relation", "blocker", "parent"],
         help="New link type.",
     )
     parser_link.set_defaults(func=link)

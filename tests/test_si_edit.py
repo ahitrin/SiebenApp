@@ -1,4 +1,5 @@
 import shutil
+import sys
 from pathlib import Path
 
 import pytest
@@ -243,6 +244,10 @@ def test_link_change_type(monkeypatch, capsys, tmp_path):
     )
 
 
+@pytest.mark.skipif(
+    list(sys.version_info)[:2] == [3, 12],
+    reason="Python 3.12 is very special in help formatting",
+)
 def test_link_error_new_link_of_unknown_type(monkeypatch, capsys, tmp_path):
     _edit_test(
         monkeypatch,
@@ -253,6 +258,10 @@ def test_link_error_new_link_of_unknown_type(monkeypatch, capsys, tmp_path):
     )
 
 
+@pytest.mark.skipif(
+    list(sys.version_info)[:2] == [3, 12],
+    reason="Python 3.12 is very special in help formatting",
+)
 def test_link_error_change_type_to_unknown(monkeypatch, capsys, tmp_path):
     _edit_test(
         monkeypatch,
