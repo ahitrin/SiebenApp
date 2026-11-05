@@ -1,4 +1,5 @@
 import shutil
+import sys
 from pathlib import Path
 
 import pytest
@@ -243,6 +244,9 @@ def test_link_change_type(monkeypatch, capsys, tmp_path):
     )
 
 
+@pytest.mark.skipif(
+    sys.version_info > (3, 12), reason="Help format has changed in Python 3.13"
+)
 def test_link_error_new_link_of_unknown_type(monkeypatch, capsys, tmp_path):
     _edit_test(
         monkeypatch,
@@ -253,6 +257,9 @@ def test_link_error_new_link_of_unknown_type(monkeypatch, capsys, tmp_path):
     )
 
 
+@pytest.mark.skipif(
+    sys.version_info > (3, 12), reason="Help format has changed in Python 3.13"
+)
 def test_link_error_change_type_to_unknown(monkeypatch, capsys, tmp_path):
     _edit_test(
         monkeypatch,
