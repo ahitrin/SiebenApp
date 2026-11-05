@@ -68,7 +68,8 @@ def full_db_content(file_path):
 
 
 def _edit_test(monkeypatch, capsys, tmp_path, name: str, si_args: list[str]):
-    monkeypatch.setenv("COLUMNS", "80")
+    monkeypatch.setenv("COLUMNS", "100")
+    monkeypatch.setenv("ROWS", "40")
     src_path = Path(__file__).parent / "asset" / "si-example.db"
     file_path = tmp_path / "si.db"
     shutil.copy(src_path, file_path)
