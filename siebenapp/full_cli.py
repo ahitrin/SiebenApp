@@ -97,7 +97,7 @@ def link(args: argparse.Namespace) -> None:
     goal_file = args.goal_file
     first = args.first
     second = args.second
-    link_type = args.link_type
+    link_type = EdgeType[args.link_type.upper()]
 
     def check(db: Graph):
         rr = db.q()
@@ -185,13 +185,6 @@ def delete_goal(args: argparse.Namespace) -> None:
         raise ValueError(
             f"Goal {goal_id} will be removed only if '--force' flag is set."
         )
-
-
-def _link_type(s: str):
-    try:
-        return EdgeType[s.upper()]
-    except KeyError:
-        return s
 
 
 def main(argv: list[str] | None = None):
@@ -285,8 +278,7 @@ def main(argv: list[str] | None = None):
     parser_link.add_argument("second", type=int, help="ID of an 'upper' goal to link.")
     parser_link.add_argument(
         "link_type",
-        type=_link_type,
-        choices=list(EdgeType),
+        choices=['relation', 'blocker', 'parent'],
         help="New link type.",
     )
     parser_link.set_defaults(func=link)

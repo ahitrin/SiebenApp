@@ -32,7 +32,7 @@ an utility _exits with code 2_ with the following output:
 and the following error:
 ```
 usage: si goal_file link [-h] first second {relation,blocker,parent}
-si goal_file link: error: argument link_type: invalid choice: 'unknown' (choose from relation, blocker, parent)
+si goal_file link: error: argument link_type: invalid choice: 'unknown' (choose from 'relation', 'blocker', 'parent')
 
 ```
 
