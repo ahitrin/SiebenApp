@@ -181,10 +181,10 @@ def open_goal(args: argparse.Namespace) -> None:
     goal_id = args.goal_id
 
     def check(db):
+        db.accept(ToggleOpenView())
         rr = db.q()
         if goal_id not in rr.index:
-            # Just ignore this case
-            return
+            raise ValueError(f"Goal {goal_id} doesn't exist")
         if rr.by_id(goal_id).is_open:
             raise ValueError(f"Goal {goal_id} is already open")
 

@@ -280,3 +280,15 @@ def test_close_error_already_closed(mocks):
 
 def test_close_error_incorrect_goal(mocks):
     _edit_test(mocks, "Close goal that doesn't exist", ["close", "77"])
+
+
+def test_open_correct(mocks):
+    _edit_test(mocks, "Correct goal re-open", ["open", "4"])
+
+
+def test_open_error_incorrect_goal(mocks):
+    _edit_test(mocks, "Re-open goal that doesn't exist", ["open", "44"])
+
+
+def test_open_error_already_open(mocks):
+    _edit_test(mocks, "Re-open goal that's not closed", ["open", "5"])
