@@ -298,3 +298,13 @@ def test_link_error_change_type_to_unknown_py312(monkeypatch, capsys, tmp_path):
         "Unknown link type replaces known",
         ["link", "7", "5", "unknown"],
     )
+
+
+def test_link_error_create_loop(monkeypatch, capsys, tmp_path):
+    _edit_test(
+        monkeypatch,
+        capsys,
+        tmp_path,
+        "New link creates a loop",
+        ["link", "9", "1", "relation"],
+    )
