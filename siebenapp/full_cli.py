@@ -130,6 +130,7 @@ def unlink(args: argparse.Namespace) -> None:
     event = ToggleLink(first, second, EdgeType.PARENT)
 
     def check(db: Graph):
+        db.accept(ToggleOpenView())
         rr = db.q()
         parent_row = rr.by_id(first)
         e_types = {e_type for g_id, e_type in parent_row.edges if g_id == second}
@@ -137,7 +138,7 @@ def unlink(args: argparse.Namespace) -> None:
             new_type = e_types.pop()
             return replace(event, edge_type=new_type)
         else:
-            raise ValueError(f"Link between goals {first} and {second} dosen't exist")
+            raise ValueError(f"Link between goals {first} and {second} doesn't exist")
 
     _process_event(goal_file, event, check)
 

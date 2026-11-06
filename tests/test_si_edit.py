@@ -240,3 +240,7 @@ def test_unlink_blocker(mocks):
 
 def test_unlink_relation(mocks):
     _edit_test(mocks, "Correct unlink: relation", ["unlink", "2", "9"])
+
+
+def test_unlink_relation_with_closed_upper_goal(mocks):
+    _edit_test(mocks, "Correct unlink with closed upper goal", ["unlink", "9", "4"])
