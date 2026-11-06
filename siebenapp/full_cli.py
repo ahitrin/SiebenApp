@@ -1,5 +1,6 @@
 import argparse
 import sys
+from dataclasses import replace
 from os import path
 
 from siebenapp.autolink import ToggleAutoLink
@@ -12,6 +13,7 @@ from siebenapp.domain import (
     Rename,
     ToggleClose,
     Delete,
+    Command,
 )
 from siebenapp.filter_view import FilterBy
 from siebenapp.goaltree import Goals
@@ -61,14 +63,17 @@ def view(args: argparse.Namespace) -> None:
 def _process_event(goal_file: str, event, check_fn=None) -> None:
     errors: list[str] = []
     db = load_raw(goal_file, errors.append)
+    new_event: Command | None = None
 
     if check_fn is not None:
         try:
-            check_fn(db)
+            new_event = check_fn(db)
         except ValueError as err:
             print(str(err))
             exit(1)
 
+    if new_event is not None:
+        event = new_event
     db.accept(event)
     if errors:
         for e in errors:
@@ -122,18 +127,19 @@ def unlink(args: argparse.Namespace) -> None:
     goal_file = args.goal_file
     first = args.first
     second = args.second
-    link_type = [EdgeType.PARENT]
+    event = ToggleLink(first, second, EdgeType.PARENT)
 
     def check(db: Graph):
         rr = db.q()
         parent_row = rr.by_id(first)
         e_types = {e_type for g_id, e_type in parent_row.edges if g_id == second}
         if e_types:
-            link_type[0] = e_types.pop()
+            new_type = e_types.pop()
+            return replace(event, edge_type=new_type)
         else:
             raise ValueError(f"Link between goals {first} and {second} dosen't exist")
 
-    _process_event(goal_file, ToggleLink(first, second, link_type[0]), check)
+    _process_event(goal_file, event, check)
 
 
 def rename(args: argparse.Namespace) -> None:

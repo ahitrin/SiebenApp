@@ -228,3 +228,15 @@ def test_link_error_incorrect_upper_goal(mocks):
 
 def test_link_error_incorrect_both_goals(mocks):
     _edit_test(mocks, "Link: incorrect both goals", ["link", "15", "10", "relation"])
+
+
+def test_unlink_parent(mocks):
+    _edit_test(mocks, "Correct unlink: parent relation", ["unlink", "8", "9"])
+
+
+def test_unlink_blocker(mocks):
+    _edit_test(mocks, "Correct unlink: blocker relation", ["unlink", "7", "5"])
+
+
+def test_unlink_relation(mocks):
+    _edit_test(mocks, "Correct unlink: relation", ["unlink", "2", "9"])
