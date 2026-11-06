@@ -68,7 +68,13 @@ def full_db_content(file_path):
     return db_content
 
 
-def _edit_test(monkeypatch, capsys, tmp_path, name: str, si_args: list[str]):
+@pytest.fixture
+def mocks(monkeypatch, capsys, tmp_path):
+    return monkeypatch, capsys, tmp_path
+
+
+def _edit_test(mocks, name: str, si_args: list[str]):
+    monkeypatch, capsys, tmp_path = mocks
     monkeypatch.setenv("COLUMNS", "100")
     monkeypatch.setenv("ROWS", "40")
     src_path = Path(__file__).parent / "asset" / "si-example.db"
@@ -94,217 +100,119 @@ def _edit_test(monkeypatch, capsys, tmp_path, name: str, si_args: list[str]):
     verify_file(content, ".md")
 
 
-def test_add(monkeypatch, capsys, tmp_path):
-    _edit_test(
-        monkeypatch, capsys, tmp_path, "Add a goal", ["add", "5", '"New subgoal"']
-    )
+def test_add(mocks):
+    _edit_test(mocks, "Add a goal", ["add", "5", '"New subgoal"'])
 
 
-def test_add_error_incorrect_goal(monkeypatch, capsys, tmp_path):
-    _edit_test(
-        monkeypatch,
-        capsys,
-        tmp_path,
-        "Add to an incorrect goal",
-        ["add", "15", "failed"],
-    )
+def test_add_error_incorrect_goal(mocks):
+    _edit_test(mocks, "Add to an incorrect goal", ["add", "15", "failed"])
 
 
 @pytest.mark.skip("temporary disable due to environment-specific behavior")
-def test_add_error_extra_description(monkeypatch, capsys, tmp_path):
-    _edit_test(
-        monkeypatch,
-        capsys,
-        tmp_path,
-        "Add with extra arguments",
-        ["add", "1", "extra", "arguments"],
-    )
+def test_add_error_extra_description(mocks):
+    _edit_test(mocks, "Add with extra arguments", ["add", "1", "extra", "arguments"])
 
 
-def test_add_error_missing_description(monkeypatch, capsys, tmp_path):
-    _edit_test(
-        monkeypatch, capsys, tmp_path, "Add with missing description", ["add", "6"]
-    )
+def test_add_error_missing_description(mocks):
+    _edit_test(mocks, "Add with missing description", ["add", "6"])
 
 
-def test_add_error_empty_description(monkeypatch, capsys, tmp_path):
-    _edit_test(
-        monkeypatch, capsys, tmp_path, "Add with empty description", ["add", "6", '""']
-    )
+def test_add_error_empty_description(mocks):
+    _edit_test(mocks, "Add with empty description", ["add", "6", '""'])
 
 
-def test_insert_correct(monkeypatch, capsys, tmp_path):
-    _edit_test(
-        monkeypatch,
-        capsys,
-        tmp_path,
-        "Correct insert",
-        ["insert", "2", "5", '"Between A and A2"'],
-    )
+def test_insert_correct(mocks):
+    _edit_test(mocks, "Correct insert", ["insert", "2", "5", '"Between A and A2"'])
 
 
-def test_insert_error_no_description(monkeypatch, capsys, tmp_path):
-    _edit_test(
-        monkeypatch,
-        capsys,
-        tmp_path,
-        "Insert without goal description",
-        ["insert", "2", "5"],
-    )
+def test_insert_error_no_description(mocks):
+    _edit_test(mocks, "Insert without goal description", ["insert", "2", "5"])
 
 
-def test_insert_error_empty_description(monkeypatch, capsys, tmp_path):
-    _edit_test(
-        monkeypatch,
-        capsys,
-        tmp_path,
-        "Insert with empty goal description",
-        ["insert", "2", "5", ""],
-    )
+def test_insert_error_empty_description(mocks):
+    _edit_test(mocks, "Insert with empty goal description", ["insert", "2", "5", ""])
 
 
 @pytest.mark.skip("temporary disable due to environment-specific behavior")
-def test_insert_error_extra_description(monkeypatch, capsys, tmp_path):
+def test_insert_error_extra_description(mocks):
     _edit_test(
-        monkeypatch,
-        capsys,
-        tmp_path,
+        mocks,
         "Insert with extra description",
         ["insert", "2", "5", "I", "forgot", "to", "add", "quotes"],
     )
 
 
-def test_insert_error_wrong_goal_order(monkeypatch, capsys, tmp_path):
+def test_insert_error_wrong_goal_order(mocks):
     _edit_test(
-        monkeypatch,
-        capsys,
-        tmp_path,
+        mocks,
         "Insert: wrong goal order",
         ["insert", "5", "2", '"Create a loop with insert"'],
     )
 
 
-def test_insert_error_incorrect_lower_goal(monkeypatch, capsys, tmp_path):
+def test_insert_error_incorrect_lower_goal(mocks):
     _edit_test(
-        monkeypatch,
-        capsys,
-        tmp_path,
+        mocks,
         "Insert: incorrect lower goal",
         ["insert", "10", "2", '"Incorrect lower goal"'],
     )
 
 
-def test_insert_error_incorrect_upper_goal(monkeypatch, capsys, tmp_path):
+def test_insert_error_incorrect_upper_goal(mocks):
     _edit_test(
-        monkeypatch,
-        capsys,
-        tmp_path,
+        mocks,
         "Insert: incorrect lower goal",
         ["insert", "2", "10", '"Incorrect upper goal"'],
     )
 
 
-def test_link_parent(monkeypatch, capsys, tmp_path):
-    _edit_test(
-        monkeypatch,
-        capsys,
-        tmp_path,
-        "Link with parent/child relation",
-        ["link", "2", "7", "parent"],
-    )
+def test_link_parent(mocks):
+    _edit_test(mocks, "Link with parent/child relation", ["link", "2", "7", "parent"])
 
 
-def test_link_blocker(monkeypatch, capsys, tmp_path):
-    _edit_test(
-        monkeypatch,
-        capsys,
-        tmp_path,
-        "Link with blocker relation",
-        ["link", "7", "6", "blocker"],
-    )
+def test_link_blocker(mocks):
+    _edit_test(mocks, "Link with blocker relation", ["link", "7", "6", "blocker"])
 
 
-def test_link_relation(monkeypatch, capsys, tmp_path):
-    _edit_test(
-        monkeypatch,
-        capsys,
-        tmp_path,
-        "Link with just relation",
-        ["link", "6", "7", "relation"],
-    )
+def test_link_relation(mocks):
+    _edit_test(mocks, "Link with just relation", ["link", "6", "7", "relation"])
 
 
-def test_link_change_type(monkeypatch, capsys, tmp_path):
-    _edit_test(
-        monkeypatch,
-        capsys,
-        tmp_path,
-        "Change link type",
-        ["link", "7", "5", "relation"],
-    )
+def test_link_change_type(mocks):
+    _edit_test(mocks, "Change link type", ["link", "7", "5", "relation"])
 
 
 @pytest.mark.skipif(
     list(sys.version_info)[:2] == [3, 12],
     reason="Python 3.12 is very special in help formatting",
 )
-def test_link_error_new_link_of_unknown_type(monkeypatch, capsys, tmp_path):
-    _edit_test(
-        monkeypatch,
-        capsys,
-        tmp_path,
-        "New link of unknown type",
-        ["link", "1", "5", "unknown"],
-    )
+def test_link_error_new_link_of_unknown_type(mocks):
+    _edit_test(mocks, "New link of unknown type", ["link", "1", "5", "unknown"])
 
 
 @pytest.mark.skipif(
     list(sys.version_info)[:2] != [3, 12],
     reason="Python 3.12 is very special in help formatting",
 )
-def test_link_error_new_link_of_unknown_type_py312(monkeypatch, capsys, tmp_path):
-    _edit_test(
-        monkeypatch,
-        capsys,
-        tmp_path,
-        "New link of unknown type",
-        ["link", "1", "5", "unknown"],
-    )
+def test_link_error_new_link_of_unknown_type_py312(mocks):
+    _edit_test(mocks, "New link of unknown type", ["link", "1", "5", "unknown"])
 
 
 @pytest.mark.skipif(
     list(sys.version_info)[:2] == [3, 12],
     reason="Python 3.12 is very special in help formatting",
 )
-def test_link_error_change_type_to_unknown(monkeypatch, capsys, tmp_path):
-    _edit_test(
-        monkeypatch,
-        capsys,
-        tmp_path,
-        "Unknown link type replaces known",
-        ["link", "7", "5", "unknown"],
-    )
+def test_link_error_change_type_to_unknown(mocks):
+    _edit_test(mocks, "Unknown link type replaces known", ["link", "7", "5", "unknown"])
 
 
 @pytest.mark.skipif(
     list(sys.version_info)[:2] != [3, 12],
     reason="Python 3.12 is very special in help formatting",
 )
-def test_link_error_change_type_to_unknown_py312(monkeypatch, capsys, tmp_path):
-    _edit_test(
-        monkeypatch,
-        capsys,
-        tmp_path,
-        "Unknown link type replaces known",
-        ["link", "7", "5", "unknown"],
-    )
+def test_link_error_change_type_to_unknown_py312(mocks):
+    _edit_test(mocks, "Unknown link type replaces known", ["link", "7", "5", "unknown"])
 
 
-def test_link_error_create_loop(monkeypatch, capsys, tmp_path):
-    _edit_test(
-        monkeypatch,
-        capsys,
-        tmp_path,
-        "New link creates a loop",
-        ["link", "9", "1", "relation"],
-    )
+def test_link_error_create_loop(mocks):
+    _edit_test(mocks, "New link creates a loop", ["link", "9", "1", "relation"])
