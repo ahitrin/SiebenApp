@@ -195,12 +195,18 @@ def delete_goal(args: argparse.Namespace) -> None:
     goal_file = args.goal_file
     goal_id = args.goal_id
 
-    if args.force:
-        _process_event(goal_file, Delete(goal_id))
-    else:
-        raise ValueError(
-            f"Goal {goal_id} will be removed only if '--force' flag is set."
-        )
+    def check(db):
+        db.accept(ToggleOpenView())
+        rr = db.q()
+        if goal_id not in rr.index:
+            raise ValueError(f"Goal {goal_id} doesn't exist")
+
+        if not args.force:
+            raise ValueError(
+                f"Goal {goal_id} will be removed only if '--force' flag is set."
+            )
+
+    _process_event(goal_file, Delete(goal_id), check)
 
 
 def main(argv: list[str] | None = None):

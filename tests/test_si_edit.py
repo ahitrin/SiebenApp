@@ -292,3 +292,27 @@ def test_open_error_incorrect_goal(mocks):
 
 def test_open_error_already_open(mocks):
     _edit_test(mocks, "Re-open goal that's not closed", ["open", "5"])
+
+
+def test_delete_leaf_without_force(mocks):
+    _edit_test(mocks, "Delete leaf goal without force", ["delete", "6"])
+
+
+def test_delete_leaf_with_force(mocks):
+    _edit_test(mocks, "Delete leaf goal with force", ["delete", "6", "--force"])
+
+
+def test_delete_subtree_with_force(mocks):
+    _edit_test(mocks, "Delete goal subtree with force", ["delete", "3", "--force"])
+
+
+def test_delete_error_incorrect_goal(mocks):
+    _edit_test(mocks, "Delete incorrect goal", ["delete", "17"])
+
+
+def test_delete_error_incorrect_goal_with_force(mocks):
+    _edit_test(mocks, "Delete incorrect goal with force", ["delete", "18", "--force"])
+
+
+def test_delete_error_root_with_force(mocks):
+    _edit_test(mocks, "Delete root with force", ["delete", "1", "--force"])
