@@ -244,3 +244,23 @@ def test_unlink_relation(mocks):
 
 def test_unlink_relation_with_closed_upper_goal(mocks):
     _edit_test(mocks, "Correct unlink with closed upper goal", ["unlink", "9", "4"])
+
+
+def test_unlink_last_parent(mocks):
+    _edit_test(mocks, "Unlink: remove last parent", ["unlink", "1", "3"])
+
+
+def test_unlink_error_no_existing_link(mocks):
+    _edit_test(mocks, "Unlink error: link doesn't exist", ["unlink", "6", "5"])
+
+
+def test_unlink_error_incorrect_lower_goal(mocks):
+    _edit_test(mocks, "Unlink error: incorrect lower goal", ["unlink", "11", "5"])
+
+
+def test_unlink_error_incorrect_upper_goal(mocks):
+    _edit_test(mocks, "Unlink error: incorrect upper goal", ["unlink", "5", "11"])
+
+
+def test_unlink_error_incorrect_both_goals(mocks):
+    _edit_test(mocks, "Unlink error: incorrect both goals", ["unlink", "13", "11"])

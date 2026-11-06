@@ -132,6 +132,10 @@ def unlink(args: argparse.Namespace) -> None:
     def check(db: Graph):
         db.accept(ToggleOpenView())
         rr = db.q()
+        if first not in rr.index:
+            raise ValueError(f"Incorrect goal id: {first}")
+        if second not in rr.index:
+            raise ValueError(f"Incorrect goal id: {second}")
         parent_row = rr.by_id(first)
         e_types = {e_type for g_id, e_type in parent_row.edges if g_id == second}
         if e_types:
