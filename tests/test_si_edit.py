@@ -216,3 +216,15 @@ def test_link_error_change_type_to_unknown_py312(mocks):
 
 def test_link_error_create_loop(mocks):
     _edit_test(mocks, "New link creates a loop", ["link", "9", "1", "relation"])
+
+
+def test_link_error_incorrect_lower_goal(mocks):
+    _edit_test(mocks, "Link: incorrect lower goal", ["link", "10", "5", "blocker"])
+
+
+def test_link_error_incorrect_upper_goal(mocks):
+    _edit_test(mocks, "Link: incorrect upper goal", ["link", "5", "10", "blocker"])
+
+
+def test_link_error_incorrect_both_goals(mocks):
+    _edit_test(mocks, "Link: incorrect both goals", ["link", "15", "10", "relation"])

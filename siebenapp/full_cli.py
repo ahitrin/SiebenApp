@@ -101,6 +101,10 @@ def link(args: argparse.Namespace) -> None:
 
     def check(db: Graph):
         rr = db.q()
+        if first not in rr.index:
+            raise ValueError(f"Incorrect goal id: {first}")
+        if second not in rr.index:
+            raise ValueError(f"Incorrect goal id: {second}")
         parent_row = rr.by_id(first)
         if any(
             [
