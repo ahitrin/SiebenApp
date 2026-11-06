@@ -264,3 +264,19 @@ def test_unlink_error_incorrect_upper_goal(mocks):
 
 def test_unlink_error_incorrect_both_goals(mocks):
     _edit_test(mocks, "Unlink error: incorrect both goals", ["unlink", "13", "11"])
+
+
+def test_close_correct(mocks):
+    _edit_test(mocks, "Correct close of an open goal", ["close", "6"])
+
+
+def test_close_error_cannot_be_closed(mocks):
+    _edit_test(mocks, "Closing a goal that cannot be closed yet", ["close", "3"])
+
+
+def test_close_error_already_closed(mocks):
+    _edit_test(mocks, "Closing an already closed goal", ["close", "4"])
+
+
+def test_close_error_incorrect_goal(mocks):
+    _edit_test(mocks, "Close goal that doesn't exist", ["close", "77"])

@@ -185,7 +185,7 @@ class Goals(Graph):
         is_closed = self.is_closed(target)
         error_messages = {
             True: "This goal can't be reopened because other subgoals block it",
-            False: "This goal can't be closed because it have open subgoals",
+            False: "This goal can't be closed because it has open subgoals",
         }
         if not self._switchable(target):
             self.error(error_messages[is_closed])

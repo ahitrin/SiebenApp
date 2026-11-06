@@ -893,7 +893,7 @@ class GoalsTest(TestCase):
         self.goals = self.build(open_(1, "Root", [2]), open_(2, "Top"))
         self.goals.accept(ToggleClose(1))
         assert self.messages == [
-            "This goal can't be closed because it have open subgoals"
+            "This goal can't be closed because it has open subgoals"
         ]
 
     def test_no_message_on_valid_reopening(self) -> None:
