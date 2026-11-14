@@ -27,10 +27,11 @@ si <file.db> insert 10 2 "Incorrect lower goal"
 ## Then
 
 an utility _exits with code 1_ with the following output:
-> Id of a lower goal is unknown
+
 
 and the following error:
 ```
+Id of a lower goal is unknown
 
 ```
 

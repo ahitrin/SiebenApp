@@ -27,10 +27,11 @@ si <file.db> add 15 failed
 ## Then
 
 an utility _exits with code 1_ with the following output:
-> Parent goal doesn't exist: 15
+
 
 and the following error:
 ```
+Parent goal doesn't exist: 15
 
 ```
 

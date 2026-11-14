@@ -27,10 +27,11 @@ si <file.db> unlink 1 3
 ## Then
 
 an utility _exits with code 1_ with the following output:
-> Can't remove the last link
+
 
 and the following error:
 ```
+Can't remove the last link
 
 ```
 

@@ -27,10 +27,11 @@ si <file.db> insert 2 5
 ## Then
 
 an utility _exits with code 1_ with the following output:
-> New subgoal description cannot be empty
+
 
 and the following error:
 ```
+New subgoal description cannot be empty
 
 ```
 

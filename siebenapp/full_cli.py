@@ -85,9 +85,7 @@ def _process_event(goal_file: str, event, check_fn=None) -> None:
         event = new_event
     db.accept(event)
     if errors:
-        for e in errors:
-            print(e)
-        exit(1)
+        _die("\n".join(errors))
     else:
         save(db, goal_file)
 

@@ -27,10 +27,11 @@ si <file.db> close 3
 ## Then
 
 an utility _exits with code 1_ with the following output:
-> This goal can't be closed because it has open subgoals
+
 
 and the following error:
 ```
+This goal can't be closed because it has open subgoals
 
 ```
 

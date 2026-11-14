@@ -27,10 +27,11 @@ si <file.db> insert 5 2 "Create a loop with insert"
 ## Then
 
 an utility _exits with code 1_ with the following output:
-> Circular dependencies between goals are not allowed
+
 
 and the following error:
 ```
+Circular dependencies between goals are not allowed
 
 ```
 

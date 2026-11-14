@@ -27,10 +27,11 @@ si <file.db> delete 1 --force
 ## Then
 
 an utility _exits with code 1_ with the following output:
-> Root goal can't be deleted
+
 
 and the following error:
 ```
+Root goal can't be deleted
 
 ```
 
