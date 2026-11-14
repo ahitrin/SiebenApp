@@ -104,10 +104,13 @@ class ZoomView(Graph):
         )
 
     def accept_ToggleClose(self, command: ToggleClose):
-        if command.goal_id == self.zoom_root[-1]:
-            self.accept_ToggleZoom(ToggleZoom(self.zoom_root[-1]))
-        # Note: zoom_root may be changed inside accept_ToggleZoom
-        self.goaltree.accept(ToggleClose(command.goal_id, self.zoom_root[-1]))
+        root_id = self.zoom_root[-1]
+        closing_current_root: bool = command.goal_id == root_id
+        self.goaltree.accept(ToggleClose(command.goal_id, root_id))
+        if closing_current_root:
+            rr = self.goaltree.q()
+            if root_id not in rr.index or not rr.by_id(root_id).is_open:
+                self.accept_ToggleZoom(ToggleZoom(self.zoom_root[-1]))
 
     def accept_Delete(self, command: Delete) -> None:
         ids_before: set[int] = {r.raw_id for r in self.goaltree.q().rows}

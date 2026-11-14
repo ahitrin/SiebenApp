@@ -445,6 +445,26 @@ def test_closing_zoom_root_should_cause_unzoom() -> None:
     )
 
 
+def test_unsuccessful_closing_of_zoom_root_should_not_cause_unzoom() -> None:
+    goals = ZoomView(
+        build_goaltree(
+            open_(1, "Root goal", [2]),
+            open_(2, "Zoom here", [3]),
+            open_(3, "Open children"),
+        )
+    )
+    goals.accept_all(ToggleZoom(2), ToggleClose(2))
+    assert goals.q() == RenderResult(
+        [
+            RenderRow(
+                2, 2, "Zoom here", True, False, True, [child(3)], {"Zoom": "Root goal"}
+            ),
+            RenderRow(3, 3, "Open children", True, True, True, []),
+        ],
+        roots={2},
+    )
+
+
 def test_goal_closing_must_not_cause_root_selection() -> None:
     goals = ZoomView(
         SelectableView(
