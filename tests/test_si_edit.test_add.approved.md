@@ -40,10 +40,10 @@ and goal file content will be the following:
 2    Subgoal A [4,5 /  | 9]
 3    Subgoal B [6,7 /  | ]
 4[x] Subgoal A1
-5    Subgoal A2 [0 /  | ]
+5    Subgoal A2 [10 /  | ]
 6[ ] Subgoal B1
 7    Subgoal B2 [ / 5 | ]
 8    [Backlog] [9 /  | ] [Autolink: later:]
 9[ ] later: Get rid of A1 [ /  | 4]
-0[ ] New subgoal
+10[ ] New subgoal
 ```

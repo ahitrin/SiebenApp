@@ -37,7 +37,7 @@ and the following error:
 and goal file content will be the following:
 ```
 1   >Example SiebenApp file [2,3,8 /  | ]
-2    Subgoal A [4,0 /  | 9]
+2    Subgoal A [4,10 /  | 9]
 3    Subgoal B [6,7 /  | ]
 4[x] Subgoal A1
 5[ ] Subgoal A2
@@ -45,5 +45,5 @@ and goal file content will be the following:
 7    Subgoal B2 [ / 5 | ]
 8    [Backlog] [9 /  | ] [Autolink: later:]
 9[ ] later: Get rid of A1 [ /  | 4]
-0    Between A and A2 [5 /  | ]
+10    Between A and A2 [5 /  | ]
 ```

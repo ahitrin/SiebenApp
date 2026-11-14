@@ -36,10 +36,10 @@ and the following error:
 
 and goal file content will be the following:
 ```
-1   >Example SiebenApp file [2,5 /  | ]
-2    Subgoal A [3,4 /  | 6]
-3[x] Subgoal A1
-4[ ] Subgoal A2
-5    [Backlog] [6 /  | ] [Autolink: later:]
-6[ ] later: Get rid of A1 [ /  | 3]
+1   >Example SiebenApp file [2,8 /  | ]
+2    Subgoal A [4,5 /  | 9]
+4[x] Subgoal A1
+5[ ] Subgoal A2
+8    [Backlog] [9 /  | ] [Autolink: later:]
+9[ ] later: Get rid of A1 [ /  | 4]
 ```

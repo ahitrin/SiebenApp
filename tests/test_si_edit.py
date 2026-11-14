@@ -7,7 +7,7 @@ import pytest
 from siebenapp import full_cli
 from siebenapp.cli import fmt
 from siebenapp.open_view import ToggleOpenView
-from siebenapp.system import load
+from siebenapp.system import load_raw
 from tests.test_cli import verify_file
 
 TEST_TEMPLATE_EDIT = """
@@ -61,7 +61,7 @@ def cleanup_stderr(s: str) -> str:
 
 
 def full_db_content(file_path):
-    db = load(str(file_path))
+    db = load_raw(str(file_path))
     db.accept(ToggleOpenView())
     rr = db.q()
     db_content = "\n".join([fmt(rr, row, 60) for row in rr.rows])
