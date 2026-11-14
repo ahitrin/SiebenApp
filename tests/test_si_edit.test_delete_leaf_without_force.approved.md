@@ -27,10 +27,11 @@ si <file.db> delete 6
 ## Then
 
 an utility _exits with code 1_ with the following output:
-> Goal 6 will be removed only if '--force' flag is set.
+
 
 and the following error:
 ```
+Goal 6 will be removed only if '--force' flag is set.
 
 ```
 

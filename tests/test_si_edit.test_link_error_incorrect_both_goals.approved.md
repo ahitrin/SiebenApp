@@ -27,10 +27,11 @@ si <file.db> link 15 10 relation
 ## Then
 
 an utility _exits with code 1_ with the following output:
-> Incorrect goal id: 15
+
 
 and the following error:
 ```
+Incorrect goal id: 15
 
 ```
 

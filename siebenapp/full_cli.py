@@ -79,8 +79,7 @@ def _process_event(goal_file: str, event, check_fn=None) -> None:
         try:
             new_event = check_fn(db)
         except ValueError as err:
-            print(str(err))
-            exit(1)
+            _die(str(err))
 
     if new_event is not None:
         event = new_event

@@ -27,10 +27,11 @@ si <file.db> open 5
 ## Then
 
 an utility _exits with code 1_ with the following output:
-> Goal 5 is already open
+
 
 and the following error:
 ```
+Goal 5 is already open
 
 ```
 

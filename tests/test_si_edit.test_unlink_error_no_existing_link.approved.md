@@ -27,10 +27,11 @@ si <file.db> unlink 6 5
 ## Then
 
 an utility _exits with code 1_ with the following output:
-> Link between goals 6 and 5 doesn't exist
+
 
 and the following error:
 ```
+Link between goals 6 and 5 doesn't exist
 
 ```
 

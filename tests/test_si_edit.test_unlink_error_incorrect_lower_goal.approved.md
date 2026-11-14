@@ -27,10 +27,11 @@ si <file.db> unlink 11 5
 ## Then
 
 an utility _exits with code 1_ with the following output:
-> Incorrect goal id: 11
+
 
 and the following error:
 ```
+Incorrect goal id: 11
 
 ```
 

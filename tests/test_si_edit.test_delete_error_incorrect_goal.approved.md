@@ -27,10 +27,11 @@ si <file.db> delete 17
 ## Then
 
 an utility _exits with code 1_ with the following output:
-> Goal 17 doesn't exist
+
 
 and the following error:
 ```
+Goal 17 doesn't exist
 
 ```
 

@@ -27,10 +27,11 @@ si <file.db> open 44
 ## Then
 
 an utility _exits with code 1_ with the following output:
-> Goal 44 doesn't exist
+
 
 and the following error:
 ```
+Goal 44 doesn't exist
 
 ```
 

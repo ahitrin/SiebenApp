@@ -27,10 +27,11 @@ si <file.db> close 4
 ## Then
 
 an utility _exits with code 1_ with the following output:
-> Goal 4 is not open
+
 
 and the following error:
 ```
+Goal 4 is not open
 
 ```
 

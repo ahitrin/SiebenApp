@@ -27,10 +27,11 @@ si <file.db> delete 18 --force
 ## Then
 
 an utility _exits with code 1_ with the following output:
-> Goal 18 doesn't exist
+
 
 and the following error:
 ```
+Goal 18 doesn't exist
 
 ```
 
