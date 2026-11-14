@@ -1,4 +1,3 @@
-import shutil
 from pathlib import Path
 
 import pytest
@@ -57,11 +56,14 @@ def cleanup_stderr(s: str) -> str:
 
 
 def full_db_content(file_path):
-    db = load(str(file_path))
-    db.accept(ToggleOpenView())
-    rr = db.q()
-    db_content = "\n".join([fmt(rr, row, 60) for row in rr.rows])
-    return db_content
+    try:
+        db = load(str(file_path))
+        db.accept(ToggleOpenView())
+        rr = db.q()
+        db_content = "\n".join([fmt(rr, row, 60) for row in rr.rows])
+        return db_content
+    except ValueError:
+        return "<UNKNOWN>"
 
 
 @pytest.fixture
@@ -91,12 +93,25 @@ def _new_file_test(mocks, name: str, precondition: str, si_args: list[str]):
         args=" ".join(si_args),
         status=status,
         stdout=format_quote(out_err.out),
-        stderr=cleanup_stderr(out_err.err),
+        stderr=cleanup_stderr(out_err.err.replace(str(file_path), "<file.db>")),
         content_after=content_after,
     )
     verify_file(content, ".md")
 
 
 def test_new_success(mocks):
-    _new_file_test(mocks, "Create new file","no file <file.db> exists",
-                   ["new", '"Root subgoal"'])
+    _new_file_test(
+        mocks, "Create new file", "no file <file.db> exists", ["new", '"Root subgoal"']
+    )
+
+
+def test_new_error_file_exists(mocks):
+    monkeypatch, capsys, tmp_path = mocks
+    f = target_file(tmp_path)
+    Path(f).touch()
+    _new_file_test(
+        mocks,
+        "Do not overwrite existing file",
+        "file <file.db> already exists",
+        ["new", '"Root subgoal"'],
+    )

@@ -26,10 +26,16 @@ from siebenapp.system import save, load_raw
 from siebenapp.zoom_view import ToggleZoom
 
 
+def _die(msg: str) -> None:
+    print(msg, file=sys.stderr)
+    exit(1)
+
+
 def new_file(args: argparse.Namespace) -> None:
     goal_file = args.goal_file
     description = args.description
-    assert not path.exists(goal_file), f"File {goal_file} already exists!"
+    if path.exists(goal_file):
+        _die(f"File {goal_file} already exists!")
     db = Goals(description)
     save(all_layers(db), goal_file)
 
