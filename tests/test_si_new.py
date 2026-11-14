@@ -55,7 +55,9 @@ def cleanup_stderr(s: str) -> str:
     return s
 
 
-def full_db_content(file_path):
+def full_db_content(file_path: Path) -> str:
+    if not file_path.exists():
+        return "<UNAVAILABLE>"
     try:
         db = load(str(file_path))
         db.accept(ToggleOpenView())
@@ -75,11 +77,17 @@ def target_file(tmp_path):
     return tmp_path / "si.db"
 
 
-def _new_file_test(mocks, name: str, precondition: str, si_args: list[str]):
+def _new_file_test(
+    mocks,
+    name: str,
+    precondition: str,
+    si_args: list[str],
+    file_path: Path | None = None,
+) -> None:
     monkeypatch, capsys, tmp_path = mocks
     monkeypatch.setenv("COLUMNS", "100")
     monkeypatch.setenv("ROWS", "40")
-    file_path = target_file(tmp_path)
+    file_path = file_path or target_file(tmp_path)
     status = "passes"
     try:
         full_cli.main([str(file_path)] + [l.replace('"', "") for l in si_args])
@@ -114,4 +122,17 @@ def test_new_error_file_exists(mocks):
         "Do not overwrite existing file",
         "file <file.db> already exists",
         ["new", '"Root subgoal"'],
+    )
+
+
+def test_new_error_unavailable_file(mocks):
+    monkeypatch, capsys, tmp_path = mocks
+    f = target_file(tmp_path)
+    Path(f).touch()
+    _new_file_test(
+        mocks,
+        "File at unavailable location",
+        "<file.db> points to an unavailable location",
+        ["new", '"Root subgoal"'],
+        Path("/dev/null/123"),
     )

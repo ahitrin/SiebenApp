@@ -1,4 +1,5 @@
 import argparse
+import sqlite3
 import sys
 from dataclasses import replace
 from os import path
@@ -37,7 +38,10 @@ def new_file(args: argparse.Namespace) -> None:
     if path.exists(goal_file):
         _die(f"File {goal_file} already exists!")
     db = Goals(description)
-    save(all_layers(db), goal_file)
+    try:
+        save(all_layers(db), goal_file)
+    except sqlite3.OperationalError:
+        _die(f"Cannot save file {goal_file}")
 
 
 def view(args: argparse.Namespace) -> None:
