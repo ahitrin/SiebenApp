@@ -1,5 +1,42 @@
 = Changelog
 
+== Alpha version 0.15
+2026-11-28
+
+New/done features:
+
+* Move selection-related logic out from the core onto middleware https://github.com/ahitrin/SiebenApp/issues/538[#538].
+* Full CLI control https://github.com/ahitrin/SiebenApp/issues/754[#754].
+
+Bug fixes:
+
+* Fix: do not convert autolinked parent relation back to weak relation.
+* Fix: remove non-blocking relation for closed goal.
+* Fix: do not unzoom on an unsuccessful close.
+* Fix: unlink existing edge before creating new one.
+
+Refactoring/cleanups:
+
+* Convert GoalId back into int https://github.com/ahitrin/SiebenApp/issues/532[#532].
+
+Other improvements:
+
+* Add support for Python 3.13 and 3.14 on CI.
+* CI: disable download of ApprovalTests helper scripts.
+* Use GitHub Actions to render site https://github.com/ahitrin/SiebenApp/issues/549[#549].
+* Use poetry instead of pipenv for dependency management https://github.com/ahitrin/SiebenApp/issues/626[#626].
+* ci: update actions versions.
+* clieben: add simple delimiter.
+* test_properties: reduce amount of invalid samples in toggle_link.
+* make format: explicitly set python version to avoid warning.
+* Support aarch64 in extra-opts.
+* Make application compatible with pipx.
+
+Compatibility breaks:
+
+* Set Python 3.10 as a minimal version.
+* Update code to Python3.10 code style https://github.com/ahitrin/SiebenApp/issues/501[#501].
+
 == Alpha version 0.14
 2024-07-04
 
